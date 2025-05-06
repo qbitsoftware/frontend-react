@@ -6,6 +6,9 @@ import Loader from '@/components/loader'
 import ErrorPage from '@/components/error'
 import { ErrorResponse } from '@/types/errors'
 import { ParticipantProvider } from '@/providers/participantProvider'
+import { NewSolo } from './-components/new-solo'
+import { NewTeams } from './-components/new-teams'
+import { UseGetParticipantsQuery } from '@/queries/participants'
 
 export const Route = createFileRoute(
     '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -46,18 +49,20 @@ export const Route = createFileRoute(
 function RouteComponent() {
     const { tournament_data, table_data } = Route.useLoaderData()
     const { tournamentid, groupid } = Route.useParams()
+    const { data: participant_data } = UseGetParticipantsQuery(Number(tournamentid), Number(groupid), false)
 
     if (tournament_data && tournament_data.data && table_data && table_data.data) {
         return (
             <div className=''>
 
-                {tournament_data && table_data &&
-                    <ParticipantProvider tournament_id={Number(tournamentid)} tournament_table_id={Number(groupid)}>
-                        <ParticipantsForm
-                            tournament_data={tournament_data.data}
-                            table_data={table_data.data}
-                        />
-                    </ParticipantProvider>
+                {tournament_data && table_data && participant_data && participant_data.data &&
+                    <>
+                        {table_data.data.solo ?
+                            <NewSolo participant_data={participant_data} />
+                            :
+                            <NewTeams participant_data={participant_data} />
+                        }
+                    </>
                 }
             </div>
         )

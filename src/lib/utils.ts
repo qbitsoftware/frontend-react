@@ -125,6 +125,27 @@ export function findEnemyName(
   return "";
 }
 
+export function formatDateStringYearMonthDay(dateStr: string): string {
+    if (!dateStr) return '';
+    
+    try {
+        const match = dateStr.match(/^(\d{4}-\d{2}-\d{2})/);
+        if (match) {
+            return match[1];
+        }
+        
+        const date = new Date(dateStr);
+        if (!isNaN(date.getTime())) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        return '';
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        return '';
+    }
+}
+
 export const formatDateString = (date: string) => {
   const dateObj = new Date(date);
   return dateObj.toLocaleDateString("en-US", {
