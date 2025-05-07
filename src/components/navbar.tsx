@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 import { LanguageDropdown } from './languageSelector'
 import { useTranslation } from 'react-i18next'
 import { AuthButton } from './ui/auth-button'
-import { SidebarTrigger } from './ui/sidebar'
+import { MobileMenuSidebarTrigger } from './ui/sidebar'
 import { useUser } from '@/providers/userProvider'
 
 export default function Navbar() {
@@ -135,8 +135,8 @@ export default function Navbar() {
                         <LanguageDropdown />
                     </div>
 
-                    <SidebarTrigger className='lg:hidden my-auto text-secondary' />
-                </div>
+                    <MobileMenuSidebarTrigger className='lg:hidden my-auto text-secondary' />
+                    </div>
             </div>
         </header >
     )

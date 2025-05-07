@@ -3,8 +3,9 @@ import {
   Outlet,
   createRootRouteWithContext,
   useRouterState,
+  useLocation
 } from "@tanstack/react-router";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Footer from "./-components/footer";
 import Navbar from "@/components/navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -19,12 +20,33 @@ export const Route = createRootRouteWithContext<{
   component: () => {
     const { status } = useRouterState();
 
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith('/admin');
+
+
     const isLoading = status === "pending";
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 1024); // 'lg' breakpoint
+      };
+
+      checkMobile();
+
+      window.addEventListener('resize', checkMobile);
+
+      return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Show navbar if: not an admin route OR if on mobile (even on admin routes)
+    const showNavbar = !isAdminRoute || isMobile;
     return (
       <>
         <SidebarProvider defaultOpen={false}>
           <div className="flex flex-col w-full relative">
-            <Navbar />
+            {showNavbar  && <Navbar />}
             <main className="flex-grow">
               <Suspense fallback={<LoadingScreen />}>
                 {isLoading ? <LoadingScreen /> : <Outlet />}

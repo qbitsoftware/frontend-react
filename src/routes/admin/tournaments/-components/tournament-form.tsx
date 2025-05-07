@@ -171,8 +171,8 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
       </AlertDialog>
 
 
-      <Card className="w-full border-none shadow-none">
-        <CardHeader className="px-0">
+      <Card className="w-full shadow-none border-none bg-transparent ">
+        <CardHeader className="px-0 ">
 
           <h5 className="font-medium">
             {initial_data
@@ -180,7 +180,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
               : t("admin.tournaments.create_tournament.title_create")}
           </h5>
         </CardHeader>
-        <CardContent className="px-2">
+        <CardContent className="p-4 rounded-lg bg-card border border-stone-100 shadow-sm">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

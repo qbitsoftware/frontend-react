@@ -175,7 +175,7 @@ function RouteComponent() {
   return (
     <>
       {" "}
-      <Card className="w-full border-none shadow-none ">
+      <Card className="w-full border-none shadow-none bg-transparent ">
         <CardHeader className="px-0 flex-col md:flex-row gap-4 justify-between items-start md:items-center space-y-0">
           <h5 className=" font-medium">
             {t("admin.tournaments.groups.images.title")}
@@ -187,7 +187,7 @@ function RouteComponent() {
         </CardHeader>
       </Card>
       {gamedays.length === 0 ? (
-        <Card className="border-dashed bg-muted/50">
+        <Card className="border border-dashed rounded bg-muted/50">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="rounded-full bg-primary/10 p-3 mb-4">
               <Calendar className="h-8 w-8 text-primary" />
@@ -216,7 +216,7 @@ function RouteComponent() {
                 <TabsTrigger
                   key={day.id}
                   value={day.id.toString()}
-                  className="text-sm px-4 py-2 h-9 data-[state=active]:bg-muted data-[state=active]:shadow-sm data-[state=active]:text-stone-800"
+                  className="text-sm px-4 py-2 h-9 data-[state=active]:bg-midnightTable/10 data-[state=active]:shadow-sm data-[state=active]:text-stone-800"
                 >
                   {day.name}
                 </TabsTrigger>
@@ -278,7 +278,7 @@ function RouteComponent() {
                 <Separator />
 
                 <CardContent className="pt-6">
-                  <div className="bg-muted/40 rounded-lg p-4 mb-8">
+                  <div className=" rounded-lg p-4 mb-8">
                     <ImageUpload
                       tournament_id={tournamentId}
                       gameDay={day.id}

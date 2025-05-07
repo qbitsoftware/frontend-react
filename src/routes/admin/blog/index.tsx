@@ -229,7 +229,7 @@ function RouteComponent() {
 
         <Card className="">
           <CardContent className="p-0">
-            <Table className="mb-8 ">
+            <Table className="">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[300px]">

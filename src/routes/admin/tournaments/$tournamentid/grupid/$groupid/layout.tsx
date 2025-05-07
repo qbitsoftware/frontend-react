@@ -50,7 +50,7 @@ function RouteComponent() {
 
   return (
     <div className="">
-      <div className="flex flex-col py-6 lg:flex-row justify-between items-center gap-2 sticky top-0 bg-white transition-all duration-200  lg:h-[4rem] z-10">
+      <div className="flex flex-col py-6 lg:flex-row justify-between items-center gap-2 sticky top-0 transition-all duration-200  lg:h-[4rem] z-10">
         <div>
           <h4 className="font-semibold">{table_data.data.class}</h4>
         </div>
@@ -78,7 +78,7 @@ function RouteComponent() {
         </Tabs>
       </div>
 
-      <div className="">
+      <div className="pb-8">
         <Outlet />
       </div>
     </div>

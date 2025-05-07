@@ -41,7 +41,7 @@ function RouteComponent() {
   }
 
   return (
-    <Card className="w-full border-none shadow-none ">
+    <Card className="w-full border-none shadow-none bg-transparent">
       <CardHeader className="px-0 flex-row justify-between items-center space-y-0">
         <h5 className="font-medium">{t("admin.tournaments.tables.title")}</h5>
       </CardHeader>

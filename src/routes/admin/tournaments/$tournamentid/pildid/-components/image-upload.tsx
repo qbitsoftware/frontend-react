@@ -71,7 +71,7 @@ export default function ImageUpload({ tournament_id, gameDay }: ImageUploadProps
 
     return (
         <div className="w-full flex flex-col justify-center mx-auto p-4">
-            <div className="relative flex flex-col items-center justify-center mb-4 border border-dashed py-8 text-center">
+            <div className="relative flex flex-col items-center justify-center mb-4 border-2 border-dashed py-8 text-center">
                 <Button
                     onClick={handleAddMoreClick}
                     variant="outline"

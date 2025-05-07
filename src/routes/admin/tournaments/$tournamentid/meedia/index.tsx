@@ -52,7 +52,7 @@ function RouteComponent() {
   };
 
   return (
-    <Card className="w-full border-none shadow-none ">
+    <Card className="w-full border-none shadow-none bg-transparent">
       <CardHeader className="px-0 flex-col md:flex-row gap-4 justify-between items-start md:items-center space-y-0">
         <h5 className="font-medium">{t('admin.media.title')}</h5>
         <Button

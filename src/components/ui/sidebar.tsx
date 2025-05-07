@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { Menu } from "lucide-react"
+import { Menu, PanelRight } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -276,12 +276,38 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <Menu className="!w-7 !h-7 p-1"/>
+      <PanelRight className="!w-7 !h-7 p-1"/>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
 })
 SidebarTrigger.displayName = "SidebarTrigger"
+
+const MobileMenuSidebarTrigger = React.forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentProps<typeof Button>
+>(({ className, onClick, ...props }, ref) => {
+  const { toggleSidebar } = useSidebar();
+
+  return (
+    <Button
+      ref={ref}
+      data-sidebar="trigger"
+      variant="ghost"
+      size="icon"
+      className={cn(className, "h-9 w-9 inline-flex items-center justify-center border border-input bg-gray-100 text-gray-500 rounded-md p-2 shadow-sm outline-2 outline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#BDCFEA]")}
+      onClick={(event) => {
+        onClick?.(event);
+        toggleSidebar();
+      }}
+      {...props}
+    >
+      <Menu className="!w-7 !h-7 p-1"/>
+      <span className="sr-only">Toggle Sidebar</span>
+    </Button>
+  );
+});
+MobileMenuSidebarTrigger.displayName = "MenuSidebarTrigger";
 
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
@@ -757,6 +783,7 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
+  MobileMenuSidebarTrigger,
   // eslint-disable-next-line react-refresh/only-export-components
   useSidebar,
 }
