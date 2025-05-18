@@ -14,6 +14,7 @@ interface BracketProps {
 export const SingleElimination = ({
     tournament_table,
     data,
+    handleSelectMatch
 }: BracketProps) => {
     const matches = organizeMatchesByRound(data.matches);
 
@@ -36,6 +37,7 @@ export const SingleElimination = ({
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}
                                                 match={match}
+                                                handleSelectMatch={handleSelectMatch}
                                             />
                                         </div>
                                     ))}
@@ -55,6 +57,7 @@ export const SingleElimination = ({
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}
                                                 match={match}
+                                                handleSelectMatch={handleSelectMatch}
                                             />
                                         </div>
                                     )

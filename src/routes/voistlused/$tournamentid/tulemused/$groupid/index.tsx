@@ -12,7 +12,7 @@ import { GroupType, MatchWrapper } from "@/types/matches";
 import StandingsProtocol from "./-components/standings-protocol";
 import Loader from "@/components/loader";
 import Protocol from "./-components/protocol";
-import { EliminationBrackets } from "@/components/window2";
+import { EliminationBrackets } from "@/components/elimination-brackets";
 
 export const Route = createFileRoute(
   "/voistlused/$tournamentid/tulemused/$groupid/"
@@ -27,7 +27,6 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { params } = Route.useLoaderData();
   const { t } = useTranslation();
-
 
   const [activeTab, setActiveTab] = useState<string>("bracket");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,9 +75,12 @@ function RouteComponent() {
   const groupName = tableQuery.data.data.class;
 
   const handleSelectMatch = (match: MatchWrapper) => {
+    if ((match.match.p1_id === "" || match.match.p1_id === "empty") || (match.match.p2_id === "" || match.match.p2_id === "empty")) {
+      return
+    }
     if (match.match.winner_id !== "") {
       setSelectedMatch(match);
-      setIsModalOpen(true);
+      setIsModalOpen(true)
     }
   };
 
@@ -213,8 +215,9 @@ function RouteComponent() {
         </Tabs>
       </div>
       {/* Match details modal */}
-      {selectedMatch && (
+      {selectedMatch && !tableQuery.data.data.solo && (
         <Protocol
+          key={selectedMatch.match.id}
           tournamentId={tournamentId}
           groupId={groupId}
           isRoundRobinFull={isRoundRobinFull}
