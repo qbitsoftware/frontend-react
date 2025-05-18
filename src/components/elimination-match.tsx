@@ -2,15 +2,18 @@ import { TableMatch } from "@/types/brackets"
 import { TournamentTable } from "@/types/groups"
 import { capitalizeWords, cn } from "@/lib/utils"
 import { extractMatchSets } from "./utils/utils"
+import { MatchWrapper } from "@/types/matches"
 
 interface EliminationMatchProps {
     match: TableMatch
     tournamentTable: TournamentTable
+    handleSelectMatch?: (match: MatchWrapper) => void
 }
 
 const EliminationMatch = ({
     match,
-    tournamentTable
+    tournamentTable,
+    handleSelectMatch
 }: EliminationMatchProps) => {
     void tournamentTable
 
@@ -27,8 +30,23 @@ const EliminationMatch = ({
         return false
     }
 
+    const onMatchClick = (match: TableMatch) => {
+        if (handleSelectMatch) {
+            const matchWrapper: MatchWrapper = {
+                match: match.match,
+                p1: match.participant_1,
+                p2: match.participant_2,
+                class: ""
+            }
+            handleSelectMatch(matchWrapper)
+        }
+    }
+
     return (
-        <div className="relative w-[220px] h-[60px] bg-white flex flex-col">
+        <div
+            onClick={() => onMatchClick(match)}
+            className="relative w-[220px] h-[60px] bg-white flex flex-col"
+        >
             <div className="absolute"></div>
             <div className={cn("relative flex w-full h-1/2 items-center", isTournamentWinner(match, match.participant_1.id) && "bg-green-200/50")}>
                 <div className="absolute text-[8px] left-1">

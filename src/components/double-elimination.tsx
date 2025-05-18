@@ -14,6 +14,7 @@ interface BracketProps {
 export const DoubleElimination = ({
     tournament_table,
     data,
+    handleSelectMatch
 }: BracketProps) => {
     const matches = organizeMatchesByRound(data.matches);
 
@@ -33,6 +34,7 @@ export const DoubleElimination = ({
                                     {roundMatches.map((match, key) => (
                                         <div key={key}>
                                             <EliminationMatch
+                                                handleSelectMatch={handleSelectMatch}
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}
                                                 match={match}
@@ -50,6 +52,7 @@ export const DoubleElimination = ({
                                     return (
                                         <div key={key} className={cn("absolute", match.is_bronze_match ? 'top-[60px]' : '-translate-y-1/2')}>
                                             <EliminationMatch
+                                                handleSelectMatch={handleSelectMatch}
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}
                                                 match={match}

@@ -3,32 +3,21 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { UseGetMatch } from '@/queries/match'
+import { Protocol } from '@/queries/match'
 import Notes from '@/routes/voistlused/-components/notes'
 import { useTranslation } from 'react-i18next'
 
 interface StatisticsProps {
-    tournament_id: number
-    group_id: number
-    match_id: string
+    protocol: Protocol | undefined
     index: number
 }
 
-export const StatisticsCard = ({ tournament_id, group_id, match_id, index }: StatisticsProps) => {
-    const { data, isLoading } = UseGetMatch(tournament_id, group_id, match_id)
+export const StatisticsCard = ({ protocol, index }: StatisticsProps) => {
     const { t } = useTranslation()
 
-    if (isLoading) {
-        return (
-            <div>
-                {t("protocol.loading")}
-            </div>
-        )
-    }
-
-    if (data && data.data) {
-        const match = data.data.match
-        const parent_matches = data.data.parent_matches
+    if (protocol) {
+        const match = protocol.match
+        const parent_matches = protocol.parent_matches
         return (
             <Card key={index} className="w-full max-w-6xl mx-auto mb-[55px]">
                 <CardHeader>
@@ -177,12 +166,5 @@ export const StatisticsCard = ({ tournament_id, group_id, match_id, index }: Sta
                 </CardContent>
             </Card>
         )
-
-    } else {
-        return (
-            <div>
-                {t("protocol.error")}
-            </div>
-        )
-    }
+    } 
 }
