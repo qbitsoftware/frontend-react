@@ -41,13 +41,14 @@ const EliminationMatch = ({
             handleSelectMatch(matchWrapper)
         }
     }
+    const bracket = Math.abs(Number(match.match.bracket.split("-")[0]) - Number(match.match.bracket.split("-")[1])) == 1 ? match.match.bracket : ""
 
     return (
         <div
             onClick={() => onMatchClick(match)}
             className="relative w-[220px] h-[60px] bg-white flex flex-col"
         >
-            <div className="absolute"></div>
+            <div className="absolute -top-[20px] left-[80px] w-[40px] text-[9px]">{bracket}</div>
             <div className={cn("relative flex w-full h-1/2 items-center", isTournamentWinner(match, match.participant_1.id) && "bg-green-200/50")}>
                 <div className="absolute text-[8px] left-1">
                     {match.match.previous_match_readable_id_1 >= 0 ? "" : match.match.previous_match_readable_id_1}
