@@ -70,8 +70,12 @@
       "no_tournaments": "Ühtegi võistlust tulemas ei ole"
     },
     "ranking": {
-      "name": "Edetabel",
+      "name": "Reiting",
       "view_all": "Kogu edetabel"
+    },
+    "adboard": {
+      "name": "Reklaamtahvel",
+      "description": "Reklaamtahvel"
     },
     "best_performers": {
       "title": "Kuu parimad mängijad",
