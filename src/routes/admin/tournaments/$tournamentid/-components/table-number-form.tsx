@@ -7,13 +7,15 @@ import { UseGetFreeVenues } from "@/queries/venues"
 import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
 
 interface TableNumberFormProps {
   match: Match
   initialTableNumber: string
+  brackets: boolean
 }
 
-export function TableNumberForm({ match, initialTableNumber }: TableNumberFormProps) {
+export function TableNumberForm({ match, initialTableNumber, brackets }: TableNumberFormProps) {
   const params = useParams({ strict: false })
   const { data: freeVenues, isLoading, isError } = UseGetFreeVenues(Number(params.tournamentid))
   const { t } = useTranslation()
@@ -43,15 +45,15 @@ export function TableNumberForm({ match, initialTableNumber }: TableNumberFormPr
 
   return (
     <div className="flex items-center gap-3">
-      <Label>{t("admin.tournaments.matches.table.table")}</Label>
+      <Label className={cn(brackets ? "text-[8px]" : "")}>{t("admin.tournaments.matches.table.table")}</Label>
       <Select value={String(tableNumber)} onValueChange={handleChange}>
-        <SelectTrigger className="h-8">
-          <span>{tableNumber}</span>
+        <SelectTrigger className={cn(brackets ? "h-[20px]" : "h-8")}>
+          <span className={cn(brackets ? "text-[10px]" : "")}>{tableNumber}</span>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="">
           <SelectItem className="min-h-[30px]" value=" "></SelectItem>
           {freeVenues && freeVenues.data && freeVenues.data.map((table) => (
-            <SelectItem key={table.name} value={String(table.name)}>
+            <SelectItem key={table.name} value={String(table.name)} className={cn(brackets ? "text-[10px]" : "", "hover:cursor-pointer")}>
               {table.name}
             </SelectItem>
           ))}

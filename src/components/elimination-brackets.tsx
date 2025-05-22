@@ -14,12 +14,14 @@ import { PrintPDF } from "./print-pdf";
 import { toast } from "sonner";
 
 interface TournamentTableProps {
+    admin?: boolean
     data: Bracket;
     tournament_table: TournamentTable
     handleSelectMatch?: (match: MatchWrapper) => void
 }
 
 export const EliminationBrackets = ({
+    admin = false,
     data,
     tournament_table,
     handleSelectMatch
@@ -108,6 +110,7 @@ export const EliminationBrackets = ({
                                     {table.name !== BracketType.MIINUSRING ? (
                                         <div className="" id={uniqueId}>
                                             <SingleElimination
+                                                admin={admin}
                                                 tournament_table={tournament_table}
                                                 data={table}
                                                 handleSelectMatch={handleSelectMatch}
@@ -116,6 +119,7 @@ export const EliminationBrackets = ({
                                     ) : (
                                         <div className="" id={uniqueId}>
                                             <DoubleElimination
+                                                admin={admin}
                                                 tournament_table={tournament_table}
                                                 data={table}
                                                 handleSelectMatch={handleSelectMatch}

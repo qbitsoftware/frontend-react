@@ -1,6 +1,5 @@
 import { BracketType, TableMatch } from "@/types/brackets";
 import { BRACKET_CONSTANTS } from "@/types/brackets";
-import { Score } from "@/types/matches";
 
 /**
  * Organizes tournament matches by their rounds

@@ -35,7 +35,7 @@ export function createColumns(t: TFunction<"translation", undefined>): ColumnDef
       header: t("admin.tournaments.matches.table.table"),
       cell: ({ row }) => {
         const match = row.original
-        return <TableNumberForm match={match.match} initialTableNumber={match.match.extra_data ? match.match.extra_data.table : "0"} />
+        return <TableNumberForm brackets={false} match={match.match} initialTableNumber={match.match.extra_data ? match.match.extra_data.table : "0"} />
       },
     },
     {

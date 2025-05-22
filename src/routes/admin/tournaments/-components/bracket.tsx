@@ -95,6 +95,7 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
               {hasEliminations && (
                 <TabsContent value="eliminations">
                   <EliminationBrackets
+                    admin
                     data={bracket.data}
                     tournament_table={tournament_table}
                     handleSelectMatch={handleSelectMatch}

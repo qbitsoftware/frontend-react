@@ -6,12 +6,14 @@ import { organizeMatchesByRound, calculateConnectorHeight, calculateRoundGap } f
 import { cn } from "@/lib/utils";
 
 interface BracketProps {
+    admin: boolean
     tournament_table: TournamentTable
     data: EliminationBracket;
     handleSelectMatch?: (match: MatchWrapper) => void
 }
 
 export const DoubleElimination = ({
+    admin = false,
     tournament_table,
     data,
     handleSelectMatch
@@ -34,6 +36,7 @@ export const DoubleElimination = ({
                                     {roundMatches.map((match, key) => (
                                         <div key={key}>
                                             <EliminationMatch
+                                                admin={admin}
                                                 handleSelectMatch={handleSelectMatch}
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}
@@ -52,6 +55,7 @@ export const DoubleElimination = ({
                                     return (
                                         <div key={key} className={cn("absolute", match.is_bronze_match ? 'top-[60px]' : '-translate-y-1/2')}>
                                             <EliminationMatch
+                                                admin={admin}
                                                 handleSelectMatch={handleSelectMatch}
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}

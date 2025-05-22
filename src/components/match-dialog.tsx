@@ -349,7 +349,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                           {form.formState.errors.scores.root.message}
                         </p>
                       )}
-                    {form.watch("scores").length < 7 && (
+                    {!useSets && form.watch("scores").length < 7 && (
                       <Button
                         type="button"
                         variant="outline"
