@@ -81,15 +81,9 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
           </div>
           <div className="sm:col-span-1 md:col-span-5 flex flex-col">
             <div className="h-full">
-              <WidgetWrapper
-                heading={t("homepage.adboard.name")}
-                addr="#"
-                icon="adboard"
-              >
-                <div className="p-2 flex-grow" ref={adboardRef}>
-                  <Adboard />
-                </div>
-              </WidgetWrapper>
+              <div className="p-2 flex-grow" ref={adboardRef}>
+                <Adboard />
+              </div>
             </div>
           </div>
         </div>
