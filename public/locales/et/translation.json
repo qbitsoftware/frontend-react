@@ -27,7 +27,8 @@
       "ratings": "Reiting",
       "rules": "Reeglid",
       "contact": "Kontakt",
-      "admin": "Admin Paneel"
+      "admin": "Admin Paneel",
+      "license": "Litsentsid"
     },
     "login": "Logi sisse",
     "logout": "Logi välja"
@@ -104,6 +105,61 @@
       "competitions": "Võistlused",
       "good_read": "Hea Lugemine",
       "results": "Tulemused"
+    }
+  },
+  "licenses": {
+    "title": "Litsentsid",
+    "page_title": "Mängija litsentsi ostmine/uuendamine",
+    "add_player": {
+      "title": "Lisa mängija",
+      "search_placeholder": "Otsi olemasolevat mängijat...",
+      "add_new_player": "Lisa uus mängija",
+      "help_text": "Otsi andmebaasist olemasolevaid mängijaid või kasuta nuppu \"Lisa uus mängija\" süsteemis puuduvate mängijate jaoks.",
+      "no_players_found": "Mängijaid ei leitud. Kasuta nuppu \"Lisa uus mängija\" andmebaasis puuduvate mängijate lisamiseks.",
+      "manual_entry_title": "Uue mängija lisamine (pole andmebaasis)",
+      "back_to_search": "Tagasi otsingusse",
+      "first_name": "Eesnimi",
+      "surname": "Perekonnanimi",
+      "birth_year": "Sünniaasta",
+      "add_to_list": "Lisa mängija nimekirja",
+      "manual_help_text": "Sisesta andmebaasis puuduva mängija andmed. Kõik väljad on kohustuslikud."
+    },
+    "table": {
+      "title": "Registreeritavad mängijad",
+      "player": "Mängija",
+      "birth_year": "Sünniaasta",
+      "club": "Klubi",
+      "license_type": "Litsentsi tüüp",
+      "price": "Hind",
+      "action": "Tegevus",
+      "eltl_id": "ELTL ID"
+    },
+    "summary": {
+      "title": "Kokkuvõte",
+      "license_single": "litsents",
+      "license_plural": "litsentsi",
+      "selected": "valitud",
+      "total_amount": "Summa kokku",
+      "complete_payment": "Jätka maksmisega"
+    },
+    "empty_state": "Mängijaid pole veel lisatud. Lisa mängijad litsentside ostmiseks.",
+    "info": {
+      "title": "Litsentside hinnakiri",
+      "validity": "Kõik litsentsid kehtivad ühe kalendriaasta"
+    },
+    "types": {
+      "adult": "Täiskasvanu litsents",
+      "child": "Laste litsents (alla 14)",
+      "youth": "Noorte litsents (15-19)",
+      "foreign": "Välismängija litsents",
+      "senior": "Pensionäri litsents",
+      "no_club": "Klubitu litsents",
+      "one_time": "Ühekordne litsents"
+    },
+    "toasts": {
+      "player_added": "Mängija edukalt lisatud",
+      "player_removed": "Mängija eemaldatud",
+      "redirecting": "Litsentisde ostmise funktsionaalsus on hetkel arenduses"
     }
   },
   "competitions": {

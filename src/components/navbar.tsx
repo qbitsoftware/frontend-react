@@ -61,6 +61,7 @@ export default function Navbar() {
     { name: t("navbar.menu.ratings"), href: "/reiting" },
     { name: t("navbar.menu.rules"), href: "/reeglid" },
     { name: t("navbar.menu.contact"), href: "/kontakt" },
+    { name: t("navbar.menu.license"), href: "/litsents" },
   ];
 
   return (

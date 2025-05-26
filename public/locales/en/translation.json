@@ -27,7 +27,8 @@
       "ratings": "Ranking",
       "rules": "Rules",
       "contact": "Contact",
-      "admin": "Admin Panel"
+      "admin": "Admin Panel",
+      "license": "Licenses"
     },
     "login": "Log in",
     "logout": "Log out"
@@ -108,6 +109,61 @@
       "news": "News",
       "good_read": "Good read",
       "results": "Results"
+    }
+  },
+  "licenses": {
+    "title": "Licenses",
+    "page_title": "Player License Purchase/Renewal",
+    "add_player": {
+      "title": "Add Player",
+      "search_placeholder": "Search for existing player...",
+      "add_new_player": "Add New Player",
+      "help_text": "Search for existing players in the database or use \"Add New Player\" for someone not in the system.",
+      "no_players_found": "No players found. Use \"Add New Player\" to add someone not in the database.",
+      "manual_entry_title": "Adding New Player (Not in Database)",
+      "back_to_search": "Back to search",
+      "first_name": "First Name",
+      "surname": "Surname",
+      "birth_year": "Birth Year",
+      "add_to_list": "Add Player to List",
+      "manual_help_text": "Enter details for a player not in the database. All fields are required."
+    },
+    "table": {
+      "title": "Players to Register",
+      "player": "Player",
+      "birth_year": "Birth Year",
+      "club": "Club",
+      "license_type": "License Type",
+      "price": "Price",
+      "action": "Action",
+      "eltl_id": "ELTL ID"
+    },
+    "summary": {
+      "title": "Total Summary",
+      "license_single": "license",
+      "license_plural": "licenses",
+      "selected": "selected",
+      "total_amount": "Total Amount",
+      "complete_payment": "Continue To Payment"
+    },
+    "empty_state": "No players added yet. Add players above to purchase licenses.",
+    "info": {
+      "title": "License Pricing",
+      "validity": "All licenses are valid for one calendar year"
+    },
+    "types": {
+      "adult": "Adult license",
+      "child": "Children's license (under 14)",
+      "youth": "Youth license (15-19)",
+      "foreign": "Foreigner license",
+      "senior": "Senior license",
+      "no_club": "No-club license",
+      "one_time": "One-time license"
+    },
+    "toasts": {
+      "player_added": "Player added successfully",
+      "player_removed": "Player removed",
+      "redirecting": "License purchasing functionality is currently in development"
     }
   },
   "competitions": {
