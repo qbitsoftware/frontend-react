@@ -77,6 +77,10 @@
       "name": "Reklaamtahvel",
       "description": "Reklaamtahvel"
     },
+    "videoboard": {
+      "name": "Videod",
+      "description": "Hiljutised videod"
+    },
     "best_performers": {
       "title": "Kuu parimad mängijad",
       "button": "Vaata veel"
@@ -540,6 +544,7 @@
         "change_time": "Aegade muutmine",
         "order": {
           "title": "Genereeri mängud",
+          "title_order": "Mängijate järjekord",
           "order_by_rating": "Järjesta reitingu järgi",
           "placeholder": "Asetus",
           "random": "Suvaliselt",

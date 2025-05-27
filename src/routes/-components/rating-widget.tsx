@@ -73,7 +73,7 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
             </TabsList>
           </Tabs>
         </div>
-        <div className="overflow-y-scroll max-h-[80vh]">
+        <div className="overflow-y-scroll max-h-[50vh] md:max-h-[135vh]">
           <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg">
             <TableHeader className="rounded-lg bg-white">
               <TableRow className=" sticky top-0 z-10">

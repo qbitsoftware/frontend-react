@@ -50,7 +50,7 @@ function RouteComponent() {
                             participants={participant_data.data}
                         />
 
-                        <div className="flex justify-end pb-1">
+                        <div className="flex justify-end pb-1 ">
                             <ResetSeeding tournament_id={Number(tournamentid)} table_id={table_data.data.id} />
                         </div>
                         {table_data.data.solo ?

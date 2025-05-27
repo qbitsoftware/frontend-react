@@ -141,7 +141,7 @@ export default function Editor({ value, setValue, readOnly }: Props) {
           editor={editor}
           //@ts-expect-error yoopta
           plugins={plugins}
-          className='w-full'
+          className='w-full p-4'
           autoFocus={true}
           readOnly={readOnly}
           value={value}

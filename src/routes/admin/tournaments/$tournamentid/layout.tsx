@@ -10,6 +10,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTranslation } from 'react-i18next'
 import ErrorPage from '@/components/error'
 import { ErrorResponse } from '@/types/errors'
+import { useState } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import TournamentTableModal from './-components/tournament-table-modal'
 
 export const Route = createFileRoute('/admin/tournaments/$tournamentid')({
   component: RouteComponent,
@@ -39,6 +42,7 @@ function RouteComponent() {
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid } = Route.useParams()
   const { t } = useTranslation()
+  const [isTablesModalOpen, setIsTablesModalOpen] = useState(false)
 
   const currentTab = location.pathname.includes('/grupid')
     ? 'groups'
@@ -46,9 +50,7 @@ function RouteComponent() {
       ? 'media'
       : location.pathname.includes('/pildid')
         ? 'images'
-        : location.pathname.includes('/lauad')
-          ? 'tables'
-          : 'info'
+        : 'info'
 
   return (
     <div className="mx-auto min-h-[95vh] h-full">
@@ -73,7 +75,7 @@ function RouteComponent() {
                   {t('admin.layout.groups')}
                 </TabsTrigger>
               </Link>
-              <Link to={`/admin/tournaments/${tournamentid}/meedia`}>
+              {/* <Link to={`/admin/tournaments/${tournamentid}/meedia`}>
                 <TabsTrigger
                   value="media"
                   className="w-[7rem] py-[6px] flex-shrink-0"
@@ -88,15 +90,24 @@ function RouteComponent() {
                 >
                   {t('admin.layout.images')}
                 </TabsTrigger>
-              </Link>
-              <Link to={`/admin/tournaments/${tournamentid}/lauad`}>
-                <TabsTrigger
-                  value="tables"
-                  className="w-[7rem] py-[6px] flex-shrink-0"
-                >
-                  {t('admin.layout.tables')}
-                </TabsTrigger>
-              </Link>
+              </Link> */}
+              <Dialog open={isTablesModalOpen} onOpenChange={setIsTablesModalOpen}>
+                <DialogTrigger asChild>
+                  <TabsTrigger
+                    value="tables"
+                    className="w-[7rem] py-[6px] flex-shrink-0"
+                    onClick={() => setIsTablesModalOpen(true)}
+                  >
+                    {t('admin.layout.tables')}
+                  </TabsTrigger>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>{t('admin.layout.tables')} - {tournament_data.data?.name}</DialogTitle>
+                  </DialogHeader>
+                  <TournamentTableModal />
+                </DialogContent>
+              </Dialog>
             </TabsList>
           </Tabs>
         </div>

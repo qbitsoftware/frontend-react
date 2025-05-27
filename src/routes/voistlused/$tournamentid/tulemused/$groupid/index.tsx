@@ -210,7 +210,7 @@ function RouteComponent() {
 
           {/* Leaderboard tab content */}
           <TabsContent value="leaderboard" className="w-full mt-6">
-            <StandingsProtocol group_id={groupId} />
+            <StandingsProtocol group_id={groupId} tournament_table={tableQuery.data.data}/>
           </TabsContent>
         </Tabs>
       </div>

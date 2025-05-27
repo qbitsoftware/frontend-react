@@ -77,6 +77,10 @@
       "name": "Ad-board",
       "description": "Ad board"
     },
+    "videoboard": {
+      "name": "Videos",
+      "description": "Latest Highlights"
+    },
     "sponsors": {
       "name": "Sponsors",
       "view_all": "View all"
@@ -543,6 +547,7 @@
         "change_time": "Change time",
         "no_results": "No results",
         "order": {
+          "title_order": "Participant Ordering",
           "order_by_rating": "Order by rating",
           "title": "Generate matches",
           "placeholder": "Seeding",

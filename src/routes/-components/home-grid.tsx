@@ -8,6 +8,7 @@ import { Tournament } from "@/types/tournaments";
 import { User } from "@/types/users";
 import { Blog } from "@/types/blogs";
 import { useTranslation } from "react-i18next";
+import VideoBoard from "./videos";
 
 interface DataStatus {
   tournamentsEmpty: boolean;
@@ -38,20 +39,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
 
       <div className="relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 my-8 mb-16 space-y-8 md:space-y-0">
-          <div className="sm:col-span-2 md:col-span-7 flex flex-col">
-            <WidgetWrapper
-              heading={t("homepage.calendar.name")}
-              addr="voistlused"
-              icon="calendar"
-            >
-              <div className="py-2 px-4 flex-grow" ref={newsRef}>
-                <CalendarWidget
-                  tournaments={tournaments || []}
-                  isEmpty={false}
-                />
-              </div>
-            </WidgetWrapper>
-          </div>
+
           <div className="sm:col-span-2 md:col-span-5 flex flex-col">
             <WidgetWrapper
               heading={t("homepage.news.name")}
@@ -66,6 +54,20 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
               </div>
             </WidgetWrapper>
           </div>
+          <div className="sm:col-span-2 md:col-span-7 flex flex-col">
+            <WidgetWrapper
+              heading={t("homepage.calendar.name")}
+              addr="voistlused"
+              icon="calendar"
+            >
+              <div className="py-2 px-4 flex-grow" ref={newsRef}>
+                <CalendarWidget
+                  tournaments={tournaments || []}
+                  isEmpty={false}
+                />
+              </div>
+            </WidgetWrapper>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 my-8">
           <div className="sm:col-span-1 md:col-span-7 flex flex-col">
@@ -74,22 +76,37 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
               addr="reiting"
               icon="ranking"
             >
-              <div className="py-2 px-4 pr-8 flex-grow" ref={ratingRef}>
+              <div className="py-2 px-4 md:pr-8 flex-grow" ref={ratingRef}>
                 <RatingWidget users={users} isEmpty={dataStatus.usersEmpty} />
               </div>
             </WidgetWrapper>
           </div>
-          <div className="sm:col-span-1 md:col-span-5 flex flex-col">
-            <div className="h-full">
-              <WidgetWrapper
-                heading={t("homepage.adboard.name")}
-                addr="#"
-                icon="adboard"
-              >
-                <div className="p-2 flex-grow" ref={adboardRef}>
-                  <Adboard />
-                </div>
-              </WidgetWrapper>
+          <div className="sm:col-span-1 md:col-span-5 flex flex-col gap-4">
+            <div className="sm:col-span-1 md:col-span-3 flex flex-col">
+              <div className="h-full">
+                <WidgetWrapper
+                  heading={t("homepage.videoboard.name")}
+                  addr="#"
+                  icon="adboard"
+                >
+                  <div className="p-2 flex-grow" ref={adboardRef}>
+                    <VideoBoard />
+                  </div>
+                </WidgetWrapper>
+              </div>
+            </div>
+            <div className="sm:col-span-1 md:col-span-2 flex flex-col">
+              <div className="h-full">
+                <WidgetWrapper
+                  heading={t("homepage.adboard.name")}
+                  addr="#"
+                  icon="adboard"
+                >
+                  <div className="p-2 flex-grow" ref={adboardRef}>
+                    <Adboard />
+                  </div>
+                </WidgetWrapper>
+              </div>
             </div>
           </div>
         </div>
