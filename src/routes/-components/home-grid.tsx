@@ -71,7 +71,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 my-8">
-          <div className="flex flex-col hidden md:flex">
+          <div className="flex-col hidden md:flex">
             <div className="h-full">
               <div className="p-2 flex-grow" ref={adboardRef}>
                 <Adboard />
@@ -92,7 +92,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
           <div className="flex flex-col">
             <WidgetWrapper
               heading={t("homepage.videoboard.name")}
-              addr="videod"
+              addr="#"
               icon="videos"
             >
               <div className="py-2 px-2 flex-grow" ref={videosRef}>
