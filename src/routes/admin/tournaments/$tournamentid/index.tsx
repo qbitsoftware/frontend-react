@@ -4,6 +4,7 @@ import { TournamentForm } from '../-components/tournament-form'
 import { UseGetTournament } from '@/queries/tournaments'
 import ErrorPage from '@/components/error'
 import MediaComponent from '../-components/media-comp'
+import ImageComp from '../-components/images-comp'
 
 export const Route = createFileRoute('/admin/tournaments/$tournamentid/')({
     loader: async ({ context: { queryClient }, params }) => {
@@ -67,19 +68,8 @@ function RouteComponent() {
                     <MediaComponent tournament={tournament.data} />
                 )}
 
-                {activeTab === 'images' && (
-                    <div className="p-8 text-center">
-                        <div className="max-w-md mx-auto">
-                            <div className="text-6xl mb-4">🖼️</div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">Image Gallery</h3>
-                            <p className="text-gray-600 mb-6">
-                                Upload tournament banners, logos, and create a photo gallery for participants and fans.
-                            </p>
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <p className="text-sm text-gray-500">Coming soon...</p>
-                            </div>
-                        </div>
-                    </div>
+                {activeTab === 'images' && tournament.data && (
+                    <ImageComp tournament_id={tournament.data.id} />
                 )}
             </div>
         </div>

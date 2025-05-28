@@ -537,7 +537,9 @@
           "info": "Info",
           "participants": "Osalejad",
           "matches": "Matšid",
-          "tables": "Tabelid"
+          "tables": "Tabelid",
+          "view_all": "Vaata kõiki",
+          "view_all_description": "Halda kõiki turniiri gruppe"
         },
         "images": {
           "title": "Pildigrupid",

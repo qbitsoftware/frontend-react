@@ -10,9 +10,11 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTranslation } from 'react-i18next'
 import ErrorPage from '@/components/error'
 import { ErrorResponse } from '@/types/errors'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import TournamentTableModal from './-components/tournament-table-modal'
+import { UseGetTournamentTablesQuery } from '@/queries/tables'
+import GroupDropdown from '../-components/group-dropdown'
 
 export const Route = createFileRoute('/admin/tournaments/$tournamentid')({
   component: RouteComponent,
@@ -42,18 +44,13 @@ function RouteComponent() {
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid } = Route.useParams()
   const { t } = useTranslation()
+  const tournament_tables = UseGetTournamentTablesQuery(Number(tournamentid))
+
   const [isTablesModalOpen, setIsTablesModalOpen] = useState(false)
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ left: '7.5rem', right: 'auto' })
   const groupsHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Mock groups data - replace with real data later
-  const mockGroups = [
-    { id: 1, name: 'Group A', teamsCount: 4 },
-    { id: 2, name: 'Group B', teamsCount: 4 },
-    { id: 3, name: 'Group C', teamsCount: 3 },
-    { id: 4, name: 'Group D', teamsCount: 4 },
-    { id: 5, name: 'Knockout Stage', teamsCount: 8 },
-  ]
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const handleGroupsMouseEnter = () => {
     if (groupsHoverTimeoutRef.current) {
@@ -67,6 +64,27 @@ function RouteComponent() {
       setShowGroupsDropdown(false)
     }, 150)
   }
+
+  useEffect(() => {
+    if (showGroupsDropdown && dropdownRef.current) {
+      const dropdown = dropdownRef.current
+      const rect = dropdown.getBoundingClientRect()
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+
+      let newPosition = { left: '0rem', right: 'auto' }
+
+      if (rect.right > viewportWidth - 20) {
+        newPosition = { left: 'auto', right: '0rem' }
+      }
+
+      setDropdownPosition(newPosition)
+
+      const spaceBelow = viewportHeight - rect.top
+      const maxHeight = Math.min(400, spaceBelow - 40)
+      dropdown.style.maxHeight = `${maxHeight}px`
+    }
+  }, [showGroupsDropdown])
 
   const currentTab = location.pathname.includes('/grupid')
     ? 'groups'
@@ -93,7 +111,6 @@ function RouteComponent() {
                   </TabsTrigger>
                 </Link>
 
-                {/* Groups tab with dropdown */}
                 <div
                   className="relative flex-shrink-0"
                   onMouseEnter={handleGroupsMouseEnter}
@@ -130,40 +147,22 @@ function RouteComponent() {
             </Tabs>
 
             {/* Groups Dropdown - positioned absolutely relative to the tabs container */}
-            {showGroupsDropdown && (
+            {showGroupsDropdown && tournament_tables && tournament_tables.data && tournament_tables.data.data && (
               <div
-                className="absolute top-full left-[7.5rem] mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-[9999]"
+                ref={dropdownRef}
+                className="absolute top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden flex flex-col"
+                style={{
+                  left: dropdownPosition.left,
+                  right: dropdownPosition.right,
+                  maxHeight: '400px',
+                }}
                 onMouseEnter={handleGroupsMouseEnter}
                 onMouseLeave={handleGroupsMouseLeave}
               >
-                <div className="p-3 border-b border-gray-100">
-                  <h6 className="font-medium text-gray-900 text-sm">Tournament Groups</h6>
-                  <p className="text-xs text-gray-500 mt-1">Select a group to manage</p>
-                </div>
-                <div className="py-2 max-h-64 overflow-y-auto">
-                  {mockGroups.map((group) => (
-                    <Link
-                      key={group.id}
-                      to={`/admin/tournaments/${tournamentid}/grupid/${group.id}`}
-                      className="flex items-center justify-between px-4 py-2 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span className="text-sm font-medium text-gray-900">{group.name}</span>
-                      </div>
-                      <span className="text-xs text-gray-500">{group.teamsCount} teams</span>
-                    </Link>
-                  ))}
-                  <div className="border-t border-gray-100 mt-2 pt-2">
-                    <Link
-                      to={`/admin/tournaments/${tournamentid}/grupid`}
-                      className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-colors text-blue-600"
-                    >
-                      <span className="text-sm font-medium">View all groups</span>
-                      <span className="text-xs">→</span>
-                    </Link>
-                  </div>
-                </div>
+                <GroupDropdown
+                  groups={tournament_tables.data.data}
+                  tournament_id={Number(tournamentid)}
+                />
               </div>
             )}
           </div>

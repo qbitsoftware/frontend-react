@@ -541,7 +541,9 @@
           "info": "Info",
           "participants": "Participants",
           "matches": "Matches",
-          "tables": "Brackets"
+          "tables": "Brackets",
+          "view_all": "View all groups",
+          "view_all_description": "Manage all tournament groups"
         },
         "images": {
           "title": "Image groups",
