@@ -4,24 +4,21 @@ import {
   redirect,
   useLocation,
   useRouter,
-} from '@tanstack/react-router'
-import {
-
-  SidebarProvider,
-} from "@/components/ui/sidebar";
+} from "@tanstack/react-router";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebar from "./-components/admin-sidebar";
 import AdminBottomNav from "./-components/admin-bottom-nav";
-import { useEffect } from 'react';
-import ErrorPage from '@/components/error';
-import { UseGetCurrentUser } from '@/queries/users';
-import { ErrorResponse } from '@/types/errors';
-import { useUser } from '@/providers/userProvider';
+import { useEffect } from "react";
+import ErrorPage from "@/components/error";
+import { UseGetCurrentUser } from "@/queries/users";
+import { ErrorResponse } from "@/types/errors";
+import { useUser } from "@/providers/userProvider";
 
 // Helper function to get cookie value
 function getCookie(name: string) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
   return undefined;
 }
 
@@ -68,7 +65,7 @@ function RouteComponent() {
   }, []);
 
   return (
-    <div className="flex flex-col mx-auto bg-[#F8F9F9]">
+    <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
         <SidebarProvider defaultOpen={defaultOpen}>
           <AdminSidebar />

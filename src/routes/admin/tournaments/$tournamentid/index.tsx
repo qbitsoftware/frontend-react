@@ -1,77 +1,99 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { TournamentForm } from '../-components/tournament-form'
-import { UseGetTournament } from '@/queries/tournaments'
-import ErrorPage from '@/components/error'
-import MediaComponent from '../-components/media-comp'
-import ImageComp from '../-components/images-comp'
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { TournamentForm } from "../-components/tournament-form";
+import { UseGetTournament } from "@/queries/tournaments";
+import ErrorPage from "@/components/error";
+import MediaComponent from "../-components/media-comp";
+import { useTranslation } from "react-i18next";
 
-export const Route = createFileRoute('/admin/tournaments/$tournamentid/')({
-    loader: async ({ context: { queryClient }, params }) => {
-        const tournamentId = Number(params.tournamentid)
-        let tournament = queryClient.getQueryData(UseGetTournament(tournamentId).queryKey)
+import ImageComp from "../-components/images-comp";
 
-        if (!tournament) {
-            tournament = await queryClient.fetchQuery(UseGetTournament(tournamentId))
-        }
-
-        return { tournament }
-    },
-
-    errorComponent: () => <ErrorPage />,
-    component: RouteComponent,
-})
+export const Route = createFileRoute("/admin/tournaments/$tournamentid/")({
+  loader: async ({ context: { queryClient }, params }) => {
+    const tournamentId = Number(params.tournamentid);
+    let tournament = queryClient.getQueryData(
+      UseGetTournament(tournamentId).queryKey,
+    );
+    if (!tournament) {
+      tournament = await queryClient.fetchQuery(UseGetTournament(tournamentId));
+    }
+    return { tournament };
+  },
+  errorComponent: () => <ErrorPage />,
+  component: RouteComponent,
+});
 
 function RouteComponent() {
-    const { tournament } = Route.useLoaderData()
-    const [activeTab, setActiveTab] = useState<'info' | 'media' | 'images'>('info')
+  const { t } = useTranslation();
 
-    const tabs = [
-        { id: 'info' as const, label: 'Info', icon: '📝' },
-        { id: 'media' as const, label: 'Media', icon: '🎥' },
-        { id: 'images' as const, label: 'Images', icon: '🖼️' }
-    ]
+  const { tournament } = Route.useLoaderData();
+  const [activeTab, setActiveTab] = useState<"info" | "media" | "images">(
+    "info",
+  );
 
-    return (
-        <div className="">
-            {/* Navigation Tabs */}
-            <div className="bg-white shadow-sm border-b mb-6">
-                <nav className="flex space-x-8" aria-label="Tabs">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`
-                                flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors
-                                ${activeTab === tab.id
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }
-                            `}
-                        >
-                            <span>{tab.icon}</span>
-                            {tab.label}
-                        </button>
-                    ))}
-                </nav>
-            </div>
+  const tabs = [
+    {
+      id: "info" as const,
+      label: "info",
+      icon: "/icons/settings.svg",
+      type: "svg" as const,
+    },
+    {
+      id: "media" as const,
+      label: "media",
+      icon: "/icons/write.svg",
+      type: "svg" as const,
+    },
+    {
+      id: "images" as const,
+      label: "images",
+      icon: "/icons/videos.svg",
+      type: "svg" as const,
+    },
+  ];
 
-            {/* Tab Content */}
-            <div className="bg-white">
-                {activeTab === 'info' && (
-                    <div>
-                        <TournamentForm initial_data={tournament.data} />
-                    </div>
-                )}
-
-                {activeTab === 'media' && tournament.data && (
-                    <MediaComponent tournament={tournament.data} />
-                )}
-
-                {activeTab === 'images' && tournament.data && (
-                    <ImageComp tournament_id={tournament.data.id} />
-                )}
-            </div>
-        </div>
-    )
+  return (
+    <div className="">
+      <div className="bg-transparent shadow-sm border-b mb-6">
+        <nav className="flex space-x-8" aria-label="Tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`
+                flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                ${
+                  activeTab === tab.id
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }
+              `}
+            >
+              <img
+                src={tab.icon}
+                alt={`${tab.label} icon`}
+                className={`w-4 h-4 
+                `}
+              />
+              {t(`admin.layout.${tab.label}`)}
+            </button>
+          ))}
+        </nav>
+      </div>
+      <div className="bg-transparent">
+        {activeTab === "info" && (
+          <div>
+            <TournamentForm initial_data={tournament.data} />
+          </div>
+        )}
+        {activeTab === "media" && tournament.data && (
+          <MediaComponent tournament={tournament.data} />
+        )}
+        {activeTab === "images" && tournament.data && (
+          <ImageComp tournament_id={tournament.data.id} />
+        )}
+      </div>
+    </div>
+  );
 }
+
