@@ -85,7 +85,7 @@ const SeedingHeader = ({
   }
 
   return (
-    <CardHeader className="flex flex-col md:flex-row items-start gap-4 md:items-center justify-between  space-y-0">
+    <CardHeader className="flex flex-col md:flex-row items-start gap-4 md:items-center justify-between  space-y-0 ">
       <div className="flex gap-2 items-center">
         <h5 className="font-medium">{(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? t("admin.tournaments.groups.participants.subgroups") : t("admin.tournaments.info.participants")}</h5>
         <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] ">
@@ -95,44 +95,51 @@ const SeedingHeader = ({
 
 
       <div className="flex flex-col gap-4 space-y-0">
-        <div className="flex gap-4">
-          <Button onClick={handleOrder} disabled={disabled}>
-            {t("admin.tournaments.groups.order.order_by_rating")}
-          </Button>
+        <div className="flex gap-2 md:gap-10 items-center">
+          <div className="flex flex-col gap-2 text-center w-[150px] md:w-auto">
+            <p className="flex items-center justify-center text-sm h-[40px]">
+              {t("admin.tournaments.groups.order.title_order")}
+            </p>
+            <Button onClick={handleOrder} disabled={disabled}>
+              {t("admin.tournaments.groups.order.order_by_rating")}
+            </Button>
+          </div>
 
 
-          <Select
-            onValueChange={setSelectedOrderValue}
-            defaultValue={selectedOrderValue}
-            disabled={disabled}
-          >
-            <SelectTrigger className="border-2 border-[#4C97F1]/20">
-              <SelectValue
-                placeholder={t("admin.tournaments.groups.order.placeholder")}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {/* <SelectItem value="random">
+          <div className="flex flex-col gap-2">
+            <Select
+              onValueChange={setSelectedOrderValue}
+              defaultValue={selectedOrderValue}
+              disabled={disabled}
+            >
+              <SelectTrigger className="border-2 border-[#4C97F1]/20">
+                <SelectValue
+                  placeholder={t("admin.tournaments.groups.order.placeholder")}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {/* <SelectItem value="random">
                 {t("admin.tournaments.groups.order.random")}
               </SelectItem> */}
-              <SelectItem value="rating">
-                {t("admin.tournaments.groups.order.by_rating")}
-              </SelectItem>
-              <SelectItem value="regular">
-                {t("admin.tournaments.groups.order.by_order")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            disabled={!selectedOrderValue}
-            onClick={() => handleSeeding(selectedOrderValue)}
-            className="flex p-0 justify-between items-center px-4 bg-midnightTable"
-          >
-            <div className="flex flex-row pr-6 gap-2">
-              {t("admin.tournaments.groups.order.title")}{" "}
-              <img src={seeds3} className="h-5 w-5 object-contain" />
-            </div>
-          </Button>
+                <SelectItem value="rating">
+                  {t("admin.tournaments.groups.order.by_rating")}
+                </SelectItem>
+                <SelectItem value="regular">
+                  {t("admin.tournaments.groups.order.by_order")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              disabled={!selectedOrderValue}
+              onClick={() => handleSeeding(selectedOrderValue)}
+              className="flex p-0 justify-between items-center px-4 bg-midnightTable"
+            >
+              <div className="flex flex-row pr-6 gap-2">
+                {t("admin.tournaments.groups.order.title")}{" "}
+                <img src={seeds3} className="h-5 w-5 object-contain" />
+              </div>
+            </Button>
+          </div>
 
         </div>
 

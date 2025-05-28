@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Plus, Minus } from "lucide-react";
@@ -21,6 +21,8 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { Match, MatchWrapper, Score } from "@/types/matches";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { Switch } from "./ui/switch";
+import { extractSetsFromPoints } from "./utils/utils";
 
 interface MatchDialogProps {
   open: boolean;
@@ -61,6 +63,8 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 
   const { t } = useTranslation()
   const { reset } = form;
+
+  const [useSets, setUseSets] = useState(match.match.use_sets || false)
 
   useEffect(() => {
     if (match && open) {
@@ -132,6 +136,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
       bracket: match.match.bracket,
       forfeit: match.match.forfeit,
       state: match.match.state,
+      use_sets: useSets,
       extra_data: {
         head_referee: data.mainReferee,
         table_referee: data.tableReferee,
@@ -154,6 +159,33 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
       toast.error(t("toasts.protocol_modals.updated_match_score_error"))
     }
     handleClose();
+  };
+
+  const handleSetChange = (playerIndex: 1 | 2, value: string) => {
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
+
+    const cleanedValue = value.replace(/^0+(\d)/, '$1');
+    const newSetValue = cleanedValue === '' ? 0 : Number.parseInt(cleanedValue);
+
+    const currentSets = extractSetsFromPoints(form.watch("scores"));
+
+    const p1Sets = playerIndex === 1 ? newSetValue : currentSets.p1_sets;
+    const p2Sets = playerIndex === 2 ? newSetValue : currentSets.p2_sets;
+
+    const totalSets = p1Sets + p2Sets;
+    const newScores = [];
+
+    for (let i = 0; i < totalSets; i++) {
+      if (i < p1Sets) {
+        newScores.push({ player1: 11, player2: 0 });
+      } else {
+        newScores.push({ player1: 0, player2: 11 });
+      }
+    }
+
+    form.setValue("scores", newScores);
   };
 
   return (
@@ -190,7 +222,16 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                 <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
                   <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                     <CardTitle className="text-lg text-gray-900 dark:text-white">
-                      {t('protocol.table.sets')}
+                      <div className="flex items-center justify-between gap-2">
+                        {t('protocol.table.sets')}
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Use sets</span>
+                          <Switch
+                            checked={useSets}
+                            onCheckedChange={setUseSets}
+                          />
+                        </div>
+                      </div>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4 pt-4">
@@ -202,7 +243,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                         {match.p2.name}
                       </div>
                     </div>
-                    {form.watch("scores").map((_, index) => (
+                    {!useSets ? form.watch("scores").map((_, index) => (
                       <div
                         key={index}
                         className="flex items-start space-x-2"
@@ -287,7 +328,20 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                           </Button>
                         )}
                       </div>
-                    ))}
+                    )) : (
+                      <div className="flex items-start space-x-2">
+                        <Input
+                          type="text"
+                          value={extractSetsFromPoints(form.watch("scores")).p1_sets}
+                          onChange={(e) => handleSetChange(1, e.target.value)}
+                        />
+                        <Input
+                          type="text"
+                          value={extractSetsFromPoints(form.watch("scores")).p2_sets}
+                          onChange={(e) => handleSetChange(2, e.target.value)}
+                        />
+                      </div>
+                    )}
                     {form.formState.errors.scores &&
                       form.formState.errors.scores.root &&
                       form.formState.errors.scores.root.message && (
@@ -295,7 +349,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                           {form.formState.errors.scores.root.message}
                         </p>
                       )}
-                    {form.watch("scores").length < 7 && (
+                    {!useSets && form.watch("scores").length < 7 && (
                       <Button
                         type="button"
                         variant="outline"

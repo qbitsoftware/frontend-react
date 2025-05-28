@@ -54,6 +54,9 @@ const NewsWidget = ({ blogs, isEmpty }: Props) => {
                 <h6 className="font-medium text-sm sm:text-base leading-tight group-hover:underline line-clamp-2">
                   {post.title}
                 </h6>
+                <div className="text-neutral-600 text-xs sm:text-sm mt-1 line-clamp-2 leading-relaxed">
+                  {post.description}
+                </div>
                 <div className="flex items-center mt-2 text-neutral-500 text-xs">
                   <Clock className="w-3 h-3 mr-1" />
                   <span>{formatDate(post.created_at)}</span>

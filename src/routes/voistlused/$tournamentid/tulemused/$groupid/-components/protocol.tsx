@@ -1,8 +1,9 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { GroupStatisticsCard } from './group-stage-protocol'
 import { StatisticsCard } from './statistics-card'
 import { useTranslation } from 'react-i18next'
 import { MatchWrapper } from '@/types/matches'
+import { UseGetMatch } from '@/queries/match'
+import { useEffect, useState } from 'react'
 
 interface ProtocolProps {
     isModalOpen: boolean,
@@ -18,12 +19,20 @@ const Protocol = ({
     isModalOpen,
     handleModalChange,
     selectedMatch,
-    isRoundRobinFull,
-    isMeistrikad,
     tournamentId,
     groupId }: ProtocolProps) => {
 
     const { t } = useTranslation()
+
+    const { data: protocol, isLoading } = UseGetMatch(tournamentId, groupId, selectedMatch.match.id)
+
+    const [isMounted, setIsMounted] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (protocol?.data?.match.match.id === selectedMatch.match.id) {
+            setIsMounted(true)
+        }
+    }, [selectedMatch, protocol])
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleModalChange}>
@@ -31,28 +40,23 @@ const Protocol = ({
                 aria-describedby={`match-protocol-${selectedMatch?.match.id}`}
                 className="max-w-[1200px] h-[90vh] px-1 md:p-4 mx-auto flex flex-col"
             >
-                <DialogTitle className="text-lg text-center font-semibold">
-                    {t("competitions.timetable.match_details")}
-                </DialogTitle>
+                {isMounted && !isLoading && (
+                    <>
+                        <DialogTitle className="text-lg text-center font-semibold">
+                            {t("competitions.timetable.match_details")}
+                        </DialogTitle>
 
-                <div className="flex-1 overflow-auto">
-                    {isRoundRobinFull && (
-                        <GroupStatisticsCard
-                            tournament_id={tournamentId}
-                            group_id={groupId}
-                            match_id={selectedMatch.match.id}
-                            index={selectedMatch.match.round}
-                        />
-                    )}
-                    {isMeistrikad && (
-                        <StatisticsCard
-                            tournament_id={tournamentId}
-                            group_id={groupId}
-                            match_id={selectedMatch.match.id}
-                            index={selectedMatch.match.round}
-                        />
-                    )}
-                </div>
+                        <div className="flex-1 overflow-auto">
+                            {protocol && (
+                                <StatisticsCard
+                                    key={selectedMatch.match.id}
+                                    protocol={protocol?.data ?? undefined}
+                                    index={selectedMatch.match.round}
+                                />
+                            )}
+                        </div>
+                    </>
+                )}
             </DialogContent>
         </Dialog>
     )

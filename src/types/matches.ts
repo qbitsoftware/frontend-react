@@ -78,6 +78,7 @@ export type Match = {
   readable_id: number;
   previous_match_readable_id_1: number
   previous_match_readable_id_2: number
+  use_sets?: boolean
 }
 
 export type MatchWrapper = {

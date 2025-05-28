@@ -9,7 +9,7 @@ import {
   useDeleteGamedayImage,
   useGetGamedaysQuery,
 } from "@/queries/images";
-import ImageUpload from "./-components/image-upload";
+import ImageUpload from "../../-components/image-upload";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

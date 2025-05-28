@@ -226,7 +226,6 @@ function RouteComponent() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -243,7 +242,7 @@ function RouteComponent() {
         <h1 className="text-2xl font-semibold mb-8">
           {t("licenses.page_title")}
         </h1>
-        <div className="bg-gray-50 rounded-lg p-6 mb-8">
+        <div className="bg-gray-100 rounded-lg p-6 mb-8">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <UserIcon className="w-5 h-5 mr-2" />
             {t("licenses.add_player.title")}
@@ -483,9 +482,8 @@ function RouteComponent() {
           </div>
         )}
 
-        {/* Summary and Payment */}
         {players.length > 0 && (
-          <div className="bg-gray-50 rounded-lg p-6">
+          <div className="bg-gray-100 rounded-lg p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-semibold">
@@ -520,7 +518,7 @@ function RouteComponent() {
         )}
 
         {players.length === 0 && (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <div className="text-center py-12 bg-gray-100 rounded-lg">
             <UserIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">{t("licenses.empty_state")}</p>
           </div>

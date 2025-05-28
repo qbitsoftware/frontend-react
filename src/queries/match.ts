@@ -9,7 +9,7 @@ export interface MatchesResponse {
     error: string | null
 }
 
-interface Protocol {
+export interface Protocol {
     match: MatchWrapper
     parent_matches: MatchWrapper[]
 }

@@ -181,9 +181,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
           )}
         </div>
         <div className="flex">
-          <div className="flex gap-2">
-            {match.match.state !== MatchState.CREATED &&
-              match.match.extra_data?.score?.map((set, index) => (
+          <div className={cn(match.match.use_sets ? "hidden" : "flex gap-2")}>
+            {match.match.state !== MatchState.CREATED
+              && match.match.extra_data
+              && match.match.extra_data.score
+              && match.match.extra_data.score.map((set, index) => (
                 <div key={index} className="flex gap-2 justify-end">
                   {match.p1.id === participant.id ? (
                     <p>{set.p1_score}</p>
@@ -277,6 +279,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                           {match.match.state !== MatchState.FINISHED && (
                             <TableNumberForm
                               match={match.match}
+                              brackets={false}
                               initialTableNumber={
                                 match.match.extra_data &&
                                 match.match.extra_data.table

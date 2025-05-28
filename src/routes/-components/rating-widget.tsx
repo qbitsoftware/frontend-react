@@ -46,7 +46,7 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
       .sort((a, b) => a.rate_order - b.rate_order);
 
     return (
-      <div className="h-full flex flex-col relative space-y-0 border rounded-t-[12px]">
+      <div className="h-[600px] md:h-[790px] flex flex-col relative space-y-0 border rounded-t-[12px]">
         <div className="w-full border-b border-stone-200 pt-1 mb-0 rounded-t-[12px] bg-[#EBEFF5]">
           <Tabs
             defaultValue="men"
@@ -73,7 +73,7 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
             </TabsList>
           </Tabs>
         </div>
-        <div className="overflow-y-scroll max-h-[80vh]">
+        <div className="overflow-y-scroll max-h-[50vh] md:max-h-[135vh]">
           <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg">
             <TableHeader className="rounded-lg bg-white">
               <TableRow className=" sticky top-0 z-10">
@@ -129,4 +129,3 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
 };
 
 export default RatingWidget;
-

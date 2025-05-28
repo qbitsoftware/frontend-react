@@ -25,14 +25,13 @@ export const Route = createFileRoute('/voistlused/$tournamentid/meedia/')({
 
 function RouteComponent() {
   const { tournament } = Route.useLoaderData()
-  const mediaContent = tournament?.data?.media || '{}'
+  const mediaContent = tournament.data && tournament.data.media || '{}'
+  console.log('mediaContent', mediaContent)
   const [value, setValue] = useState<YooptaContentValue | undefined>(JSON.parse(mediaContent))
   const { t } = useTranslation()
 
   const hasMedia = mediaContent !== '{}' &&
-    value &&
-    Array.isArray(value.blocks) &&
-    value.blocks.length > 0
+    value
 
 
   return (

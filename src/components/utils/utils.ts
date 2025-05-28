@@ -105,3 +105,17 @@ export function extractMatchSets(match: TableMatch | undefined) {
     p2_sets: totals?.team_2_total || 0,
   };
 }
+
+export function extractSetsFromPoints(scores: { player1: number, player2: number }[] | undefined) {
+  if (!scores) {
+    return { p1_sets: 0, p2_sets: 0 };
+  }
+  return scores.reduce((acc, score) => {
+    if (score.player1 >= 11 && score.player1 - score.player2 >= 2) {
+      acc.p1_sets++;
+    } else if (score.player2 >= 11 && score.player2 - score.player1 >= 2) {
+      acc.p2_sets++;
+    }
+    return acc;
+  }, { p1_sets: 0, p2_sets: 0 });
+}
