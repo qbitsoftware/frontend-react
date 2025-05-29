@@ -1,12 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDeleteGameday, useDeleteGamedayImage, useGetGamedaysQuery, usePatchGameDay, usePostGameDay } from '@/queries/images';
 import { Gameday } from '@/types/gamedays';
-import { Edit2, Plus, Trash2 } from 'lucide-react';
+import { Calendar, Edit2, Plus, Trash2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { toast } from "sonner"
