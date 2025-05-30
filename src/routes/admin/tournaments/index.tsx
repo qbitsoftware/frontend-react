@@ -1,13 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { UseGetTournaments } from '@/queries/tournaments'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { AlertCircle, PlusCircle } from 'lucide-react'
+import { AlertCircle, HelpCircle, PlusCircle } from 'lucide-react'
 import { ErrorResponse } from '@/types/errors'
 import { Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { TournamentTable } from './-components/tournaments'
 import ErrorPage from '@/components/error'
+import { useOnboarding } from '@/providers/tutorialProvider'
+
+
+export interface TournamentSearchParams {
+    tutorial?: boolean
+}
 
 export const Route = createFileRoute('/admin/tournaments/')({
     loader: async ({ context: { queryClient } }) => {
@@ -26,9 +32,12 @@ function RouteComponent() {
     const { tournaments_data, error } = Route.useLoaderData()
     const { t } = useTranslation()
 
+    const { startFlow } = useOnboarding()
+
+
     if (tournaments_data && tournaments_data.data) {
         return (
-            <div className='py-8 px-2 md:p-8'>
+            <div className='py-8 px-2 md:p-8 '>
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8">
                     <div className='flex items-center justify-center flex-col text-center mb-4 md:mb-0 md:justify-start md:items-start'>
                         <h3 className="font-bold text-gray-900">
@@ -38,13 +47,20 @@ function RouteComponent() {
                             {t('admin.tournaments.description')}
                         </p>
                     </div>
-                    <Link href='/admin/tournaments/new'>
-                        <Button className=' px-4'>
-                        <PlusCircle className="w-4 h-4 mr-1" />
+                    <div className='flex items-center justify-center gap-4'>
+                        {/* <Button  >
+                            Tutorial
+                        </Button> */}
+                        <HelpCircle className='cursor-pointer' onClick={() => startFlow('tournament-creation')} />
+                        <Link href='/admin/tournaments/new'>
+                            <Button className=' px-4 z-60' id='tutorial-tournament-add'>
+                                <PlusCircle className="w-4 h-4 mr-1" />
 
-                            {t('admin.tournaments.add_new')}
-                        </Button>
-                    </Link>
+                                {t('admin.tournaments.add_new')}
+                            </Button>
+                        </Link>
+
+                    </div>
                 </div>
                 <TournamentTable tournaments={tournaments_data.data} />
             </div>

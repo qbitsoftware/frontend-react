@@ -1,7 +1,7 @@
-// -components/admin-navigation-items.tsx
 import {
   FileText,
   LayoutDashboard,
+  MessageCircleQuestion,
   MessagesSquare,
   PersonStanding,
   Trophy,
@@ -37,5 +37,11 @@ export const getAdminNavigationItems = (t: any) => [
     label: t("admin.layout.sidebar.feedback"),
     icon: <MessagesSquare className="h-5 w-5" />,
     to: "/admin/feedback",
+  },
+  {
+    id: "tutorial",
+    label: t("admin.layout.sidebar.tutorial"),
+    icon: <MessageCircleQuestion className="h-5 w-5" />,
+    to: "/admin/tutorial",
   },
 ];

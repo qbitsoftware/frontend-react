@@ -59,6 +59,7 @@ interface TournamentFormProps {
 
 export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) => {
   const { t } = useTranslation()
+
   const [value, setValue] = useState<YooptaContentValue | undefined>(
     initial_data && initial_data.information ? JSON.parse(initial_data?.information) : undefined
   );
@@ -188,10 +189,15 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem
+                      id="tutorial-tournament-name"
+                    >
                       <FormLabel>{t("admin.tournaments.create_tournament.name")}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t("admin.tournaments.create_tournament.name_placeholder")} {...field} />
+                        <Input
+                          id="tournament-name-input"
+                          autoComplete="off"
+                          placeholder={t("admin.tournaments.create_tournament.name_placeholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -202,16 +208,16 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                   control={form.control}
                   name="sport"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem id="tutorial-tournament-sport">
                       <FormLabel>{t("admin.tournaments.create_tournament.sport")}</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger id="tournament-sport-select" data-testid="sport-select-trigger">
                             <SelectValue placeholder={t("admin.tournaments.create_tournament.sport_placeholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="tabletennis">
+                          <SelectItem value="tabletennis" data-value="tabletennis">
                             {t("admin.tournaments.create_tournament.sport_value.tabletennis")}
                           </SelectItem>
                         </SelectContent>
@@ -225,12 +231,13 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                   control={form.control}
                   name="start_date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col" id="tutorial-tournament-start-date">
                       <FormLabel>{t("admin.tournaments.create_tournament.start_date")}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
+                              id="start-date-button"
                               variant={"outline"}
                               className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
                             >
@@ -256,12 +263,13 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                   control={form.control}
                   name="end_date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col" id="tutorial-tournament-end-date">
                       <FormLabel>{t("admin.tournaments.create_tournament.end_date")}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
+                              id="end-date-button"
                               variant={"outline"}
                               className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
                             >
@@ -287,15 +295,21 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                   control={form.control}
                   name="location"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col" id="tutorial-tournament-location">
                       <FormLabel>{t("admin.tournaments.create_tournament.location")}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t("admin.tournaments.create_tournament.location_placeholder")} {...field} />
+                        <Input
+                          id="tournament-location-input"
+                          autoComplete="off"
+                          placeholder={t("admin.tournaments.create_tournament.location_placeholder")}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="category"
@@ -308,10 +322,11 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                 control={form.control}
                 name="total_tables"
                 render={({ field }) => (
-                  <FormItem className="w-full">
+                  <FormItem className="w-full" id="tutorial-tournament-tables">
                     <FormLabel>{t("admin.tournaments.create_tournament.number_of_tables")}</FormLabel>
                     <FormControl>
                       <Input
+                        id="tournament-tables-input"
                         type="number"
                         placeholder={t("admin.tournaments.create_tournament.number_of_tables_placeholder")}
                         {...field}
@@ -335,7 +350,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                 control={form.control}
                 name="calc_rating"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4" id="tutorial-tournament-rating">
                     <div className="space-y-0.5">
                       <FormLabel className="text-base">{t("admin.tournaments.create_tournament.ranking")}</FormLabel>
                       <FormDescription>
@@ -343,7 +358,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch id="tournament-rating-switch" checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -353,7 +368,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                 control={form.control}
                 name="private"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4" id="tutorial-tournament-private">
                     <div className="space-y-0.5">
                       <FormLabel className="text-base">{t("admin.tournaments.create_tournament.private")}</FormLabel>
                       <FormDescription>
@@ -361,25 +376,25 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch id="tournament-private-switch" checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                   </FormItem>
                 )}
               />
 
               {/* Pane siiia */}
-              <div className="w-full flex flex-col gap-4">
+              <div className="w-full flex flex-col gap-4" id="tutorial-tournament-information">
                 <p className="text-sm">{t("admin.tournaments.create_tournament.additional_information")} </p>
 
                 <Editor value={value} setValue={setValue} readOnly={false} />
               </div>
-              <div className="flex flex-col-reverse gap-10 md:gap-4 md:flex-row md:justify-between ">
+              <div className="flex flex-col-reverse gap-10 md:gap-4 md:flex-row md:justify-between" id="tutorial-tournament-create">
                 {initial_data && (
                   <Button type="button" className="text-red-600" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
                     {t("admin.tournaments.delete")}
                   </Button>
                 )}
-                <Button type="submit" className="md:w-[200px] w-full">
+                <Button id="tournament-create-button" type="submit" className="md:w-[200px] w-full">
                   {initial_data
                     ? t("admin.tournaments.create_tournament.button_edit")
                     : t("admin.tournaments.create_tournament.button_create")}
@@ -412,25 +427,41 @@ function CategoryInput({
     setShowSuggestions(true)
   }
 
+
   const handleSuggestionClick = (category: string) => {
     setInputValue(category)
     field.onChange(category)
     setShowSuggestions(false)
+
+    if (inputRef.current) {
+      inputRef.current.value = category
+
+      const inputEvent = new Event('input', { bubbles: true })
+      const changeEvent = new Event('change', { bubbles: true })
+
+      inputRef.current.dispatchEvent(inputEvent)
+      inputRef.current.dispatchEvent(changeEvent)
+    }
+
     inputRef.current?.focus()
   }
+
+
 
   const filteredCategories = categories.filter((cat) =>
     cat.category.toLowerCase().startsWith(inputValue.toLowerCase()),
   )
 
   return (
-    <FormItem className="flex flex-col">
+    <FormItem className="flex flex-col" id="tutorial-tournament-category">
       <FormLabel>{t("admin.tournaments.create_tournament.category")}</FormLabel>
       <div className="relative">
         <FormControl>
           <Input
             ref={inputRef}
+            id="tournament-category-input"
             placeholder={t("admin.tournaments.create_tournament.category_placeholder")}
+            autoComplete="off"
             value={inputValue}
             onChange={handleInputChange}
             onFocus={() => setShowSuggestions(true)}
@@ -438,7 +469,7 @@ function CategoryInput({
           />
         </FormControl>
         {showSuggestions && filteredCategories.length > 0 && (
-          <ul className="absolute z-10 w-full bg-white border mt-1 max-h-60 overflow-auto rounded-md shadow-lg">
+          <ul className="absolute z-50 w-full bg-white border mt-1 max-h-60 overflow-auto rounded-md shadow-lg">
             {filteredCategories.map((cat) => (
               <li
                 key={cat.category}

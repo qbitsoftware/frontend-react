@@ -11,6 +11,7 @@ interface TournamentTableProps {
   tournaments: Tournament[]
 }
 
+
 export const TournamentTable: React.FC<TournamentTableProps> = ({ tournaments }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
