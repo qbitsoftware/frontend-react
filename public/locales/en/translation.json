@@ -171,9 +171,13 @@
     }
   },
   "competitions": {
+    "details": "Details",
     "category": "Category",
     "dates": "Dates",
+    "start": "Start",
+    "end": "End",
     "location": "Location",
+    "organizer": "Organizer",
     "tables": "Total tables",
     "bracket": "Bracket",
     "play_off": "Play-off",
@@ -242,7 +246,7 @@
     },
     "navbar": {
       "info": "Info",
-      "timetable": "Timetable",
+      "matches": "Matches",
       "standings": "Standings",
       "results": "Results",
       "participants": "Participants",

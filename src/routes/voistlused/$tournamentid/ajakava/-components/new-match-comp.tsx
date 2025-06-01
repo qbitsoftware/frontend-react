@@ -5,8 +5,8 @@ import { TournamentTable } from "@/types/groups";
 import { GroupType, MatchWrapper } from "@/types/matches";
 import { Participant } from "@/types/participants";
 import { AvatarFallback } from "@radix-ui/react-avatar";
-import placeholderImg from "@/assets/placheolderImg.svg";
 import { Skeleton } from "@/components/ui/skeleton";
+import blueprofile from "@/assets/blue-profile.png"
 
 interface ITTFMatchComponentProps {
   match: MatchWrapper;
@@ -26,26 +26,16 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
   }
 
   return (
-    <Card className="w-[300px] sm:w-[300px] xl:w-[350px] p-4">
-      <div className="flex flex-col gap-1">
+    <Card className="  pb-0 border-[#EFF0EF] !shadow-scheduleCard">
+      <div className="flex flex-col gap-1 p-4">
         {/* header */}
         <div className="flex justify-between mb-4">
           <div>
             <p className="text-lg font-medium">{table_data.class}</p>
-            {table_data.type == GroupType.CHAMPIONS_LEAGUE && (
-              <p className="text-xs">
-                {formatDateGetDayMonthYear(match.match.start_date)} -{" "}
-                <span className="font-bold">
-                  {formatDateGetHours(match.match.start_date)}
-                </span>
-                {match.match.extra_data.table
-                  ? ` | Laud ${match.match.extra_data.table}`
-                  : ""}
-              </p>
-            )}
-            <p className="text-xs pt-1">{match.match.location}</p>
+            
           </div>
-          <div className="text-3xl">
+          
+          <div className="text-2xl">
             {match.match.winner_id !== "" ? (
               `${match.match.extra_data.team_1_total}:${match.match.extra_data.team_2_total}`
             ) : (
@@ -54,7 +44,7 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pb-2">
           <ITTFMatchUserComponent
             participant={match.p1}
             match={match}
@@ -68,6 +58,20 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
             table_data={table_data}
           />
         </div>
+        <div className="py-4 pb-0 border-t text-center">
+            {table_data.type == GroupType.CHAMPIONS_LEAGUE && (
+              <p className="text-xs">
+                {formatDateGetDayMonthYear(match.match.start_date)} -{" "}
+                <span className="font-bold">
+                  {formatDateGetHours(match.match.start_date)}
+                </span>
+                {match.match.extra_data.table
+                  ? ` | Laud ${match.match.extra_data.table}`
+                  : ""}
+              </p>
+            )}
+            <p className="text-xs">{match.match.location}</p>
+          </div>
       </div>
     </Card>
   );
@@ -103,7 +107,7 @@ const ITTFMatchUserComponent = ({
           />
           <AvatarFallback>
             <img
-              src={placeholderImg}
+              src={blueprofile}
               className="rounded-full h-8 w-8"
               alt="Club"
             />

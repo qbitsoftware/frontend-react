@@ -13,7 +13,7 @@ const Navbar = ({ tournament_tables }: Props) => {
   const { t } = useTranslation()
   const NavLinks = [
     { name: t("competitions.navbar.info"), href: "/" },
-    { name: t("competitions.navbar.timetable"), href: "/ajakava" },
+    { name: t("competitions.navbar.matches"), href: "/ajakava" },
     { name: t("competitions.navbar.results"), href: "/tulemused" },
     { name: t("competitions.navbar.participants"), href: "/mangijad" },
     { name: t("competitions.navbar.gallery"), href: "/galerii" },
@@ -45,18 +45,18 @@ const Navbar = ({ tournament_tables }: Props) => {
   });
 
   return (
-    <div className="">
-      <div className="pt-12 pb-4 px-2 md:px-12 text-[#363636] ">
+    <div className="self-start">
+      <div className="pt-12 pb-10 px-2 md:px-12 text-[#363636] ">
         <div className="flex flex-col">
-          <h1 className="text-4xl text-center md:text-left font-semibold mb-4">
+          <h1 className="text-3xl text-center md:text-left font-semibold mb-1">
             {tournament.name}
           </h1>
-          <p className="text-xl text-center md:text-left">{`${formatDateString(tournament.start_date)} - ${formatDateString(tournament.end_date)} • ${tournament.location}`}</p>
+          <p className="text-center md:text-left">{`${formatDateString(tournament.start_date)} - ${formatDateString(tournament.end_date)} • ${tournament.location}`}</p>
         </div>
       </div>
       <div className="px-2 md:px-12 ">
-        <Tabs value={activeTab} className="w-full flex justify-center md:justify-start">
-          <TabsList className="flex-wrap space-x-1">
+        <Tabs value={activeTab} className="w-full flex justify-center md:justify-start pb-2">
+          <TabsList className="flex-wrap space-x-2">
             {filteredNavLinks.map((link) => (
               <Link
                 className=""

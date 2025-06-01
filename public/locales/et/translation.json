@@ -167,9 +167,13 @@
     }
   },
   "competitions": {
+    "details": "Andmed",
     "category": "Kategooria",
     "dates": "Kuupäevad",
+    "start": "Algus",
+    "end": "Lõpp",
     "location": "Toimumiskoht",
+    "organizer": "Korraldaja",
     "tables": "Laudu kokku",
     "bracket": "Tabelid",
     "play_off": "Kohamängud",
@@ -238,7 +242,7 @@
     },
     "navbar": {
       "info": "Info",
-      "timetable": "Ajakava",
+      "matches": "Mängud",
       "standings": "Kohad",
       "results": "Tulemused",
       "participants": "Osalejad",
