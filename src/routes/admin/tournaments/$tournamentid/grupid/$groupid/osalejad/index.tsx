@@ -7,7 +7,6 @@ import { ErrorResponse } from '@/types/errors'
 import { NewSolo } from './-components/new-solo'
 import { NewTeams } from './-components/new-teams'
 import { UseGetParticipantsQuery } from '@/queries/participants'
-import ResetSeeding from '../../../-components/reset-seeding'
 import SeedingHeader from './-components/seeding-header'
 
 export const Route = createFileRoute(
@@ -50,9 +49,9 @@ function RouteComponent() {
                             participants={participant_data.data}
                         />
 
-                        <div className="flex justify-end pb-1 ">
+                        {/* <div className="flex ">
                             <ResetSeeding tournament_id={Number(tournamentid)} table_id={table_data.data.id} />
-                        </div>
+                        </div> */}
                         {table_data.data.solo ?
                             <NewSolo participant_data={participant_data} tournament_id={Number(tournamentid)} tournament_table={table_data.data} />
                             :
