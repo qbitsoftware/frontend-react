@@ -62,9 +62,9 @@ export default function GroupRow({ participant, index, tournament_id, tournament
         setGlobalEdit(false)
     }
 
-    const handleDeleteParticipant = () => {
+    const handleDeleteParticipant = async () => {
         try {
-            deleteParticipant(participantState)
+            await deleteParticipant(participantState)
             setIsEditing(false)
             setGlobalEdit(false)
             toast.message(t("toasts.participants.deleted"))
@@ -74,9 +74,9 @@ export default function GroupRow({ participant, index, tournament_id, tournament
         }
     }
 
-    const handleUpdateParticipant = () => {
+    const handleUpdateParticipant = async () => {
         try {
-            addOrUpdateParticipant(participantState, participantState.id)
+            await addOrUpdateParticipant(participantState, participantState.id)
             toast.message(t("toasts.participants.updated"))
         } catch (error) {
             void error
