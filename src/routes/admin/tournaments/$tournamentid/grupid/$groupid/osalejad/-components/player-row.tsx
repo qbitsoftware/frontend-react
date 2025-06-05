@@ -49,7 +49,6 @@ export default function PlayerRow({ participant, index, player, updateField, tou
     }, [debouncedSearchTerm]);
 
     const handleNameChange = (value: string) => {
-        console.log("value", value)
         setFullName(value)
         setSearchTerm(value)
     }
