@@ -1,4 +1,4 @@
-import { formatDateToNumber } from "@/lib/utils"
+import { capitalizeWords, formatDateToNumber } from "@/lib/utils"
 import { MatchWrapper, TableTennisExtraData } from "@/types/matches"
 
 interface Props {
@@ -28,12 +28,12 @@ export const LastMatch = ({ last_game }: Props) => {
             <div className="flex items-center space-x-4">
                 <span className="text-xs text-gray-500">{formatDateToNumber(last_game.match.start_date)}</span>
                 <span className="text-sm">
-                    {last_game.p1.name}
+                    {capitalizeWords(last_game.p1.name)}
                 </span>
                 <span className="font-bold text-sm">{p1_score}</span>
                 <span className="text-xs">:</span>
                 <span className="font-bold text-sm">{p2_score}</span>
-                <span className="text-sm">{last_game.p2.name}</span>
+                <span className="text-sm">{capitalizeWords(last_game.p2.name)}</span>
             </div>
         </div>
     )

@@ -459,6 +459,12 @@
       "description": "Manage and organize tournaments",
       "add_new": "New Tournament",
       "delete": "Delete a tournament",
+      "warnings": {
+        "bracket_size_mismatch": {
+          "title": "This bracket size might not be suitable for the amount of participants!",
+          "body": "Warning: You have {{participants}} participants, you should choose {{closestPowerOf2}} table size. Instead you chose bracket size of {{tableSize}}. This may give incorrect results."
+        }
+      },
       "create_tournament": {
         "errors": {
           "location": "Location is required",
@@ -468,6 +474,7 @@
           "sport": "Sport is required",
           "end_date": "End date is required",
           "total_tables": "Total tables must be at least 1",
+          "total_tables_max": "Total tables must be at most 200",
           "category": "Category is required"
         },
         "tournament_tables": {

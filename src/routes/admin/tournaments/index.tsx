@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { HelpCircle, PlusCircle } from 'lucide-react'
+import { PlusCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { TournamentTable } from './-components/tournaments'
 import ErrorPage from '@/components/error'
-import { useOnboarding } from '@/providers/tutorialProvider'
 import { UseGetTournamentsAdmin } from '@/queries/tournaments'
 
 
@@ -29,9 +28,6 @@ function RouteComponent() {
     const { tournaments_data } = Route.useLoaderData()
     const { t } = useTranslation()
 
-    const { startFlow } = useOnboarding()
-
-
     return (
         <div className='py-8 px-2 md:p-8 '>
             <div className="flex flex-col md:flex-row justify-between items-center mb-8">
@@ -44,7 +40,7 @@ function RouteComponent() {
                     </p>
                 </div>
                 <div className='flex items-center justify-center gap-4'>
-                    <HelpCircle className='cursor-pointer' onClick={() => startFlow('tournament-creation')} />
+                    {/* <HelpCircle className='cursor-pointer' onClick={() => startFlow('tournament-creation')} /> */}
                     <Link href='/admin/tournaments/new'>
                         <Button className=' px-4 z-60' id='tutorial-tournament-add'>
                             <PlusCircle className="w-4 h-4 mr-1" />

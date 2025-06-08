@@ -111,8 +111,13 @@ export const UsePatchTournamentMedia = (tournament_id: number) => {
             })
             return data;
         },
-        onSuccess: () => {
-            queryClient.resetQueries({ queryKey: ['tournament_admin', tournament_id] })
+        onSuccess: (data: TournamentResponse) => {
+            queryClient.setQueryData(
+                ['tournament_admin', tournament_id],
+                () => {
+                    return data;
+                },
+            );
         }
     })
 }
@@ -176,7 +181,12 @@ export const UsePostTournament = () => {
                         oldData.message = data.message;
                         oldData.error = data.error;
                     } else {
-                        return data;
+                        const newData: TournamentsResponse = {
+                            message: data.message,
+                            error: data.error,
+                            data: data.data ? [data.data] : null,
+                        }
+                        return newData;
                     }
                     return oldData;
                 },

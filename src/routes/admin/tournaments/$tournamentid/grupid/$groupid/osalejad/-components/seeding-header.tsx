@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface SeedingHeaderProps {
   tournament_id: number;
@@ -40,6 +41,18 @@ const SeedingHeader = ({
   const updateSeeding = UsePostSeeding(tournament_id, table_data.id);
   const updateOrder = UsePostOrder(tournament_id, table_data.id);
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+
+  const getClosestPowerOf2 = (num: number): number => {
+    if (num <= 8) return 8;
+    return Math.pow(2, Math.ceil(Math.log2(num)));
+  };
+
+  const checkPowerOf2Warning = (): boolean => {
+    const closestPowerOf2 = getClosestPowerOf2(participants?.length);
+    return closestPowerOf2 !== table_data.size;
+  };
+
 
   const [disabled, setDisabled] = useState(false);
   const isDisabled = (data: MatchesResponse | undefined): boolean => {
@@ -63,17 +76,42 @@ const SeedingHeader = ({
 
   const { t } = useTranslation();
 
+  const executeSeeding = async (order: string) => {
+    try {
+      await updateSeeding.mutateAsync({ order });
+      toast.message(t('toasts.participants.seeding_success'));
+    } catch (error) {
+      void error;
+      toast.error(t('toasts.participants.seeding_error'));
+    }
+  };
+
+
   const handleSeeding = async (order: string | undefined) => {
     if (!order) {
       return;
     }
-    try {
-      await updateSeeding.mutateAsync({ order });
-      toast.message(t('toasts.participants.seeding_success'))
-    } catch (error) {
-      void error;
-      toast.error(t("toasts.participants.seeding_error"))
+    const showWarning = !(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && checkPowerOf2Warning();
+    if (showWarning) {
+      setShowWarningModal(true);
+    } else {
+      await executeSeeding(order);
     }
+
+  };
+
+  const handleWarningConfirm = async () => {
+    setShowWarningModal(false);
+    await executeSeeding("rating");
+  };
+
+  const handleWarningCancel = () => {
+    setShowWarningModal(false);
+  };
+
+  const getWarningMessage = () => {
+    const closestPowerOf2 = getClosestPowerOf2(participants?.length || 0);
+    return t('admin.tournaments.warnings.bracket_size_mismatch.body', { participants: participants?.length, closestPowerOf2, tableSize: table_data.size });
   };
 
   const handleOrder = async () => {
@@ -127,6 +165,25 @@ const SeedingHeader = ({
             <img src={seeds3} className="h-4 w-4 object-contain" />
           </Button>
         </div>
+
+        <Dialog open={showWarningModal} onOpenChange={setShowWarningModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("admin.tournaments.groups.order.title")}</DialogTitle>
+              <DialogDescription>
+                {getWarningMessage()}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={handleWarningCancel}>
+                Cancel
+              </Button>
+              <Button onClick={handleWarningConfirm}>
+                Continue Anyway
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <AlertDialog>
           <AlertDialogTrigger asChild>

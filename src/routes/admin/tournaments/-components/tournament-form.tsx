@@ -43,7 +43,7 @@ const createFormSchema = (t: TFunction) => z.object({
   start_date: z.date({ message: t("admin.tournaments.create_tournament.errors.start_date") }),
   end_date: z.date({ message: t("admin.tournaments.create_tournament.errors.end_date") }),
   sport: z.string({ message: t("admin.tournaments.create_tournament.errors.sport") }),
-  total_tables: z.number().min(1, { message: t("admin.tournaments.create_tournament.errors.total_tables") }),
+  total_tables: z.number().min(1, { message: t("admin.tournaments.create_tournament.errors.total_tables") }).max(200, { message: t("admin.tournaments.create_tournament.errors.total_tables_max") }),
   category: z.string({ message: t("admin.tournaments.create_tournament.errors.category") }),
   location: z.string().min(1, { message: t("admin.tournaments.create_tournament.errors.location") }),
   information: z.any(),

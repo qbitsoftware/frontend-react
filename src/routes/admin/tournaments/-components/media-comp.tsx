@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from "sonner"
 import Editor from '../../-components/yooptaeditor';
+import { useRouter } from '@tanstack/react-router';
 
 interface Props {
     tournament: Tournament
@@ -14,9 +15,11 @@ interface Props {
 
 export default function MediaComponent({ tournament }: Props) {
     const { t } = useTranslation();
+    const router = useRouter()
     const [value, setValue] = useState<YooptaContentValue | undefined>(
         JSON.parse(tournament.media || "{}")
     );
+
     const mediaMutation = UsePatchTournamentMedia(
         Number(tournament.id)
     );
@@ -25,6 +28,9 @@ export default function MediaComponent({ tournament }: Props) {
         try {
             await mediaMutation.mutateAsync({ media: JSON.stringify(value) });
             toast.message(t("toasts.media.save_success"))
+            router.navigate({
+                to: `/admin/tournaments/${tournament.id}`
+            })
         } catch (error) {
             void error;
             toast.error(t("toasts.media.save_error"));
