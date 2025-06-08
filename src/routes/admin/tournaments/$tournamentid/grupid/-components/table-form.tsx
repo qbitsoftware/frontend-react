@@ -74,7 +74,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
   const { t } = useTranslation()
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [customSize, setCustomSize] = useState("");
+  // const [customSize, setCustomSize] = useState("");
   const formSchema = createFormSchema(t)
 
   const { tournamentid } = useParams({ strict: false })
@@ -226,23 +226,24 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                   )}
                 />
                 {form.watch("type") === GroupType.ROUND_ROBIN || form.watch("type") === GroupType.ROUND_ROBIN_FULL_PLACEMENT ? (
-                  <FormItem>
-                    <FormLabel>{t("admin.tournaments.create_tournament.group_amount")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        id="tournamentSize"
-                        placeholder={initial_data?.size?.toString() || t("admin.tournaments.create_tournament.number_of_groups_placeholder")}
-                        value={customSize}
-                        onChange={(e) => {
-                          const numValue = parseInt(e.target.value, 10) || 0;
-                          setCustomSize(e.target.value);
-                          form.setValue("size", numValue);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <div></div>
+                  // <FormItem>
+                  //   <FormLabel>{t("admin.tournaments.create_tournament.group_amount")}</FormLabel>
+                  //   <FormControl>
+                  //     <Input
+                  //       type="number"
+                  //       id="tournamentSize"
+                  //       placeholder={initial_data?.size?.toString() || t("admin.tournaments.create_tournament.number_of_groups_placeholder")}
+                  //       value={customSize}
+                  //       onChange={(e) => {
+                  //         const numValue = parseInt(e.target.value, 10) || 0;
+                  //         setCustomSize(e.target.value);
+                  //         form.setValue("size", numValue);
+                  //       }}
+                  //     />
+                  //   </FormControl>
+                  //   <FormMessage />
+                  // </FormItem>
                 ) : form.watch("type") === GroupType.CHAMPIONS_LEAGUE ? <div></div> : (
                   <FormItem>
                     <FormLabel>{t("admin.tournaments.create_tournament.tournament_size")}</FormLabel>

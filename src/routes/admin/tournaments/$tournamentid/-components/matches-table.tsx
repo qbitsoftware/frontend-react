@@ -87,7 +87,18 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         filtered = data;
     }
 
-    return filtered.filter((match) => match.p1.id !== "" && match.p2.id !== "");
+    const validMatches = filtered.filter((match) => match.p1.id !== "" && match.p2.id !== "");
+
+    return validMatches.sort((a, b) => {
+      const stateOrder = {
+        [MatchState.ONGOING]: 0,
+        [MatchState.CREATED]: 1,
+        [MatchState.FINISHED]: 2,
+      };
+
+      return stateOrder[a.match.state] - stateOrder[b.match.state];
+    });
+
   }, [data, filterValue]);
 
   const handleCardClick = (match: MatchWrapper) => {

@@ -1041,7 +1041,9 @@
       "seeding_success": "Seeding successful",
       "seeding_error": "Seeding failed. Please try again",
       "order_success": "Order updated successfully",
-      "order_error": "Order update failed. Please try again"
+      "order_error": "Order update failed. Please try again",
+      "reset_success": "Matches reset successfully",
+      "reset_error": "Matches reset failed. Please try again"
     },
     "protocol_modals": {
       "updated_match_score": "Match score updated successfully",

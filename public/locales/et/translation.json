@@ -1037,7 +1037,9 @@
       "seeding_success": "Osalejate asetamine õnnestus",
       "seeding_error": "Osalejate asetamine nurjus. Palun proovige uuesti",
       "order_success": "Osalejate järjekorda panemine õnnestus",
-      "order_error": "Osalejate järjekorda panemine nurjus. Palun proovige uuesti"
+      "order_error": "Osalejate järjekorda panemine nurjus. Palun proovige uuesti",
+      "reset_success": "Matšid lähtestatud edukalt",
+      "reset_error": "Matšide lähtestamine nurjus. Palun proovige uuesti"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",

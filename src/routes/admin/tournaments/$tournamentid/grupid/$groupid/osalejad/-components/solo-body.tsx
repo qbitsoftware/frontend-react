@@ -166,7 +166,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                         <div
                                                             key={i}
                                                             className="px-3 py-2 cursor-pointer hover:bg-accent"
-                                                            onClick={() => {
+                                                            onClick={async () => {
                                                                 setPopoverOpen(false)
                                                                 const new_player = NewPlayer(user)
                                                                 const new_participant: ParticipantFormValues = {
@@ -183,7 +183,7 @@ export default function SoloParticipants({ participants, group_participant, tour
 
                                                                 setSearchTerm('')
                                                                 try {
-                                                                    addOrUpdateParticipant(new_participant)
+                                                                    await addOrUpdateParticipant(new_participant)
                                                                     toast.message(t("toasts.participants.created"))
                                                                 } catch (error) {
                                                                     void error
@@ -204,7 +204,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                                     <TableCell colSpan={6}></TableCell>
                                     <TableCell className="sticky right-0 p-3">
                                         <Button
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 if (searchTerm.trim() === "") {
                                                     return
                                                 }
@@ -226,7 +226,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                     }
                                                     setSearchTerm('')
                                                     try {
-                                                        addOrUpdateParticipant(new_participant)
+                                                        await addOrUpdateParticipant(new_participant)
                                                         toast.message(t("toasts.participants.created"))
                                                     } catch (error) {
                                                         void error
