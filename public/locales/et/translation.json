@@ -198,6 +198,8 @@
       }
     },
     "results": {
+            "groups": "Grupid",
+
       "finished": "Lõppenud",
       "teams": "Meeskond",
       "solo_team": "Võistleja",

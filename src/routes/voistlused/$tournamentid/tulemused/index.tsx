@@ -79,8 +79,8 @@ function RouteComponent() {
   return (
     <>
       {hasTableWithParticipants ? (
-        <div className='mx-auto px-4 md:px-12 py-4 md:py-8'>
-          <h5 className='font-bold mb-4 md:mb-8 text-center md:text-left'>{t('competitions.navbar.results')}</h5>
+        <div className=''>
+          <h4 className='font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700'>{t('competitions.results.groups')}</h4>
           <ul className='pb-8 flex flex-col gap-2'>
             {tablesWithParticipants.map((table) => (
               <Link key={table.id} href={`/voistlused/${tournament.id}/tulemused/${table.id}`} className="md:w-2/3">

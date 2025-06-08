@@ -44,7 +44,7 @@ export const Filters = ({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-12 flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#E9F2FC]"
+                className=" flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#f1f2f7]/70"
               >
                 <span>
                   {activeClass === "all"
@@ -78,7 +78,7 @@ export const Filters = ({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="h-12 flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#E9F2FC]"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#f1f2f7]/70"
             >
               <span>
                 {/* (${getFormattedDate(gamedays[activeDay])}) */}

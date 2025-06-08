@@ -67,8 +67,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="px-4 md:px-12 py-4 md:py-8">
-      <h5 className="font-bold mb-4 md:mb-8 text-center md:text-left">{t('gallery.title')}</h5>
+    <div className="">
+      <h4 className="font-bold text-gray-700 mb-4 md:mb-8 text-center md:text-left">{t('gallery.title')}</h4>
       <div className='pb-8 '>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
@@ -78,7 +78,7 @@ function RouteComponent() {
                 <TabsTrigger
                   key={day.id}
                   value={day.id.toString()}
-                  className="text-sm px-4 py-2 h-9 data-[state=active]:bg-muted data-[state=active]:shadow-sm data-[state=active]:text-stone-800"
+                  className="text-sm px-4 py-2  data-[state=active]:bg-primary data-[state=active]:shadow-sm"
                 >
                   {day.name}
                 </TabsTrigger>
@@ -93,12 +93,6 @@ function RouteComponent() {
               className="rounded-md pt-2"
             >
               <div className="rounded-md">
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <h3 className="text-lg font-medium">{day.name}</h3>
-                  </div>
-                </div>
-
                 {day.images && day.images.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                     {day.images.map((img, idx) => (

@@ -152,6 +152,11 @@ function RouteComponent() {
       matchesData.data.length > 0 ? (
         <>
           <div>
+            <h4
+             className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
+              {t("competitions.timetable.matches")}
+            </h4>
+
             <Filters
               matches={matchesData.data}
               gamedays={uniqueGamedays}
@@ -164,7 +169,7 @@ function RouteComponent() {
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />
-           
+
             <div className="">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-y-4 md:gap-y-12 gap-x-4 my-6">
                 {/* First render matches that are associated with round robin tables */}

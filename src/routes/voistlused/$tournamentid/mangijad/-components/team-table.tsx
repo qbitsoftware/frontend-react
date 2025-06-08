@@ -34,45 +34,46 @@ const TeamTable: React.FC<TeamTableProps> = ({ participants, table_data }) => {
     setSelectedImage(null)
   }
 
-  const handleRowClick = (participant: Participant) => {
+  const handleCardClick = (participant: Participant) => {
     setSelectedTeam(participant)
     setIsDialogOpen(true)
   }
 
   return (
-    <div className="h-full bg-white rounded-md">
+    <div className=" w-full md:w-[320px] h-full rounded-md">
       {participants && participants.length > 0 ? (
-        <div className="rounded-md border h-full overflow-y-auto">
-          <Table className="bg-white h-full">
-            <TableHeader>
-              <TableRow className="bg-[#F9F9FB]">
-                <TableHead>{t('competitions.participants.table.name')}</TableHead>
-                <TableHead>{t('competitions.participants.table.team')}</TableHead>
-                <TableHead>{t('competitions.participants.table.player_count')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {participants.map((participant) => (
-                <TableRow
-                  key={participant.id}
-                  onClick={() => handleRowClick(participant)}
-                  className="cursor-pointer hover:bg-gray-100"
-                >
-                  <TableCell>
-                    <Avatar>
-                      <AvatarImage
-                        src={participant.extra_data.image_url}
-                        className="cursor-pointer object-cover"
-                      />
-                      <AvatarFallback><img src={clubPlaceholder} className='rounded-full' alt="Club" /></AvatarFallback>
-                    </Avatar>
-                  </TableCell>
-                  <TableCell>{participant.name}</TableCell>
-                  <TableCell>{participant.players ? participant.players.length : 0}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <div className=" flex flex-col gap-2">
+          {participants.map((participant) => (
+            <div
+              key={participant.id}
+              onClick={() => handleCardClick(participant)}
+              className=" border bg-white rounded-lg px-3 py-1 cursor-pointer hover:shadow-md transition-shadow duration-200 hover:bg-gray-50"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src={participant.extra_data.image_url}
+                      className="object-cover"
+                    />
+                    <AvatarFallback>
+                      <img src={clubPlaceholder} className='rounded-full' alt="Club" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h6 className="font-medium text-gray-900 ">
+                      {participant.name}
+                    </h6>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm text-gray-600">
+                    {participant.players ? participant.players.length : 0}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="bg-white shadow-lg rounded-lg p-8 text-center h-full flex items-center justify-center">
