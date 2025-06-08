@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import ErrorPage from "@/components/error";
 import {
-  UseGetTournaments,
+  UseGetTournamentsPublic,
   type TournamentsResponse,
 } from "@/queries/tournaments";
 import CalendarView from "@/components/CalendarView";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/kalender/")({
     };
 
     try {
-      tournaments = await queryClient.ensureQueryData(UseGetTournaments());
+      tournaments = await queryClient.ensureQueryData(UseGetTournamentsPublic());
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 404) {
         console.warn("Tournaments API returned 404");

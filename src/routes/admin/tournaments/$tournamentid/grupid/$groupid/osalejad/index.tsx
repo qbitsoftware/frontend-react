@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { UseGetTournament } from '@/queries/tournaments'
 import { UseGetTournamentTableQuery } from '@/queries/tables'
 import Loader from '@/components/loader'
 import ErrorPage from '@/components/error'
@@ -8,6 +7,7 @@ import { NewSolo } from './-components/new-solo'
 import { NewTeams } from './-components/new-teams'
 import { UseGetParticipantsQuery } from '@/queries/participants'
 import SeedingHeader from './-components/seeding-header'
+import { UseGetTournamentAdmin } from '@/queries/tournaments'
 
 export const Route = createFileRoute(
     '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -18,7 +18,7 @@ export const Route = createFileRoute(
         let tournament_data
         try {
             tournament_data = await queryClient.ensureQueryData(
-                UseGetTournament(Number(params.tournamentid)),
+                UseGetTournamentAdmin(Number(params.tournamentid)),
             )
         } catch (error) {
             const err = error as ErrorResponse

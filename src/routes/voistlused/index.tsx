@@ -1,9 +1,9 @@
-import { UseGetTournaments } from '@/queries/tournaments'
 import { createFileRoute } from '@tanstack/react-router'
 import ErrorPage from '@/components/error'
 import { XCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { TournamentsCalendar } from './-components/new-calendar'
+import { UseGetTournamentsPublic } from '@/queries/tournaments'
 
 export const Route = createFileRoute('/voistlused/')({
   errorComponent: () => {
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/voistlused/')({
   },
   component: RouteComponent,
   loader: async ({ context: { queryClient } }) => {
-    const tournaments = await queryClient.ensureQueryData(UseGetTournaments())
+    const tournaments = await queryClient.ensureQueryData(UseGetTournamentsPublic())
     return { tournaments }
   },
 })

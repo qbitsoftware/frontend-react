@@ -50,7 +50,7 @@ function RouteComponent() {
   // Get the default state from the cookie
   const defaultOpen = getCookie("sidebar:state") !== "false";
 
-  if (!user || user.role != "admin") {
+  if (!user?.role.includes('admin')) {
     router.navigate({ to: "/" });
   }
 

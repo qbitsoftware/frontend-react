@@ -4,7 +4,7 @@ import Editor from "@/routes/admin/-components/yooptaeditor";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  UseGetTournament,
+  UseGetTournamentAdmin,
   UsePatchTournamentMedia,
 } from "@/queries/tournaments";
 import ErrorPage from "@/components/error";
@@ -20,11 +20,11 @@ export const Route = createFileRoute(
   loader: async ({ context: { queryClient }, params }) => {
     const tournamentId = Number(params.tournamentid);
     let tournament = queryClient.getQueryData(
-      UseGetTournament(tournamentId).queryKey
+      UseGetTournamentAdmin(tournamentId).queryKey
     );
 
     if (!tournament) {
-      tournament = await queryClient.fetchQuery(UseGetTournament(tournamentId));
+      tournament = await queryClient.fetchQuery(UseGetTournamentAdmin(tournamentId));
     }
 
     return { tournament };

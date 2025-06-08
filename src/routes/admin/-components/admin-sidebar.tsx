@@ -15,12 +15,14 @@ import sidebarLogo from "@/assets/sidebar-logo.png";
 import { Button } from "@/components/ui/button";
 import { LanguageDropdown } from "@/components/languageSelector";
 import { getAdminNavigationItems } from "./admin-nav-items";
+import { useUser } from "@/providers/userProvider";
 
 const AdminSidebar = () => {
   const { t } = useTranslation();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const menuItems = getAdminNavigationItems(t);
+  const { user } = useUser()
+  const menuItems = getAdminNavigationItems(t, user?.role);
 
   return (
     <Sidebar collapsible="icon">

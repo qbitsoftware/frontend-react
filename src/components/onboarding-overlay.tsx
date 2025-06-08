@@ -22,7 +22,6 @@ export function OnboardingOverlay({
     currentGlobalStep,
     onNext,
     onSkip,
-    onComplete,
     onPrevious
 }: OnboardingOverlayProps) {
     const [targetElement, setTargetElement] = useState<HTMLElement | null>(null)
@@ -435,7 +434,7 @@ export function OnboardingOverlay({
                                     <div
                                         key={index}
                                         className={`h-1 w-3 rounded-full flex-shrink-0 ${index === currentGlobalStep ? "bg-primary" :
-                                                index < currentGlobalStep ? "bg-green-400" : "bg-gray-200"
+                                            index < currentGlobalStep ? "bg-green-400" : "bg-gray-200"
                                             }`}
                                     />
                                 ))}

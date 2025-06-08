@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Trophy, Target, type LucideIcon, LayoutDashboard, AlertCircle, PersonStanding } from "lucide-react";
+import { Trophy, Target, type LucideIcon, LayoutDashboard, PersonStanding } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import {
   Table,
@@ -17,20 +17,19 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { UseGetTournaments } from "@/queries/tournaments";
 import ErrorPage from "@/components/error";
 import { formatDateString } from "@/lib/utils";
-import { ErrorResponse } from "@/types/errors";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Tournament } from "@/types/tournaments";
 import { useUsersCount } from "@/queries/users";
+import { UseGetTournamentsAdmin } from "@/queries/tournaments";
 
 
 export const Route = createFileRoute("/admin/dashboard/")({
   loader: async ({ context: { queryClient } }) => {
     try {
-      const tournaments_data = await queryClient.ensureQueryData(UseGetTournaments());
+      const tournaments_data = await queryClient.ensureQueryData(UseGetTournamentsAdmin());
       return { tournaments_data, error: null };
     } catch (error) {
       return { tournaments_data: null, error };
@@ -41,11 +40,11 @@ export const Route = createFileRoute("/admin/dashboard/")({
 });
 
 export default function RouteComponent() {
-  const { tournaments_data, error } = Route.useLoaderData();
+  const { tournaments_data } = Route.useLoaderData();
   const router = useRouter();
   const { t } = useTranslation();
 
-  const {count} = useUsersCount()
+  const { count } = useUsersCount()
 
   const processChartData = (tournaments: Tournament[]) => {
     const monthMap = new Map();
@@ -93,59 +92,19 @@ export default function RouteComponent() {
     };
   };
 
-  // Handle error cases
-  if (error) {
-    const err = error as ErrorResponse;
-    if (err.response && err.response.status === 404) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-[400px] m-8 space-y-2 rounded-lg border-2 border-dashed border-gray-200">
-          <LayoutDashboard className="w-16 h-16 text-gray-300 mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">
-            {t("admin.dashboard.missing")}
-          </h3>
-          <p className="text-gray-500 text-center max-w-md">
-            {t("admin.dashboard.missing_subtitle")}
-          </p>
-          <Link href="/admin/tournaments/new">
-            <Button className="mt-2 px-6">{t("admin.tournaments.add_new")}</Button>
-          </Link>
-        </div>
-      );
-    } else {
-      // Handle other errors like network issues
-      return (
-        <Card className="w-full">
-          <CardHeader className="flex flex-row items-center space-x-4">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <AlertCircle className="w-6 h-6 text-red-600" />
-            </div>
-            <div>
-              <CardTitle>
-                {t("admin.dashboard.errors.network.title")}
-              </CardTitle>
-              <p className="text-gray-600 mt-1">
-                {t("admin.dashboard.errors.network.description")}
-              </p>
-            </div>
-          </CardHeader>
-        </Card>
-      );
-    }
-  }
-
   // If there's no error but also no data or empty data
   if (!tournaments_data || !tournaments_data.data || tournaments_data.data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] m-8 space-y-2 rounded-lg border-2 border-dashed border-gray-200">
         <LayoutDashboard className="w-16 h-16 text-gray-300 mb-4" />
         <h3 className="text-xl font-semibold text-gray-700 mb-2">
-          {t("admin.dashboard.not_found.title")}
+          {t("admin.dashboard.missing")}
         </h3>
         <p className="text-gray-500 text-center max-w-md">
-          {t("admin.dashboard.not_found.subtitle")}
+          {t("admin.dashboard.missing_subtitle")}
         </p>
         <Link href="/admin/tournaments/new">
-          <Button className="mt-2 px-6">{t("admin.dashboard.add_new")}</Button>
+          <Button className="mt-2 px-6">{t("admin.tournaments.add_new")}</Button>
         </Link>
       </div>
     );
@@ -171,7 +130,7 @@ export default function RouteComponent() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <StatsCard
+        <StatsCard
           Icon={Target}
           iconColor="text-green-600"
           bgColor="bg-green-100"
@@ -215,7 +174,7 @@ export default function RouteComponent() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {upcomingTournaments.map((tournament) => (
+                {upcomingTournaments?.slice(0, 5).map((tournament) => (
                   <TableRow
                     className="cursor-pointer"
                     key={tournament.name}
@@ -259,7 +218,7 @@ export default function RouteComponent() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {tournaments_data.data.map((tournament) => (
+                {tournaments_data.data?.slice(0, 5).map((tournament) => (
                   <TableRow
                     className="cursor-pointer"
                     key={tournament.name}

@@ -1,19 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { TournamentTables } from './-components/tables'
 import { UseGetTournamentTables } from '@/queries/tables'
-import { UseGetTournament } from '@/queries/tournaments'
 import { ErrorResponse } from '@/types/errors'
 import ErrorPage from '@/components/error'
+import { UseGetTournamentAdmin } from '@/queries/tournaments'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/',
 )({
   component: RouteComponent,
-    errorComponent: () => <ErrorPage />,
+  errorComponent: () => <ErrorPage />,
   loader: async ({ context: { queryClient }, params }) => {
     let tournament_tables
     try {
-        tournament_tables = await queryClient.ensureQueryData(
+      tournament_tables = await queryClient.ensureQueryData(
         UseGetTournamentTables(Number(params.tournamentid)),
       )
     } catch (error) {
@@ -23,7 +23,7 @@ export const Route = createFileRoute(
       }
     }
     const tournament = await queryClient.ensureQueryData(
-      UseGetTournament(Number(params.tournamentid)),
+      UseGetTournamentAdmin(Number(params.tournamentid)),
     )
     return { tournament, tournament_tables }
   },
