@@ -78,7 +78,7 @@ function RouteComponent() {
                 <TabsTrigger
                   key={day.id}
                   value={day.id.toString()}
-                  className="text-sm px-4 py-2  data-[state=active]:bg-primary data-[state=active]:shadow-sm"
+                  className="text-sm px-4 py-2 data-[state=active]:text-gray-700 data-[state=active]:bg-[#e7edf3] data-[state=active]:shadow-sm"
                 >
                   {day.name}
                 </TabsTrigger>

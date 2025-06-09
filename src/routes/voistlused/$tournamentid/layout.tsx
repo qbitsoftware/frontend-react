@@ -52,7 +52,7 @@ function RouteComponent() {
       <TournamentProvider tournamentData={tournamentData.data}>
         <div className="max-w-[1440px] mx-auto min-h-screen flex flex-col">
           <Navbar tournament_tables={tournament_tables?.data || []} />
-          <div className="bg-white px-2 md:px-16 py-4 md:py-10">
+          <div className=" px-2 md:px-16 py-4 md:py-10">
             <Outlet />
           </div>
         </div>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import React, { useState } from "react";
-import placeholderImg from "@/assets/placheolderImg.svg";
+import blueprofile from "@/assets/blue-profile.png";
 import { useTranslation } from "react-i18next";
 import { ImageModal } from "./image-modal";
 import { Participant } from "@/types/participants";
@@ -83,7 +83,7 @@ const SoloTable: React.FC<SoloTableProps> = ({ participants, table_data }) => {
                       ></AvatarImage>
                       <AvatarFallback>
                         <img
-                          src={placeholderImg}
+                          src={blueprofile}
                           className="rounded-full"
                         ></img>
                       </AvatarFallback>

@@ -79,7 +79,7 @@ function RouteComponent() {
   return (
     <>
       {hasTableWithParticipants ? (
-        <div className=''>
+        <div className='px-2'>
           <h4 className='font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700'>{t('competitions.results.groups')}</h4>
           <ul className='pb-8 flex flex-col gap-2'>
             {tablesWithParticipants.map((table) => (

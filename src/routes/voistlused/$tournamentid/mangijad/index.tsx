@@ -83,7 +83,6 @@ function RouteComponent() {
     filteredData = filteredData.filter((table) => table.class === activeClass);
   }
 
-  
   const filteredPlayerCount = getTotalPlayers(filteredData);
 
   // Then filter by search query
@@ -116,12 +115,12 @@ function RouteComponent() {
             {t("competitions.participants.title")}
           </h4>
           <div className="pb-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between space-y-2 md:space-y-0 space-x-0 md:space-x-4">
+            <div className="px-2 flex flex-col md:flex-row items-start md:items-center md:justify-between space-y-2 md:space-y-0 space-x-0 md:space-x-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className=" flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#f1f2f7]/70"
+                    className=" md:mx-0 flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#f1f2f7]/70"
                   >
                     <span>{activeClass === "all" ? "Kõik" : activeClass}</span>
                     <ChevronDown className="h-4 w-4" />
@@ -147,7 +146,8 @@ function RouteComponent() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <div className="flex items-center gap-2 px-2">
+              <div className="flex items-start md:items-center flex-col gap-4 md:flex-row md:gap-2 md:px-2 pt-2 md:pt-0">
+                {" "}
                 <div className="relative w-full md:w-auto">
                   <Input
                     type="text"
@@ -166,7 +166,7 @@ function RouteComponent() {
                 </p>
               </div>
             </div>
-            <div className="flex flex-row overflow-x-scroll md:gap-16 my-2 py-5 ">
+            <div className="flex flex-col gap-4 md:gap-8 my-2 py-5 ">
               {filteredData.length > 0 ? (
                 filteredData.map((table) => (
                   <Group key={table.id} group={table} />

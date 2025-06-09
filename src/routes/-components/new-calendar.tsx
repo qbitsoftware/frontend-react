@@ -472,7 +472,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
                           <div
                             className={`h-6 w-6 rounded-full flex items-center justify-center cursor-pointer  ${index >= zoomStartMonth &&
                               index < zoomStartMonth + 3
-                              ? "bg-[#90D3FF] border-2 border-[#20B2C0]"
+                              ? "bg-[#90D3FF] border-2 border-[#c6ecf0]"
                               : "bg-[#E6E6E6] hover:bg-[#90D3FF] border-2 border-[#CBCBCB]"
                               }`}
                             onClick={() => handleMonthCircleClick(index)}

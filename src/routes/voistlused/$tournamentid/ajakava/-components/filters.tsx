@@ -8,10 +8,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { MatchWrapper } from "@/types/matches";
 
 interface ScheduleFiltersProps {
-  matches: MatchWrapper[];
   gamedays: string[];
   activeDay: number;
   setActiveDay: (day: number) => void;
@@ -21,10 +19,12 @@ interface ScheduleFiltersProps {
   setActiveClass: (classValue: string) => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
+    filteredMatchCount: number;
+
 }
 
 export const Filters = ({
-  matches,
+  filteredMatchCount,
   gamedays,
   activeDay,
   setActiveDay,
@@ -37,8 +37,8 @@ export const Filters = ({
 }: ScheduleFiltersProps) => {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-wrap gap-4 justify-between rounded-[10px]">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col md:flex-row flex-wrap gap-4 justify-between rounded-[10px]">
+      <div className="flex items-center gap-4 px-2">
         {classes.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -54,7 +54,7 @@ export const Filters = ({
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="space-y-1">
+            <DropdownMenuContent className="space-y-1 ">
               <DropdownMenuItem
                 onClick={() => setActiveClass("all")}
                 className={activeClass === "all" ? "bg-slate-100" : ""}
@@ -90,7 +90,7 @@ export const Filters = ({
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="space-y-1">
+          <DropdownMenuContent className="space-y-1 max-h-[240px] overflow-y-scroll">
             {Array.from({ length: totalDays }).map((_, index) => (
               <DropdownMenuItem
                 key={index}
@@ -107,7 +107,7 @@ export const Filters = ({
         </DropdownMenu>
       </div>
 
-      <div className="flex items-center gap-2 px-2">
+      <div className="flex items-start md:items-center flex-col gap-4 md:flex-row md:gap-2 px-2">
         <div className="relative">
           <Input
             type="text"
@@ -119,7 +119,7 @@ export const Filters = ({
           <Search className="absolute right-3 top-1/2 -translate-y-1/2  text-gray-400" />
         </div>
         <p className="text-[#15803D] bg-[#EBFEF2] py-1 px-4 flex items-center rounded-lg font-medium text-sm">
-          {matches.length} mängu
+          {filteredMatchCount} games
         </p>
       </div>
     </div>

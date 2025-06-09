@@ -76,11 +76,11 @@ function RouteComponent() {
         {tournament ? (
           <>
             {tournament.information && hasContent && (
-              <div className="w-full md:w-2/3 bg-white rounded-lg">
+              <div className="w-full md:w-2/3 bg-white border border-[#dce0e7] rounded-lg">
                 <Editor value={value} setValue={setValue} readOnly />
               </div>
             )}
-            <div className="w-full md:w-1/3 flex flex-col  border border-[#EBEEF4] rounded-md p-3 md:p-6 space-y-4 ">
+            <div className="w-full md:w-1/3 flex flex-col  border border-[#dce0e7] rounded-md p-3 md:p-6 space-y-4 ">
               <div className="pl-4 space-y-2">
                 <div className=" flex justify-between mr-4">
                   <p>{t("competitions.start")}: </p>

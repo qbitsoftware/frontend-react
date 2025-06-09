@@ -416,7 +416,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
                   size="icon"
                   onClick={handlePrevMonths}
                   disabled={zoomStartMonth === 0}
-                  className="bg-[#737373] hover:bg-stone-400 rounded-md disabled:opacity-50 border-2 border-[#5c5c5c]"
+                  className="bg-[#e9e9e9] hover:bg-stone-100 rounded-md disabled:opacity-50 border-2 border-[#5c5c5c] text-[#737373]"
                 >
                   <ChevronLeft strokeWidth={2.5} />
                 </Button>
@@ -425,7 +425,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
                   size="icon"
                   onClick={handleNextMonths}
                   disabled={zoomStartMonth >= 9}
-                  className="bg-[#737373] hover:bg-stone-400  p-2 rounded-md disabled:opacity-50 border-2 border-[#5c5c5c]"
+                  className="bg-[#e9e9e9] hover:bg-stone-100  p-2 rounded-md disabled:opacity-50 border-2 border-[#5c5c5c] text-[#737373]"
                 >
                   <ChevronRight strokeWidth={2.5} />
                 </Button>
@@ -438,7 +438,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
                           <div
                             className={`h-6 w-6 rounded-full flex items-center justify-center cursor-pointer  ${index >= zoomStartMonth &&
                               index < zoomStartMonth + 3
-                              ? "bg-[#90D3FF] border-2 border-[#20B2C0]"
+                              ? "bg-[#3177a5] border-2 border-[#737373]"
                               : "bg-[#E6E6E6] hover:bg-[#90D3FF] border-2 border-[#CBCBCB]"
                               }`}
                             onClick={() => handleMonthCircleClick(index)}

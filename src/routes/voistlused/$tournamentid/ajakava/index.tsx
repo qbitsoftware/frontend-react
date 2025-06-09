@@ -69,6 +69,7 @@ function RouteComponent() {
   const safeMatches = Array.isArray(matchesData.data)
     ? getUniqueMatches(matchesData.data)
     : [];
+  
   let classFilteredMatches = safeMatches;
   if (activeClass !== "all") {
     classFilteredMatches = safeMatches.filter(
@@ -80,10 +81,14 @@ function RouteComponent() {
   const [searchTerm, setSearchTerm] = useState("");
   const safeDayIndex =
     activeDay >= 0 && activeDay < uniqueGamedays.length ? activeDay : 0;
+  
   let filteredMatches = filterMatchesByGameday(
     classFilteredMatches,
     uniqueGamedays[safeDayIndex]
   );
+
+  // Store count before search filter for the badge
+  const matchesBeforeSearch = [...filteredMatches];
 
   if (searchTerm) {
     const term = searchTerm.toLowerCase();
@@ -94,9 +99,10 @@ function RouteComponent() {
     );
   }
 
+  // Calculate the count to display in the badge
+  const displayMatchCount = searchTerm ? filteredMatches.length : matchesBeforeSearch.length;
+
   const uniqueClasses = getUniqueClasses(safeMatches);
-  // const timeSlots = generateTimeSlotsForGameday(filteredMatches);
-  // const tables = getUniqueTables(filteredMatches);
   const initialSetupDone = useRef(false);
 
   useEffect(() => {
@@ -151,14 +157,12 @@ function RouteComponent() {
       Array.isArray(matchesData.data) &&
       matchesData.data.length > 0 ? (
         <>
-          <div>
-            <h4
-             className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
+          <div className="">
+            <h4 className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
               {t("competitions.timetable.matches")}
             </h4>
-
+          
             <Filters
-              matches={matchesData.data}
               gamedays={uniqueGamedays}
               activeClass={activeClass}
               activeDay={activeDay}
@@ -168,6 +172,7 @@ function RouteComponent() {
               setActiveClass={setActiveClass}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
+              filteredMatchCount={displayMatchCount}
             />
 
             <div className="">
