@@ -1,5 +1,5 @@
 import ErrorPage from '@/components/error'
-import { UseGetTournament } from '@/queries/tournaments'
+import { UseGetTournamentPublic } from '@/queries/tournaments'
 import Editor from '@/routes/admin/-components/yooptaeditor'
 import { createFileRoute } from '@tanstack/react-router'
 import { YooptaContentValue } from '@yoopta/editor'
@@ -11,10 +11,10 @@ export const Route = createFileRoute('/voistlused/$tournamentid/meedia/')({
   errorComponent: () => <ErrorPage />,
   loader: async ({ context: { queryClient }, params }) => {
     const tournamentId = Number(params.tournamentid)
-    let tournament = queryClient.getQueryData(UseGetTournament(tournamentId).queryKey)
+    let tournament = queryClient.getQueryData(UseGetTournamentPublic(tournamentId).queryKey)
 
     if (!tournament) {
-      tournament = await queryClient.fetchQuery(UseGetTournament(tournamentId))
+      tournament = await queryClient.fetchQuery(UseGetTournamentPublic(tournamentId))
     }
 
     return { tournament }
@@ -26,7 +26,6 @@ export const Route = createFileRoute('/voistlused/$tournamentid/meedia/')({
 function RouteComponent() {
   const { tournament } = Route.useLoaderData()
   const mediaContent = tournament.data && tournament.data.media || '{}'
-  console.log('mediaContent', mediaContent)
   const [value, setValue] = useState<YooptaContentValue | undefined>(JSON.parse(mediaContent))
   const { t } = useTranslation()
 

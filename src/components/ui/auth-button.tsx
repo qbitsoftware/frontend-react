@@ -30,7 +30,7 @@ export const AuthButton: React.FC<AuthButtonProps> = ({ className }) => {
         }
     }
 
-    if (user && user.role == 'admin') {
+    if (user?.role.includes("admin")) {
         return <Button variant="ghost" className="rounded-[6px]" onClick={handleLogout}>{t('navbar.logout')}</Button>
     } else {
         return (

@@ -1,4 +1,3 @@
-
 import { queryOptions, useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import { axiosInstance } from "./axiosconf";
 import { Tournament, TournamentSize, TournamentType } from "@/types/tournaments";
@@ -19,17 +18,33 @@ export type TournamentResponse = {
 };
 
 
-export function UseGetTournaments() {
+export function UseGetTournamentsAdmin() {
     return queryOptions<TournamentsResponse>({
-        queryKey: ["tournaments"],
+        queryKey: ['tournaments_admin'],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments`, {
+                params: { public: false },
                 withCredentials: true,
-            })
+            });
             return data;
         },
     });
 }
+
+export function UseGetTournamentsPublic() {
+    return queryOptions<TournamentsResponse>({
+        queryKey: ['tournaments_public'],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/v1/tournaments`, {
+                params: { public: true },
+                withCredentials: true,
+            });
+            return data;
+        },
+    });
+}
+
+
 
 export type TournamentTypesResposne = {
     data: TournamentType[] | null
@@ -96,25 +111,44 @@ export const UsePatchTournamentMedia = (tournament_id: number) => {
             })
             return data;
         },
-        onSuccess: () => {
-            queryClient.resetQueries({ queryKey: ['tournament', tournament_id] })
+        onSuccess: (data: TournamentResponse) => {
+            queryClient.setQueryData(
+                ['tournament_admin', tournament_id],
+                () => {
+                    return data;
+                },
+            );
         }
     })
 }
 
 
-export const UseGetTournament = (id: number) => {
+export const UseGetTournamentPublic = (id: number) => {
     return queryOptions<TournamentResponse>({
-        queryKey: ["tournament", id],
+        queryKey: ['tournament_public', id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${id}`, {
-                withCredentials: true
-            })
+                params: { public: true },
+                withCredentials: true,
+            });
             return data;
-        }
+        },
+    });
+};
 
-    })
-}
+export const UseGetTournamentAdmin = (id: number) => {
+    return queryOptions<TournamentResponse>({
+        queryKey: ['tournament_admin', id],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/v1/tournaments/${id}`, {
+                params: { public: false },
+                withCredentials: true,
+            });
+            return data;
+        },
+    });
+};
+
 
 export const UseGetTournamentQuery = (id: number) => {
     return useQuery<TournamentResponse>({
@@ -139,15 +173,25 @@ export const UsePostTournament = () => {
             return data;
         },
         onSuccess: (data: TournamentResponse) => {
-            queryClient.setQueryData(["tournaments"], (oldData: TournamentsResponse) => {
-                if (oldData && oldData.data && data.data) {
-                    oldData.data = [...oldData.data, data.data]
-                    oldData.message = data.message
-                    oldData.error = data.error
-                }
-                return oldData
-            })
-        }
+            queryClient.setQueryData(
+                ['tournaments_admin'],
+                (oldData: TournamentsResponse) => {
+                    if (oldData?.data && data.data) {
+                        oldData.data = [...oldData.data, data.data];
+                        oldData.message = data.message;
+                        oldData.error = data.error;
+                    } else {
+                        const newData: TournamentsResponse = {
+                            message: data.message,
+                            error: data.error,
+                            data: data.data ? [data.data] : null,
+                        }
+                        return newData;
+                    }
+                    return oldData;
+                },
+            );
+        },
     })
 }
 
@@ -167,7 +211,7 @@ export const UseStartTournament = (tournament_id: number) => {
             return data;
         },
         onSuccess: () => {
-            queryClient.resetQueries({ queryKey: ['tournaments'] })
+            queryClient.resetQueries({ queryKey: ['tournaments_admin'] })
         }
     })
 }
@@ -183,8 +227,8 @@ export const UsePatchTournament = (id: number) => {
         },
 
         onSuccess: (data: TournamentResponse) => {
-            queryClient.resetQueries({ queryKey: ['tournaments'] })
-            queryClient.setQueryData(["tournament", id], (oldData: TournamentResponse) => {
+            queryClient.resetQueries({ queryKey: ['tournaments_admin'] })
+            queryClient.setQueryData(["tournament_admin", id], (oldData: TournamentResponse) => {
                 if (oldData) {
                     oldData.data = data.data
                     oldData.message = data.message
@@ -208,8 +252,8 @@ export const UseDeleteTournament = (id: number | undefined) => {
             return data;
         },
         onSuccess: () => {
-            queryClient.setQueryData(['tournaments'], (oldData: TournamentsResponse) => {
-                if (oldData && oldData.data) {
+            queryClient.setQueryData(['tournaments_admin'], (oldData: TournamentsResponse) => {
+                if (oldData?.data) {
                     oldData.data = oldData.data.filter((tournament: Tournament) => tournament.id !== id)
                 }
                 return oldData

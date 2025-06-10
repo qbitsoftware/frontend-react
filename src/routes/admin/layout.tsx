@@ -13,6 +13,8 @@ import ErrorPage from "@/components/error";
 import { UseGetCurrentUser } from "@/queries/users";
 import { ErrorResponse } from "@/types/errors";
 import { useUser } from "@/providers/userProvider";
+import { OnboardingProvider } from "@/providers/tutorialProvider";
+import { GlobalOnboarding } from "@/components/global-onboarding";
 
 // Helper function to get cookie value
 function getCookie(name: string) {
@@ -48,7 +50,7 @@ function RouteComponent() {
   // Get the default state from the cookie
   const defaultOpen = getCookie("sidebar:state") !== "false";
 
-  if (!user || user.role != "admin") {
+  if (!user?.role.includes('admin')) {
     router.navigate({ to: "/" });
   }
 
@@ -67,14 +69,17 @@ function RouteComponent() {
   return (
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <AdminSidebar />
-          {/* Main Content */}
-          <div className="w-full overflow-x-auto">
-            <Outlet />
-          </div>
-        </SidebarProvider>
-        <AdminBottomNav />
+        <OnboardingProvider>
+          <SidebarProvider defaultOpen={defaultOpen}>
+            <AdminSidebar />
+            {/* Main Content */}
+            <div className="w-full overflow-x-auto">
+              <Outlet />
+            </div>
+          </SidebarProvider>
+          <AdminBottomNav />
+          <GlobalOnboarding />
+        </OnboardingProvider>
       </div>
     </div>
   );

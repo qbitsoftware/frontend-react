@@ -124,7 +124,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
         handleStopEditing()
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         try {
             const updatedParticipant = { ...participantState };
 
@@ -132,9 +132,10 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                 updatedParticipant.order = participant.order;
             }
 
-            addOrUpdateParticipant(updatedParticipant, updatedParticipant.id);
+            await addOrUpdateParticipant(updatedParticipant, updatedParticipant.id);
             toast.message(t("toasts.participants.updated"))
         } catch (error) {
+            setParticipantState(participant)
             void error;
             toast.error(t("toasts.participants.updated_error"))
         }

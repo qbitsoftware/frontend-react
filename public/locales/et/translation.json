@@ -461,6 +461,18 @@
       "description": "Turniiride loomine ja haldamine",
       "add_new": "Uus Turniir",
       "delete": "Kustuta turniir",
+      "tournaments": {
+        "title": "Tournaments",
+        "description": "Manage and organize tournaments",
+        "add_new": "New Tournament",
+        "delete": "Delete a tournament"
+      },
+      "warnings": {
+        "bracket_size_mismatch": {
+          "title": "See tabeli suurus ei pruugi olla parim, võttes arvesse mängijate arvu.",
+          "body": "Hoiatus! Teil on {{participants}} osalejat, peaksite valima {{closestPowerOf2}}-se tabeli suuruse. Teie valisite tabeli suuruseks {{tableSize}}. See võib anda vigaseid tulemusi!"
+        }
+      },
       "create_tournament": {
         "errors": {
           "location": "Asukoht on kohustuslik",
@@ -470,6 +482,7 @@
           "start_date": "Alguskuupäev on kohustuslik",
           "end_date": "Lõppkuupäev on kohustuslik",
           "total_tables": "Laudade arv peab olema suurem kui 1",
+          "total_tables_max": "Laudade arv ei tohi ületada 200",
           "category": "Kategooria on kohustuslik"
         },
         "tournament_tables": {
@@ -1043,7 +1056,9 @@
       "seeding_success": "Osalejate asetamine õnnestus",
       "seeding_error": "Osalejate asetamine nurjus. Palun proovige uuesti",
       "order_success": "Osalejate järjekorda panemine õnnestus",
-      "order_error": "Osalejate järjekorda panemine nurjus. Palun proovige uuesti"
+      "order_error": "Osalejate järjekorda panemine nurjus. Palun proovige uuesti",
+      "reset_success": "Matšid lähtestatud edukalt",
+      "reset_error": "Matšide lähtestamine nurjus. Palun proovige uuesti"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",

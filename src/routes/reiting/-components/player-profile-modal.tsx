@@ -4,7 +4,7 @@ import { PlayerProfileData } from "./player-profile-data";
 import placeholderImg from "@/assets/placheolderImg.svg";
 import { UseGetUserProfile } from "@/queries/players";
 import { User } from "@/types/users";
-import {X} from "lucide-react"
+import { X } from "lucide-react"
 
 interface PlayerProfileModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ export const PlayerProfileModal = ({ isOpen, onClose, user }: PlayerProfileModal
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[90vw] md:max-w-5xl h-[90vh] md:h-[600px] overflow-y-auto py-8 px-8 bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-xl border border-gray-100">
-      <DialogClose className="absolute right-4 top-4 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors">
+        <DialogClose className="absolute right-4 top-4 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors">
           <X className="h-5 w-5 text-gray-500" />
           <span className="sr-only">Close</span>
         </DialogClose>

@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import HomePageGrid from "./-components/home-grid";
-import { UseGetTournaments } from "@/queries/tournaments";
 import { UseGetUsers } from "@/queries/users";
 import { UseGetBlogsOption } from "@/queries/blogs";
 import ErrorPage from "@/components/error";
+import { UseGetTournamentsPublic } from "@/queries/tournaments";
 
 export const Route = createFileRoute("/")({
   component: Index,
   loader: async ({ context: { queryClient } }) => {
-    const tournamentsPromise = queryClient.ensureQueryData(UseGetTournaments());
+    const tournamentsPromise = queryClient.ensureQueryData(UseGetTournamentsPublic());
     const usersPromise = queryClient.ensureQueryData(UseGetUsers());
     const blogsPromise = queryClient.ensureQueryData(UseGetBlogsOption());
 

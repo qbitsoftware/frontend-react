@@ -1,12 +1,12 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import Navbar from './-components/navbar'
-import { UseGetTournament } from '@/queries/tournaments'
 import { TournamentProvider } from './-components/tournament-provider'
 import { useEffect } from 'react'
 import ErrorPage from '@/components/error'
 import NotFoundPage from '@/routes/-components/notfound'
 import { UseGetTournamentTables } from '@/queries/tables'
 import { ErrorResponse } from '@/types/errors'
+import { UseGetTournamentPublic } from '@/queries/tournaments'
 
 export const Route = createFileRoute('/voistlused/$tournamentid')({
   component: RouteComponent,
@@ -15,7 +15,7 @@ export const Route = createFileRoute('/voistlused/$tournamentid')({
   loader: async ({ context: { queryClient }, params }) => {
     try {
       const tournamentData = await queryClient.ensureQueryData(
-        UseGetTournament(Number(params.tournamentid)),
+        UseGetTournamentPublic(Number(params.tournamentid)),
       )
 
       let tournament_tables = null

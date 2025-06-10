@@ -97,20 +97,34 @@ export default function PlayerRow({ participant, index, player, updateField, tou
         setSearchTerm('')
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const nameParts = fullName.trim().split(/\s+/)
+        let updatedParticipant = null
         if (nameParts.length > 0) {
             const firstName = nameParts[0]
             const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
 
             updateField(`players.${index}.first_name`, firstName)
             updateField(`players.${index}.last_name`, lastName)
+            updatedParticipant = {
+                ...participant,
+                players: participant.players.map((player, i) =>
+                    i === index
+                        ? { ...player, first_name: firstName, last_name: lastName }
+                        : player
+                )
+            }
         }
 
         try {
-            addOrUpdateParticipant(participant, participant.id)
+            if (updatedParticipant === null) {
+                await addOrUpdateParticipant(participant, participant.id)
+            } else {
+                await addOrUpdateParticipant(updatedParticipant, participant.id)
+            }
             toast.message(t("toasts.participants.updated"))
         } catch (error) {
+            handleCancel()
             void error;
             toast.error(t("toasts.participants.updated_error"))
         }
@@ -176,6 +190,7 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                                     key={i}
                                     className="px-3 py-2 cursor-pointer hover:bg-accent"
                                     onClick={() => {
+
                                         setPopoverOpen(false)
                                         setFullName(user.first_name + " " + user.last_name)
                                         updateField(`players.${index}.first_name`, user.first_name)

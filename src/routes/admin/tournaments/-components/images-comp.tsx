@@ -159,10 +159,11 @@ export default function ImageComp({ tournament_id }: Props) {
             {" "}
             <Card className="w-full border-none shadow-none bg-transparent ">
                 <CardHeader className="px-0 flex-col md:flex-row gap-4 justify-between items-start md:items-center space-y-0">
-                    <h5 className=" font-medium">
+                    {/* <HelpCircle className='cursor-pointer' onClick={() => startFlow('image-explainer')} /> */}
+                    <h5 className=" font-medium" id="tutorial-images-title">
                         {t("admin.tournaments.groups.images.title")}
                     </h5>
-                    <Button onClick={addGameDay} className="flex items-center gap-2">
+                    <Button onClick={addGameDay} className="flex items-center gap-2" id="tutorial-images-add-gameday">
                         <Plus className="h-4 w-4 mr-1" />
                         {t("admin.tournaments.groups.images.new")}
                     </Button>
@@ -193,7 +194,7 @@ export default function ImageComp({ tournament_id }: Props) {
                     className="w-full space-y-6"
                 >
                     <div className="overflow-x-auto pb-2">
-                        <TabsList className="flex h-auto p-1 justify-start rounded-lg">
+                        <TabsList className="flex h-auto p-1 justify-start rounded-lg" id="tutorial-images-tabs">
                             {gamedays.map((day) => (
                                 <TabsTrigger
                                     key={day.id}
@@ -214,7 +215,7 @@ export default function ImageComp({ tournament_id }: Props) {
                         >
                             <Card className="border shadow-sm">
                                 <CardHeader className="pb-3">
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex justify-between items-center" id="tutorial-images-gameday-actions">
                                         {editingGameday && editingGameday.id === day.id ? (
                                             <form onSubmit={saveTabName} className="flex-1 max-w-xs">
                                                 <Input
@@ -260,7 +261,7 @@ export default function ImageComp({ tournament_id }: Props) {
                                 <Separator />
 
                                 <CardContent className="pt-6">
-                                    <div className=" rounded-lg p-4 mb-8">
+                                    <div className=" rounded-lg p-4 mb-8" id="tutorial-images-upload">
                                         <ImageUpload
                                             tournament_id={tournament_id}
                                             gameDay={day.id}
@@ -268,7 +269,7 @@ export default function ImageComp({ tournament_id }: Props) {
                                     </div>
 
                                     {day.images && day.images.length > 0 ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tutorial-images-gallery">
                                             {day.images.map((img, idx) => (
                                                 <div
                                                     key={idx}
@@ -296,7 +297,7 @@ export default function ImageComp({ tournament_id }: Props) {
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-center py-12 border border-dashed rounded-lg bg-muted/30">
+                                        <div className="text-center py-12 border border-dashed rounded-lg bg-muted/30" id="tutorial-images-gallery">
                                             <p className="text-muted-foreground">
                                                 {t("admin.tournaments.groups.images.no_images")}
                                             </p>

@@ -62,9 +62,9 @@ export default function GroupRow({ participant, index, tournament_id, tournament
         setGlobalEdit(false)
     }
 
-    const handleDeleteParticipant = () => {
+    const handleDeleteParticipant = async () => {
         try {
-            deleteParticipant(participantState)
+            await deleteParticipant(participantState)
             setIsEditing(false)
             setGlobalEdit(false)
             toast.message(t("toasts.participants.deleted"))
@@ -74,9 +74,9 @@ export default function GroupRow({ participant, index, tournament_id, tournament
         }
     }
 
-    const handleUpdateParticipant = () => {
+    const handleUpdateParticipant = async () => {
         try {
-            addOrUpdateParticipant(participantState, participantState.id)
+            await addOrUpdateParticipant(participantState, participantState.id)
             toast.message(t("toasts.participants.updated"))
         } catch (error) {
             void error
@@ -291,18 +291,30 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                                         <div
                                                             key={i}
                                                             className="px-3 py-2 cursor-pointer hover:bg-accent"
-                                                            onClick={() => {
+                                                            onClick={async () => {
                                                                 setPopoverOpen(false)
                                                                 const new_player = NewPlayer(user)
-                                                                if (!participantState.players) {
-                                                                    participantState.players = []
-                                                                }
-                                                                participantState.players.push(new_player)
+                                                                const currentPlayers = participantState.players || []
+                                                                const updatedPlayers = [...currentPlayers, new_player]
+
+
                                                                 setSearchTerm('')
                                                                 try {
-                                                                    addOrUpdateParticipant(participantState, participantState.id)
+                                                                    const updatedParticipant = {
+                                                                        ...participantState,
+                                                                        players: updatedPlayers
+                                                                    }
+                                                                    await addOrUpdateParticipant(updatedParticipant, participantState.id)
+                                                                    setParticipantState(prev => ({
+                                                                        ...prev,
+                                                                        players: updatedPlayers
+                                                                    }))
                                                                     toast.message(t("toasts.participants.updated"))
                                                                 } catch (error) {
+                                                                    setParticipantState(prev => ({
+                                                                        ...prev,
+                                                                        players: currentPlayers
+                                                                    }))
                                                                     void error
                                                                     toast.error(t("toasts.participants.updated_error"))
                                                                 }
@@ -321,22 +333,35 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                     <TableCell colSpan={6}></TableCell>
                                     <TableCell className="sticky right-0 p-3">
                                         <Button
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 if (searchTerm.trim() === "") {
                                                     return
                                                 }
                                                 const nameParts = searchTerm.trim().split(/\s+/)
                                                 if (nameParts.length > 0) {
                                                     const new_player = NewPlayerFromName(searchTerm)
-                                                    if (!participantState.players) {
-                                                        participantState.players = []
-                                                    }
-                                                    participantState.players.push(new_player)
+
+                                                    const currentPlayers = participantState.players || []
+                                                    const updatedPlayers = [...currentPlayers, new_player]
+
                                                     setSearchTerm('')
                                                     try {
-                                                        addOrUpdateParticipant(participantState, participantState.id)
+                                                        const updatedParticipant = {
+                                                            ...participantState,
+                                                            players: updatedPlayers
+                                                        }
+                                                        await addOrUpdateParticipant(updatedParticipant, participantState.id)
+                                                        setParticipantState(prev => ({
+                                                            ...prev,
+                                                            players: updatedPlayers
+                                                        }))
                                                         toast.message(t("toasts.participants.updated"))
                                                     } catch (error) {
+                                                        setParticipantState(prev => ({
+                                                            ...prev,
+                                                            players: currentPlayers
+                                                        }))
+
                                                         void error
                                                         toast.error(t("toasts.participants.updated_error"))
                                                     }

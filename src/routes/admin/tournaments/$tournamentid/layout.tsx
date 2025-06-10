@@ -4,7 +4,6 @@ import {
   redirect,
   useLocation,
 } from "@tanstack/react-router";
-import { UseGetTournament } from "@/queries/tournaments";
 import { Link } from "@tanstack/react-router";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
@@ -21,6 +20,7 @@ import {
 import TournamentTableModal from "./-components/tournament-table-modal";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
+import { UseGetTournamentAdmin } from "@/queries/tournaments";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
   component: RouteComponent,
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
     let tournament_data = undefined;
     try {
       tournament_data = await queryClient.ensureQueryData(
-        UseGetTournament(Number(params.tournamentid)),
+        UseGetTournamentAdmin(Number(params.tournamentid)),
       );
     } catch (error) {
       const err = error as ErrorResponse;
