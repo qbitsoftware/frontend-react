@@ -31,7 +31,8 @@
       "license": "Litsentsid"
     },
     "login": "Logi sisse",
-    "logout": "Logi välja"
+    "logout": "Logi välja",
+    "profile": "Profiil"
   },
   "footer": {
     "contact": {
@@ -109,6 +110,150 @@
       "competitions": "Võistlused",
       "good_read": "Hea Lugemine",
       "results": "Tulemused"
+    }
+  },
+  "profile": {
+    "header": {
+      "greeting": "Tere tulemast tagasi",
+      "tournaments": "Turniiri",
+      "wins": "Võitu"
+    },
+    "navbar": {
+      "overview": "Ülevaade",
+      "tournaments": "Minu Turniirid",
+      "settings": "Seaded"
+    },
+    "tournaments": {
+      "title": "Turniiride ülevaade",
+      "subtitle": "Siit leiad informatsioon hetkeste avalike turniiride kohta",
+      "searchPlaceholder": "Otsi turniire...",
+      "empty": {
+        "title": "Turniire ei ole saadaval",
+        "description": "Hetkel ei ole ühtegi turniiri registreerimiseks avatud. Vaata varsti uuesti või võta meiega ühendust turniiri korraldamiseks!",
+        "button": "Taotle turniiri"
+      },
+      "noResults": {
+        "title": "Turniire ei leitud",
+        "description": "Proovi muuta otsingusõnu, et leida rohkem turniire.",
+        "clearButton": "Tühjenda otsing"
+      },
+      "registrationOpen": "Registreerimine avatud",
+      "spotsAvailable": "{{count}} kohta",
+      "groupsCount": "{{count}} gruppi",
+      "detailsButton": "Üksikasjad",
+      "viewButton": "Vaata",
+      "hideGroups": "Peida grupid",
+      "chooseGroupLong": "Vali grupp ({{count}})",
+      "chooseGroupShort": "Grupid ({{count}})",
+      "selectGroup": "Vali oma grupp",
+      "open": "Avatud",
+      "status": "Staatus",
+      "registrationOpenStatus": "Registreerimine avatud",
+      "latestPlayer": "Viimane",
+      "anonymous": "Anonüümne",
+      "groupFull": "Grupp täis",
+      "registerButton": "Registreeru",
+      "groupsAvailable": "{{count}} gruppi saadaval",
+      "totalParticipants": "Kokku {{count}} osalejat",
+      "noGroups": {
+        "title": "Gruppe pole veel saadaval",
+        "description": "Võistlusgrupid teatatakse peagi."
+      },
+      "showingCount": "Näitan {{filtered}} turniiri {{total}}-st"
+    },
+    "settings": {
+      "notice": {
+        "title": "Täida oma profiil",
+        "description": "Turniiridel osalemiseks täida palun oma ees- ja perekonnanimi. See informatsioon on vajalik turniirile registreerimiseks ja tulemuste kuvamiseks."
+      },
+      "personalInfo": {
+        "title": "Isikuandmed",
+        "description": "Uuenda oma isikuandmeid ja kontaktinfot",
+        "firstName": {
+          "label": "Eesnimi",
+          "placeholder": "Sisesta oma eesnimi"
+        },
+        "lastName": {
+          "label": "Perekonnanimi",
+          "placeholder": "Sisesta oma perekonnanimi"
+        },
+        "email": {
+          "label": "E-posti aadress",
+          "placeholder": "Sisesta oma e-post"
+        },
+        "birthDate": {
+          "label": "Sünnipäev"
+        },
+        "saveButton": "Salvesta muudatused",
+        "saving": "Salvestamine..."
+      },
+      "password": {
+        "title": "Muuda parooli",
+        "description": "Uuenda oma parooli, et hoida konto turvalisena",
+        "currentPassword": {
+          "label": "Praegune parool",
+          "placeholder": "Sisesta praegune parool"
+        },
+        "newPassword": {
+          "label": "Uus parool",
+          "placeholder": "Sisesta uus parool"
+        },
+        "confirmPassword": {
+          "label": "Kinnita uus parool",
+          "placeholder": "Kinnita uus parool"
+        },
+        "requirements": {
+          "title": "Parooli nõuded:",
+          "length": "Vähemalt 8 tähemärki pikk",
+          "mixedCase": "Soovitav on kasutada suur- ja väiketähti",
+          "special": "Parema turvalisuse jaoks lisa numbreid ja erimärke"
+        },
+        "changeButton": "Muuda parooli",
+        "changing": "Muutmine..."
+      },
+      "success": {
+        "personalInfo": "Isikuandmed edukalt uuendatud",
+        "password": "Parool edukalt muudetud"
+      },
+      "error": {
+        "personalInfo": "Isikuandmete uuendamine ebaõnnestus",
+        "password": "Parooli muutmine ebaõnnestus"
+      },
+      "validation": {
+        "firstName": {
+          "minLength": "Eesnimi peab olema vähemalt 1 tähemärgi pikkune"
+        },
+        "lastName": {
+          "minLength": "Perekonnanimi peab olema vähemalt 1 tähemärgi pikkune"
+        },
+        "email": {
+          "invalid": "Palun sisesta korrektne e-posti aadress"
+        },
+        "birthDate": {
+          "invalid": "Palun sisesta korrektne kuupäev"
+        },
+        "password": {
+          "currentRequired": "Praegune parool on kohustuslik",
+          "newMinLength": "Uus parool peab olema vähemalt 8 tähemärki pikk",
+          "confirmRequired": "Palun kinnita oma uus parool",
+          "mismatch": "Paroolid ei ühti"
+        }
+      }
+    },
+    "page_title": "Mängija litsentsi ostmine/uuendamine",
+    "add_player": {
+      "title": "Lisa mängija",
+      "search_placeholder": "Otsi olemasolevat mängijat...",
+      "add_new_player": "Lisa uus mängija",
+      "help_text": "Otsi andmebaasist olemasolevaid mängijaid või kasuta nuppu \"Lisa uus mängija\" süsteemis puuduvate mängijate jaoks.",
+      "no_players_found": "Mängijaid ei leitud. Kasuta nuppu \"Lisa uus mängija\" andmebaasis puuduvate mängijate lisamiseks.",
+      "manual_entry_title": "Uue mängija lisamine (pole andmebaasis)",
+      "back_to_search": "Tagasi otsingusse",
+      "first_name": "Eesnimi",
+      "surname": "Perekonnanimi",
+      "birth_year": "Sünniaasta",
+      "add_to_list": "Lisa mängija nimekirja",
+      "manual_help_text": "Sisesta andmebaasis puuduva mängija andmed. Kõik väljad on kohustuslikud."
     }
   },
   "licenses": {

@@ -1,4 +1,4 @@
-import { Player } from "./players";
+import type { Player } from "./players";
 
 export type Participant = {
   id: string;
@@ -17,18 +17,17 @@ export type Participant = {
   players: Player[];
   tournament_table_id: number;
   extra_data: PartipantExtraData;
-}
+};
 
 interface Deleted_at {
   Valid: boolean;
-  Time: string
+  Time: string;
 }
-
-
 
 export type PartipantExtraData = {
   image_url: string;
-  class: string
-  is_parent: boolean
+  class: string;
+  is_parent: boolean;
   total_points: number;
-}
+};
+

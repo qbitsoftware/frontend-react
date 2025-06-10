@@ -1,3 +1,5 @@
+import type { TournamentTable } from "./groups";
+
 export type Tournament = {
   created_at: string;
   deleted_at: string | null;
@@ -19,27 +21,32 @@ export type Tournament = {
 };
 
 export type TournamentInformation = {
-  fields: [{ title: string, information: string }]
-}
+  fields: [{ title: string; information: string }];
+};
+
+export type TournamentWithGroups = {
+  tournament: Tournament;
+  groups: TournamentTable[];
+};
 
 export type TournamentType = {
-  id: number
+  id: number;
   created_at: string;
   deleted_at: string | null;
   name: string;
-}
+};
 
 export type TournamentSize = {
-  id: number
+  id: number;
   created_at: string;
   deleted_at: string | null;
   size: number;
-}
+};
 
 export interface RoundTime {
-  id: string
-  name: string
-  date: string
-  time: string
-  location: string
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  location: string;
 }
