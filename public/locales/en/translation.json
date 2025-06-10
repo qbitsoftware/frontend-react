@@ -1067,13 +1067,14 @@
     "time": "Time",
     "table": {
       "game": "Game",
-      "sets": "Sets",
+      "sets": "Result",
       "score": "Score",
       "total": "Total",
       "doubles": "Doubles",
       "solo_game": "Solo game",
       "double_game": "Double game",
-      "forfeit": "Forfeit"
+      "forfeit": "Forfeit",
+      "use_sets": "Insert result in sets"
     },
     "captain": "Captain",
     "notes": "Notes",

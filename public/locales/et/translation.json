@@ -1104,11 +1104,12 @@
     "time": "Kellaaeg",
     "table": {
       "game": "Mäng",
-      "sets": "Setid",
+      "sets": "Tulemus",
       "score": "Skoor",
       "total": "Kokku",
       "doubles": "Paar",
       "solo_game": "Üksik mäng",
+      "use_sets": "Sisesta tulemus settides",
       "double_game": "Paarismäng",
       "forfeit": "Loobumine"
     },
