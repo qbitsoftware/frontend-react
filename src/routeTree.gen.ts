@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ProfileLayoutImport } from './routes/profile/layout'
 import { Route as AdminLayoutImport } from './routes/admin/layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as VoistlusedIndexImport } from './routes/voistlused/index'
@@ -18,6 +19,7 @@ import { Route as UudisedIndexImport } from './routes/uudised/index'
 import { Route as ReitingIndexImport } from './routes/reiting/index'
 import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as ReeglidIndexImport } from './routes/reeglid/index'
+import { Route as ProfileIndexImport } from './routes/profile/index'
 import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as LitsentsIndexImport } from './routes/litsents/index'
 import { Route as KontaktIndexImport } from './routes/kontakt/index'
@@ -30,6 +32,8 @@ import { Route as AdminDashboardLayoutImport } from './routes/admin/dashboard/la
 import { Route as AdminClubsLayoutImport } from './routes/admin/clubs/layout'
 import { Route as AdminBlogLayoutImport } from './routes/admin/blog/layout'
 import { Route as VoistlusedTournamentidIndexImport } from './routes/voistlused/$tournamentid/index'
+import { Route as ProfileTournamentsIndexImport } from './routes/profile/tournaments/index'
+import { Route as ProfileSettingsIndexImport } from './routes/profile/settings/index'
 import { Route as AdminTournamentsIndexImport } from './routes/admin/tournaments/index'
 import { Route as AdminFeedbackIndexImport } from './routes/admin/feedback/index'
 import { Route as AdminDashboardIndexImport } from './routes/admin/dashboard/index'
@@ -60,6 +64,12 @@ import { Route as AdminTournamentsTournamentidGrupidGroupidOsalejadIndexImport }
 import { Route as AdminTournamentsTournamentidGrupidGroupidMangudIndexImport } from './routes/admin/tournaments/$tournamentid/grupid/$groupid/mangud/index'
 
 // Create/Update Routes
+
+const ProfileLayoutRoute = ProfileLayoutImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AdminLayoutRoute = AdminLayoutImport.update({
   id: '/admin',
@@ -101,6 +111,12 @@ const ReeglidIndexRoute = ReeglidIndexImport.update({
   id: '/reeglid/',
   path: '/reeglid/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileIndexRoute = ProfileIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfileLayoutRoute,
 } as any)
 
 const LoginIndexRoute = LoginIndexImport.update({
@@ -176,6 +192,18 @@ const VoistlusedTournamentidIndexRoute =
     path: '/',
     getParentRoute: () => VoistlusedTournamentidLayoutRoute,
   } as any)
+
+const ProfileTournamentsIndexRoute = ProfileTournamentsIndexImport.update({
+  id: '/tournaments/',
+  path: '/tournaments/',
+  getParentRoute: () => ProfileLayoutRoute,
+} as any)
+
+const ProfileSettingsIndexRoute = ProfileSettingsIndexImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => ProfileLayoutRoute,
+} as any)
 
 const AdminTournamentsIndexRoute = AdminTournamentsIndexImport.update({
   id: '/',
@@ -383,6 +411,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLayoutImport
       parentRoute: typeof rootRoute
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileLayoutImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/blog': {
       id: '/admin/blog'
       path: '/blog'
@@ -460,6 +495,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexImport
       parentRoute: typeof rootRoute
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexImport
+      parentRoute: typeof ProfileLayoutImport
+    }
     '/reeglid/': {
       id: '/reeglid/'
       path: '/reeglid'
@@ -536,6 +578,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/tournaments/'
       preLoaderRoute: typeof AdminTournamentsIndexImport
       parentRoute: typeof AdminTournamentsLayoutImport
+    }
+    '/profile/settings/': {
+      id: '/profile/settings/'
+      path: '/settings'
+      fullPath: '/profile/settings'
+      preLoaderRoute: typeof ProfileSettingsIndexImport
+      parentRoute: typeof ProfileLayoutImport
+    }
+    '/profile/tournaments/': {
+      id: '/profile/tournaments/'
+      path: '/tournaments'
+      fullPath: '/profile/tournaments'
+      preLoaderRoute: typeof ProfileTournamentsIndexImport
+      parentRoute: typeof ProfileLayoutImport
     }
     '/voistlused/$tournamentid/': {
       id: '/voistlused/$tournamentid/'
@@ -837,6 +893,22 @@ const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
   AdminLayoutRouteChildren,
 )
 
+interface ProfileLayoutRouteChildren {
+  ProfileIndexRoute: typeof ProfileIndexRoute
+  ProfileSettingsIndexRoute: typeof ProfileSettingsIndexRoute
+  ProfileTournamentsIndexRoute: typeof ProfileTournamentsIndexRoute
+}
+
+const ProfileLayoutRouteChildren: ProfileLayoutRouteChildren = {
+  ProfileIndexRoute: ProfileIndexRoute,
+  ProfileSettingsIndexRoute: ProfileSettingsIndexRoute,
+  ProfileTournamentsIndexRoute: ProfileTournamentsIndexRoute,
+}
+
+const ProfileLayoutRouteWithChildren = ProfileLayoutRoute._addFileChildren(
+  ProfileLayoutRouteChildren,
+)
+
 interface VoistlusedTournamentidLayoutRouteChildren {
   VoistlusedTournamentidIndexRoute: typeof VoistlusedTournamentidIndexRoute
   VoistlusedTournamentidAjakavaIndexRoute: typeof VoistlusedTournamentidAjakavaIndexRoute
@@ -878,6 +950,7 @@ const VoistlusedTournamentidLayoutRouteWithChildren =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminLayoutRouteWithChildren
+  '/profile': typeof ProfileLayoutRouteWithChildren
   '/admin/blog': typeof AdminBlogLayoutRouteWithChildren
   '/admin/clubs': typeof AdminClubsLayoutRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardLayoutRouteWithChildren
@@ -889,6 +962,7 @@ export interface FileRoutesByFullPath {
   '/kontakt': typeof KontaktIndexRoute
   '/litsents': typeof LitsentsIndexRoute
   '/login': typeof LoginIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/reeglid': typeof ReeglidIndexRoute
   '/register': typeof RegisterIndexRoute
   '/reiting': typeof ReitingIndexRoute
@@ -900,6 +974,8 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/admin/feedback': typeof AdminFeedbackIndexRoute
   '/admin/tournaments/': typeof AdminTournamentsIndexRoute
+  '/profile/settings': typeof ProfileSettingsIndexRoute
+  '/profile/tournaments': typeof ProfileTournamentsIndexRoute
   '/voistlused/$tournamentid/': typeof VoistlusedTournamentidIndexRoute
   '/admin/blog/$blogid': typeof AdminBlogBlogidIndexRoute
   '/admin/blog/new': typeof AdminBlogNewIndexRoute
@@ -934,6 +1010,7 @@ export interface FileRoutesByTo {
   '/kontakt': typeof KontaktIndexRoute
   '/litsents': typeof LitsentsIndexRoute
   '/login': typeof LoginIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/reeglid': typeof ReeglidIndexRoute
   '/register': typeof RegisterIndexRoute
   '/reiting': typeof ReitingIndexRoute
@@ -944,6 +1021,8 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/admin/feedback': typeof AdminFeedbackIndexRoute
   '/admin/tournaments': typeof AdminTournamentsIndexRoute
+  '/profile/settings': typeof ProfileSettingsIndexRoute
+  '/profile/tournaments': typeof ProfileTournamentsIndexRoute
   '/voistlused/$tournamentid': typeof VoistlusedTournamentidIndexRoute
   '/admin/blog/$blogid': typeof AdminBlogBlogidIndexRoute
   '/admin/blog/new': typeof AdminBlogNewIndexRoute
@@ -972,6 +1051,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/admin': typeof AdminLayoutRouteWithChildren
+  '/profile': typeof ProfileLayoutRouteWithChildren
   '/admin/blog': typeof AdminBlogLayoutRouteWithChildren
   '/admin/clubs': typeof AdminClubsLayoutRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardLayoutRouteWithChildren
@@ -983,6 +1063,7 @@ export interface FileRoutesById {
   '/kontakt/': typeof KontaktIndexRoute
   '/litsents/': typeof LitsentsIndexRoute
   '/login/': typeof LoginIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/reeglid/': typeof ReeglidIndexRoute
   '/register/': typeof RegisterIndexRoute
   '/reiting/': typeof ReitingIndexRoute
@@ -994,6 +1075,8 @@ export interface FileRoutesById {
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/admin/feedback/': typeof AdminFeedbackIndexRoute
   '/admin/tournaments/': typeof AdminTournamentsIndexRoute
+  '/profile/settings/': typeof ProfileSettingsIndexRoute
+  '/profile/tournaments/': typeof ProfileTournamentsIndexRoute
   '/voistlused/$tournamentid/': typeof VoistlusedTournamentidIndexRoute
   '/admin/blog/$blogid/': typeof AdminBlogBlogidIndexRoute
   '/admin/blog/new/': typeof AdminBlogNewIndexRoute
@@ -1024,6 +1107,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/profile'
     | '/admin/blog'
     | '/admin/clubs'
     | '/admin/dashboard'
@@ -1035,6 +1119,7 @@ export interface FileRouteTypes {
     | '/kontakt'
     | '/litsents'
     | '/login'
+    | '/profile/'
     | '/reeglid'
     | '/register'
     | '/reiting'
@@ -1046,6 +1131,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/'
     | '/admin/feedback'
     | '/admin/tournaments/'
+    | '/profile/settings'
+    | '/profile/tournaments'
     | '/voistlused/$tournamentid/'
     | '/admin/blog/$blogid'
     | '/admin/blog/new'
@@ -1079,6 +1166,7 @@ export interface FileRouteTypes {
     | '/kontakt'
     | '/litsents'
     | '/login'
+    | '/profile'
     | '/reeglid'
     | '/register'
     | '/reiting'
@@ -1089,6 +1177,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/feedback'
     | '/admin/tournaments'
+    | '/profile/settings'
+    | '/profile/tournaments'
     | '/voistlused/$tournamentid'
     | '/admin/blog/$blogid'
     | '/admin/blog/new'
@@ -1115,6 +1205,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/profile'
     | '/admin/blog'
     | '/admin/clubs'
     | '/admin/dashboard'
@@ -1126,6 +1217,7 @@ export interface FileRouteTypes {
     | '/kontakt/'
     | '/litsents/'
     | '/login/'
+    | '/profile/'
     | '/reeglid/'
     | '/register/'
     | '/reiting/'
@@ -1137,6 +1229,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/'
     | '/admin/feedback/'
     | '/admin/tournaments/'
+    | '/profile/settings/'
+    | '/profile/tournaments/'
     | '/voistlused/$tournamentid/'
     | '/admin/blog/$blogid/'
     | '/admin/blog/new/'
@@ -1166,6 +1260,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
+  ProfileLayoutRoute: typeof ProfileLayoutRouteWithChildren
   VoistlusedTournamentidLayoutRoute: typeof VoistlusedTournamentidLayoutRouteWithChildren
   UudisedBlogidRoute: typeof UudisedBlogidRoute
   KalenderIndexRoute: typeof KalenderIndexRoute
@@ -1183,6 +1278,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminLayoutRoute: AdminLayoutRouteWithChildren,
+  ProfileLayoutRoute: ProfileLayoutRouteWithChildren,
   VoistlusedTournamentidLayoutRoute:
     VoistlusedTournamentidLayoutRouteWithChildren,
   UudisedBlogidRoute: UudisedBlogidRoute,
@@ -1210,6 +1306,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/admin",
+        "/profile",
         "/voistlused/$tournamentid",
         "/uudised/$blogid",
         "/kalender/",
@@ -1235,6 +1332,14 @@ export const routeTree = rootRoute
         "/admin/dashboard",
         "/admin/tournaments",
         "/admin/feedback/"
+      ]
+    },
+    "/profile": {
+      "filePath": "profile/layout.tsx",
+      "children": [
+        "/profile/",
+        "/profile/settings/",
+        "/profile/tournaments/"
       ]
     },
     "/admin/blog": {
@@ -1301,6 +1406,10 @@ export const routeTree = rootRoute
     "/login/": {
       "filePath": "login/index.tsx"
     },
+    "/profile/": {
+      "filePath": "profile/index.tsx",
+      "parent": "/profile"
+    },
     "/reeglid/": {
       "filePath": "reeglid/index.tsx"
     },
@@ -1348,6 +1457,14 @@ export const routeTree = rootRoute
     "/admin/tournaments/": {
       "filePath": "admin/tournaments/index.tsx",
       "parent": "/admin/tournaments"
+    },
+    "/profile/settings/": {
+      "filePath": "profile/settings/index.tsx",
+      "parent": "/profile"
+    },
+    "/profile/tournaments/": {
+      "filePath": "profile/tournaments/index.tsx",
+      "parent": "/profile"
     },
     "/voistlused/$tournamentid/": {
       "filePath": "voistlused/$tournamentid/index.tsx",

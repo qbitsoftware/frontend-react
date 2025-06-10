@@ -31,7 +31,8 @@
       "license": "Licenses"
     },
     "login": "Log in",
-    "logout": "Log out"
+    "logout": "Log out",
+    "profile": "Profile"
   },
   "footer": {
     "contact": {
@@ -97,6 +98,31 @@
       }
     }
   },
+  "feedback": {
+    "title": "Feedback Form",
+    "subtitle": "Your suggestions and feedback help us improve the platform",
+    "topic": {
+      "title": "Subject",
+      "placeholder": "Summary"
+    },
+    "message": {
+      "title": "Message",
+      "placeholder": "Please describe your experience or suggestion in detail..."
+    },
+    "submitButton": {
+      "send": "Send",
+      "sending": "Sending..."
+    },
+    "success": {
+      "title": "Thank you for your feedback!",
+      "description": "We have received your feedback and will take it into account when developing the platform.",
+      "sendMoreButton": "Send more feedback"
+    },
+    "validation": {
+      "titleMin": "Title must be at least 5 characters.",
+      "bodyMin": "Message must be at least 10 characters."
+    }
+  },
   "news": {
     "title": "News",
     "all_news": "All news",
@@ -113,6 +139,115 @@
       "news": "News",
       "good_read": "Good read",
       "results": "Results"
+    }
+  },
+  "profile": {
+    "header": {
+      "greeting": "Welcome back",
+      "tournaments": "Tournaments",
+      "wins": "Wins"
+    },
+    "navbar": {
+      "overview": "Overview",
+      "tournaments": "My tournaments",
+      "settings": "Account Settings"
+    },
+    "tournaments": {
+      "title": "Tournament Overview",
+      "subtitle": "This view showcases all currently public tournaments",
+      "searchPlaceholder": "Search tournaments...",
+      "empty": {
+        "title": "No tournaments available",
+        "description": "There are currently no tournaments open for registration. Check back soon for new tournaments or contact us to organize one!",
+        "button": "Request Tournament"
+      },
+      "noResults": {
+        "title": "No tournaments found",
+        "description": "Try adjusting your search terms to find more tournaments.",
+        "clearButton": "Clear Search"
+      },
+      "registrationOpen": "Registration Open",
+      "spotsAvailable": "{{count}} spots",
+      "groupsCount": "{{count}} groups",
+      "detailsButton": "Details",
+      "viewButton": "View",
+      "hideGroups": "Hide Groups",
+      "chooseGroupLong": "Choose Group ({{count}})",
+      "chooseGroupShort": "Groups ({{count}})",
+      "selectGroup": "Select Your Group",
+      "open": "Open",
+      "status": "Status",
+      "registrationOpenStatus": "Registration Open",
+      "latestPlayer": "Latest",
+      "anonymous": "Anonymous",
+      "groupFull": "Group Full",
+      "registerButton": "Register",
+      "groupsAvailable": "{{count}} groups available",
+      "totalParticipants": "{{count}} total participants",
+      "noGroups": {
+        "title": "No groups available yet",
+        "description": "Competition groups will be announced soon."
+      },
+      "showingCount": "Showing {{filtered}} of {{total}} available tournaments"
+    },
+    "settings": {
+      "notice": {
+        "title": "Complete Your Profile",
+        "description": "Please fill in your first name and last name below to participate in tournaments. This information is required for tournament registration and results."
+      },
+      "personalInfo": {
+        "title": "Personal Information",
+        "description": "Update your personal details and contact information",
+        "firstName": {
+          "label": "First Name",
+          "placeholder": "Enter your first name"
+        },
+        "lastName": {
+          "label": "Last Name",
+          "placeholder": "Enter your last name"
+        },
+        "email": {
+          "label": "Email Address",
+          "placeholder": "Enter your email"
+        },
+        "birthDate": {
+          "label": "Birth Date"
+        },
+        "saveButton": "Save Changes",
+        "saving": "Saving..."
+      },
+      "password": {
+        "title": "Change Password",
+        "description": "Update your password to keep your account secure",
+        "currentPassword": {
+          "label": "Current Password",
+          "placeholder": "Enter your current password"
+        },
+        "newPassword": {
+          "label": "New Password",
+          "placeholder": "Enter new password"
+        },
+        "confirmPassword": {
+          "label": "Confirm New Password",
+          "placeholder": "Confirm new password"
+        },
+        "requirements": {
+          "title": "Password Requirements:",
+          "length": "At least 8 characters long",
+          "mixedCase": "Mix of uppercase and lowercase letters recommended",
+          "special": "Include numbers and special characters for better security"
+        },
+        "changeButton": "Change Password",
+        "changing": "Changing..."
+      },
+      "success": {
+        "personalInfo": "Personal information updated successfully",
+        "password": "Password changed successfully"
+      },
+      "error": {
+        "personalInfo": "Failed to update personal information",
+        "password": "Failed to change password"
+      }
     }
   },
   "licenses": {
@@ -962,13 +1097,14 @@
     "time": "Time",
     "table": {
       "game": "Game",
-      "sets": "Sets",
+      "sets": "Result",
       "score": "Score",
       "total": "Total",
       "doubles": "Doubles",
       "solo_game": "Solo game",
       "double_game": "Double game",
-      "forfeit": "Forfeit"
+      "forfeit": "Forfeit",
+      "use_sets": "Insert result in sets"
     },
     "captain": "Captain",
     "notes": "Notes",

@@ -21,6 +21,30 @@ export interface UsersResponse {
   error: string | null;
 }
 
+export interface MeResponse {
+  data: User;
+  message: string;
+  error: string | null;
+}
+
+export interface UserResponse {
+  data: UserLogin;
+  message: string;
+  error: string | null;
+}
+
+export const UseGetMe = () => {
+  return useQuery<MeResponse>({
+    queryKey: ["me"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/v1/users/me`, {
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
+};
+
 export const useGetUser = () => {
   return queryOptions<LoginResponse>({
     queryKey: ["user"],
@@ -31,6 +55,35 @@ export const useGetUser = () => {
       return data;
     },
     retry: false,
+  });
+};
+
+export const usePatchUser = () => {
+  return useMutation({
+    mutationFn: async (formData: Partial<User>) => {
+      const { data } = await axiosInstance.patch("/api/v1/users", formData, {
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
+};
+
+export const usePatchUserPassword = () => {
+  return useMutation({
+    mutationFn: async (formData: {
+      current_password: string;
+      new_password: string;
+    }) => {
+      const { data } = await axiosInstance.patch(
+        "/auth/change_password",
+        formData,
+        {
+          withCredentials: true,
+        },
+      );
+      return data;
+    },
   });
 };
 
@@ -192,4 +245,3 @@ export const sendUserFeedback = async (feedback: FeedbackForm) => {
     return { success: false, error };
   }
 };
-
