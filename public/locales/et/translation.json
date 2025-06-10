@@ -59,6 +59,31 @@
       "name": "Nimi",
       "date": "Kuupäev",
       "location": "Asukoht"
+    }
+  },
+  "feedback": {
+    "title": "Tagasisidevorm",
+    "subtitle": "Teie ettepanekud ja tagasiside aitavad meil platvormi paremaks teha",
+    "topic": {
+      "title": "Teema",
+      "placeholder": "Kokkuvõte"
+    },
+    "message": {
+      "title": "Sõnum",
+      "placeholder": "Palun kirjeldage oma kogemust või ettepanekut detailsemalt..."
+    },
+    "submitButton": {
+      "send": "Saada",
+      "sending": "Saatmine..."
+    },
+    "success": {
+      "title": "Täname tagasiside eest!",
+      "description": "Oleme teie tagasiside kätte saanud ja võtame seda arvesse platvormi arendamisel.",
+      "sendMoreButton": "Saada veel tagasisidet"
+    },
+    "validation": {
+      "titleMin": "Pealkiri peab olema vähemalt 5 tähemärki pikk.",
+      "bodyMin": "Sõnum peab olema vähemalt 10 tähemärki pikk."
     },
     "news": {
       "name": "Uudised",

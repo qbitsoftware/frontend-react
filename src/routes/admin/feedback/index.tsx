@@ -1,8 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -10,68 +6,74 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { FeedbackForm, sendUserFeedback } from "@/queries/users";
-import { useState } from "react";
-import { CheckCircle } from "lucide-react";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { type FeedbackForm, sendUserFeedback } from '@/queries/users'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
+import { CheckCircle } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-export const Route = createFileRoute("/admin/feedback/")({
+export const Route = createFileRoute('/admin/feedback/')({
   component: FeedbackFormComponent,
-});
-
-const formSchema = z.object({
-  title: z.string().min(5, {
-    message: "Title must be at least 5 characters.",
-  }),
-  body: z.string().min(10, {
-    message: "Message body must be at least 10 characters.",
-  }),
-});
+})
 
 export function FeedbackFormComponent() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const { t } = useTranslation()
+
+  const formSchema = z.object({
+    title: z.string().min(5, {
+      message: t('feedback.validation.titleMin'),
+    }),
+    body: z.string().min(10, {
+      message: t('feedback.validation.bodyMin'),
+    }),
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      body: "",
+      title: '',
+      body: '',
     },
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const feedbackData: FeedbackForm = {
       ...values,
-      name: "ELTL admin",
-    };
+      name: 'ELTL admin',
+    }
 
     try {
-      const result = await sendUserFeedback(feedbackData);
+      const result = await sendUserFeedback(feedbackData)
       if (result.success) {
-        console.log("Feedback submitted successfully");
-        setIsSubmitted(true);
-        form.reset();
+        console.log('Feedback submitted successfully')
+        setIsSubmitted(true)
+        form.reset()
 
         setTimeout(() => {
-          setIsSubmitted(false);
-        }, 5000);
+          setIsSubmitted(false)
+        }, 5000)
       } else {
-        console.error("Error submitting feedback:", result.error);
+        console.error('Error submitting feedback:', result.error)
       }
     } catch (error) {
-      console.error("Error submitting feedback:", error);
+      console.error('Error submitting feedback:', error)
     }
   }
 
   return (
     <div className="container p-8">
       <h3 className="text-center md:text-left text-stone-800 font-bold">
-        Tagasisidevorm
+        {t('feedback.title')}
       </h3>
       <p className="text-center md:text-left text-gray-500 mb-8 mt-1">
-        Teie ettepanekud ja tagasiside aitavad meil platvormi paremaks teha
+        {t('feedback.subtitle')}
       </p>
 
       {isSubmitted ? (
@@ -79,19 +81,16 @@ export function FeedbackFormComponent() {
           <div className="flex items-center gap-3 mb-2">
             <CheckCircle className="text-green-600 h-6 w-6" />
             <h4 className="font-medium text-green-800">
-              Täname tagasiside eest!
+              {t('feedback.success.title')}
             </h4>
           </div>
-          <p className="text-green-700">
-            Oleme teie tagasiside kätte saanud ja võtame seda arvesse platvormi
-            arendamisel.
-          </p>
+          <p className="text-green-700">{t('feedback.success.description')}</p>
           <Button
             onClick={() => setIsSubmitted(false)}
             variant="outline"
             className="mt-4 border-green-300 text-green-700 hover:bg-green-100 hover:text-green-800"
           >
-            Saada veel tagasisidet
+            {t('feedback.success.sendMoreButton')}
           </Button>
         </div>
       ) : (
@@ -105,9 +104,12 @@ export function FeedbackFormComponent() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Teema</FormLabel>
+                  <FormLabel>{t('feedback.topic.title')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Kokkuvõte" {...field} />
+                    <Input
+                      placeholder={t('feedback.topic.placeholder')}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -118,10 +120,10 @@ export function FeedbackFormComponent() {
               name="body"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sõnum</FormLabel>
+                  <FormLabel>{t('feedback.message.title')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Palun kirjeldage oma kogemust või ettepanekut detailsemalt..."
+                      placeholder={t('feedback.message.placeholder')}
                       className="h-32 resize-none"
                       {...field}
                     />
@@ -132,14 +134,16 @@ export function FeedbackFormComponent() {
             />
             <Button
               type="submit"
-              className={`w-full ${form.formState.isSubmitting ? "opacity-70" : ""}`}
+              className={`w-full ${form.formState.isSubmitting ? 'opacity-70' : ''}`}
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Saatmine..." : "Saada"}
+              {form.formState.isSubmitting
+                ? t('feedback.submitButton.sending')
+                : t('feedback.submitButton.send')}
             </Button>
           </form>
         </Form>
       )}
     </div>
-  );
+  )
 }
