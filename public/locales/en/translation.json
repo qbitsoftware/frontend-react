@@ -98,6 +98,31 @@
       }
     }
   },
+  "feedback": {
+    "title": "Feedback Form",
+    "subtitle": "Your suggestions and feedback help us improve the platform",
+    "topic": {
+      "title": "Subject",
+      "placeholder": "Summary"
+    },
+    "message": {
+      "title": "Message",
+      "placeholder": "Please describe your experience or suggestion in detail..."
+    },
+    "submitButton": {
+      "send": "Send",
+      "sending": "Sending..."
+    },
+    "success": {
+      "title": "Thank you for your feedback!",
+      "description": "We have received your feedback and will take it into account when developing the platform.",
+      "sendMoreButton": "Send more feedback"
+    },
+    "validation": {
+      "titleMin": "Title must be at least 5 characters.",
+      "bodyMin": "Message must be at least 10 characters."
+    }
+  },
   "news": {
     "title": "News",
     "all_news": "All news",
@@ -1067,13 +1092,14 @@
     "time": "Time",
     "table": {
       "game": "Game",
-      "sets": "Sets",
+      "sets": "Result",
       "score": "Score",
       "total": "Total",
       "doubles": "Doubles",
       "solo_game": "Solo game",
       "double_game": "Double game",
-      "forfeit": "Forfeit"
+      "forfeit": "Forfeit",
+      "use_sets": "Insert result in sets"
     },
     "captain": "Captain",
     "notes": "Notes",

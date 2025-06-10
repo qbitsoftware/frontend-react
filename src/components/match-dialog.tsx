@@ -61,22 +61,24 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     },
   });
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { reset } = form;
 
-  const [useSets, setUseSets] = useState(match.match.use_sets || false)
+  const [useSets, setUseSets] = useState(match.match.use_sets || false);
 
   useEffect(() => {
     if (match && open) {
       reset({
         tableReferee: match.match.extra_data?.table_referee || "",
         mainReferee: match.match.extra_data?.head_referee || "",
-        scores: Array.isArray(match.match.extra_data?.score) && match.match.extra_data.score.length > 0
-          ? match.match.extra_data.score.map((s: Score) => ({
-            player1: typeof s.p1_score === 'number' ? s.p1_score : 0,
-            player2: typeof s.p2_score === 'number' ? s.p2_score : 0,
-          }))
-          : [{ player1: 0, player2: 0 }],
+        scores:
+          Array.isArray(match.match.extra_data?.score) &&
+          match.match.extra_data.score.length > 0
+            ? match.match.extra_data.score.map((s: Score) => ({
+                player1: typeof s.p1_score === "number" ? s.p1_score : 0,
+                player2: typeof s.p2_score === "number" ? s.p2_score : 0,
+              }))
+            : [{ player1: 0, player2: 0 }],
       });
     }
   }, [match, reset, open]);
@@ -96,17 +98,17 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     tournament_id,
     match.match.tournament_table_id,
     match.match.id,
-  )
+  );
 
   const resetMatch = async () => {
     try {
-      await useResetMatch.mutateAsync()
-      toast.success(t("toasts.protocol_modals.match_reset_success"))
+      await useResetMatch.mutateAsync();
+      toast.success(t("toasts.protocol_modals.match_reset_success"));
     } catch (error) {
-      void error
-      toast.error(t("toasts.protocol_modals.match_reset_error"))
+      void error;
+      toast.error(t("toasts.protocol_modals.match_reset_error"));
     }
-  }
+  };
 
   const { append, remove } = useFieldArray({
     name: "scores",
@@ -119,7 +121,6 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
       p1_score: score.player1,
       p2_score: score.player2,
     }));
-
 
     const sendMatch: Match = {
       id: match.match.id,
@@ -153,10 +154,10 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 
     try {
       await usePatchMatch.mutateAsync(sendMatch);
-      toast.message(t("toasts.protocol_modals.updated_match_score"))
+      toast.message(t("toasts.protocol_modals.updated_match_score"));
     } catch (error) {
       void error;
-      toast.error(t("toasts.protocol_modals.updated_match_score_error"))
+      toast.error(t("toasts.protocol_modals.updated_match_score_error"));
     }
     handleClose();
   };
@@ -166,8 +167,8 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
       return;
     }
 
-    const cleanedValue = value.replace(/^0+(\d)/, '$1');
-    const newSetValue = cleanedValue === '' ? 0 : Number.parseInt(cleanedValue);
+    const cleanedValue = value.replace(/^0+(\d)/, "$1");
+    const newSetValue = cleanedValue === "" ? 0 : Number.parseInt(cleanedValue);
 
     const currentSets = extractSetsFromPoints(form.watch("scores"));
 
@@ -192,7 +193,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl p-0 overflow-y-scroll bg-white dark:bg-gray-800 rounded-lg shadow-lg border-none">
         <DialogHeader className="py-10 pb-2 rounded-t-lg text-2xl font-bold text-center mx-auto">
-          <DialogTitle>{t('protocol.title')}</DialogTitle>
+          <DialogTitle>{t("protocol.title")}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -200,7 +201,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
               <div className="p-6 space-y-6">
                 <div className="flex justify-center items-center gap-4">
                   <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t('protocol.round')}:
+                    {t("protocol.round")}:
                   </span>
                   <span className="font-medium text-gray-900 dark:text-white">
                     {match.match.round + 1}
@@ -223,9 +224,11 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                   <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                     <CardTitle className="text-lg text-gray-900 dark:text-white">
                       <div className="flex items-center justify-between gap-2">
-                        {t('protocol.table.sets')}
+                        {t("protocol.table.sets")}
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Use sets</span>
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            {t("protocol.table.use_sets")}
+                          </span>
                           <Switch
                             checked={useSets}
                             onCheckedChange={setUseSets}
@@ -243,101 +246,116 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                         {match.p2.name}
                       </div>
                     </div>
-                    {!useSets ? form.watch("scores").map((_, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start space-x-2"
-                      >
-                        <FormField
-                          control={form.control}
-                          name={`scores.${index}.player1`}
-                          render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  {...field}
-                                  value={field.value}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
+                    {!useSets ? (
+                      form.watch("scores").map((_, index) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <FormField
+                            control={form.control}
+                            name={`scores.${index}.player1`}
+                            render={({ field }) => (
+                              <FormItem className="flex-1">
+                                <FormControl>
+                                  <Input
+                                    type="text"
+                                    {...field}
+                                    value={field.value}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
 
-                                    if (value === "") {
-                                      field.onChange(0);
-                                      return;
-                                    }
+                                      if (value === "") {
+                                        field.onChange(0);
+                                        return;
+                                      }
 
-                                    if (!/^\d*$/.test(value)) {
-                                      return;
-                                    }
+                                      if (!/^\d*$/.test(value)) {
+                                        return;
+                                      }
 
-                                    const cleanedValue = value.replace(/^0+(\d)/, '$1');
-                                    const numberValue = cleanedValue === '' ? 0 : Number.parseInt(cleanedValue);
+                                      const cleanedValue = value.replace(
+                                        /^0+(\d)/,
+                                        "$1",
+                                      );
+                                      const numberValue =
+                                        cleanedValue === ""
+                                          ? 0
+                                          : Number.parseInt(cleanedValue);
 
-                                    field.onChange(numberValue);
-                                  }}
-                                  className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                                      field.onChange(numberValue);
+                                    }}
+                                    className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`scores.${index}.player2`}
+                            render={({ field }) => (
+                              <FormItem className="flex-1">
+                                <FormControl>
+                                  <Input
+                                    type="text"
+                                    {...field}
+                                    value={field.value}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+
+                                      if (value === "") {
+                                        field.onChange(0);
+                                        return;
+                                      }
+
+                                      if (!/^\d*$/.test(value)) {
+                                        return;
+                                      }
+
+                                      const cleanedValue = value.replace(
+                                        /^0+(\d)/,
+                                        "$1",
+                                      );
+                                      const numberValue =
+                                        cleanedValue === ""
+                                          ? 0
+                                          : Number.parseInt(cleanedValue);
+
+                                      field.onChange(numberValue);
+                                    }}
+                                    className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          {index >= 0 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => remove(index)}
+                              className="bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 rounded-md"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </Button>
                           )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`scores.${index}.player2`}
-                          render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  {...field}
-                                  value={field.value}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
-
-                                    if (value === "") {
-                                      field.onChange(0);
-                                      return;
-                                    }
-
-                                    if (!/^\d*$/.test(value)) {
-                                      return;
-                                    }
-
-                                    const cleanedValue = value.replace(/^0+(\d)/, '$1');
-                                    const numberValue = cleanedValue === '' ? 0 : Number.parseInt(cleanedValue);
-
-                                    field.onChange(numberValue);
-                                  }}
-                                  className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        {index >= 0 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => remove(index)}
-                            className="bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 rounded-md"
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    )) : (
+                        </div>
+                      ))
+                    ) : (
                       <div className="flex items-start space-x-2">
                         <Input
                           type="text"
-                          value={extractSetsFromPoints(form.watch("scores")).p1_sets}
+                          value={
+                            extractSetsFromPoints(form.watch("scores")).p1_sets
+                          }
                           onChange={(e) => handleSetChange(1, e.target.value)}
                         />
                         <Input
                           type="text"
-                          value={extractSetsFromPoints(form.watch("scores")).p2_sets}
+                          value={
+                            extractSetsFromPoints(form.watch("scores")).p2_sets
+                          }
                           onChange={(e) => handleSetChange(2, e.target.value)}
                         />
                       </div>
@@ -357,7 +375,8 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                         onClick={() => append({ player1: 0, player2: 0 })}
                         className="bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 rounded-md"
                       >
-                        <Plus className="h-4 w-4 mr-2" /> {t('protocol.actions.add_set')}
+                        <Plus className="h-4 w-4 mr-2" />{" "}
+                        {t("protocol.actions.add_set")}
                       </Button>
                     )}
                   </CardContent>
@@ -376,12 +395,16 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('protocol.table_referee')}{" "}
-                            <span className="text-gray-400">({t("protocol.actions.optional")})</span>
+                            {t("protocol.table_referee")}{" "}
+                            <span className="text-gray-400">
+                              ({t("protocol.actions.optional")})
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder={t('protocol.table_referee_placeholder')}
+                              placeholder={t(
+                                "protocol.table_referee_placeholder",
+                              )}
                               {...field}
                               className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
                             />
@@ -396,12 +419,16 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('protocol.head_referee')}{" "}
-                            <span className="text-gray-400">({t('protocol.actions.optional')})</span>
+                            {t("protocol.head_referee")}{" "}
+                            <span className="text-gray-400">
+                              ({t("protocol.actions.optional")})
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder={t('protocol.head_referee_placeholder')}
+                              placeholder={t(
+                                "protocol.head_referee_placeholder",
+                              )}
                               {...field}
                               className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
                             />
@@ -421,7 +448,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                   className="bg-black/90"
                   onClick={resetMatch}
                 >
-                  {t('protocol.reset_game')}
+                  {t("protocol.reset_game")}
                 </Button>
               </div>
               <div className="flex gap-2">
@@ -431,15 +458,14 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                   onClick={() => onClose(false)}
                   className="bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-md"
                 >
-                  {t('protocol.actions.cancel')}
+                  {t("protocol.actions.cancel")}
                 </Button>
                 <Button
                   type="submit"
                   className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 rounded-md"
                 >
-                  {t('protocol.actions.save')}
+                  {t("protocol.actions.save")}
                 </Button>
-
               </div>
             </DialogFooter>
           </form>
@@ -450,4 +476,3 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 };
 
 export default MatchDialog;
-
