@@ -1,40 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useUser } from "@/providers/userProvider";
-import { UseGetMe, usePatchUser, usePatchUserPassword } from "@/queries/users";
+import { usePatchUserPassword } from "@/queries/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   AlertCircle,
-  AlertTriangle,
-  Calendar,
   Eye,
   EyeOff,
   Lock,
-  Mail,
-  Save,
-  User,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import SettingsSkeleton from "./-components/settings-skeleton";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/profile/settings/")({
   component: RouteComponent,
 });
 
-const personalInfoSchema = z.object({
-  firstName: z.string().min(1, "First name must be at least 1 characters"),
-  lastName: z.string().min(1, "Last name must be at least 1 characters"),
-  birthDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date"),
-  email: z.string().email("Please enter a valid email address"),
-});
+// const personalInfoSchema = z.object({
+//   firstName: z.string().min(1, "First name must be at least 1 characters"),
+//   lastName: z.string().min(1, "Last name must be at least 1 characters"),
+//   birthDate: z
+//     .string()
+//     .regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date"),
+//   email: z.string().email("Please enter a valid email address"),
+// });
 
 const passwordSchema = z
   .object({
@@ -49,30 +42,29 @@ const passwordSchema = z
     path: ["confirmPassword"],
   });
 
-type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
+// type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 function RouteComponent() {
-  const { user } = useUser();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isPersonalInfoSaving, setIsPersonalInfoSaving] = useState(false);
+  // const [isPersonalInfoSaving, setIsPersonalInfoSaving] = useState(false);
   const [isPasswordSaving, setIsPasswordSaving] = useState(false);
-  const { data: userProfile, isLoading } = UseGetMe();
+  // const { data: userProfile, isLoading } = UseGetMe();
   const { t } = useTranslation();
 
-  const updateUserMutation = usePatchUser();
+  // const updateUserMutation = usePatchUser();
   const updatePassword = usePatchUserPassword();
 
-  const {
-    register: registerPersonalInfo,
-    handleSubmit: handlePersonalInfoSubmit,
-    formState: { errors: personalInfoErrors },
-    reset: resetPersonalInfo,
-  } = useForm<PersonalInfoFormData>({
-    resolver: zodResolver(personalInfoSchema),
-  });
+  // const {
+  //   register: registerPersonalInfo,
+  //   handleSubmit: handlePersonalInfoSubmit,
+  //   formState: { errors: personalInfoErrors },
+  //   reset: resetPersonalInfo,
+  // } = useForm<PersonalInfoFormData>({
+  //   resolver: zodResolver(personalInfoSchema),
+  // });
 
   const {
     register: registerPassword,
@@ -83,35 +75,36 @@ function RouteComponent() {
     resolver: zodResolver(passwordSchema),
   });
 
-  useEffect(() => {
-    if (userProfile?.data) {
-      resetPersonalInfo({
-        firstName: userProfile.data.first_name || "",
-        lastName: userProfile.data.last_name || "",
-        birthDate: userProfile.data.birth_date || "",
-        email: user?.email || "",
-      });
-    }
-  }, [userProfile, user, resetPersonalInfo]);
+  // useEffect(() => {
+  //   if (userProfile?.data) {
+  // resetPersonalInfo({
+  //   firstName: userProfile.data.first_name || "",
+  //   lastName: userProfile.data.last_name || "",
+  //   birthDate: userProfile.data.birth_date || "",
+  //   email: user?.email || "",
+  // });
+  // }
+  //userProfile, user, resetPersonalInfo
+  // }, [userProfile, user]);
 
-  const isMissingInfo =
-    !userProfile?.data?.first_name || !userProfile?.data?.last_name;
+  // const isMissingInfo =
+  //   !userProfile?.data?.first_name || !userProfile?.data?.last_name;
 
-  const onPersonalInfoSubmit = async (data: PersonalInfoFormData) => {
-    setIsPersonalInfoSaving(true);
+  // const onPersonalInfoSubmit = async (data: PersonalInfoFormData) => {
+  //   setIsPersonalInfoSaving(true);
 
-    try {
-      await updateUserMutation.mutateAsync({
-        first_name: data.firstName,
-        last_name: data.lastName,
-        birth_date: data.birthDate,
-      });
-      toast.success("Personal information updated successfully");
-    } catch (error) {
-      toast.error("Failed to update personal information");
-    }
-    setIsPersonalInfoSaving(false);
-  };
+  //   try {
+  //     await updateUserMutation.mutateAsync({
+  //       first_name: data.firstName,
+  //       last_name: data.lastName,
+  //       birth_date: data.birthDate,
+  //     });
+  //     toast.success("Personal information updated successfully");
+  //   } catch (error) {
+  //     toast.error("Failed to update personal information");
+  //   }
+  //   setIsPersonalInfoSaving(false);
+  // };
 
   const onPasswordSubmit = async (data: PasswordFormData) => {
     setIsPasswordSaving(true);
@@ -126,15 +119,16 @@ function RouteComponent() {
     } catch (error) {
       toast.error("Failed to change password");
     }
+    setIsPasswordSaving(false);
   };
 
-  if (isLoading) {
-    return <SettingsSkeleton />;
-  }
+  // if (isLoading) {
+  //   return <SettingsSkeleton />;
+  // }
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {isMissingInfo && (
+      {/* {isMissingInfo && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 sm:p-6 shadow-sm">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600 flex-shrink-0 mt-0.5">
@@ -151,7 +145,7 @@ function RouteComponent() {
           </div>
         </div>
       )}
-      {/* Personal Information Section */}
+
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white">
@@ -303,7 +297,7 @@ function RouteComponent() {
             </Button>
           </div>
         </form>
-      </div>
+      </div> */}
 
       {/* Password Change Section */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 sm:p-8">

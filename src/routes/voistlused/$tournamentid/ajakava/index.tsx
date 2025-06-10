@@ -69,7 +69,7 @@ function RouteComponent() {
   const safeMatches = Array.isArray(matchesData.data)
     ? getUniqueMatches(matchesData.data)
     : [];
-  
+
   let classFilteredMatches = safeMatches;
   if (activeClass !== "all") {
     classFilteredMatches = safeMatches.filter(
@@ -81,11 +81,16 @@ function RouteComponent() {
   const [searchTerm, setSearchTerm] = useState("");
   const safeDayIndex =
     activeDay >= 0 && activeDay < uniqueGamedays.length ? activeDay : 0;
-  
+
+  console.log("Unique gamedays:", uniqueGamedays);
+  console.log("uniquegames", uniqueGamedays[safeDayIndex]);
+
   let filteredMatches = filterMatchesByGameday(
     classFilteredMatches,
     uniqueGamedays[safeDayIndex]
   );
+
+  console.log("Filtered matches:", filteredMatches);
 
   // Store count before search filter for the badge
   const matchesBeforeSearch = [...filteredMatches];
@@ -154,14 +159,14 @@ function RouteComponent() {
   return (
     <>
       {matchesData?.data &&
-      Array.isArray(matchesData.data) &&
-      matchesData.data.length > 0 ? (
+        Array.isArray(matchesData.data) &&
+        matchesData.data.length > 0 ? (
         <>
           <div className="">
             <h4 className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
               {t("competitions.timetable.matches")}
             </h4>
-          
+
             <Filters
               gamedays={uniqueGamedays}
               activeClass={activeClass}
@@ -177,30 +182,7 @@ function RouteComponent() {
 
             <div className="">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-y-4 md:gap-y-12 gap-x-4 my-6">
-                {/* First render matches that are associated with round robin tables */}
-                {matchesData?.data &&
-                  Array.isArray(matchesData.data) &&
-                  matchesData.data
-                    .filter((match) => {
-                      const table = getMatchTTTable(match);
-                      return table && table.type === "round_robin";
-                    })
-                    .map((match, key) => {
-                      return (
-                        <ITTFMatchComponent
-                          key={`round-robin-${key}`}
-                          match={match}
-                          table_data={getMatchTTTable(match)}
-                        />
-                      );
-                    })}
-
-                {/* Then render the filtered matches for non-round robin tables */}
                 {filteredMatches
-                  .filter((match) => {
-                    const table = getMatchTTTable(match);
-                    return !table || table.type !== "round_robin";
-                  })
                   .map((match, key) => {
                     return (
                       <ITTFMatchComponent

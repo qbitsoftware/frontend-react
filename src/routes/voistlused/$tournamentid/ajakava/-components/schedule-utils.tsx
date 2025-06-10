@@ -31,19 +31,23 @@ export function extractDateOnly(dateTimeStr: string | null | undefined): string 
  */
 export function getUniqueGamedays(matches: MatchWrapper[]): string[] {
   // Extract dates from winner type matches with valid rounds
-  const winnerDates = matches
-    .filter(match => match.match.type === "winner" && match.match.round)
-    .map(match => extractDateOnly(match.match.start_date))
-    .filter(Boolean);
+  // const winnerDates = matches
+  //   .filter(match => match.match.type === "winner" && match.match.round)
+  //   .map(match => extractDateOnly(match.match.start_date))
+  //   .filter(Boolean);
 
-  // Extract dates from round type matches with valid rounds
-  const roundDates = matches
-    .filter(match => match.match.type === "round" && match.match.round)
-    .map(match => extractDateOnly(match.match.start_date))
-    .filter(Boolean);
+  // // Extract dates from round type matches with valid rounds
+  // const roundDates = matches
+  //   .filter(match => match.match.type === "round" && match.match.round)
+  //   .map(match => extractDateOnly(match.match.start_date))
+  //   .filter(Boolean);
+
+  // for all
+  const dates = matches.filter(match => match.match.round).map(match => extractDateOnly(match.match.start_date)).filter(Boolean);
 
   // Combine both sets and remove duplicates
-  const allDates = [...winnerDates, ...roundDates];
+  // const allDates = [...winnerDates, ...roundDates];
+  const allDates = [...dates]
   return [...new Set(allDates)].filter(Boolean).sort();
 }
 
