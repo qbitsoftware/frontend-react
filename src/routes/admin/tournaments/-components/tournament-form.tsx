@@ -8,7 +8,6 @@ import { useRouter } from "@tanstack/react-router"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -78,7 +77,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         start_date: new Date(),
         end_date: new Date(),
         total_tables: 1,
-        sport: "",
+        sport: "tabletennis",
         location: "",
         category: "",
         information: "",
@@ -206,22 +205,18 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
 
                 <FormField
                   control={form.control}
-                  name="sport"
+                  name="location"
                   render={({ field }) => (
-                    <FormItem id="tutorial-tournament-sport">
-                      <FormLabel>{t("admin.tournaments.create_tournament.sport")}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger id="tournament-sport-select" data-testid="sport-select-trigger">
-                            <SelectValue placeholder={t("admin.tournaments.create_tournament.sport_placeholder")} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="tabletennis" data-value="tabletennis">
-                            {t("admin.tournaments.create_tournament.sport_value.tabletennis")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <FormItem className="" id="tutorial-tournament-location">
+                      <FormLabel>{t("admin.tournaments.create_tournament.location")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="tournament-location-input"
+                          autoComplete="off"
+                          placeholder={t("admin.tournaments.create_tournament.location_placeholder")}
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -291,24 +286,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col" id="tutorial-tournament-location">
-                      <FormLabel>{t("admin.tournaments.create_tournament.location")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="tournament-location-input"
-                          autoComplete="off"
-                          placeholder={t("admin.tournaments.create_tournament.location_placeholder")}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
 
                 <FormField
                   control={form.control}
@@ -317,35 +295,36 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                     <CategoryInput field={field} categories={tournament_categories?.data || []} />
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="total_tables"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col" id="tutorial-tournament-tables">
+                      <FormLabel>{t("admin.tournaments.create_tournament.number_of_tables")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="tournament-tables-input"
+                          type="number"
+                          placeholder={t("admin.tournaments.create_tournament.number_of_tables_placeholder")}
+                          {...field}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "") {
+                              field.onChange(0);
+                            } else {
+                              const cleanedValue = value.replace(/^0+/, '');
+                              field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
+                            }
+                          }}
+                          value={field.value === 0 ? '' : field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <FormField
-                control={form.control}
-                name="total_tables"
-                render={({ field }) => (
-                  <FormItem className="w-full" id="tutorial-tournament-tables">
-                    <FormLabel>{t("admin.tournaments.create_tournament.number_of_tables")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="tournament-tables-input"
-                        type="number"
-                        placeholder={t("admin.tournaments.create_tournament.number_of_tables_placeholder")}
-                        {...field}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === "") {
-                            field.onChange(0);
-                          } else {
-                            const cleanedValue = value.replace(/^0+/, '');
-                            field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
-                          }
-                        }}
-                        value={field.value === 0 ? '' : field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="calc_rating"
