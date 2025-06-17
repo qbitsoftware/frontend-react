@@ -1,13 +1,10 @@
 import ErrorPage from "@/components/error";
 import { useUser } from "@/providers/userProvider";
 import {
-  Link,
   Outlet,
   createFileRoute,
-  useLocation,
   useNavigate,
 } from "@tanstack/react-router";
-import { Settings, Trophy, User } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -21,7 +18,7 @@ export const Route = createFileRoute("/profile")({
 function RouteComponent() {
   const { user } = useUser();
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -34,11 +31,11 @@ function RouteComponent() {
     return null;
   }
 
-  const navItems = [
-    { path: "/profile", label: "overview", icon: User },
-    { path: "/profile/tournaments", label: "tournaments", icon: Trophy },
-    { path: "/profile/settings", label: "settings", icon: Settings },
-  ];
+  // const navItems = [
+  //   { path: "/profile", label: "overview", icon: User },
+  //   { path: "/profile/tournaments", label: "tournaments", icon: Trophy },
+  //   { path: "/profile/settings", label: "settings", icon: Settings },
+  // ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -74,7 +71,7 @@ function RouteComponent() {
           </div>
         </div>
 
-        <nav className="bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5 mb-8">
+        {/* <nav className="bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5 mb-8">
           <div className="flex gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -114,7 +111,7 @@ function RouteComponent() {
             })}
           </div>
         </nav>
-
+ */}
         <Outlet />
       </div>
     </div>

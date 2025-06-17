@@ -114,12 +114,12 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         } else {
           router.navigate({ to: `/admin/tournaments`, replace: true })
         }
-        toast.error(t('toasts.tournaments.created'))
+        toast.message(t('toasts.tournaments.created'))
       }
     } catch (error) {
       void error
       if (initial_data) {
-        toast.message(t('toasts.tournaments.updated_error'))
+        toast.error(t('toasts.tournaments.updated_error'))
       } else {
         toast.error(t('toasts.tournaments.created_error'))
       }

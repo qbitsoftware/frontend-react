@@ -1,65 +1,51 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UseGetProfileTournaments } from "@/queries/tournaments";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Award,
-  Calendar,
-  CalendarX,
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  Eye,
-  MapPin,
-  Search,
-  Target,
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Search,
   Trophy,
-  UserCheck,
-  Users,
-  Zap,
 } from "lucide-react";
 import { useState } from "react";
-import TournamentSkeleton from "./-components/tournament-skeleton";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/profile/")({
   component: RouteComponent,
-  loader: async ({ context: { queryClient } }) => {
-    const tournaments = await queryClient.ensureQueryData(
-      UseGetProfileTournaments(),
-    );
-    return { tournaments };
-  },
+  // loader: async ({ context: { queryClient } }) => {
+    // const tournaments = await queryClient.ensureQueryData(
+    //   UseGetProfileTournaments(),
+    // );
+  //   return { tournaments };
+  // },
 });
 
 function RouteComponent() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedTournaments, setExpandedTournaments] = useState<number[]>([]);
-  const { tournaments } = Route.useLoaderData();
-  const router = useRouter();
+  const navigate = useNavigate()
+  navigate({to: "/profile/settings"})
+  // const [expandedTournaments, setExpandedTournaments] = useState<number[]>([]);
+  // const { tournaments } = Route.useLoaderData();
+  // const tournaments: TournamentWithGroups[] = [];
+  // const router = useRouter();
   const { t } = useTranslation();
 
-  const toggleTournamentExpansion = (tournamentId: number) => {
-    setExpandedTournaments((prev) =>
-      prev.includes(tournamentId)
-        ? prev.filter((id) => id !== tournamentId)
-        : [...prev, tournamentId],
-    );
-  };
+  // const toggleTournamentExpansion = (tournamentId: number) => {
+  //   setExpandedTournaments((prev) =>
+  //     prev.includes(tournamentId)
+  //       ? prev.filter((id) => id !== tournamentId)
+  //       : [...prev, tournamentId],
+  //   );
+  // };
 
-  const filteredTournaments = tournaments?.data?.filter(
-    (tournamentWithGroups) =>
-      tournamentWithGroups.tournament.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      tournamentWithGroups.tournament.location
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      tournamentWithGroups.tournament.category
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()),
-  );
+  // const filteredTournaments = tournaments?.filter(
+  //   (tournamentWithGroups) =>
+  //     tournamentWithGroups.tournament.name
+  //       .toLowerCase()
+  //       .includes(searchTerm.toLowerCase()) ||
+  //     tournamentWithGroups.tournament.location
+  //       .toLowerCase()
+  //       .includes(searchTerm.toLowerCase()) ||
+  //     tournamentWithGroups.tournament.category
+  //       .toLowerCase()
+  //       .includes(searchTerm.toLowerCase()),
+  // );
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -95,7 +81,7 @@ function RouteComponent() {
             </div>
           </div>
 
-          {!tournaments?.data && (
+          {/* {!tournaments?.data && (
             <div className="grid gap-6">
               {[1, 2, 3].map((index) => (
                 <TournamentSkeleton key={`skeleton-${index + 1}`} />
@@ -119,10 +105,10 @@ function RouteComponent() {
                 {t("profile.tournaments.empty.button")}
               </Button>
             </div>
-          )}
+          )} */}
 
           {/* Empty Search Results */}
-          {tournaments?.data &&
+          {/* {tournaments?.data &&
             tournaments.data.length > 0 &&
             filteredTournaments?.length === 0 &&
             searchTerm && (
@@ -143,9 +129,9 @@ function RouteComponent() {
                 </Button>
               </div>
             )}
-
+ */}
           {/* Enhanced Tournament Cards */}
-          {tournaments?.data &&
+          {/* {tournaments?.data &&
             filteredTournaments &&
             filteredTournaments.length > 0 && (
               <div className="space-y-4 sm:space-y-6">
@@ -165,7 +151,6 @@ function RouteComponent() {
                       key={tournament.id}
                       className="group relative bg-gradient-to-r from-gray-50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300 overflow-hidden"
                     >
-                      {/* Tournament Card Background Effects */}
                       <div className="absolute -top-2 -right-2 w-16 h-16 sm:w-20 sm:h-20 bg-blue-500 rounded-full opacity-5 blur-2xl group-hover:opacity-10 transition-opacity duration-300" />
                       <div className="absolute -bottom-2 -left-2 w-20 h-20 sm:w-24 sm:h-24 bg-purple-500 rounded-full opacity-5 blur-2xl" />
 
@@ -282,9 +267,8 @@ function RouteComponent() {
                           </div>
                         </div>
                       </div>
-
-                      {/* Enhanced Groups Section */}
-                      {isExpanded && groups && groups.length > 0 && (
+ */}
+                      {/* {isExpanded && groups && groups.length > 0 && (
                         <div className="border-t-2 border-blue-200 bg-gradient-to-r from-blue-50 via-white to-blue-50 sm:bg-gradient-to-r sm:from-white sm:via-blue-50/30 sm:to-white">
                           <div className="p-3 sm:p-6">
                             <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6">
@@ -311,7 +295,6 @@ function RouteComponent() {
                                     key={group.id}
                                     className="group/group relative bg-white rounded-lg border border-blue-200 sm:border-gray-200 p-3 sm:p-4 hover:border-blue-300 hover:shadow-sm transition-all duration-200 overflow-hidden shadow-sm sm:shadow-none"
                                   >
-                                    {/* Group card accent */}
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-600" />
 
                                     <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
@@ -389,10 +372,9 @@ function RouteComponent() {
                                   </div>
                                 );
                               })}
-                            </div>
+                            </div> */}
 
-                            {/* Action Bar */}
-                            <div className="mt-3 sm:mt-6 pt-2 sm:pt-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+                            {/* <div className="mt-3 sm:mt-6 pt-2 sm:pt-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
                               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-gray-600">
                                 <span className="flex items-center gap-1 sm:gap-2">
                                   <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
@@ -414,10 +396,9 @@ function RouteComponent() {
                             </div>
                           </div>
                         </div>
-                      )}
+                      )} */}
 
-                      {/* Empty groups state */}
-                      {isExpanded && (!groups || groups.length === 0) && (
+                      {/* {isExpanded && (!groups || groups.length === 0) && (
                         <div className="border-t-2 border-blue-200 bg-blue-50 sm:border-t sm:border-gray-200 sm:bg-gray-50/50">
                           <div className="p-4 sm:p-6 lg:p-8 text-center">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2 sm:mb-3 lg:mb-4">
@@ -436,17 +417,16 @@ function RouteComponent() {
                   );
                 })}
               </div>
-            )}
+            )} */}
 
-          {/* Show count of available tournaments */}
-          {tournaments?.data && tournaments.data.length > 0 && (
+          {/* {tournaments?.data && tournaments.data.length > 0 && (
             <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-500">
               {t("profile.tournaments.showingCount", {
                 filtered: filteredTournaments?.length || 0,
                 total: tournaments.data.length,
               })}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
