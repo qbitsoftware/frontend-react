@@ -31,6 +31,8 @@ const createFormSchema = (t: TFunction) => z.object({
   max_team_size: z.number().optional(),
   woman_weight: z.number().min(1).max(10),
   size: z.number(),
+  start_time: z.string().optional(),
+  avg_match_duration: z.number().min(10).max(60),
 }).superRefine((data, ctx) => {
   if (data.solo) return;
 
@@ -74,6 +76,9 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
   const { t } = useTranslation()
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [durationInputValue, setDurationInputValue] = useState<string>(
+    initial_data?.avg_match_duration ? String(initial_data.avg_match_duration) : '15'
+  )
   // const [customSize, setCustomSize] = useState("");
   const formSchema = createFormSchema(t)
 
@@ -98,6 +103,8 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
         max_team_size: 2,
         size: 16,
         woman_weight: 1,
+        start_time: "",
+        avg_match_duration: 15,
       },
   })
 
@@ -227,23 +234,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                 />
                 {form.watch("type") === GroupType.ROUND_ROBIN || form.watch("type") === GroupType.ROUND_ROBIN_FULL_PLACEMENT ? (
                   <div></div>
-                  // <FormItem>
-                  //   <FormLabel>{t("admin.tournaments.create_tournament.group_amount")}</FormLabel>
-                  //   <FormControl>
-                  //     <Input
-                  //       type="number"
-                  //       id="tournamentSize"
-                  //       placeholder={initial_data?.size?.toString() || t("admin.tournaments.create_tournament.number_of_groups_placeholder")}
-                  //       value={customSize}
-                  //       onChange={(e) => {
-                  //         const numValue = parseInt(e.target.value, 10) || 0;
-                  //         setCustomSize(e.target.value);
-                  //         form.setValue("size", numValue);
-                  //       }}
-                  //     />
-                  //   </FormControl>
-                  //   <FormMessage />
-                  // </FormItem>
                 ) : form.watch("type") === GroupType.CHAMPIONS_LEAGUE ? <div></div> : (
                   <FormItem>
                     <FormLabel>{t("admin.tournaments.create_tournament.tournament_size")}</FormLabel>
@@ -277,6 +267,106 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                     <FormMessage />
                   </FormItem>
                 )}
+
+                <FormField
+                  control={form.control}
+                  name="start_time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("admin.tournaments.create_tournament.start_time")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="time"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t("admin.tournaments.create_tournament.start_time_description", "Select tournament start time (24-hour format)")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="avg_match_duration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("admin.tournaments.create_tournament.avg_match_duration")}</FormLabel>
+                      <div className="grid grid-cols-[1fr,80px] items-center gap-4">
+                        <FormControl>
+                          <Slider
+                            min={10}
+                            max={60}
+                            step={5}
+                            value={[field.value && field.value >= 10 && field.value <= 60 ? field.value : 15]}
+                            onValueChange={(values) => {
+                              field.onChange(values[0]);
+                              setDurationInputValue(String(values[0]));
+                            }}
+                            className="pt-2"
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <Input
+                            type='text'
+                            value={durationInputValue}
+                            onChange={(e) => {
+                              const value = e.target.value;
+
+                              // Always update the display value
+                              setDurationInputValue(value);
+
+                              // Allow completely empty string
+                              if (value === '') {
+                                return;
+                              }
+
+                              // Only allow numbers
+                              if (!/^\d+$/.test(value)) {
+                                return;
+                              }
+
+                              // Cap the value at 60 immediately
+                              const numValue = parseInt(value);
+                              if (numValue > 60) {
+                                field.onChange(60);
+                                setDurationInputValue('60');
+                              } else {
+                                field.onChange(numValue);
+                              }
+                            }}
+                            onBlur={() => {
+                              // Only apply defaults/bounds when user leaves the field
+                              if (durationInputValue === '') {
+                                field.onChange(15);
+                                setDurationInputValue('15');
+                              } else {
+                                const numValue = parseInt(durationInputValue);
+                                if (numValue < 10) {
+                                  field.onChange(10);
+                                  setDurationInputValue('10');
+                                } else if (numValue > 60) {
+                                  field.onChange(60);
+                                  setDurationInputValue('60');
+                                } else {
+                                  // Value is valid, make sure form field is in sync
+                                  field.onChange(numValue);
+                                }
+                              }
+                            }}
+                            className="w-20"
+                          />
+                        </FormControl>
+                      </div>
+                      <FormDescription>
+                        {t("admin.tournaments.create_tournament.avg_match_duration_description", "Average duration per match (10-60 minutes)")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}

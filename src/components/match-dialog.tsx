@@ -65,19 +65,27 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   const { reset } = form;
 
   const [useSets, setUseSets] = useState(match.match.use_sets || false);
+  const [isForfeit, setIsForfeit] = useState(match.match.forfeit || false);
+  const [forfeitWinner, setForfeitWinner] = useState<string>("");
+
+
 
   useEffect(() => {
     if (match && open) {
+      setIsForfeit(match.match.forfeit || false);
+      if (match.match.forfeit) {
+        setForfeitWinner(match.match.winner_id)
+      }
       reset({
         tableReferee: match.match.extra_data?.table_referee || "",
         mainReferee: match.match.extra_data?.head_referee || "",
         scores:
           Array.isArray(match.match.extra_data?.score) &&
-          match.match.extra_data.score.length > 0
+            match.match.extra_data.score.length > 0
             ? match.match.extra_data.score.map((s: Score) => ({
-                player1: typeof s.p1_score === "number" ? s.p1_score : 0,
-                player2: typeof s.p2_score === "number" ? s.p2_score : 0,
-              }))
+              player1: typeof s.p1_score === "number" ? s.p1_score : 0,
+              player2: typeof s.p2_score === "number" ? s.p2_score : 0,
+            }))
             : [{ player1: 0, player2: 0 }],
       });
     }
@@ -116,41 +124,50 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   });
 
   const handleSubmit = async (data: MatchFormValues) => {
-    const scores: Score[] = data.scores.map((score, index) => ({
-      number: index,
-      p1_score: score.player1,
-      p2_score: score.player2,
-    }));
+    let sendMatch: Match
+    if (isForfeit) {
+      sendMatch = match.match
+      sendMatch.winner_id = forfeitWinner 
+      sendMatch.forfeit = true;
 
-    const sendMatch: Match = {
-      id: match.match.id,
-      tournament_table_id: match.match.tournament_table_id,
-      type: match.match.type,
-      round: match.match.round,
-      p1_id: match.match.p1_id,
-      p2_id: match.match.p2_id,
-      winner_id: match.match.winner_id,
-      order: match.match.order,
-      sport_type: match.match.sport_type,
-      location: match.match.location,
-      start_date: new Date().toISOString(),
-      bracket: match.match.bracket,
-      forfeit: match.match.forfeit,
-      state: match.match.state,
-      use_sets: useSets,
-      extra_data: {
-        head_referee: data.mainReferee,
-        table_referee: data.tableReferee,
-        score: scores,
-        table: match.match.extra_data.table,
-        parent_match_id: "",
-      },
-      readable_id: match.match.readable_id,
-      topCoord: 0,
-      table_type: match.match.table_type,
-      previous_match_readable_id_1: 0,
-      previous_match_readable_id_2: 0,
-    };
+    } else {
+      const scores: Score[] = data.scores.map((score, index) => ({
+        number: index,
+        p1_score: score.player1,
+        p2_score: score.player2,
+      }));
+
+      sendMatch = {
+        id: match.match.id,
+        tournament_table_id: match.match.tournament_table_id,
+        type: match.match.type,
+        round: match.match.round,
+        p1_id: match.match.p1_id,
+        p2_id: match.match.p2_id,
+        winner_id: match.match.winner_id,
+        order: match.match.order,
+        sport_type: match.match.sport_type,
+        location: match.match.location,
+        start_date: new Date().toISOString(),
+        bracket: match.match.bracket,
+        forfeit: match.match.forfeit,
+        state: match.match.state,
+        use_sets: useSets,
+        extra_data: {
+          head_referee: data.mainReferee,
+          table_referee: data.tableReferee,
+          score: scores,
+          table: match.match.extra_data.table,
+          parent_match_id: "",
+        },
+        readable_id: match.match.readable_id,
+        topCoord: 0,
+        table_type: match.match.table_type,
+        previous_match_readable_id_1: 0,
+        previous_match_readable_id_2: 0,
+      };
+
+    }
 
     try {
       await usePatchMatch.mutateAsync(sendMatch);
@@ -220,167 +237,226 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                     </span>
                   </div>
                 </div>
+
+                {/* Forfeit Section */}
                 <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
                   <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                     <CardTitle className="text-lg text-gray-900 dark:text-white">
                       <div className="flex items-center justify-between gap-2">
-                        {t("protocol.table.sets")}
+                        {t("protocol.forfeit.title", "Forfeit")}
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            {t("protocol.table.use_sets")}
+                            {t("protocol.forfeit.enable", "Enable Forfeit")}
                           </span>
                           <Switch
-                            checked={useSets}
-                            onCheckedChange={setUseSets}
+                            checked={isForfeit}
+                            onCheckedChange={setIsForfeit}
                           />
                         </div>
                       </div>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 pt-4">
-                    <div className="grid grid-cols-2 gap-4 mb-2">
-                      <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {match.p1.name}
+                  {isForfeit && (
+                    <CardContent className="space-y-4 pt-4">
+                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        {t("protocol.forfeit.description", "Select the winner by forfeit")}
                       </div>
-                      <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {match.p2.name}
+                      <div className="grid grid-cols-2 gap-4">
+                        <Button
+                          type="button"
+                          variant={forfeitWinner === match.p1.id ? "default" : "outline"}
+                          onClick={() => setForfeitWinner(match.p1.id)}
+                          className={`p-4 h-auto ${forfeitWinner === match.p1.id
+                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                            : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            }`}
+                        >
+                          <div className="text-center">
+                            <div className="font-medium">{match.p1.name}</div>
+                          </div>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={forfeitWinner === match.p2.id ? "default" : "outline"}
+                          onClick={() => setForfeitWinner(match.p2.id)}
+                          className={`p-4 h-auto ${forfeitWinner === match.p2.id
+                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                            : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            }`}
+                        >
+                          <div className="text-center">
+                            <div className="font-medium">{match.p2.name}</div>
+                          </div>
+                        </Button>
                       </div>
-                    </div>
-                    {!useSets ? (
-                      form.watch("scores").map((_, index) => (
-                        <div key={index} className="flex items-start space-x-2">
-                          <FormField
-                            control={form.control}
-                            name={`scores.${index}.player1`}
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormControl>
-                                  <Input
-                                    type="text"
-                                    {...field}
-                                    value={field.value}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-
-                                      if (value === "") {
-                                        field.onChange(0);
-                                        return;
-                                      }
-
-                                      if (!/^\d*$/.test(value)) {
-                                        return;
-                                      }
-
-                                      const cleanedValue = value.replace(
-                                        /^0+(\d)/,
-                                        "$1",
-                                      );
-                                      const numberValue =
-                                        cleanedValue === ""
-                                          ? 0
-                                          : Number.parseInt(cleanedValue);
-
-                                      field.onChange(numberValue);
-                                    }}
-                                    className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name={`scores.${index}.player2`}
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormControl>
-                                  <Input
-                                    type="text"
-                                    {...field}
-                                    value={field.value}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-
-                                      if (value === "") {
-                                        field.onChange(0);
-                                        return;
-                                      }
-
-                                      if (!/^\d*$/.test(value)) {
-                                        return;
-                                      }
-
-                                      const cleanedValue = value.replace(
-                                        /^0+(\d)/,
-                                        "$1",
-                                      );
-                                      const numberValue =
-                                        cleanedValue === ""
-                                          ? 0
-                                          : Number.parseInt(cleanedValue);
-
-                                      field.onChange(numberValue);
-                                    }}
-                                    className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          {index >= 0 && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => remove(index)}
-                              className="bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 rounded-md"
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="flex items-start space-x-2">
-                        <Input
-                          type="text"
-                          value={
-                            extractSetsFromPoints(form.watch("scores")).p1_sets
-                          }
-                          onChange={(e) => handleSetChange(1, e.target.value)}
-                        />
-                        <Input
-                          type="text"
-                          value={
-                            extractSetsFromPoints(form.watch("scores")).p2_sets
-                          }
-                          onChange={(e) => handleSetChange(2, e.target.value)}
-                        />
-                      </div>
-                    )}
-                    {form.formState.errors.scores &&
-                      form.formState.errors.scores.root &&
-                      form.formState.errors.scores.root.message && (
-                        <p className="text-red-500 text-sm">
-                          {form.formState.errors.scores.root.message}
-                        </p>
-                      )}
-                    {!useSets && form.watch("scores").length < 7 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => append({ player1: 0, player2: 0 })}
-                        className="bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 rounded-md"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />{" "}
-                        {t("protocol.actions.add_set")}
-                      </Button>
-                    )}
-                  </CardContent>
+                    </CardContent>
+                  )}
                 </Card>
+
+                {/* Scores Section - Hidden when forfeit is enabled */}
+                {!isForfeit && (
+                  <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+                    <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
+                      <CardTitle className="text-lg text-gray-900 dark:text-white">
+                        <div className="flex items-center justify-between gap-2">
+                          {t("protocol.table.sets")}
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                              {t("protocol.table.use_sets")}
+                            </span>
+                            <Switch
+                              checked={useSets}
+                              onCheckedChange={setUseSets}
+                            />
+                          </div>
+                        </div>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4">
+                      <div className="grid grid-cols-2 gap-4 mb-2">
+                        <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          {match.p1.name}
+                        </div>
+                        <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          {match.p2.name}
+                        </div>
+                      </div>
+                      {!useSets ? (
+                        form.watch("scores").map((_, index) => (
+                          <div key={index} className="flex items-start space-x-2">
+                            <FormField
+                              control={form.control}
+                              name={`scores.${index}.player1`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormControl>
+                                    <Input
+                                      type="text"
+                                      {...field}
+                                      value={field.value}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+
+                                        if (value === "") {
+                                          field.onChange(0);
+                                          return;
+                                        }
+
+                                        if (!/^\d*$/.test(value)) {
+                                          return;
+                                        }
+
+                                        const cleanedValue = value.replace(
+                                          /^0+(\d)/,
+                                          "$1",
+                                        );
+                                        const numberValue =
+                                          cleanedValue === ""
+                                            ? 0
+                                            : Number.parseInt(cleanedValue);
+
+                                        field.onChange(numberValue);
+                                      }}
+                                      className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`scores.${index}.player2`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormControl>
+                                    <Input
+                                      type="text"
+                                      {...field}
+                                      value={field.value}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+
+                                        if (value === "") {
+                                          field.onChange(0);
+                                          return;
+                                        }
+
+                                        if (!/^\d*$/.test(value)) {
+                                          return;
+                                        }
+
+                                        const cleanedValue = value.replace(
+                                          /^0+(\d)/,
+                                          "$1",
+                                        );
+                                        const numberValue =
+                                          cleanedValue === ""
+                                            ? 0
+                                            : Number.parseInt(cleanedValue);
+
+                                        field.onChange(numberValue);
+                                      }}
+                                      className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            {index >= 0 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => remove(index)}
+                                className="bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 rounded-md"
+                              >
+                                <Minus className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex items-start space-x-2">
+                          <Input
+                            type="text"
+                            value={
+                              extractSetsFromPoints(form.watch("scores")).p1_sets
+                            }
+                            onChange={(e) => handleSetChange(1, e.target.value)}
+                          />
+                          <Input
+                            type="text"
+                            value={
+                              extractSetsFromPoints(form.watch("scores")).p2_sets
+                            }
+                            onChange={(e) => handleSetChange(2, e.target.value)}
+                          />
+                        </div>
+                      )}
+                      {form.formState.errors.scores &&
+                        form.formState.errors.scores.root &&
+                        form.formState.errors.scores.root.message && (
+                          <p className="text-red-500 text-sm">
+                            {form.formState.errors.scores.root.message}
+                          </p>
+                        )}
+                      {!useSets && form.watch("scores").length < 7 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => append({ player1: 0, player2: 0 })}
+                          className="bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 rounded-md"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />{" "}
+                          {t("protocol.actions.add_set")}
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
 
                 <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
                   <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">

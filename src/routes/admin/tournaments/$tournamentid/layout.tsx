@@ -10,17 +10,10 @@ import { useTranslation } from "react-i18next";
 import ErrorPage from "@/components/error";
 import { ErrorResponse } from "@/types/errors";
 import { useState, useRef, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import TournamentTableModal from "./-components/tournament-table-modal";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdmin } from "@/queries/tournaments";
+import TableStatusSidebar from "./-components/table-status-sidebar";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
   component: RouteComponent,
@@ -52,7 +45,6 @@ function RouteComponent() {
   const { t } = useTranslation();
   const tournament_tables = UseGetTournamentTablesQuery(Number(tournamentid));
 
-  const [isTablesModalOpen, setIsTablesModalOpen] = useState(false);
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
     left: "7.5rem",
@@ -136,30 +128,6 @@ function RouteComponent() {
                     </TabsTrigger>
                   </Link>
                 </div>
-
-                <Dialog
-                  open={isTablesModalOpen}
-                  onOpenChange={setIsTablesModalOpen}
-                >
-                  <DialogTrigger asChild>
-                    <TabsTrigger
-                      value="tables"
-                      className="w-[7rem] py-[6px] flex-shrink-0"
-                      onClick={() => setIsTablesModalOpen(true)}
-                    >
-                      {t("admin.layout.tables")}
-                    </TabsTrigger>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>
-                        {t("admin.layout.tables")} -{" "}
-                        {tournament_data.data?.name}
-                      </DialogTitle>
-                    </DialogHeader>
-                    <TournamentTableModal />
-                  </DialogContent>
-                </Dialog>
               </TabsList>
             </Tabs>
 
@@ -188,8 +156,13 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="px-4 md:px-9 pb-8">
-          <Outlet />
+        <div className="">
+          <div className="flex flex-col md:flex-row h-full">
+            <TableStatusSidebar />
+            <div className="flex-1 px-4 md:px-9 pb-8">
+              <Outlet />
+            </div>
+          </div>
         </div>
       </div>
     </div>
