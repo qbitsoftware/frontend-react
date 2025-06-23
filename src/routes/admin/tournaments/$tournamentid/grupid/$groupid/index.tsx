@@ -3,6 +3,7 @@ import TournamentTableForm from '../-components/table-form'
 import { UseGetTournamentTable } from '@/queries/tables'
 import ErrorPage from '@/components/error'
 import { ErrorResponse } from '@/types/errors'
+import TimetableForm from '../-components/timetable-form'
 
 export const Route = createFileRoute(
     '/admin/tournaments/$tournamentid/grupid/$groupid/',
@@ -39,6 +40,7 @@ function RouteComponent() {
     return (
         <div>
             <TournamentTableForm initial_data={table_data.data} />
+            <TimetableForm  tournament_table={table_data.data}/>
         </div>
     )
 }

@@ -687,6 +687,7 @@
         "layout": {
           "info": "Info",
           "participants": "Participants",
+          "timetable": "Timetable",
           "matches": "Matches",
           "tables": "Brackets",
           "view_all": "View all groups",

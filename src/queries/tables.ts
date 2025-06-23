@@ -2,6 +2,7 @@ import { TournamentTable } from "@/types/groups";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "./axiosconf";
 import TournamentTableForm from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
+import { TimetableFormValues } from "@/routes/admin/tournaments/$tournamentid/grupid/-components/timetable-form";
 
 export interface TournamentTableResponse {
     data: TournamentTable | null
@@ -124,6 +125,22 @@ export const UseDeleteTournamentTable = (tournament_id: number, tournament_table
         onSuccess: () => {
             queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
         },
+    })
+}
+
+export const UseGenerateTimeTable = (tournament_id: number, tournament_table_id: number) => {
+    // const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (formdata: TimetableFormValues) => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}/timetable`, formdata, {
+                withCredentials: true
+            })
+            return data;
+        },
+        // onSuccess: () => {
+        //     queryClient.invalidateQueries({ queryKey: ['tournament_table', tournament_table_id] })
+        //     queryClient.invalidateQueries({ queryKey: ['tournament_tables', tournament_id] })
+        // }
     })
 }
 

@@ -245,7 +245,7 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                 </AccordionTrigger>
 
                 <AccordionContent className="px-4 pt-2 pb-4">
-                    <div className="px-4">
+                    <div className="px-4 overflow-x-auto">
                         <Table>
                             <ParticipantHeader team={true} />
                             <TableBody>

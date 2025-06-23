@@ -724,6 +724,7 @@
         "layout": {
           "info": "Info",
           "participants": "Osalejad",
+          "timetable": "Ajakava",
           "matches": "Matšid",
           "tables": "Tabelid",
           "view_all": "Vaata kõiki",

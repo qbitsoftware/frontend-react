@@ -99,6 +99,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
       return stateOrder[a.match.state] - stateOrder[b.match.state];
     });
 
+
   }, [data, filterValue]);
 
   const handleCardClick = (match: MatchWrapper) => {

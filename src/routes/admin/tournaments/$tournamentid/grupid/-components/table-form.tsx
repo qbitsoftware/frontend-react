@@ -31,8 +31,6 @@ const createFormSchema = (t: TFunction) => z.object({
   max_team_size: z.number().optional(),
   woman_weight: z.number().min(1).max(10),
   size: z.number(),
-  start_time: z.string().optional(),
-  avg_match_duration: z.number().min(10).max(60),
 }).superRefine((data, ctx) => {
   if (data.solo) return;
 
@@ -76,10 +74,10 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
   const { t } = useTranslation()
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [durationInputValue, setDurationInputValue] = useState<string>(
-    initial_data?.avg_match_duration ? String(initial_data.avg_match_duration) : '15'
+  const [womanWeightInputValue, setWomanWeightInputValue] = useState<string>(
+    initial_data?.woman_weight ? String(initial_data.woman_weight) : '1'
   )
-  // const [customSize, setCustomSize] = useState("");
+
   const formSchema = createFormSchema(t)
 
   const { tournamentid } = useParams({ strict: false })
@@ -270,106 +268,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
 
                 <FormField
                   control={form.control}
-                  name="start_time"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("admin.tournaments.create_tournament.start_time")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="time"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t("admin.tournaments.create_tournament.start_time_description", "Select tournament start time (24-hour format)")}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="avg_match_duration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("admin.tournaments.create_tournament.avg_match_duration")}</FormLabel>
-                      <div className="grid grid-cols-[1fr,80px] items-center gap-4">
-                        <FormControl>
-                          <Slider
-                            min={10}
-                            max={60}
-                            step={5}
-                            value={[field.value && field.value >= 10 && field.value <= 60 ? field.value : 15]}
-                            onValueChange={(values) => {
-                              field.onChange(values[0]);
-                              setDurationInputValue(String(values[0]));
-                            }}
-                            className="pt-2"
-                          />
-                        </FormControl>
-                        <FormControl>
-                          <Input
-                            type='text'
-                            value={durationInputValue}
-                            onChange={(e) => {
-                              const value = e.target.value;
-
-                              // Always update the display value
-                              setDurationInputValue(value);
-
-                              // Allow completely empty string
-                              if (value === '') {
-                                return;
-                              }
-
-                              // Only allow numbers
-                              if (!/^\d+$/.test(value)) {
-                                return;
-                              }
-
-                              // Cap the value at 60 immediately
-                              const numValue = parseInt(value);
-                              if (numValue > 60) {
-                                field.onChange(60);
-                                setDurationInputValue('60');
-                              } else {
-                                field.onChange(numValue);
-                              }
-                            }}
-                            onBlur={() => {
-                              // Only apply defaults/bounds when user leaves the field
-                              if (durationInputValue === '') {
-                                field.onChange(15);
-                                setDurationInputValue('15');
-                              } else {
-                                const numValue = parseInt(durationInputValue);
-                                if (numValue < 10) {
-                                  field.onChange(10);
-                                  setDurationInputValue('10');
-                                } else if (numValue > 60) {
-                                  field.onChange(60);
-                                  setDurationInputValue('60');
-                                } else {
-                                  // Value is valid, make sure form field is in sync
-                                  field.onChange(numValue);
-                                }
-                              }
-                            }}
-                            className="w-20"
-                          />
-                        </FormControl>
-                      </div>
-                      <FormDescription>
-                        {t("admin.tournaments.create_tournament.avg_match_duration_description", "Average duration per match (10-60 minutes)")}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="solo"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 mb-3">
@@ -452,24 +350,65 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                           min={1}
                           max={10}
                           step={0.1}
-                          value={[field.value]}
-                          onValueChange={(values) => field.onChange(values[0])}
+                          value={[field.value && field.value >= 1 && field.value <= 10 ? field.value : 1]}
+                          onValueChange={(values) => {
+                            field.onChange(values[0]);
+                            setWomanWeightInputValue(String(values[0]));
+                          }}
                           className="pt-2"
                         />
                       </FormControl>
                       <FormControl>
                         <Input
-                          type='number'
-                          min={1}
-                          max={10}
-                          step={0.1}
-                          value={typeof field.value === 'number' ? field.value : 1}
+                          type='text'
+                          value={womanWeightInputValue}
                           onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value) && value >= 1 && value <= 10) {
-                              field.onChange(value);
-                            } else if (e.target.value === '') {
+                            const value = e.target.value;
+
+                            // Always update the display value
+                            setWomanWeightInputValue(value);
+
+                            // Allow completely empty string
+                            if (value === '') {
+                              return;
+                            }
+
+                            // Allow numbers with decimal point
+                            if (!/^\d*\.?\d*$/.test(value)) {
+                              return;
+                            }
+
+                            // Cap the value at 10 immediately
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue)) {
+                              if (numValue > 10) {
+                                field.onChange(10);
+                                setWomanWeightInputValue('10');
+                              } else if (numValue < 1) {
+                                field.onChange(1);
+                                setWomanWeightInputValue('1');
+                              } else {
+                                field.onChange(numValue);
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            // Only apply defaults/bounds when user leaves the field
+                            if (womanWeightInputValue === '') {
                               field.onChange(1);
+                              setWomanWeightInputValue('1');
+                            } else {
+                              const numValue = parseFloat(womanWeightInputValue);
+                              if (numValue < 1) {
+                                field.onChange(1);
+                                setWomanWeightInputValue('1');
+                              } else if (numValue > 10) {
+                                field.onChange(10);
+                                setWomanWeightInputValue('10');
+                              } else {
+                                // Value is valid, make sure form field is in sync
+                                field.onChange(numValue);
+                              }
                             }
                           }}
                           className="w-20"

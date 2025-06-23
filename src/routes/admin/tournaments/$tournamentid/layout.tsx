@@ -156,12 +156,13 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="">
-          <div className="flex flex-col md:flex-row h-full">
+        <div className="flex w-full">
+          {/* <div className="flex flex-col md:flex-row h-full"> */}
+          <div className="flex-1 px-4 md:px-9 pb-8">
+            <Outlet />
+          </div>
+          <div className="">
             <TableStatusSidebar />
-            <div className="flex-1 px-4 md:px-9 pb-8">
-              <Outlet />
-            </div>
           </div>
         </div>
       </div>
