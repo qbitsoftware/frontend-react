@@ -64,7 +64,7 @@ const TableStatusSidebar = () => {
     }
 
     return (
-        <div className="min-w-[16rem] flex flex-col border-l h-screen">
+        <div className="hidden min-w-[16rem] lg:flex flex-col border-l h-screen">
             <div className="flex items-center justify-between h-[68px] px-2 border-b">
                 <h3 className="text-lg font-semibold">
                     Tables {tableStatuses.filter(t => t.isOccupied).length}/{tableStatuses.length}
