@@ -15,6 +15,7 @@ import { ErrorResponse } from "@/types/errors";
 import { useUser } from "@/providers/userProvider";
 import { OnboardingProvider } from "@/providers/tutorialProvider";
 import { GlobalOnboarding } from "@/components/global-onboarding";
+import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
 
 // Helper function to get cookie value
 function getCookie(name: string) {
@@ -76,6 +77,7 @@ function RouteComponent() {
             <div className="w-full overflow-x-auto">
               <Outlet />
             </div>
+            <TableStatusSidebar />
           </SidebarProvider>
           <AdminBottomNav />
           <GlobalOnboarding />

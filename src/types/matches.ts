@@ -12,6 +12,8 @@ export enum MatchState {
   ONGOING = "ongoing"
 }
 
+export type FilterOption = "all" | "winner_declared" | "ongoing" | "not_started"
+
 export enum GroupType {
   SINGLE_ELIM = "single_elimination",
   SINGLE_ELIM_BRONZE = "single_elimination_bronze",
@@ -72,6 +74,8 @@ export type Match = {
   forfeit: boolean
   start_date: string
   extra_data: TableTennisExtraData
+  next_winner_bracket?: string
+  next_loser_bracket?: string
   topCoord: number // for front end purposes
   table_type: string
   state: MatchState;

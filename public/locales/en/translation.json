@@ -973,6 +973,7 @@
       },
       "matches": {
         "table": {
+          "bracket": "Bracket",
           "modify": "Modify",
           "serial_number": "SN.",
           "round": "Round",
@@ -984,7 +985,9 @@
           "participant_2_score": "Participant 2 score",
           "winner_placement": "Winner placement",
           "loser_placement": "Loser placement",
-          "winner": "Winner"
+          "winner": "Winner",
+          "winner_bracket": "Winner",
+          "loser_bracket": "Loser"
         },
         "not_played": "Not played yet"
       },

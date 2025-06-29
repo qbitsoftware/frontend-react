@@ -38,7 +38,10 @@ function RouteComponent() {
 
   return (
     <div>
-      <TournamentTables tables={tournament_tables?.data} tournament={tournament.data} />
+      <TournamentTables
+        tables={tournament_tables?.data}
+        tournament={tournament.data}
+      />
     </div>
   )
 }

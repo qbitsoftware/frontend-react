@@ -80,7 +80,7 @@ function RouteComponent() {
                   className={cn(
                     'w-full sm:w-[7rem] py-[6px]',
                     currentTab === tab.value &&
-                    'bg-secondary text-white hover:bg-secondary/90',
+                      'bg-secondary text-white hover:bg-secondary/90',
                     currentTab !== tab.value && 'hover:bg-secondary/10',
                   )}
                 >

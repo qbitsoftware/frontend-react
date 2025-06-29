@@ -63,6 +63,7 @@ const EliminationMatch = ({
                             match.match.extra_data &&
                             match.match.extra_data.table
                         }
+                        showLabel={true}
                     />
                 ) :
                     match.match.extra_data && match.match.extra_data.table ? (

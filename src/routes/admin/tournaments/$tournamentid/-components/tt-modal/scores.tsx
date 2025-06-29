@@ -11,12 +11,12 @@ const Scores = () => {
         match,
         childMatches,
         isLoading,
-        player_count,
+        playerCount,
         handleForfeitMatch
     } = useProtocolModal()
 
 
-    const order = generateMatchOrderLabels(player_count)
+    const order = generateMatchOrderLabels(playerCount)
 
     const { t } = useTranslation()
 

@@ -12,8 +12,8 @@ import { useTranslation } from "react-i18next";
 export function Content() {
 
   const {
-    player_count,
-    match,
+    playerCount,
+    match,  
     notes,
     headReferee,
     tableReferee,
@@ -82,8 +82,8 @@ export function Content() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TeamPlayers key={1} team={1} playerCount={player_count} players={getAvailablePlayers(1)} />
-            <TeamPlayers key={2} team={2} playerCount={player_count} players={getAvailablePlayers(2)} />
+            <TeamPlayers key={1} team={1} playerCount={playerCount} players={getAvailablePlayers(1)} />
+            <TeamPlayers key={2} team={2} playerCount={playerCount} players={getAvailablePlayers(2)} />
           </div>
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1">

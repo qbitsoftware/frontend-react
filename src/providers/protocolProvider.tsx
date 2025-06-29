@@ -10,16 +10,16 @@ interface ProtocolModalProps {
     isOpen: boolean;
     onClose: () => void;
     match: MatchWrapper;
-    tournament_id: number;
-    player_count: number
+    tournamentId: number;
+    playerCount: number
     children: ReactNode
 }
 
 interface ProtocolModalContextValues {
     playerMatches: MatchWrapper[];
     isOpen: boolean;
-    tournament_id: number;
-    player_count: number;
+    tournamentId: number;
+    playerCount: number;
     match: MatchWrapper;
     notes: string
     headReferee: string
@@ -52,8 +52,8 @@ export const ProtocolModalProvider = ({
     isOpen,
     onClose,
     match,
-    tournament_id,
-    player_count,
+    tournamentId,
+    playerCount,
     children
 }: ProtocolModalProps) => {
 
@@ -77,30 +77,30 @@ export const ProtocolModalProvider = ({
 
     // Queries
     const { data: childMatches, isLoading } = UseGetChildMatchesQuery(
-        tournament_id,
+        tournamentId,
         match.match.tournament_table_id,
         match.match.id
     )
     // Mutations
     const { mutateAsync: startMatch } = UseStartMatch(
-        tournament_id,
+        tournamentId,
         match.match.tournament_table_id,
         match.match.id
     )
     const { mutateAsync: updateMatch } = UsePatchMatch(
-        tournament_id,
+        tournamentId,
         match.match.tournament_table_id,
         match.match.id
     )
 
     const { mutateAsync: switchParticipants } = UsePatchMatchSwitch(
-        tournament_id,
+        tournamentId,
         match.match.tournament_table_id,
         match.match.id
     )
 
     const { mutateAsync: resetMatch } = UsePatchMatchReset(
-        tournament_id,
+        tournamentId,
         match.match.tournament_table_id,
         match.match.id
     )
@@ -292,8 +292,8 @@ export const ProtocolModalProvider = ({
     const ProtocolModalValues: ProtocolModalContextValues = {
         playerMatches,
         isOpen,
-        tournament_id,
-        player_count,
+        tournamentId,
+        playerCount,
         match,
         notes,
         headReferee,

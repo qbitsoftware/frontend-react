@@ -15,16 +15,16 @@ import { useTranslation } from 'react-i18next'
 interface ReGroupingProps {
     isOpen: boolean
     onClose: () => void
-    tournament_id: number
+    tournamentId: number
     state: string
 }
 
-const ReGrouping: React.FC<ReGroupingProps> = ({ isOpen, onClose, tournament_id, state }) => {
+const ReGrouping: React.FC<ReGroupingProps> = ({ isOpen, onClose, tournamentId, state }) => {
     const params = useParams({ strict: false })
-    const { data } = UseGetParticipantsQuery(tournament_id, Number(params.groupid), true)
+    const { data } = UseGetParticipantsQuery(tournamentId, Number(params.groupid), true)
     const [participants, setParticipants] = useState<Participant[]>([])
-    const useRegroupMutation = UseRegroupMatches(tournament_id, Number(params.groupid), true)
-    const useFinalsMutation = UseRegroupMatches(tournament_id, Number(params.groupid), false, true)
+    const useRegroupMutation = UseRegroupMatches(tournamentId, Number(params.groupid), true)
+    const useFinalsMutation = UseRegroupMatches(tournamentId, Number(params.groupid), false, true)
 
     const { t } = useTranslation()
 
