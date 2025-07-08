@@ -13,7 +13,6 @@ import { useState, useRef, useEffect } from "react";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdmin } from "@/queries/tournaments";
-import TableStatusSidebar from "./-components/table-status-sidebar";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
   component: RouteComponent,
@@ -155,15 +154,8 @@ function RouteComponent() {
               )}
           </div>
         </div>
-
-        <div className="flex w-full">
-          {/* <div className="flex flex-col md:flex-row h-full"> */}
-          <div className="flex-1 px-4 md:px-9 pb-8">
-            <Outlet />
-          </div>
-          <div className="">
-            <TableStatusSidebar />
-          </div>
+        <div className="px-4 md:px-9 pb-8">
+          <Outlet />
         </div>
       </div>
     </div>

@@ -1,5 +1,12 @@
 import type { Player } from "./players";
 
+export const ParticipantType = {
+  P1: "p1",
+  P2: "p2",
+}
+
+export type ParticipantType = typeof ParticipantType[keyof typeof ParticipantType];
+
 export type Participant = {
   id: string;
   name: string;

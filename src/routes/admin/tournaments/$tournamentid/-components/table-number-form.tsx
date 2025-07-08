@@ -13,9 +13,10 @@ interface TableNumberFormProps {
   match: Match
   initialTableNumber: string
   brackets: boolean
+  showLabel?: boolean
 }
 
-export function TableNumberForm({ match, initialTableNumber, brackets }: TableNumberFormProps) {
+export function TableNumberForm({ match, initialTableNumber, brackets, showLabel = false }: TableNumberFormProps) {
   const params = useParams({ strict: false })
   const { data: freeVenues, isLoading, isError } = UseGetFreeVenues(Number(params.tournamentid))
   const { t } = useTranslation()
@@ -45,7 +46,7 @@ export function TableNumberForm({ match, initialTableNumber, brackets }: TableNu
 
   return (
     <div className="flex items-center gap-3">
-      <Label className={cn(brackets ? "text-[8px]" : "")}>{t("admin.tournaments.matches.table.table")}</Label>
+      {showLabel && <Label className={cn(brackets ? "text-[8px]" : "")}>{t("admin.tournaments.matches.table.table")}</Label>}
       <Select value={String(tableNumber)} onValueChange={handleChange}>
         <SelectTrigger className={cn(brackets ? "h-[20px]" : "h-8")}>
           <span className={cn(brackets ? "text-[10px]" : "")}>{tableNumber}</span>

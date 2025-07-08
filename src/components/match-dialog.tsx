@@ -28,7 +28,7 @@ interface MatchDialogProps {
   open: boolean;
   onClose: (open: boolean) => void;
   match: MatchWrapper;
-  tournament_id: number;
+  tournamentId: number;
 }
 
 const scoreSchema = z.object({
@@ -50,7 +50,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   open,
   onClose,
   match,
-  tournament_id,
+  tournamentId,
 }) => {
   const form = useForm<MatchFormValues>({
     resolver: zodResolver(matchFormSchema),
@@ -97,13 +97,13 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   };
 
   const usePatchMatch = UsePatchMatch(
-    tournament_id,
+    tournamentId,
     match.match.tournament_table_id,
     match.match.id,
   );
 
   const useResetMatch = UsePatchMatchReset(
-    tournament_id,
+    tournamentId,
     match.match.tournament_table_id,
     match.match.id,
   );

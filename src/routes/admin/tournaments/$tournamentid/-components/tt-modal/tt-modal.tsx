@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 export const TableTennisProtocolModal = () => {
     const { t } = useTranslation()
-    const { isOpen, onClose, tournament_id, match } = useProtocolModal()
+    const { isOpen, onClose, tournamentId, match } = useProtocolModal()
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -21,9 +21,9 @@ export const TableTennisProtocolModal = () => {
                             <span>vs</span>
                             <span className="font-bold">{match.p2.name}</span>
                             <ProtocolDownloadButton
-                                tournament_id={tournament_id}
-                                group_id={match.match.tournament_table_id}
-                                match_id={match.match.id}
+                                tournamentId={tournamentId}
+                                groupId={match.match.tournament_table_id}
+                                matchId={match.match.id}
                             />
                         </DialogTitle>
                         <div className="flex items-center gap-2">
