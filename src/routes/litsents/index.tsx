@@ -27,13 +27,13 @@ export const Route = createFileRoute("/litsents/")({
 
 const getLicenseTypePrice = (licenseType: LicenseType): number => {
   const priceMap = {
-    [LicenseType.ADULT]: 25,
-    [LicenseType.CHILD]: 10,
-    [LicenseType.YOUTH]: 15,
-    [LicenseType.SENIOR]: 20,
-    [LicenseType.FOREIGNER]: 25,
-    [LicenseType.NO_CLUB]: 35,
-    [LicenseType.ONE_TIME]: 10,
+    [LicenseType.ADULT]: 40,
+    [LicenseType.CHILD]: 15,
+    [LicenseType.YOUTH]: 25,
+    [LicenseType.SENIOR]: 25,
+    [LicenseType.FOREIGNER]: 40,
+    [LicenseType.NO_CLUB]: 65,
+    [LicenseType.ONE_TIME]: 15,
     [LicenseType.NONE]: 0,
   };
   return priceMap[licenseType] || 0;

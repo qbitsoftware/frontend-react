@@ -678,7 +678,7 @@
       },
       "tables": {
         "no_tables": "No tables have been assigned yet",
-        "title": "Table management",
+        "title": "Tables",
         "taken": "Occupied",
         "free": "Free",
         "empty_placeholder": "Table available for matches"

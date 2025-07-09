@@ -599,7 +599,7 @@
         "feedback": "Tagasiside"
       },
       "info": "Turniiri info",
-      "groups": "Võistlusgrupid",
+      "groups": "Võistlusklassid",
       "media": "Meedia",
       "tables": "Lauad",
       "images": "Pildid",
@@ -668,7 +668,7 @@
         },
         "back": "Tagasi",
         "edit_group": "Muuda grupi seadistusi",
-        "create_group": "Loo grupp",
+        "create_group": "Loo võistlusklass",
         "title_create": "Loo uus turniir",
         "woman_weight": "Naiste reitingu kaal",
         "woman_weight_description": "Naiste reiting korrutatakse selle kaaluga",
@@ -715,7 +715,7 @@
       },
       "tables": {
         "no_tables": "Laudu pole veel lisatud",
-        "title": "Laudade haldamine",
+        "title": "Mängulauad",
         "taken": "Võetud",
         "free": "Vaba",
         "empty_placeholder": "Laud on mänguks vaba"
@@ -773,7 +773,7 @@
         },
         "add_new": "Lisa uus",
         "no_tables": "Gruppe pole veel lisatud",
-        "title": "Turniiri grupid",
+        "title": "Turniiri klassid",
         "errors": {
           "class": "Grupi nimi on kohustuslik",
           "type": "Turniiri tüüp on kohustuslik",
