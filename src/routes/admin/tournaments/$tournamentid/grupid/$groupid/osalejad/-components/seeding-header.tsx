@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { MatchesResponse, UseGetMatchesQuery } from "@/queries/match";
-import { UsePostOrder, UsePostSeeding, UsePostOrderReset } from "@/queries/participants";
-import { useEffect, useState } from "react";
+import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants } from "@/queries/participants";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import seeds3 from "@/assets/seeds3.png";
 import { TournamentTable } from "@/types/groups";
@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Upload } from "lucide-react";
 
 interface SeedingHeaderProps {
   tournament_id: number;
@@ -41,7 +42,9 @@ const SeedingHeader = ({
   const updateSeeding = UsePostSeeding(tournament_id, table_data.id);
   const updateOrder = UsePostOrder(tournament_id, table_data.id);
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
+  const importMutation = UseImportParticipants(tournament_id, table_data.id)
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getClosestPowerOf2 = (num: number): number => {
     if (num <= 8) return 8;
@@ -134,6 +137,32 @@ const SeedingHeader = ({
     }
   };
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+      toast.error(t('toasts.participants.invalid_file_format', 'Please select an Excel file (.xlsx or .xls)'));
+      return;
+    }
+
+    try {
+      await importMutation.mutateAsync(file)
+
+      toast.message(t('toasts.participants.import_success', 'Participants imported successfully'));
+    } catch (error: any) {
+      toast.error(error.response?.data.error);
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <CardHeader className="flex flex-col items-start gap-4 space-y-0">
       <div className="flex gap-2 items-center">
@@ -163,6 +192,25 @@ const SeedingHeader = ({
           >
             <span>{t("admin.tournaments.groups.order.title")}</span>
             <img src={seeds3} className="h-4 w-4 object-contain" />
+          </Button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+
+          <Button
+            onClick={handleImportClick}
+            disabled={disabled}
+            variant="outline"
+            size="sm"
+            className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5"
+          >
+            <Upload className="h-4 w-4" />
+            <span>{t("admin.tournaments.groups.import.title", "Import Excel")}</span>
           </Button>
         </div>
 
