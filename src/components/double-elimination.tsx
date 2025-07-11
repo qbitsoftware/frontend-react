@@ -4,6 +4,7 @@ import { MatchWrapper } from "@/types/matches";
 import EliminationMatch from "./elimination-match";
 import { organizeMatchesByRound, calculateConnectorHeight, calculateRoundGap } from "./utils/utils"
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface BracketProps {
     admin: boolean
@@ -19,6 +20,7 @@ export const DoubleElimination = ({
     handleSelectMatch
 }: BracketProps) => {
     const matches = organizeMatchesByRound(data.matches);
+    const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
 
     return (
         <div className="flex h-full items-center">
@@ -41,6 +43,8 @@ export const DoubleElimination = ({
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}
                                                 match={match}
+                                                hoveredPlayerId={hoveredPlayerId}
+                                                onPlayerHover={setHoveredPlayerId}
                                             />
                                         </div>
                                     ))}
@@ -60,6 +64,8 @@ export const DoubleElimination = ({
                                                 tournamentTable={tournament_table}
                                                 key={match.match.id}
                                                 match={match}
+                                                hoveredPlayerId={hoveredPlayerId}
+                                                onPlayerHover={setHoveredPlayerId}
                                             />
                                         </div>
                                     )

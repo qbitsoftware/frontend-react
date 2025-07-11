@@ -17,6 +17,8 @@ interface EliminationMatchProps {
   tournamentTable: TournamentTable;
   handleSelectMatch?: (match: MatchWrapper) => void;
   admin: boolean;
+  hoveredPlayerId?: string | null;
+  onPlayerHover?: (playerId: string | null) => void;
 }
 
 const EliminationMatch = ({
@@ -24,11 +26,21 @@ const EliminationMatch = ({
   tournamentTable,
   handleSelectMatch,
   admin = false,
+  hoveredPlayerId,
+  onPlayerHover,
 }: EliminationMatchProps) => {
   void tournamentTable;
 
   const { t } = useTranslation();
   const { p1_sets, p2_sets } = extractMatchSets(match);
+
+  const isPlayerInMatch = (playerId: string | null | undefined) => {
+    return playerId && (match.participant_1.id === playerId || match.participant_2.id === playerId);
+  };
+
+  const handlePlayerHover = (playerId: string | null) => {
+    onPlayerHover?.(playerId);
+  };
 
   const isTournamentWinner = (
     match: TableMatch,
@@ -110,9 +122,10 @@ const EliminationMatch = ({
       </div>
       <div
         className={cn(
-          "relative flex w-full h-1/2 items-center",
+          "relative flex w-full h-1/2 items-center transition-all duration-200",
           isTournamentWinner(match, match.participant_1.id) &&
             "bg-green-200/50",
+          hoveredPlayerId === match.participant_1.id && "ring-2 ring-blue-400 bg-blue-50 shadow-md"
         )}
       >
         <div className="absolute text-[8px] left-1">
@@ -137,9 +150,11 @@ const EliminationMatch = ({
             </span>
             <p
               className={cn(
-                "w-full text-xs",
+                "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors",
                 p1_sets > p2_sets && "font-semibold",
               )}
+              onMouseEnter={() => handlePlayerHover(match.participant_1.id)}
+              onMouseLeave={() => handlePlayerHover(null)}
             >
               {capitalizeWords(match.participant_1.name)}
             </p>
@@ -156,9 +171,10 @@ const EliminationMatch = ({
       </div>
       <div
         className={cn(
-          "relative flex w-full h-1/2 items-center",
+          "relative flex w-full h-1/2 items-center transition-all duration-200",
           isTournamentWinner(match, match.participant_2.id) &&
             "bg-green-200/50",
+          hoveredPlayerId === match.participant_2.id && "ring-2 ring-blue-400 bg-blue-50 shadow-md"
         )}
       >
         <div className="absolute text-[8px] left-1">
@@ -183,9 +199,11 @@ const EliminationMatch = ({
             </span>
             <p
               className={cn(
-                "w-full text-xs",
+                "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors",
                 p2_sets > p1_sets && "font-semibold",
               )}
+              onMouseEnter={() => handlePlayerHover(match.participant_2.id)}
+              onMouseLeave={() => handlePlayerHover(null)}
             >
               {capitalizeWords(match.participant_2.name)}
             </p>
