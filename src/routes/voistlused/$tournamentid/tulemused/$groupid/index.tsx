@@ -102,8 +102,8 @@ function RouteComponent() {
           className="w-full"
           defaultValue={activeTab}
         >
-          <div className="flex flex-col items-center">
-            <h4 className="text-center font-medium pt-4 pb-2">{groupName}</h4>
+          <div className="flex flex-col items-start">
+            <h4 className="text-center font-medium ml-2 pt-4 pb-2">{groupName}</h4>
 
             <TabsList className="h-10 space-x-2">
               {isMeistrikad && (
@@ -167,7 +167,7 @@ function RouteComponent() {
 
           {/* Bracket tab content */}
           {hasBracketData && (
-            <TabsContent value="bracket" className="w-full mt-6">
+            <TabsContent value="bracket" className="w-full mt-2">
               {isMeistrikad && bracketQuery.data?.data?.round_robins?.[0] && (
                 <GroupBracket
                   brackets={bracketQuery.data.data.round_robins[0]}
@@ -186,7 +186,7 @@ function RouteComponent() {
           )}
 
           {/* Placement tab content */}
-          <TabsContent value="placement" className="w-full mt-6">
+          <TabsContent value="placement" className="w-full mt-2">
             {isFreeForAll ? (
               <div className="text-center text-stone-700">
                 {t("competitions.errors.no_groups")}

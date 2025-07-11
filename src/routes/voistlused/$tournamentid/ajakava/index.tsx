@@ -40,7 +40,7 @@ export const Route = createFileRoute("/voistlused/$tournamentid/ajakava/")({
 
 function RouteComponent() {
   const { matchesData, tournamentTables } = Route.useLoaderData();
-  const [activeDay, setActiveDay] = useState<number>(0);
+  const [activeDay, setActiveDay] = useState<number | string>("all");
   const [activeClass, setActiveClass] = useState<string>("all");
   const [activeStatus, setActiveStatus] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,19 +77,18 @@ function RouteComponent() {
     [safeMatches],
   );
 
-  // Ensure activeDay is within bounds
-  const safeDayIndex = useMemo(
-    () => (activeDay >= 0 && activeDay < uniqueGamedays.length ? activeDay : 0),
-    [activeDay, uniqueGamedays.length],
-  );
-
   // Memoize filtered and sorted matches
   const { displayMatches, displayMatchCount } = useMemo(() => {
-    // First filter by gameday
-    let matches = filterMatchesByGameday(
-      classFilteredMatches,
-      uniqueGamedays[safeDayIndex],
-    );
+    // Filter by date/gameday
+    let matches = classFilteredMatches;
+    
+    if (activeDay !== "all") {
+      // If activeDay is a number, filter by that specific date
+      if (typeof activeDay === "number" && activeDay >= 0 && activeDay < uniqueGamedays.length) {
+        matches = filterMatchesByGameday(matches, uniqueGamedays[activeDay]);
+      }
+    }
+    // If activeDay is "all", don't filter by date - show all matches
 
     // Filter out matches without any players
     matches = matches.filter((match) => {
@@ -152,7 +151,7 @@ function RouteComponent() {
   }, [
     classFilteredMatches,
     uniqueGamedays,
-    safeDayIndex,
+    activeDay,
     searchTerm,
     activeStatus,
   ]);

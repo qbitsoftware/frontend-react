@@ -22,6 +22,17 @@ export const DoubleElimination = ({
     const matches = organizeMatchesByRound(data.matches);
     const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
 
+    const shouldHighlightConnector = (match: typeof data.matches[0]) => {
+        if (!hoveredPlayerId) return false;
+        
+        const isPlayerInCurrentMatch = match.participant_1.id === hoveredPlayerId || match.participant_2.id === hoveredPlayerId;
+        
+        if (!isPlayerInCurrentMatch) return false;
+        
+        // Check if the player won this match and would advance
+        return match.match.winner_id === hoveredPlayerId;
+    };
+
     return (
         <div className="flex h-full items-center">
             {Object.entries(matches).map(([round, roundMatches], roundIndex) => {
@@ -94,18 +105,18 @@ export const DoubleElimination = ({
 
                                                 <div className={cn("absolute text-[8px]", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
                                                 <div className={cn("py-[27px]", isEven ? 'self-start' : 'self-end')}>
-                                                    <div className={cn("w-4 h-[1px] bg-gray-500 self-start", isEven ? 'self-start' : 'self-end')} />
+                                                    <div className={cn("w-4 self-start", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                                 </div>
                                                 <div
                                                     className={cn(
-                                                        "w-[1px] bg-gray-500",
-                                                        !isEven ? "self-start" : "self-end"
+                                                        !isEven ? "self-start" : "self-end",
+                                                        shouldHighlightConnector(match) ? 'w-[2px] bg-blue-400' : 'w-[2px] bg-blue-200'
                                                     )}
                                                     style={{
                                                         height: connectorHeight - BRACKET_CONSTANTS.CONNECTOR_LINE_HEIGHT,
                                                     }}
                                                 />
-                                                <div className={cn("w-4 h-[1px] bg-gray-500 self-start", isEven ? 'self-end' : 'self-start')} />
+                                                <div className={cn("w-4 self-start", isEven ? 'self-end' : 'self-start', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                             </div>
                                         )
                                     } else {
@@ -121,7 +132,7 @@ export const DoubleElimination = ({
 
                                                 <div className={cn("absolute text-[8px]", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
                                                 <div className={cn("py-[27px]", isEven ? 'self-start' : 'self-end')}>
-                                                    <div className={cn("w-4 h-[1px] bg-gray-500 self-start", isEven ? 'self-start' : 'self-end')} />
+                                                    <div className={cn("w-4 self-start", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                                 </div>
 
                                             </div>

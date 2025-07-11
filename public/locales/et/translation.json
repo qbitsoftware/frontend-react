@@ -397,11 +397,11 @@
       "status_completed": "Lõppenud",
       "status_pending": "Käimasolevad",
       "status_scheduled": "Tulemas",
-      "status_all": "Kõik",
+      "status_all": "Kõik Mängud",
       "bracket": "Koht",
       "final": "Finaal",
       "winner": "Võitja",
-      "matches": "Matšid",
+      "matches": "Mängud",
       "timetable": "Ajakava"
     },
     "errors": {
@@ -415,7 +415,7 @@
     },
     "navbar": {
       "info": "Info",
-      "matches": "Mängud",
+      "matches": "Ajakava",
       "standings": "Kohad",
       "results": "Tabelid",
       "participants": "Osalejad",
@@ -727,7 +727,7 @@
           "info": "Info",
           "participants": "Osalejad",
           "timetable": "Ajakava",
-          "matches": "Matšid",
+          "matches": "Mängud",
           "tables": "Tabelid",
           "view_all": "Vaata kõiki",
           "view_all_description": "Halda kõiki turniiri gruppe"
@@ -1233,8 +1233,8 @@
       "seeding_error": "Osalejate asetamine nurjus. Palun proovige uuesti",
       "order_success": "Osalejate järjekorda panemine õnnestus",
       "order_error": "Osalejate järjekorda panemine nurjus. Palun proovige uuesti",
-      "reset_success": "Matšid lähtestatud edukalt",
-      "reset_error": "Matšide lähtestamine nurjus. Palun proovige uuesti"
+      "reset_success": "Mängude lähtestatud edukalt",
+      "reset_error": "Mängude lähtestamine nurjus. Palun proovige uuesti"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",
