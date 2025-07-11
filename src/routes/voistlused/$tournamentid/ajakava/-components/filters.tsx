@@ -11,8 +11,8 @@ import { useTranslation } from "react-i18next";
 
 interface ScheduleFiltersProps {
   gamedays: string[];
-  activeDay: number;
-  setActiveDay: (day: number) => void;
+  activeDay: number | string;
+  setActiveDay: (day: number | string) => void;
   totalDays: number;
   classes: string[];
   activeClass: string;
@@ -29,7 +29,6 @@ export const Filters = ({
   gamedays,
   activeDay,
   setActiveDay,
-  totalDays,
   classes,
   activeClass,
   setActiveClass,
@@ -39,6 +38,50 @@ export const Filters = ({
   setSearchTerm,
 }: ScheduleFiltersProps) => {
   const { t } = useTranslation();
+
+  // Format date for display
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        // Fallback: try to format manually if Date parsing fails
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+          const [, month, day] = parts;
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return `${day.padStart(2, '0')} ${monthNames[parseInt(month) - 1]}`;
+        }
+        return dateString;
+      }
+      
+      return date.toLocaleDateString('en', {
+        day: '2-digit',
+        month: 'short'
+      });
+    } catch (error) {
+      console.error('Date formatting error:', error, 'for date:', dateString);
+      // Fallback: try to format manually
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const [, month, day] = parts;
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${day.padStart(2, '0')} ${monthNames[parseInt(month) - 1]}`;
+      }
+      return dateString;
+    }
+  };
+
+  // Get display text for active day
+  const getActiveDayDisplay = (): string => {
+    if (activeDay === "all") {
+      return "All Dates";
+    }
+    if (typeof activeDay === "number" && gamedays[activeDay]) {
+      return formatDate(gamedays[activeDay]);
+    }
+    return "All Dates";
+  };
 
   const statusOptions = [
     {
@@ -109,32 +152,35 @@ export const Filters = ({
           </DropdownMenu>
         )}
 
-        {/* Gameday Filter */}
+        {/* Date Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               className="flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#f1f2f7]/70"
             >
-              <span>
-                {gamedays[activeDay]
-                  ? `${t("competitions.timetable.gameday")} ${activeDay + 1}`
-                  : `${t("competitions.timetable.gameday")} ${activeDay + 1}`}
-              </span>
+              <span>{getActiveDayDisplay()}</span>
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="space-y-1 max-h-[240px] overflow-y-scroll">
-            {Array.from({ length: totalDays }).map((_, index) => (
+            {/* All Dates Option */}
+            <DropdownMenuItem
+              onClick={() => setActiveDay("all")}
+              className={activeDay === "all" ? "bg-slate-100" : ""}
+            >
+              All Dates
+            </DropdownMenuItem>
+            
+            {/* Individual Date Options */}
+            {gamedays.map((date, index) => (
               <DropdownMenuItem
-                key={index}
+                key={date}
                 onClick={() => setActiveDay(index)}
                 className={activeDay === index ? "bg-slate-100" : ""}
               >
-                {gamedays[index]
-                  ? `${t("competitions.timetable.gameday")} ${index + 1}`
-                  : `${t("competitions.timetable.gameday")} ${index + 1}`}
+                {formatDate(date)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

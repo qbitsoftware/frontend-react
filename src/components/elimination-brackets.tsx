@@ -47,10 +47,10 @@ export const EliminationBrackets = ({
         <div className=" px-4 flex flex-col w-full bg-[#F8F9FA] rounded-t pdf-background">
           <div className="flex justify-between mt-2 items-center"></div>
           <div className="flex justify-between z-10">
-            <h1 className="text-base font-medium">{tournament_table.class}</h1>
+            <h1 className="text-base font-medium"></h1>
             <Button
               variant="outline"
-              className="self-end"
+              className="self-end float-right"
               onClick={handlePrint}
             >
               <Printer className="mr-1 h-4 w-4" />
