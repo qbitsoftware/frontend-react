@@ -41,7 +41,7 @@ const matchFormSchema = z.object({
   mainReferee: z.string().optional(),
   scores: z
     .array(scoreSchema)
-    .max(7, "A maximum of 7 scores are allowed for best of 7"),
+    .max(7, "A maximum of 7 scores are allowed for best of 7!"),
 });
 
 type MatchFormValues = z.infer<typeof matchFormSchema>;

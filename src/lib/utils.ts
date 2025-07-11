@@ -206,6 +206,18 @@ export const formatDateGetDayMonthYear = (dateTime: string) => {
   return `${dayOfWeek}, ${dayOfMonth}${ordinalSuffix} ${month} ${year}`;
 }
 
+export const formatDateGetDayMonth = (dateTime: string) => {
+  const date = new Date(dateTime);
+  const locale = i18n.language;
+
+  const dayOfWeek = date.toLocaleString(locale, { weekday: 'short' });
+  const dayOfMonth = date.getDate();
+  const month = date.toLocaleString(locale, { month: 'short' });
+  const ordinalSuffix = getLocalizedOrdinalSuffix(dayOfMonth, locale);
+
+  return `${dayOfWeek}, ${dayOfMonth}${ordinalSuffix} ${month}`;
+}
+
 const getLocalizedOrdinalSuffix = (day: number, locale: string): string => {
   if (locale.startsWith('en')) {
     if (day > 3 && day < 21) return 'th';
