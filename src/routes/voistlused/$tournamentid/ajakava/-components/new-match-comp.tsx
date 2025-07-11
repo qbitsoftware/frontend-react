@@ -2,12 +2,12 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { cn, formatDateGetDayMonthYear, formatDateGetHours } from "@/lib/utils";
 import { TournamentTable } from "@/types/groups";
-import { GroupType, MatchWrapper } from "@/types/matches";
+import { MatchWrapper } from "@/types/matches";
 import { Participant } from "@/types/participants";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import blueprofile from "@/assets/blue-profile.png";
-import { Clock, MapPin, Trophy } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 
 interface ITTFMatchComponentProps {
   match: MatchWrapper;
@@ -183,11 +183,6 @@ const ITTFMatchUserComponent = ({
           >
             {truncateName(participant.name, 15)}
           </p>
-          {participant.extra_data?.club && (
-            <p className="text-xs text-gray-500">
-              {participant.extra_data.club}
-            </p>
-          )}
         </div>
       </div>
 

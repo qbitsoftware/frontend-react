@@ -4,7 +4,6 @@ import {
   capitalizeWords,
   cn,
   formatDateGetDayMonth,
-  formatDateGetDayMonthYear,
   formatDateGetHours,
 } from "@/lib/utils";
 import { extractMatchSets } from "./utils/utils";
