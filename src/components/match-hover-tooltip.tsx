@@ -1,0 +1,132 @@
+import React from "react";
+import { TableMatch } from "@/types/brackets";
+import { capitalizeWords, cn } from "@/lib/utils";
+import { extractMatchSets } from "./utils/utils";
+
+interface MatchHoverTooltipProps {
+  match: TableMatch;
+  visible: boolean;
+  position: { x: number; y: number };
+}
+
+const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
+  match,
+  visible,
+  position,
+}) => {
+  const { p1_sets, p2_sets } = extractMatchSets(match);
+  const scores = match.match?.extra_data?.score || [];
+  
+  // Check if all sets are 11-0 (indicates set-based scoring rather than point-based)
+  const hasActualPointScores = scores.some((score: any) => 
+    !(score.p1_score === 11 && score.p2_score === 0) && 
+    !(score.p1_score === 0 && score.p2_score === 11)
+  );
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[280px] pointer-events-none"
+      style={{
+        left: position.x + 10,
+        top: position.y - 10,
+        transform: "translateY(-100%)",
+      }}
+    >
+      <div className="space-y-3">
+        {/* Match Header */}
+        <div className="border-b border-gray-100 pb-2">
+          <div className="text-sm font-semibold text-gray-700">
+            Match {match.match.readable_id > 0 ? match.match.readable_id : ""}
+          </div>
+        </div>
+
+        {/* Players */}
+        <div className="space-y-2">
+          <div className={cn(
+            "flex items-center justify-between p-2 rounded",
+            p1_sets > p2_sets ? "bg-green-50" : "bg-gray-50"
+          )}>
+            <span className="font-medium text-sm">
+              {capitalizeWords(match.participant_1.name)}
+            </span>
+            <span className={cn(
+              "font-bold text-lg",
+              p1_sets > p2_sets ? "text-green-700" : "text-gray-600"
+            )}>
+              {p1_sets}
+            </span>
+          </div>
+
+          <div className={cn(
+            "flex items-center justify-between p-2 rounded",
+            p2_sets > p1_sets ? "bg-green-50" : "bg-gray-50"
+          )}>
+            <span className="font-medium text-sm">
+              {capitalizeWords(match.participant_2.name)}
+            </span>
+            <span className={cn(
+              "font-bold text-lg",
+              p2_sets > p1_sets ? "text-green-700" : "text-gray-600"
+            )}>
+              {p2_sets}
+            </span>
+          </div>
+        </div>
+
+        {/* Set Scores - Only show if there are actual point scores */}
+        {scores.length > 0 && hasActualPointScores && (
+          <div className="space-y-2">
+            <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+              Set Scores
+            </div>
+            <div className="grid gap-1">
+              {scores.map((score: any, index: number) => {
+                const p1Won = score.p1_score >= 11 && score.p1_score - score.p2_score >= 2;
+                const p2Won = score.p2_score >= 11 && score.p2_score - score.p1_score >= 2;
+                
+                return (
+                  <div key={index} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Set {index + 1}</span>
+                    <div className="flex items-center space-x-1">
+                      <span className={cn(
+                        "font-mono",
+                        p1Won ? "font-bold text-green-700" : "text-gray-600"
+                      )}>
+                        {score.p1_score}
+                      </span>
+                      <span className="text-gray-400">-</span>
+                      <span className={cn(
+                        "font-mono",
+                        p2Won ? "font-bold text-green-700" : "text-gray-600"
+                      )}>
+                        {score.p2_score}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Show message when only set scores are available */}
+        {scores.length > 0 && !hasActualPointScores && (
+          <div className="text-xs text-gray-500 text-center py-2">
+            Match scored by sets only
+          </div>
+        )}
+
+        {/* No scores available */}
+        {scores.length === 0 && (
+          <div className="text-xs text-gray-500 text-center py-2">
+            No detailed scores available
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default MatchHoverTooltip;

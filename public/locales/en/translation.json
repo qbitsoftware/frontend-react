@@ -366,7 +366,7 @@
       "status_completed": "Completed",
       "status_pending": "Ongoing",
       "status_scheduled": "Scheduled",
-      "status_all": "All",
+      "status_all": "All Matches",
       "bracket": "Bracket",
       "final": "Final",
       "winner": "Winner",
@@ -384,7 +384,7 @@
     },
     "navbar": {
       "info": "Info",
-      "matches": "Matches",
+      "matches": "Schedule",
       "standings": "Standings",
       "results": "Brackets",
       "participants": "Participants",
@@ -690,7 +690,7 @@
           "info": "Info",
           "participants": "Participants",
           "timetable": "Timetable",
-          "matches": "Matches",
+          "matches": "Schedule",
           "tables": "Brackets",
           "view_all": "View all groups",
           "view_all_description": "Manage all tournament groups"
@@ -899,7 +899,7 @@
       },
       "filters": {
         "status": {
-          "all": "All",
+          "all": "All Matches",
           "created": "Created",
           "ongoing": "Ongoing",
           "finished": "Finished",
