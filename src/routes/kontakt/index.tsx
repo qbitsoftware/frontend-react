@@ -56,7 +56,6 @@ function RouteComponent() {
                     </div>
                   </div>
 
-                  {/* Email */}
                   <div className="flex items-center gap-4 p-4 bg-white rounded-lg border border-blue-200/50 hover:border-[#4C97F1]/50 transition-all">
                     <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
                       <Mail className="h-5 w-5 text-white" />
@@ -69,7 +68,6 @@ function RouteComponent() {
                     </div>
                   </div>
 
-                  {/* Office Hours */}
                   <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-blue-200/50">
                     <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                       <Clock className="h-5 w-5 text-white" />
@@ -82,7 +80,6 @@ function RouteComponent() {
                 </div>
               </div>
 
-              {/* Banking Information */}
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-1 h-6 bg-green-600 rounded-full"></div>
@@ -103,7 +100,6 @@ function RouteComponent() {
               </div>
             </div>
 
-            {/* Map Section */}
             <div className="space-y-6">
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-6">
@@ -111,7 +107,6 @@ function RouteComponent() {
                   <h2 className="text-xl font-bold text-gray-900">{t("contact.location.title")}</h2>
                 </div>
                 
-                {/* Map Widget */}
                 <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2028.2986543739744!2d24.729942316078643!3d59.42926838167742!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4692934b9c7f1a1b%3A0x4b9b9b9b9b9b9b9b!2sLaki%203%2C%2010621%20Tallinn%2C%20Estonia!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s"
