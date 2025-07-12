@@ -3,15 +3,13 @@ import { TournamentTable } from "@/types/groups";
 import { MatchWrapper } from "@/types/matches";
 import { SingleElimination } from "./single-elimination";
 import { DoubleElimination } from "./double-elimination";
-import { parseTableType } from "@/lib/utils";
 import { Separator } from "./ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Printer } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { PrintPDF } from "./print-pdf";
-import { toast } from "sonner";
+import { PDFPreviewModal } from "./pdf-preview-modal";
 
 interface TournamentTableProps {
   admin?: boolean;
@@ -28,85 +26,75 @@ export const EliminationBrackets = ({
 }: TournamentTableProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
+  const [showPreview, setShowPreview] = useState(false);
 
-  const handlePrint = async () => {
-    try {
-      const title = tournament_table
-        ? `${tournament_table.class} Tournament`
-        : "Tournament Bracket";
-      await PrintPDF("bracket-container", title, true);
-    } catch (error) {
-      void error;
-      toast.error("Failed to print brackets");
-    }
+  const handlePrint = () => {
+    setShowPreview(true);
   };
 
   return (
-    <div>
-      <div className="z-40 top-0 w-full flex xl:justify-end ">
-        <div className=" px-4 flex flex-col w-full bg-[#F8F9FA] rounded-t pdf-background">
-          <div className="flex justify-between mt-2 items-center"></div>
-          <div className="flex justify-between z-10">
-            <h1 className="text-base font-medium">{tournament_table.class}</h1>
+    <div className='border-grey-200 border-x border-b'>
+      <div className="z-40 top-0 w-full">
+        <div className="px-4 w-full bg-[#F8F9FA] rounded-t pdf-background">
+          <div className="flex justify-between items-center py-3">
+            {/* Bracket Jump-to Tabs */}
+            <Tabs
+              defaultValue={data?.eliminations[0]?.elimination[0].name}
+              className="z-10 flex-1"
+            >
+              <TabsList className="flex justify-start gap-4 px-0 text-black bg-transparent overflow-x-auto scrollbar-hide">
+                {data.eliminations.map((item, index) => (
+                  <TabsTrigger
+                    key={index}
+                    value={item.elimination[0].name}
+                    className="flex-shrink-0 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-sm bg-[#4C97F1] text-white"
+                    onClick={() => {
+                      const container = scrollContainerRef.current;
+                      const targetElement = document.getElementById(
+                        item.elimination[0].name,
+                      );
+
+                      if (container && targetElement) {
+                        const containerRect = container.getBoundingClientRect();
+                        const targetRect = targetElement.getBoundingClientRect();
+                        const scrollTop =
+                          targetRect.top -
+                          containerRect.top +
+                          container.scrollTop -
+                          50;
+                        container.scrollTo({
+                          top: scrollTop,
+                          behavior: "smooth",
+                        });
+                      }
+                    }}
+                  >
+                    {item.elimination[0].name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+            
+            {/* Print Button */}
             <Button
               variant="outline"
-              className="self-end"
+              className="ml-4 flex-shrink-0"
               onClick={handlePrint}
             >
-              <Printer className="mr-1 h-4 w-4" />
+              <Printer className="mr-2 h-4 w-4" />
               {t("admin.tournaments.groups.tables.print")}
             </Button>
           </div>
-          <div className="z-10 pdf-remove-in-print">
-            <h2 className="pdf-remove-in-print text-xs">
-              {parseTableType(tournament_table.type)}
-            </h2>
-          </div>
-          <Separator className="my-1 z-10" />
-          <Tabs
-            defaultValue={data?.eliminations[0]?.elimination[0].name}
-            className="z-10"
-          >
-            <TabsList className="flex w-full justify-start gap-6 px-0 text-black bg-transparent overflow-x-auto">
-              {data.eliminations.map((item, index) => (
-                <TabsTrigger
-                  key={index}
-                  value={item.elimination[0].name}
-                  className="px-0 text-sm data-[state=active]:underline data-[state=active]:bg-transparent data-[state=active]:text-gray-500 data-[state=active]:shadow-none data-[state=active]:border-none bg-transparent"
-                  onClick={() => {
-                    const container = scrollContainerRef.current;
-                    const targetElement = document.getElementById(
-                      item.elimination[0].name,
-                    );
-
-                    if (container && targetElement) {
-                      const containerRect = container.getBoundingClientRect();
-                      const targetRect = targetElement.getBoundingClientRect();
-                      const scrollTop =
-                        targetRect.top -
-                        containerRect.top +
-                        container.scrollTop -
-                        50;
-                      container.scrollTo({
-                        top: scrollTop,
-                        behavior: "smooth",
-                      });
-                    }
-                  }}
-                >
-                  {item.elimination[0].name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <Separator className="border-gray-300" />
         </div>
       </div>
 
       <div
         ref={scrollContainerRef}
-        className="bg-[#F8F9FA] relative h-[70vh] flex flex-col overflow-auto"
+        className="bg-[#F8F9FA] relative h-[85vh] flex flex-col overflow-auto"
+        id="bracket-container"
       >
-        <div className="flex flex-col gap-10 px-10">
+        <div className="flex flex-col gap-10 px-10 min-w-max">
           {data.eliminations.map((eliminations, eliminationIndex) => {
             return eliminations.elimination.map((table, tableIndex) => {
               const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;
@@ -140,6 +128,13 @@ export const EliminationBrackets = ({
           })}
         </div>
       </div>
+
+      <PDFPreviewModal
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+        containerId="bracket-container"
+        title={tournament_table ? `${tournament_table.class} Tournament` : "Tournament Bracket"}
+      />
     </div>
   );
 };

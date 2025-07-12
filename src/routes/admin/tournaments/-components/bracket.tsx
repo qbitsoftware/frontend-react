@@ -129,7 +129,7 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
           open={isOpen}
           onClose={() => setIsOpen(false)}
           match={selectedMatch}
-          tournament_id={tournament_table.tournament_id}
+          tournamentId={tournament_table.tournament_id}
         />
       ) : (
         selectedMatch &&
@@ -137,9 +137,9 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
           <ProtocolModalProvider
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
-            tournament_id={tournament_table.tournament_id}
+            tournamentId={tournament_table.tournament_id}
             match={selectedMatch}
-            player_count={tournament_table.min_team_size}
+            playerCount={tournament_table.min_team_size}
           >
             <TableTennisProtocolModal />
           </ProtocolModalProvider>

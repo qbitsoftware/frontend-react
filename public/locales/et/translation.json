@@ -383,7 +383,7 @@
     "timetable": {
       "table": "Laud",
       "search_placeholder": "Otsi nime",
-      "all_groups": "Kõik grupid",
+      "all_groups": "Kõik klassid",
       "gameday": "Mängupäev",
       "match_details": "Mängu detailid",
       "player_1": "Mängija 1",
@@ -394,12 +394,16 @@
       "play_off": "Play-off",
       "group_match": "Tiimi matš",
       "status": "Staatus",
-      "status_completed": "Läbi",
-      "status_pending": "Käimas",
+      "status_completed": "Lõppenud",
+      "status_pending": "Käimasolevad",
+      "status_scheduled": "Tulemas",
+      "status_all": "Kõik Mängud",
       "bracket": "Koht",
-      "final": "Finaal",
+      "final": "FINAAL",
+      "semifinal": "POOLFINAAL",
+      "quarterfinal": "VEERANDFINAAL",
       "winner": "Võitja",
-      "matches": "Matšid",
+      "matches": "Mängud",
       "timetable": "Ajakava"
     },
     "errors": {
@@ -413,9 +417,9 @@
     },
     "navbar": {
       "info": "Info",
-      "matches": "Mängud",
+      "matches": "Ajakava",
       "standings": "Kohad",
-      "results": "Tulemused",
+      "results": "Tabelid",
       "participants": "Osalejad",
       "gallery": "Galerii",
       "guide": "Juhend",
@@ -599,7 +603,7 @@
         "feedback": "Tagasiside"
       },
       "info": "Turniiri info",
-      "groups": "Võistlusgrupid",
+      "groups": "Võistlusklassid",
       "media": "Meedia",
       "tables": "Lauad",
       "images": "Pildid",
@@ -668,7 +672,7 @@
         },
         "back": "Tagasi",
         "edit_group": "Muuda grupi seadistusi",
-        "create_group": "Loo grupp",
+        "create_group": "Loo võistlusklass",
         "title_create": "Loo uus turniir",
         "woman_weight": "Naiste reitingu kaal",
         "woman_weight_description": "Naiste reiting korrutatakse selle kaaluga",
@@ -715,7 +719,7 @@
       },
       "tables": {
         "no_tables": "Laudu pole veel lisatud",
-        "title": "Laudade haldamine",
+        "title": "Mängulauad",
         "taken": "Võetud",
         "free": "Vaba",
         "empty_placeholder": "Laud on mänguks vaba"
@@ -724,10 +728,11 @@
         "layout": {
           "info": "Info",
           "participants": "Osalejad",
-          "matches": "Matšid",
+          "timetable": "Ajakava",
+          "matches": "Mängud",
           "tables": "Tabelid",
           "view_all": "Vaata kõiki",
-          "view_all_description": "Halda kõiki turniiri gruppe"
+          "view_all_description": "Halda kõiki turniiri klasse"
         },
         "images": {
           "title": "Pildigrupid",
@@ -772,7 +777,7 @@
         },
         "add_new": "Lisa uus",
         "no_tables": "Gruppe pole veel lisatud",
-        "title": "Turniiri grupid",
+        "title": "Turniiri klassid",
         "errors": {
           "class": "Grupi nimi on kohustuslik",
           "type": "Turniiri tüüp on kohustuslik",
@@ -807,7 +812,20 @@
             "select_p2": "Vali teine mängija vahetamiseks",
             "player_selected": "Mängija valitud"
           },
-          "print": "Prindi tabel"
+          "print": "Lae alla PDF",
+          "pdf_preview": "PDF Eelvaade",
+          "print_settings": "Printimise seaded",
+          "white_background": "Valge taust (säästab tinti)",
+          "high_quality": "Kõrge kvaliteet",
+          "updating": "Uuendamine...",
+          "update_preview": "Uuenda eelvaadet",
+          "generating_preview": "Eelvaate genereerimine...",
+          "preview_first_section": "Eelvaade (esimene osa)",
+          "no_preview_available": "Eelvaade pole saadaval",
+          "cancel": "Tühista",
+          "generating_pdf": "PDF-i genereerimine...",
+          "download_pdf": "Laadi PDF alla",
+          "pages_count": "{{count}} lehte prinditakse"
         },
         "img_modal": {
           "title": "Muuda pilti",
@@ -1009,6 +1027,7 @@
       },
       "matches": {
         "table": {
+          "bracket": "Tabel",
           "modify": "Muuda",
           "serial_number": "JKNR.",
           "round": "Ring",
@@ -1018,6 +1037,8 @@
           "participant_2": "Osaleja 2",
           "participant_1_score": "Osaleja 1 tulemus",
           "participant_2_score": "Osaleja 2 tulemus",
+          "winner_bracket": "Plussring",
+          "loser_bracket": "Miinusring",
           "winner_placement": "Võitja koht",
           "loser_placement": "Kaotaja koht",
           "winner": "Võitja"
@@ -1121,6 +1142,7 @@
     },
     "forfeit": {
       "title": "Loobumisvõit",
+      "enable": "Määra Loobumisvõit",
       "description": "Märgi võitja",
       "delete": "Kustuta loobumisvõit",
       "delete_confirm": "Kinnita loobumisvõit",
@@ -1227,8 +1249,8 @@
       "seeding_error": "Osalejate asetamine nurjus. Palun proovige uuesti",
       "order_success": "Osalejate järjekorda panemine õnnestus",
       "order_error": "Osalejate järjekorda panemine nurjus. Palun proovige uuesti",
-      "reset_success": "Matšid lähtestatud edukalt",
-      "reset_error": "Matšide lähtestamine nurjus. Palun proovige uuesti"
+      "reset_success": "Mängude lähtestatud edukalt",
+      "reset_error": "Mängude lähtestamine nurjus. Palun proovige uuesti"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",

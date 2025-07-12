@@ -1,120 +1,301 @@
-import { TableMatch } from "@/types/brackets"
-import { TournamentTable } from "@/types/groups"
-import { capitalizeWords, cn } from "@/lib/utils"
-import { extractMatchSets } from "./utils/utils"
-import { MatchState, MatchWrapper } from "@/types/matches"
-import { TableNumberForm } from "@/routes/admin/tournaments/$tournamentid/-components/table-number-form"
-import { useTranslation } from "react-i18next"
+import { TableMatch } from "@/types/brackets";
+import { TournamentTable } from "@/types/groups";
+import {
+  capitalizeWords,
+  cn,
+  formatDateGetDayMonth,
+  formatDateGetHours,
+} from "@/lib/utils";
+import { extractMatchSets } from "./utils/utils";
+import { MatchState, MatchWrapper } from "@/types/matches";
+import { TableNumberForm } from "@/routes/admin/tournaments/$tournamentid/-components/table-number-form";
+import { useTranslation } from "react-i18next";
+import { Clock } from "lucide-react";
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import MatchHoverTooltip from "./match-hover-tooltip";
 
 interface EliminationMatchProps {
-    match: TableMatch
-    tournamentTable: TournamentTable
-    handleSelectMatch?: (match: MatchWrapper) => void
-    admin: boolean
+  match: TableMatch;
+  tournamentTable: TournamentTable;
+  handleSelectMatch?: (match: MatchWrapper) => void;
+  admin: boolean;
+  hoveredPlayerId?: string | null;
+  onPlayerHover?: (playerId: string | null) => void;
 }
 
 const EliminationMatch = ({
-    match,
-    tournamentTable,
-    handleSelectMatch,
-    admin = false
+  match,
+  tournamentTable,
+  handleSelectMatch,
+  admin = false,
+  hoveredPlayerId,
+  onPlayerHover,
 }: EliminationMatchProps) => {
-    void tournamentTable
+  void tournamentTable;
 
-    const { t } = useTranslation()
-    const { p1_sets, p2_sets } = extractMatchSets(match)
+  const { t } = useTranslation();
+  const { p1_sets, p2_sets } = extractMatchSets(match);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isTransformed, setIsTransformed] = useState(false);
 
-    const isTournamentWinner = (match: TableMatch, participant_id: string): boolean => {
-        const parts = match.match.bracket.split('-')
-        if (parts.length == 2) {
-            if (Math.abs(Number(parts[0]) - Number(parts[1])) == 1) {
-                return match.match.winner_id == participant_id && match.match.winner_id != ""
-            }
-            return false
-        }
-        return false
+
+  const handlePlayerHover = (playerId: string | null) => {
+    onPlayerHover?.(playerId);
+  };
+
+  const handleMatchMouseEnter = (event: React.MouseEvent) => {
+    // Only show tooltip if both participants are defined and not empty
+    const hasValidParticipants = 
+      match.participant_1.id && 
+      match.participant_2.id && 
+      match.participant_1.id !== "" && 
+      match.participant_2.id !== "" &&
+      match.participant_1.id !== "empty" && 
+      match.participant_2.id !== "empty";
+    
+    if (hasValidParticipants) {
+      // Get the element's bounding rect to calculate position relative to the viewport
+      const rect = event.currentTarget.getBoundingClientRect();
+      
+      // Debug logging for problematic matches
+      console.log('BRACKETT:', match.match.bracket);
+      console.log('Element rect:', rect);
+      console.log('Scroll posiTion:', window.scrollX, window.scrollY);
+      
+      // Check if this match is in an absolutely positioned container (placement matches)
+      const parentElement = event.currentTarget.parentElement;
+      const hasTransform = parentElement?.classList.contains('-translate-y-1/2');
+      const hasBronzePosition = parentElement?.classList.contains('top-[60px]');
+      
+      console.log('Has transform:', hasTransform, 'Has bronze position:', hasBronzePosition);
+      console.log('Parent element classes:', parentElement?.className);
+      
+      setMousePosition({ 
+        x: rect.right, 
+        y: rect.top
+      });
+      setIsTransformed(hasTransform || false);
+      setShowTooltip(true);
     }
+  };
 
-    const onMatchClick = (match: TableMatch) => {
-        if (handleSelectMatch) {
-            const matchWrapper: MatchWrapper = {
-                match: match.match,
-                p1: match.participant_1,
-                p2: match.participant_2,
-                class: ""
-            }
-            handleSelectMatch(matchWrapper)
-        }
+  const handleMatchMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
+  const handleMatchMouseMove = (event: React.MouseEvent) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setMousePosition({ 
+      x: rect.right, 
+      y: rect.top
+    });
+  };
+
+  const isTournamentWinner = (
+    match: TableMatch,
+    participant_id: string,
+  ): boolean => {
+    const parts = match.match.bracket.split("-");
+    if (parts.length == 2) {
+      if (Math.abs(Number(parts[0]) - Number(parts[1])) == 1) {
+        return (
+          match.match.winner_id == participant_id && match.match.winner_id != ""
+        );
+      }
+      return false;
     }
-    const bracket = Math.abs(Number(match.match.bracket.split("-")[0]) - Number(match.match.bracket.split("-")[1])) == 1 ? match.match.bracket : ""
+    return false;
+  };
 
-    return (
-        <div
-            onClick={() => onMatchClick(match)}
-            className="relative w-[220px] h-[60px] bg-white flex flex-col"
-        >
-            <div className="absolute -top-[20px] left-[80px] w-[40px] text-[9px]">{bracket}</div>
-            <div className="absolute text-[8px] -top-[20px]">
-                {(match.match.state !== MatchState.FINISHED && match.participant_1.id != "" && match.participant_2.id != "" && match.participant_1.id != "empty" && match.participant_2.id != "empty") && admin ? (
-                    <TableNumberForm
-                        brackets={true}
-                        match={match.match}
-                        initialTableNumber={
-                            match.match.extra_data &&
-                            match.match.extra_data.table
-                        }
-                    />
-                ) :
-                    match.match.extra_data && match.match.extra_data.table ? (
-                        <div>{t("admin.tournaments.matches.table.table")} {match.match.extra_data.table}</div>
-                    ) : null}
-            </div>
-            <div className={cn("relative flex w-full h-1/2 items-center", isTournamentWinner(match, match.participant_1.id) && "bg-green-200/50")}>
-                <div className="absolute text-[8px] left-1">
-                    {match.match.previous_match_readable_id_1 >= 0 ? "" : match.match.previous_match_readable_id_1}
-                </div>
-                {match.participant_1.id === "empty" ? (
-                    <>
-                        <div className="text-center px-2">{""}</div>
-                        <div className="w-full text-gray-500 ml-2 pdf-participant text-xs">(Bye)</div>
-                        <div className="text-right pr-4">{""}</div>
-                    </>
-                ) : match.participant_1.id === "" ? (
-                    <div className="w-full" />
-                ) : (
-                    <>
-                        <span className="px-2 font-medium w-[30px]">
-                            {`${(match.match.type == "winner" && match.match.round == 0) ? match.participant_1.order : ""}`}
-                        </span>
-                        <p className={cn("w-full text-xs", p1_sets > p2_sets && "font-semibold")}>{capitalizeWords(match.participant_1.name)}</p>
-                        <p className={cn("px-3 h-full flex items-center", p1_sets > p2_sets && "bg-[#F3F9FC] font-semibold")}>{p1_sets}</p>
-                    </>
-                )}
-            </div>
-            <div className={cn("relative flex w-full h-1/2 items-center", isTournamentWinner(match, match.participant_2.id) && "bg-green-200/50")}>
-                <div className="absolute text-[8px] left-1">
-                    {match.match.previous_match_readable_id_2 >= 0 ? "" : match.match.previous_match_readable_id_2}
-                </div>
-                {match.participant_2.id === "empty" ? (
-                    <>
-                        <div className="text-center px-2">{""}</div>
-                        <div className="w-full text-gray-500 ml-2 pdf-participant text-xs">(Bye)</div>
-                        <div className="text-right pr-4">{""}</div>
-                    </>
-                ) : match.participant_2.id === "" ? (
-                    <div className="w-full" />
-                ) : (
-                    <>
-                        <span className="px-2 font-medium w-[30px]">
-                            {`${(match.match.type == "winner" && match.match.round == 0) ? match.participant_2.order : ""}`}
-                        </span>
-                        <p className={cn("w-full text-xs", p2_sets > p1_sets && "font-semibold")}>{capitalizeWords(match.participant_2.name)}</p>
-                        <p className={cn("px-3 h-full flex items-center", p2_sets > p1_sets && "bg-[#F3F9FC]")}>{p2_sets}</p>
-                    </>
-                )}
-            </div>
-        </div >
-    )
-}
+  const onMatchClick = (match: TableMatch) => {
+    if (handleSelectMatch) {
+      const matchWrapper: MatchWrapper = {
+        match: match.match,
+        p1: match.participant_1,
+        p2: match.participant_2,
+        class: "",
+      };
+      handleSelectMatch(matchWrapper);
+    }
+  };
+  const bracket =
+    Math.abs(
+      Number(match.match.bracket.split("-")[0]) -
+        Number(match.match.bracket.split("-")[1]),
+    ) == 1
+      ? match.match.bracket
+      : "";
 
-export default EliminationMatch
+  const matchDate = match.match.start_date;
+
+  return (
+    <>
+      <div
+        onClick={() => onMatchClick(match)}
+        onMouseEnter={handleMatchMouseEnter}
+        onMouseLeave={handleMatchMouseLeave}
+        onMouseMove={handleMatchMouseMove}
+        className="relative w-[220px] h-[60px] bg-white flex flex-col border border-gray-200 rounded-md hover:shadow-md transition-shadow cursor-pointer"
+      >
+      <div className="absolute -top-[20px] left-[80px] w-[40px] text-[9px]">
+        {bracket}
+      </div>
+      <div className="absolute text-[8px] -top-[15px]">
+        {match.match.state !== MatchState.FINISHED &&
+        match.participant_1.id != "" &&
+        match.participant_2.id != "" &&
+        match.participant_1.id != "empty" &&
+        match.participant_2.id != "empty" &&
+        admin ? (
+          <TableNumberForm
+            brackets={true}
+            match={match.match}
+            initialTableNumber={
+              match.match.extra_data && match.match.extra_data.table
+            }
+            showLabel={true}
+          />
+        ) : match.match.extra_data && match.match.extra_data.table ? (
+          <div className="flex items-center w-full">
+            <span>
+              {t("admin.tournaments.matches.table.table")}{" "}
+              {match.match.extra_data.table}
+            </span>
+            {matchDate && (
+              <div className="flex items-center gap-1 ml-20">
+                <Clock className="h-3 w-3" />
+                <span>{formatDateGetDayMonth(matchDate)}</span>
+                <span className="font-semibold">
+                  {formatDateGetHours(matchDate)} 
+                </span>
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
+      <div
+        className={cn(
+          "relative flex w-full h-1/2 items-center transition-all duration-200 border-b border-gray-200",
+          isTournamentWinner(match, match.participant_1.id) &&
+            "bg-green-200/50",
+          hoveredPlayerId === match.participant_1.id && "ring-2 ring-blue-400 bg-blue-50 shadow-md"
+        )}
+      >
+        <div className="absolute text-[8px] left-1">
+          {match.match.previous_match_readable_id_1 >= 0
+            ? ""
+            : match.match.previous_match_readable_id_1}
+        </div>
+        {match.participant_1.id === "empty" ? (
+          <>
+            <div className="text-center px-2">{""}</div>
+            <div className="w-full text-gray-500 ml-2 pdf-participant text-xs">
+              (Bye)
+            </div>
+            <div className="text-right pr-4">{""}</div>
+          </>
+        ) : match.participant_1.id === "" ? (
+          <div className="w-full" />
+        ) : (
+          <>
+            <span className="px-2 font-medium w-[30px]">
+              {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_1.order : ""}`}
+            </span>
+            <p
+              className={cn(
+                "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors",
+                p1_sets > p2_sets && "font-semibold",
+              )}
+              onMouseEnter={() => handlePlayerHover(match.participant_1.id)}
+              onMouseLeave={() => handlePlayerHover(null)}
+            >
+              {capitalizeWords(match.participant_1.name)}
+            </p>
+            <p
+              className={cn(
+                "px-3 h-full flex items-center",
+                p1_sets > p2_sets && "bg-[#F3F9FC] font-semibold",
+              )}
+            >
+              {p1_sets}
+            </p>
+          </>
+        )}
+      </div>
+      <div
+        className={cn(
+          "relative flex w-full h-1/2 items-center transition-all duration-200",
+          isTournamentWinner(match, match.participant_2.id) &&
+            "bg-green-200/50",
+          hoveredPlayerId === match.participant_2.id && "ring-2 ring-blue-400 bg-blue-50 shadow-md"
+        )}
+      >
+        <div className="absolute text-[8px] left-1">
+          {match.match.previous_match_readable_id_2 >= 0
+            ? ""
+            : match.match.previous_match_readable_id_2}
+        </div>
+        {match.participant_2.id === "empty" ? (
+          <>
+            <div className="text-center px-2">{""}</div>
+            <div className="w-full text-gray-500 ml-2 pdf-participant text-xs">
+              (Bye)
+            </div>
+            <div className="text-right pr-4">{""}</div>
+          </>
+        ) : match.participant_2.id === "" ? (
+          <div className="w-full" />
+        ) : (
+          <>
+            <span className="px-2 font-medium w-[30px]">
+              {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_2.order : ""}`}
+            </span>
+            <p
+              className={cn(
+                "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors",
+                p2_sets > p1_sets && "font-semibold",
+              )}
+              onMouseEnter={() => handlePlayerHover(match.participant_2.id)}
+              onMouseLeave={() => handlePlayerHover(null)}
+            >
+              {capitalizeWords(match.participant_2.name)}
+            </p>
+            <p
+              className={cn(
+                "px-3 h-full flex items-center",
+                p2_sets > p1_sets && "bg-[#F3F9FC]",
+              )}
+            >
+              {p2_sets}
+            </p>
+          </>
+        )}
+      </div>
+      </div>
+
+      {/* Render tooltip using portal when transformed to avoid CSS transform issues */}
+      {isTransformed && showTooltip && createPortal(
+        <MatchHoverTooltip
+          match={match}
+          visible={showTooltip}
+          position={mousePosition}
+        />,
+        document.body
+      )}
+      
+      {/* Render tooltip normally when not transformed */}
+      {!isTransformed && (
+        <MatchHoverTooltip
+          match={match}
+          visible={showTooltip}
+          position={mousePosition}
+        />
+      )}
+    </>
+  );
+};
+
+export default EliminationMatch;
+

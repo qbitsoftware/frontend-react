@@ -10,18 +10,18 @@ import { RoundTime } from '@/types/tournaments'
 import { useTranslation } from 'react-i18next'
 
 interface TimeEditingModalProps {
-    tournament_id: number
-    tournament_table_id: number
+    tournamentId: number
+    tournamentTableId: number
     matches: MatchWrapper[],
     isOpen: boolean
     onClose: () => void
 }
 
-const TimeEditingModal: React.FC<TimeEditingModalProps> = ({ tournament_id, isOpen, onClose, matches, tournament_table_id }) => {
+const TimeEditingModal: React.FC<TimeEditingModalProps> = ({ tournamentId, isOpen, onClose, matches, tournamentTableId }) => {
     const [rounds, setRounds] = useState<RoundTime[]>([])
     const [loading, setLoading] = useState(false)
     const [modifiedRounds, setModifiedRounds] = useState<Set<string>>(new Set())
-    const timeMutation = UseUpdateMatchTime(tournament_id, tournament_table_id)
+    const timeMutation = UseUpdateMatchTime(tournamentId, tournamentTableId)
 
     const { t } = useTranslation()
 

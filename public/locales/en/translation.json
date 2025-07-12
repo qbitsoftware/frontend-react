@@ -352,7 +352,7 @@
     "timetable": {
       "table": "Table",
       "search_placeholder": "Search by name",
-      "all_groups": "All groups",
+      "all_groups": "All classes",
       "gameday": "Gameday",
       "match_details": "Match Details",
       "player_1": "Player 1",
@@ -365,8 +365,12 @@
       "status": "Status",
       "status_completed": "Completed",
       "status_pending": "Ongoing",
+      "status_scheduled": "Scheduled",
+      "status_all": "All Matches",
       "bracket": "Bracket",
-      "final": "Final",
+      "final": "FINAL",
+      "semifinal": "SEMIFINAL",
+      "quarterfinal": "QUARTERFINAL",
       "winner": "Winner",
       "matches": "Matches",
       "timetable": "Timetable"
@@ -382,9 +386,9 @@
     },
     "navbar": {
       "info": "Info",
-      "matches": "Matches",
+      "matches": "Schedule",
       "standings": "Standings",
-      "results": "Results",
+      "results": "Brackets",
       "participants": "Participants",
       "gallery": "Gallery",
       "guide": "Guide",
@@ -678,7 +682,7 @@
       },
       "tables": {
         "no_tables": "No tables have been assigned yet",
-        "title": "Table management",
+        "title": "Tables",
         "taken": "Occupied",
         "free": "Free",
         "empty_placeholder": "Table available for matches"
@@ -687,7 +691,8 @@
         "layout": {
           "info": "Info",
           "participants": "Participants",
-          "matches": "Matches",
+          "timetable": "Timetable",
+          "matches": "Schedule",
           "tables": "Brackets",
           "view_all": "View all groups",
           "view_all_description": "Manage all tournament groups"
@@ -770,7 +775,20 @@
             "select_p2": "Select second player to switch",
             "player_selected": "Player selected"
           },
-          "print": "Print bracket"
+          "print": "Download PDF",
+          "pdf_preview": "PDF Preview",
+          "print_settings": "Print Settings",
+          "white_background": "White background (saves ink)",
+          "high_quality": "High quality",
+          "updating": "Updating...",
+          "update_preview": "Update Preview",
+          "generating_preview": "Generating preview...",
+          "preview_first_section": "Preview (first section)",
+          "no_preview_available": "No preview available",
+          "cancel": "Cancel",
+          "generating_pdf": "Generating PDF...",
+          "download_pdf": "Download PDF",
+          "pages_count": "{{count}} pages will be printed"
         },
         "img_modal": {
           "title": "Edit image",
@@ -896,7 +914,7 @@
       },
       "filters": {
         "status": {
-          "all": "All",
+          "all": "All Matches",
           "created": "Created",
           "ongoing": "Ongoing",
           "finished": "Finished",
@@ -972,6 +990,7 @@
       },
       "matches": {
         "table": {
+          "bracket": "Bracket",
           "modify": "Modify",
           "serial_number": "SN.",
           "round": "Round",
@@ -983,7 +1002,9 @@
           "participant_2_score": "Participant 2 score",
           "winner_placement": "Winner placement",
           "loser_placement": "Loser placement",
-          "winner": "Winner"
+          "winner": "Winner",
+          "winner_bracket": "Winner",
+          "loser_bracket": "Loser"
         },
         "not_played": "Not played yet"
       },
@@ -1084,6 +1105,7 @@
     },
     "forfeit": {
       "title": "Forfeit",
+      "enable": "Give Forfeit",
       "description": "Choose a winner",
       "delete": "Delete forfeit",
       "delete_confirm": "Confirm forfeit",

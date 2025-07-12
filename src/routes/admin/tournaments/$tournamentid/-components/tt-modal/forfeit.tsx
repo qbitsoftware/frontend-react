@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 const Forfeit = ({ match }: { match: MatchWrapper }) => {
     const {
-        tournament_id,
+        tournamentId,
         forfeitMatch,
         setForfeitMatch
     } = useProtocolModal()
@@ -22,7 +22,7 @@ const Forfeit = ({ match }: { match: MatchWrapper }) => {
     const { t } = useTranslation()
 
     const { mutateAsync: updateMatch } = UsePatchMatch(
-        tournament_id,
+        tournamentId,
         match.match.tournament_table_id,
         match.match.id)
 

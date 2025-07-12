@@ -10,14 +10,6 @@ import { useTranslation } from "react-i18next";
 import ErrorPage from "@/components/error";
 import { ErrorResponse } from "@/types/errors";
 import { useState, useRef, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import TournamentTableModal from "./-components/tournament-table-modal";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdmin } from "@/queries/tournaments";
@@ -52,7 +44,6 @@ function RouteComponent() {
   const { t } = useTranslation();
   const tournament_tables = UseGetTournamentTablesQuery(Number(tournamentid));
 
-  const [isTablesModalOpen, setIsTablesModalOpen] = useState(false);
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
     left: "7.5rem",
@@ -136,41 +127,16 @@ function RouteComponent() {
                     </TabsTrigger>
                   </Link>
                 </div>
-
-                <Dialog
-                  open={isTablesModalOpen}
-                  onOpenChange={setIsTablesModalOpen}
-                >
-                  <DialogTrigger asChild>
-                    <TabsTrigger
-                      value="tables"
-                      className="w-[7rem] py-[6px] flex-shrink-0"
-                      onClick={() => setIsTablesModalOpen(true)}
-                    >
-                      {t("admin.layout.tables")}
-                    </TabsTrigger>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>
-                        {t("admin.layout.tables")} -{" "}
-                        {tournament_data.data?.name}
-                      </DialogTitle>
-                    </DialogHeader>
-                    <TournamentTableModal />
-                  </DialogContent>
-                </Dialog>
               </TabsList>
             </Tabs>
 
-            {/* Groups Dropdown - positioned absolutely relative to the tabs container */}
             {showGroupsDropdown &&
               tournament_tables &&
               tournament_tables.data &&
               tournament_tables.data.data && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden flex flex-col"
+                  className="absolute top-full mt-2 w-100 bg-white border border-gray-200 rounded-xl shadow-2xl z-[999999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-visible flex flex-col"
                   style={{
                     left: dropdownPosition.left,
                     right: dropdownPosition.right,
@@ -187,7 +153,6 @@ function RouteComponent() {
               )}
           </div>
         </div>
-
         <div className="px-4 md:px-9 pb-8">
           <Outlet />
         </div>

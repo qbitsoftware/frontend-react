@@ -74,7 +74,10 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
   const { t } = useTranslation()
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  // const [customSize, setCustomSize] = useState("");
+  const [womanWeightInputValue, setWomanWeightInputValue] = useState<string>(
+    initial_data?.woman_weight ? String(initial_data.woman_weight) : '1'
+  )
+
   const formSchema = createFormSchema(t)
 
   const { tournamentid } = useParams({ strict: false })
@@ -98,6 +101,8 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
         max_team_size: 2,
         size: 16,
         woman_weight: 1,
+        start_time: "",
+        avg_match_duration: 15,
       },
   })
 
@@ -227,23 +232,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                 />
                 {form.watch("type") === GroupType.ROUND_ROBIN || form.watch("type") === GroupType.ROUND_ROBIN_FULL_PLACEMENT ? (
                   <div></div>
-                  // <FormItem>
-                  //   <FormLabel>{t("admin.tournaments.create_tournament.group_amount")}</FormLabel>
-                  //   <FormControl>
-                  //     <Input
-                  //       type="number"
-                  //       id="tournamentSize"
-                  //       placeholder={initial_data?.size?.toString() || t("admin.tournaments.create_tournament.number_of_groups_placeholder")}
-                  //       value={customSize}
-                  //       onChange={(e) => {
-                  //         const numValue = parseInt(e.target.value, 10) || 0;
-                  //         setCustomSize(e.target.value);
-                  //         form.setValue("size", numValue);
-                  //       }}
-                  //     />
-                  //   </FormControl>
-                  //   <FormMessage />
-                  // </FormItem>
                 ) : form.watch("type") === GroupType.CHAMPIONS_LEAGUE ? <div></div> : (
                   <FormItem>
                     <FormLabel>{t("admin.tournaments.create_tournament.tournament_size")}</FormLabel>
@@ -362,24 +350,65 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                           min={1}
                           max={10}
                           step={0.1}
-                          value={[field.value]}
-                          onValueChange={(values) => field.onChange(values[0])}
+                          value={[field.value && field.value >= 1 && field.value <= 10 ? field.value : 1]}
+                          onValueChange={(values) => {
+                            field.onChange(values[0]);
+                            setWomanWeightInputValue(String(values[0]));
+                          }}
                           className="pt-2"
                         />
                       </FormControl>
                       <FormControl>
                         <Input
-                          type='number'
-                          min={1}
-                          max={10}
-                          step={0.1}
-                          value={typeof field.value === 'number' ? field.value : 1}
+                          type='text'
+                          value={womanWeightInputValue}
                           onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value) && value >= 1 && value <= 10) {
-                              field.onChange(value);
-                            } else if (e.target.value === '') {
+                            const value = e.target.value;
+
+                            // Always update the display value
+                            setWomanWeightInputValue(value);
+
+                            // Allow completely empty string
+                            if (value === '') {
+                              return;
+                            }
+
+                            // Allow numbers with decimal point
+                            if (!/^\d*\.?\d*$/.test(value)) {
+                              return;
+                            }
+
+                            // Cap the value at 10 immediately
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue)) {
+                              if (numValue > 10) {
+                                field.onChange(10);
+                                setWomanWeightInputValue('10');
+                              } else if (numValue < 1) {
+                                field.onChange(1);
+                                setWomanWeightInputValue('1');
+                              } else {
+                                field.onChange(numValue);
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            // Only apply defaults/bounds when user leaves the field
+                            if (womanWeightInputValue === '') {
                               field.onChange(1);
+                              setWomanWeightInputValue('1');
+                            } else {
+                              const numValue = parseFloat(womanWeightInputValue);
+                              if (numValue < 1) {
+                                field.onChange(1);
+                                setWomanWeightInputValue('1');
+                              } else if (numValue > 10) {
+                                field.onChange(10);
+                                setWomanWeightInputValue('10');
+                              } else {
+                                // Value is valid, make sure form field is in sync
+                                field.onChange(numValue);
+                              }
                             }
                           }}
                           className="w-20"

@@ -1,12 +1,12 @@
 import { UseGetTournamentMatches } from "@/queries/match";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { UseGetTournamentTables } from "@/queries/tables";
 import ErrorPage from "@/components/error";
 import { useTranslation } from "react-i18next";
 import { ErrorResponse } from "@/types/errors";
 import ITTFMatchComponent from "./-components/new-match-comp";
-import { MatchWrapper } from "@/types/matches";
+import { MatchState, MatchWrapper } from "@/types/matches";
 import {
   filterMatchesByGameday,
   getUniqueClasses,
@@ -20,10 +20,10 @@ export const Route = createFileRoute("/voistlused/$tournamentid/ajakava/")({
   loader: async ({ context: { queryClient }, params }) => {
     try {
       const matchesData = await queryClient.ensureQueryData(
-        UseGetTournamentMatches(Number(params.tournamentid))
+        UseGetTournamentMatches(Number(params.tournamentid)),
       );
       const tournamentTables = await queryClient.ensureQueryData(
-        UseGetTournamentTables(Number(params.tournamentid))
+        UseGetTournamentTables(Number(params.tournamentid)),
       );
 
       return { matchesData, tournamentTables };
@@ -40,25 +40,183 @@ export const Route = createFileRoute("/voistlused/$tournamentid/ajakava/")({
 
 function RouteComponent() {
   const { matchesData, tournamentTables } = Route.useLoaderData();
-  const [activeDay, setActiveDay] = useState<number>(0);
+  const [activeDay, setActiveDay] = useState<number | string>("all");
   const [activeClass, setActiveClass] = useState<string>("all");
+  const [activeStatus, setActiveStatus] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const { t } = useTranslation();
+  const initialSetupDone = useRef(false);
 
-  const getMatchTTTable = (match: MatchWrapper) => {
-    if (
-      tournamentTables &&
-      tournamentTables.data &&
-      tournamentTables.data.length > 0
-    ) {
-      const table = tournamentTables.data.find((table) => {
-        return table.id == match.match.tournament_table_id;
-      });
-      return table;
+  // Memoize table lookup map for O(1) access
+  const tableMap = useMemo(() => {
+    if (!tournamentTables?.data) return new Map();
+
+    return new Map(tournamentTables.data.map((table) => [table.id, table]));
+  }, [tournamentTables?.data]);
+
+  // Memoize unique matches to avoid recalculation
+  const safeMatches = useMemo(() => {
+    if (!matchesData?.data || !Array.isArray(matchesData.data)) return [];
+    return getUniqueMatches(matchesData.data);
+  }, [matchesData?.data]);
+
+  // Memoize class-filtered matches
+  const classFilteredMatches = useMemo(() => {
+    if (activeClass === "all") return safeMatches;
+    return safeMatches.filter((match) => match.class === activeClass);
+  }, [safeMatches, activeClass]);
+
+  // Memoize unique gamedays and classes
+  const uniqueGamedays = useMemo(
+    () => getUniqueGamedays(classFilteredMatches),
+    [classFilteredMatches],
+  );
+
+  const uniqueClasses = useMemo(
+    () => getUniqueClasses(safeMatches),
+    [safeMatches],
+  );
+
+  // Memoize filtered and sorted matches
+  const { displayMatches, displayMatchCount } = useMemo(() => {
+    // Filter by date/gameday
+    let matches = classFilteredMatches;
+    
+    if (activeDay !== "all") {
+      // If activeDay is a number, filter by that specific date
+      if (typeof activeDay === "number" && activeDay >= 0 && activeDay < uniqueGamedays.length) {
+        matches = filterMatchesByGameday(matches, uniqueGamedays[activeDay]);
+      }
     }
-    return null;
+    // If activeDay is "all", don't filter by date - show all matches
+
+    matches = matches.filter((match) => {
+      const hasPlayer1 = match.p1 && match.p1.id && match.p1.id !== "";
+      const hasPlayer2 = match.p2 && match.p2.id && match.p2.id !== "";
+
+      if (!hasPlayer1 || !hasPlayer2) {
+        return false;
+      }
+
+      const isByeGame = match.p1?.name?.toLowerCase().includes("bye") || 
+                       match.p2?.name?.toLowerCase().includes("bye");
+
+      return !isByeGame;
+    });
+
+    // Filter by status
+    if (activeStatus !== "all") {
+      matches = matches.filter((match) => {
+        const hasWinner = match.match.winner_id && match.match.winner_id !== "";
+        const hasStarted = match.match.state === MatchState.ONGOING;
+
+        switch (activeStatus) {
+          case "finished":
+            return hasWinner;
+          case "ongoing":
+            return hasStarted && !hasWinner;
+          case "created":
+            return !hasStarted && !hasWinner;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Sort matches by time, then by table, then by match number
+    matches.sort((a, b) => {
+      // Primary sort: by scheduled time
+      if (a.match.start_date && b.match.start_date) {
+        const timeA = new Date(a.match.start_date).getTime();
+        const timeB = new Date(b.match.start_date).getTime();
+        if (timeA !== timeB) return timeA - timeB;
+      }
+
+      return (a.match.order || 0) - (b.match.order || 0);
+    });
+
+    // Store count before search filter
+    const matchesBeforeSearch = matches.length;
+
+    // Apply search filter if needed
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      matches = matches.filter(
+        (match) =>
+          match.p1?.name?.toLowerCase().includes(term) ||
+          match.p2?.name?.toLowerCase().includes(term),
+      );
+    }
+
+    return {
+      displayMatches: matches,
+      displayMatchCount: searchTerm ? matches.length : matchesBeforeSearch,
+    };
+  }, [
+    classFilteredMatches,
+    uniqueGamedays,
+    activeDay,
+    searchTerm,
+    activeStatus,
+  ]);
+
+  // Optimized table lookup function
+  const getMatchTTTable = (match: MatchWrapper) => {
+    if (!match.match.tournament_table_id) return null;
+    return tableMap.get(match.match.tournament_table_id) || null;
   };
 
-  if (!matchesData || !matchesData.data) {
+  // Initialize active day to the nearest upcoming gameday
+  useEffect(() => {
+    if (initialSetupDone.current || uniqueGamedays.length === 0) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Find the nearest upcoming gameday within 7 days
+    const lookAheadDays = 7;
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + lookAheadDays);
+
+    let bestDayIndex = 0;
+    let closestFutureDate: Date | null = null;
+
+    uniqueGamedays.forEach((day, index) => {
+      const gameDate = new Date(day);
+      gameDate.setHours(0, 0, 0, 0);
+
+      // Skip today
+      if (gameDate.getTime() === today.getTime()) return;
+
+      // If it's within the look-ahead period
+      if (gameDate > today && gameDate <= maxDate) {
+        if (!closestFutureDate || gameDate < closestFutureDate) {
+          closestFutureDate = gameDate;
+          bestDayIndex = index;
+        }
+      }
+    });
+
+    // If no date found within look-ahead, find the next future date
+    if (!closestFutureDate) {
+      uniqueGamedays.forEach((day, index) => {
+        const gameDate = new Date(day);
+        if (
+          gameDate > today &&
+          (!closestFutureDate || gameDate < closestFutureDate)
+        ) {
+          closestFutureDate = gameDate;
+          bestDayIndex = index;
+        }
+      });
+    }
+
+    setActiveDay(bestDayIndex);
+    initialSetupDone.current = true;
+  }, [uniqueGamedays]);
+
+  // Early return for no data
+  if (!matchesData?.data || !Array.isArray(matchesData.data)) {
     return (
       <div className="p-6 text-center rounded-sm">
         <p className="text-stone-500">{t("competitions.errors.no_groups")}</p>
@@ -66,143 +224,45 @@ function RouteComponent() {
     );
   }
 
-  const safeMatches = Array.isArray(matchesData.data)
-    ? getUniqueMatches(matchesData.data)
-    : [];
-
-  let classFilteredMatches = safeMatches;
-  if (activeClass !== "all") {
-    classFilteredMatches = safeMatches.filter(
-      (match) => match.class === activeClass
+  if (matchesData.data.length === 0) {
+    return (
+      <div className="p-6 text-center rounded-sm">
+        <p className="text-stone-500">{t("competitions.errors.no_schedule")}</p>
+      </div>
     );
   }
-
-  const uniqueGamedays = getUniqueGamedays(classFilteredMatches);
-  const [searchTerm, setSearchTerm] = useState("");
-  const safeDayIndex =
-    activeDay >= 0 && activeDay < uniqueGamedays.length ? activeDay : 0;
-
-  console.log("Unique gamedays:", uniqueGamedays);
-  console.log("uniquegames", uniqueGamedays[safeDayIndex]);
-
-  let filteredMatches = filterMatchesByGameday(
-    classFilteredMatches,
-    uniqueGamedays[safeDayIndex]
-  );
-
-  console.log("Filtered matches:", filteredMatches);
-
-  // Store count before search filter for the badge
-  const matchesBeforeSearch = [...filteredMatches];
-
-  if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    filteredMatches = filteredMatches.filter(
-      (match) =>
-        match.p1?.name?.toLowerCase().includes(term) ||
-        match.p2?.name?.toLowerCase().includes(term)
-    );
-  }
-
-  // Calculate the count to display in the badge
-  const displayMatchCount = searchTerm ? filteredMatches.length : matchesBeforeSearch.length;
-
-  const uniqueClasses = getUniqueClasses(safeMatches);
-  const initialSetupDone = useRef(false);
-
-  useEffect(() => {
-    if (initialSetupDone.current) return;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    let upcomingDayIndex = -1;
-
-    const lookAheadPeriod = 7;
-    const maxDate = new Date(today);
-    maxDate.setDate(today.getDate() + lookAheadPeriod);
-
-    const gameDayDates = uniqueGamedays.map((day) => {
-      const date = new Date(day);
-      date.setHours(0, 0, 0, 0);
-      return date;
-    });
-
-    for (let i = 0; i < gameDayDates.length; i++) {
-      const gameDate = gameDayDates[i];
-
-      if (gameDate.getTime() === today.getTime()) continue;
-
-      if (gameDate > today && gameDate <= maxDate) {
-        upcomingDayIndex = i;
-        break;
-      }
-    }
-
-    if (upcomingDayIndex === -1) {
-      for (let i = 0; i < gameDayDates.length; i++) {
-        const gameDate = gameDayDates[i];
-        if (gameDate > today) {
-          upcomingDayIndex = i;
-          break;
-        }
-      }
-    }
-
-    if (upcomingDayIndex === -1) {
-      upcomingDayIndex = 0;
-    }
-
-    setActiveDay(upcomingDayIndex);
-    initialSetupDone.current = true;
-  }, [uniqueGamedays, setActiveDay]);
 
   return (
-    <>
-      {matchesData?.data &&
-        Array.isArray(matchesData.data) &&
-        matchesData.data.length > 0 ? (
-        <>
-          <div className="">
-            <h4 className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
-              {t("competitions.timetable.matches")}
-            </h4>
+    <div className="">
+      <h4 className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
+        {t("competitions.timetable.matches")}
+      </h4>
 
-            <Filters
-              gamedays={uniqueGamedays}
-              activeClass={activeClass}
-              activeDay={activeDay}
-              setActiveDay={setActiveDay}
-              totalDays={uniqueGamedays.length || 1}
-              classes={uniqueClasses}
-              setActiveClass={setActiveClass}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              filteredMatchCount={displayMatchCount}
-            />
+      <Filters
+        gamedays={uniqueGamedays}
+        activeClass={activeClass}
+        activeDay={activeDay}
+        setActiveDay={setActiveDay}
+        totalDays={uniqueGamedays.length || 1}
+        classes={uniqueClasses}
+        setActiveClass={setActiveClass}
+        activeStatus={activeStatus}
+        setActiveStatus={setActiveStatus}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        filteredMatchCount={displayMatchCount}
+      />
 
-            <div className="">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-y-4 md:gap-y-12 gap-x-4 my-6">
-                {filteredMatches
-                  .map((match, key) => {
-                    return (
-                      <ITTFMatchComponent
-                        key={`filtered-${key}`}
-                        match={match}
-                        table_data={getMatchTTTable(match)}
-                      />
-                    );
-                  })}
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="p-6 text-center rounded-sm">
-          <p className="text-stone-500">
-            {t("competitions.errors.no_schedule")}
-          </p>
-        </div>
-      )}
-    </>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-y-4 md:gap-y-12 gap-x-4 my-6">
+        {displayMatches.map((match, index) => (
+          <ITTFMatchComponent
+            key={`${match.match.id}-${index}`}
+            match={match}
+            table_data={getMatchTTTable(match)}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
+

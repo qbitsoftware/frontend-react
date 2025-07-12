@@ -15,4 +15,7 @@ export type TournamentTable = {
   woman_weight: number;
   size: number;
   participants: Participant[];
+  avg_match_duration: number;
+  start_date: string;
+  break_duration: number,
 }
