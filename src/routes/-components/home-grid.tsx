@@ -32,7 +32,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
   const videosRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="max-w-[1440px] min-h-screen mx-auto md:px-4 lg:px-6 relative">
+    <div className="max-w-[85%] min-h-screen mx-auto md:px-4 lg:px-6 relative">
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-grey-500 backdrop-blur-lg"></div>
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat opacity-30"></div>

@@ -7,10 +7,12 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlayerProfileModal } from "../reiting/-components/player-profile-modal";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@/types/users";
+import placeholderImg from "@/assets/placheolderImg.svg";
 
 interface Props {
   users: User[] | null;
@@ -101,11 +103,22 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
                   key={user.id}
                   className="group cursor-pointer"
                 >
-                  <TableCell className="px-6 py-3 text-sm font-bold">
+                  <TableCell className="px-6 py-3 text-lg font-bold text-[#4C97F1]">
                     {user.rate_order}
                   </TableCell>
-                  <TableCell className="px-6 py-3 text-sm font-semibold group-hover:text-blue-600 group-hover:underline">
-                    {`${user.last_name} ${user.first_name}`}
+                  <TableCell className="px-6 py-3 flex items-center space-x-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src="" alt={`${user.first_name} ${user.last_name}'s profile`} />
+                      <AvatarFallback>
+                        <img src={placeholderImg} className="rounded-full h-full w-full object-cover" alt="Profile" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold group-hover:text-blue-600 group-hover:underline">
+                        {user.last_name}
+                      </span>
+                      <span className="text-sm text-gray-600">{user.first_name}</span>
+                    </div>
                   </TableCell>
                   <TableCell className="px-6 py-3 text-sm">
                     {user.rate_points}

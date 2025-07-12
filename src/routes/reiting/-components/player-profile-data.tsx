@@ -14,31 +14,32 @@ export const PlayerProfileData = ({ profile }: PlayerProfileDataProps) => {
 
   return (
     <Tabs defaultValue="latest-matches" className="w-full min-h-64">
-      <TabsList className="w-full grid grid-cols-1 md:grid-cols-3 bg-gray-50 p-1 rounded-lg">
+      <TabsList className="w-full grid grid-cols-1 md:grid-cols-3 bg-gray-100/50 p-1 rounded-xl border border-gray-200/50">
         <TabsTrigger
           value="latest-matches"
-          className="transition-all duration-200"
+          className="transition-all duration-300 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg"
         >
           {t("rating.player_modal.menus.latest_matches.title")}
         </TabsTrigger>
         <TabsTrigger
           value="temp-placeholder"
-          className="transition-all duration-200"
+          className="transition-all duration-300 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg"
         >
           {t("rating.player_modal.menus.player_profile.title")}
         </TabsTrigger>
         <TabsTrigger
           value="rating-change"
-          className="transition-all duration-200"
+          className="transition-all duration-300 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg"
         >
           {t("rating.player_modal.menus.rating_change_graph.title")}
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="latest-matches" className="mt-4">
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <h3 className="font-medium text-lg text-gray-800 mb-4">
-            Recent Match History
+      <TabsContent value="latest-matches" className="mt-6">
+        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200/50">
+          <h3 className="font-semibold text-xl text-gray-900 mb-6 flex items-center gap-3">
+            <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+            {t("rating.player_modal.sections.recent_match_history")}
           </h3>
 
           <div className="space-y-2">
@@ -49,57 +50,59 @@ export const PlayerProfileData = ({ profile }: PlayerProfileDataProps) => {
         </div>
       </TabsContent>
 
-      <TabsContent value="temp-placeholder" className="mt-4">
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <h3 className="font-medium text-lg text-gray-800 mb-4">
-            Player Information
+      <TabsContent value="temp-placeholder" className="mt-6">
+        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200/50">
+          <h3 className="font-semibold text-xl text-gray-900 mb-6 flex items-center gap-3">
+            <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+            {t("rating.player_modal.sections.player_information")}
           </h3>
 
-          <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-            <div className="flex items-center">
-              <p className="w-32 text-gray-500">Nationality:</p>
-              <p className="font-semibold flex items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-200/30">
+              <p className="text-sm text-gray-500 mb-2">{t("rating.player_modal.fields.nationality")}</p>
+              <p className="font-semibold flex items-center text-gray-900">
                 {profile.user.foreigner === 0 ? (
                   <span className="text-lg">🇪🇪</span>
                 ) : (
-                  "Foreigner"
+                  t("rating.player_modal.values.foreigner")
                 )}
               </p>
             </div>
 
-            <div className="flex items-center">
-              <p className="w-32 text-gray-500">ELTL ID:</p>
-              <p className="font-semibold">{profile.user.eltl_id}</p>
+            <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-200/30">
+              <p className="text-sm text-gray-500 mb-2">{t("rating.player_modal.fields.eltl_id")}</p>
+              <p className="font-semibold text-gray-900">{profile.user.eltl_id}</p>
             </div>
 
-            <div className="flex items-center">
-              <p className="w-32 text-gray-500">Year of birth:</p>
-              <p className="font-semibold">
+            <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-200/30">
+              <p className="text-sm text-gray-500 mb-2">{t("rating.player_modal.fields.year_of_birth")}</p>
+              <p className="font-semibold text-gray-900">
                 {profile.user.birth_date ? formatDateToNumber(profile.user.birth_date) : "----"}
               </p>
             </div>
 
-            <div className="flex items-center">
-              <p className="w-32 text-gray-500">Rating:</p>
-              <p className="font-semibold text-gray-800">
-                {profile.user.rate_order || "N/A"}
+            <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-200/30">
+              <p className="text-sm text-gray-500 mb-2">{t("rating.player_modal.fields.rating")}</p>
+              <p className="font-semibold text-[#4C97F1]">
+                {t("rating.player_modal.fields.rank")}{profile.user.rate_order || "N/A"}
               </p>
             </div>
 
-            <div className="flex items-center">
-              <p className="w-32 text-gray-500">Sex:</p>
-              <p className="font-semibold">
-                {profile.user.sex === "M" ? "Male" : "Female"}
+            <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-200/30">
+              <p className="text-sm text-gray-500 mb-2">{t("rating.player_modal.fields.sex")}</p>
+              <p className="font-semibold text-gray-900">
+                {profile.user.sex === "M" ? t("rating.player_modal.values.male") : t("rating.player_modal.values.female")}
               </p>
             </div>
           </div>
         </div>
       </TabsContent>
 
-      <TabsContent value="rating-change" className="mt-4">
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <h3 className="font-medium text-lg text-gray-800 mb-4">
-            Rating Progress
+      <TabsContent value="rating-change" className="mt-6">
+        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200/50">
+          <h3 className="font-semibold text-xl text-gray-900 mb-6 flex items-center gap-3">
+            <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+            {t("rating.player_modal.sections.rating_progress")}
           </h3>
           <div className="w-full">
             <PlayerRankingChangeGraph stats={profile.rating_change} />
