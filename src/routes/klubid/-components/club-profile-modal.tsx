@@ -31,7 +31,7 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
   if (isOpen && (isLoading || !playerData)) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl">
+        <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl"> tournament_tables 
           <div className="flex justify-center items-center h-40">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
@@ -178,7 +178,7 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
                     {t("admin.clubs.table.website")}
                   </p>
                   <a
-                    href={club.website}
+                    href={club.website.startsWith('http') ? club.website : `https://${club.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-medium text-blue-600 hover:underline"

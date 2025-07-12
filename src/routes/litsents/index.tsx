@@ -213,6 +213,28 @@ function RouteComponent() {
     updateLicenseType(playerId, licenseType);
   };
 
+  const getAvailableLicenseTypes = (player: User) => {
+    // Get the player's age-based default license type
+    const currentYear = new Date().getFullYear();
+    const birthDate = player.birth_date || "";
+    const birthYear = birthDate ? parseInt(birthDate) : 0;
+    const age = birthYear ? currentYear - birthYear : 0;
+
+    let defaultLicenseType = LicenseType.ADULT;
+    if (age < 15) {
+      defaultLicenseType = LicenseType.CHILD;
+    } else if (age >= 15 && age <= 19) {
+      defaultLicenseType = LicenseType.YOUTH;
+    } else if (age >= 65) {
+      defaultLicenseType = LicenseType.SENIOR;
+    }
+
+    // Return only the default license type and foreigner license
+    return licenseTypes.filter(type => 
+      type.id === defaultLicenseType || type.id === LicenseType.FOREIGNER
+    );
+  };
+
   const calculateTotal = () => {
     return players.reduce((total, player) => {
       return total + getLicenseTypePrice(player.licenseType);
@@ -225,28 +247,18 @@ function RouteComponent() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-8">
-              <span className="text-xl font-semibold">
-                {t("licenses.title")}
-              </span>
-            </div>
+    <div className="w-full mx-auto lg:px-4 max-w-[85%]">
+      <div className='py-6'>
+        <div className="bg-white border border-gray-200/50 shadow-lg rounded-2xl px-6 sm:px-8 md:px-12 py-8 space-y-8">
+          <div className="flex items-center gap-4 pb-6 border-b border-gray-200/50">
+            <div className="w-1 h-8 bg-[#4C97F1] rounded-full"></div>
+            <h1 className="text-2xl font-bold text-gray-900">{t("licenses.page_title")}</h1>
           </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-2xl font-semibold mb-8">
-          {t("licenses.page_title")}
-        </h1>
-        <div className="bg-gray-100 rounded-lg p-6 mb-8">
-          <h2 className="text-lg font-semibold mb-4 flex items-center">
-            <UserIcon className="w-5 h-5 mr-2" />
-            {t("licenses.add_player.title")}
-          </h2>
+          <div className="bg-gradient-to-br from-[#4C97F1]/5 to-blue-50/50 border border-[#4C97F1]/20 rounded-xl p-6 mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+              <h2 className="text-xl font-bold text-gray-900">{t("licenses.add_player.title")}</h2>
+            </div>
 
           {!showManualEntry ? (
             <div>
@@ -266,7 +278,7 @@ function RouteComponent() {
                         )}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full"
+                        className="w-full border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl px-4 py-3 shadow-sm transition-all"
                         autoComplete="off"
                       />
                     </PopoverTrigger>
@@ -290,16 +302,21 @@ function RouteComponent() {
                           playerSuggestions.data.map((user, i) => (
                             <div
                               key={i}
-                              className="px-3 py-2 cursor-pointer hover:bg-accent"
+                              className="px-4 py-3 cursor-pointer hover:bg-[#4C97F1]/10 hover:text-[#4C97F1] transition-colors rounded-lg mx-1 my-1"
                               onClick={() => handlePlayerSelect(user)}
                             >
-                              {capitalizeWords(user.first_name)}{" "}
-                              {capitalizeWords(user.last_name)}{" "}
-                              {user.eltl_id && `(${user.eltl_id})`}
+                              <div className="font-medium">
+                                {capitalizeWords(user.first_name)}{" "}
+                                {capitalizeWords(user.last_name)}
+                              </div>
+                              {user.eltl_id && (
+                                <div className="text-xs text-gray-500">ELTL ID: {user.eltl_id}</div>
+                              )}
                             </div>
                           ))
                         ) : (
-                          <div className="px-3 py-4 text-sm text-gray-500 text-center">
+                          <div className="px-4 py-6 text-sm text-gray-500 text-center">
+                            <UserIcon className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                             {t("licenses.add_player.no_players_found")}
                           </div>
                         )}
@@ -307,27 +324,32 @@ function RouteComponent() {
                     )}
                   </Popover>
                 </div>
-                <div className="border-l pl-4 ml-2">
+                <div className="border-l-2 border-gray-200 pl-4 ml-4">
                   <button
                     onClick={() => setShowManualEntry(true)}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors whitespace-nowrap flex items-center"
+                    className="bg-[#4C97F1] hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap flex items-center shadow-lg hover:shadow-xl"
                     title={t("licenses.add_player.add_new_player")}
                   >
-                    <UserPlus className="w-5 h-5 mr-1" />
+                    <UserPlus className="w-5 h-5 mr-2" />
                     {t("licenses.add_player.add_new_player")}
                   </button>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mt-3">
-                {t("licenses.add_player.help_text")}
-              </p>
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700">
+                  {t("licenses.add_player.help_text")}
+                </p>
+              </div>
             </div>
           ) : (
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-md font-medium text-gray-700">
-                  {t("licenses.add_player.manual_entry_title")}
-                </h3>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 bg-green-600 rounded-full"></div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {t("licenses.add_player.manual_entry_title")}
+                  </h3>
+                </div>
                 <button
                   onClick={() => {
                     setShowManualEntry(false);
@@ -337,9 +359,9 @@ function RouteComponent() {
                       birth_date: "",
                     });
                   }}
-                  className="text-gray-600 hover:text-gray-800 flex items-center text-sm"
+                  className="text-gray-600 hover:text-[#4C97F1] flex items-center text-sm font-medium transition-colors"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  <ArrowLeft className="w-4 h-4 mr-2" />
                   {t("licenses.add_player.back_to_search")}
                 </button>
               </div>
@@ -351,7 +373,7 @@ function RouteComponent() {
                   onChange={(e) =>
                     setNewPlayer({ ...newPlayer, first_name: e.target.value })
                   }
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -360,7 +382,7 @@ function RouteComponent() {
                   onChange={(e) =>
                     setNewPlayer({ ...newPlayer, last_name: e.target.value })
                   }
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm"
                 />
                 <input
                   type="number"
@@ -369,111 +391,128 @@ function RouteComponent() {
                   onChange={(e) =>
                     setNewPlayer({ ...newPlayer, birth_date: e.target.value })
                   }
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm"
                 />
               </div>
-              <div className="mt-4">
+              <div className="flex items-start gap-4 mt-6">
                 <button
                   onClick={addPlayer}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md font-medium transition-colors flex items-center"
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center shadow-lg hover:shadow-xl"
                 >
-                  <Plus className="w-5 h-5 mr-1" />
+                  <Plus className="w-5 h-5 mr-2" />
                   {t("licenses.add_player.add_to_list")}
                 </button>
+                <div className="flex-1 p-3 bg-green-50 rounded-lg border border-green-200">
+                  <p className="text-sm text-green-700">
+                    {t("licenses.add_player.manual_help_text")}
+                  </p>
+                </div>
               </div>
-              <p className="text-sm text-gray-600 mt-2">
-                {t("licenses.add_player.manual_help_text")}
-              </p>
             </div>
           )}
         </div>
 
-        {players.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border mb-8">
-            <div className="px-6 py-4 border-b">
-              <h2 className="text-lg font-semibold">
-                {t("licenses.table.title")}
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("licenses.table.player")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("licenses.table.birth_year")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("licenses.table.club")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("licenses.table.license_type")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("licenses.table.price")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("licenses.table.action")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {players.map((player) => {
-                    const license = licenseTypes.find(
-                      (l) => l.id === player.licenseType,
-                    );
-                    return (
-                      <tr key={player.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {player.first_name} {player.last_name}
-                          </div>
-                          {player.eltl_id && player.eltl_id > 0 && (
-                            <div className="text-xs text-gray-500">
-                              {t("licenses.table.eltl_id")}: {player.eltl_id}
+          {players.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {t("licenses.table.title")}
+                  </h2>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gradient-to-r from-[#4C97F1]/5 to-blue-50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                        {t("licenses.table.player")}
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                        {t("licenses.table.birth_year")}
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                        {t("licenses.table.club")}
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                        {t("licenses.table.license_type")}
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                        {t("licenses.table.price")}
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                        {t("licenses.table.action")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {players.map((player) => {
+                      const license = licenseTypes.find(
+                        (l) => l.id === player.licenseType,
+                      );
+                      return (
+                        <tr key={player.id} className="hover:bg-[#4C97F1]/5 transition-colors">
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-[#4C97F1] rounded-full flex items-center justify-center text-white font-bold">
+                                {player.first_name.charAt(0)}{player.last_name.charAt(0)}
+                              </div>
+                              <div>
+                                <div className="text-sm font-semibold text-gray-900">
+                                  {player.first_name} {player.last_name}
+                                </div>
+                                {player.eltl_id && player.eltl_id > 0 && (
+                                  <div className="text-xs text-gray-500">
+                                    {t("licenses.table.eltl_id")}: {player.eltl_id}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {player.birth_date
-                            ? new Date(player.birth_date).getFullYear()
-                            : ""}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {player.club_name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <select
-                            value={player.licenseType}
-                            onChange={(e) =>
-                              handleLicenseTypeChange(player.id, e.target.value)
-                            }
-                            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            {licenseTypes.map((type) => (
-                              <option key={type.id} value={type.id}>
-                                {type.name}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          €
-                          {license
-                            ? license.price
-                            : getLicenseTypePrice(player.licenseType)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button
-                            onClick={() => removePlayer(player.id)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-700">
+                              {player.birth_date
+                                ? new Date(player.birth_date).getFullYear()
+                                : "---"}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-sm text-gray-600">
+                              {player.club_name || "---"}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <select
+                              value={player.licenseType}
+                              onChange={(e) =>
+                                handleLicenseTypeChange(player.id, e.target.value)
+                              }
+                              className="px-3 py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-sm focus:outline-none transition-all"
+                            >
+                              {getAvailableLicenseTypes(player).map((type) => (
+                                <option key={type.id} value={type.id}>
+                                  {type.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-lg font-bold text-[#4C97F1]">
+                              €{license
+                                ? license.price
+                                : getLicenseTypePrice(player.licenseType)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <button
+                              onClick={() => removePlayer(player.id)}
+                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </td>
+                        </tr>
                     );
                   })}
                 </tbody>
@@ -482,63 +521,77 @@ function RouteComponent() {
           </div>
         )}
 
-        {players.length > 0 && (
-          <div className="bg-gray-100 rounded-lg p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {t("licenses.summary.title")}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {players.length}{" "}
-                  {players.length === 1
-                    ? t("licenses.summary.license_single")
-                    : t("licenses.summary.license_plural")}{" "}
-                  {t("licenses.summary.selected")}
-                </p>
+          {players.length > 0 && (
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-1 h-6 bg-green-600 rounded-full"></div>
+                    <h3 className="text-xl font-bold text-gray-900">
+                      {t("licenses.summary.title")}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {players.length}{" "}
+                    {players.length === 1
+                      ? t("licenses.summary.license_single")
+                      : t("licenses.summary.license_plural")}{" "}
+                    {t("licenses.summary.selected")}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600 mb-1">
+                    {t("licenses.summary.total_amount")}
+                  </p>
+                  <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-green-200">
+                    <p className="text-3xl font-bold text-green-600">
+                      €{calculateTotal()}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">
-                  {t("licenses.summary.total_amount")}
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  €{calculateTotal()}
-                </p>
-              </div>
+
+              <button
+                onClick={handleCompletePayment}
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 px-6 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+              >
+                <ShoppingCart className="w-5 h-5 mr-3" />
+                {t("licenses.summary.complete_payment")}
+              </button>
             </div>
+          )}
 
-            <button
-              onClick={handleCompletePayment}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-md font-medium transition-colors flex items-center justify-center"
-            >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              {t("licenses.summary.complete_payment")}
-            </button>
-          </div>
-        )}
-
-        {players.length === 0 && (
-          <div className="text-center py-12 bg-gray-100 rounded-lg">
-            <UserIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">{t("licenses.empty_state")}</p>
-          </div>
-        )}
-
-        <div className="mt-12 bg-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4 text-blue-900">
-            {t("licenses.info.title")}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            {licenseTypes.map((type) => (
-              <div key={type.id} className="flex justify-between text-blue-800">
-                <span>{type.name}:</span>
-                <span className="font-medium">€{type.price}</span>
+          {players.length === 0 && (
+            <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-dashed border-gray-300">
+              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <UserIcon className="w-8 h-8 text-gray-400" />
               </div>
-            ))}
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">{t("licenses.empty_state_title")}</h3>
+              <p className="text-gray-500">{t("licenses.empty_state")}</p>
+            </div>
+          )}
+
+          <div className="mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-1 h-6 bg-blue-600 rounded-full"></div>
+              <h3 className="text-xl font-bold text-blue-900">
+                {t("licenses.info.title")}
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {licenseTypes.map((type) => (
+                <div key={type.id} className="bg-white p-4 rounded-lg border border-blue-200 flex justify-between items-center">
+                  <span className="font-medium text-blue-800">{type.name}</span>
+                  <span className="font-bold text-blue-600 text-lg">€{type.price}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 p-4 bg-blue-100 rounded-lg border border-blue-300">
+              <p className="text-sm text-blue-700 font-medium">
+                {t("licenses.info.validity")}
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-blue-700 mt-4">
-            * {t("licenses.info.validity")}
-          </p>
         </div>
       </div>
     </div>
