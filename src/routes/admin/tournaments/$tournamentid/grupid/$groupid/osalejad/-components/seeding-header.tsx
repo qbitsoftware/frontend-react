@@ -21,7 +21,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Upload } from "lucide-react";
+import { Upload, Download } from "lucide-react";
+import * as XLSX from 'xlsx';
 
 interface SeedingHeaderProps {
   tournament_id: number;
@@ -163,16 +164,58 @@ const SeedingHeader = ({
     }
   };
 
+  const handleDownloadTemplate = () => {
+    let headers: string[];
+    let filename: string;
+
+    const isRoundRobin = table_data.type === GroupType.ROUND_ROBIN || table_data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
+    const hasTeams = !table_data.solo;
+
+    if (isRoundRobin && hasTeams) {
+      headers = ['id', 'name', 'team', 'group'];
+      filename = 'participants_roundrobin_teams_template.xlsx';
+    } else if (isRoundRobin && !hasTeams) {
+      headers = ['id', 'name', 'group'];
+      filename = 'participants_roundrobin_solo_template.xlsx';
+    } else if (!isRoundRobin && hasTeams) {
+      headers = ['id', 'name', 'team'];
+      filename = 'participants_teams_template.xlsx';
+    } else {
+      headers = ['id', 'name'];
+      filename = 'participants_solo_template.xlsx';
+    }
+
+    const wsData = [headers];
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Participants');
+
+    XLSX.writeFile(wb, filename);
+  };
+
   return (
     <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-      <div className="flex gap-2 items-center">
-        <h5 className="font-medium">{(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? t("admin.tournaments.groups.participants.subgroups") : t("admin.tournaments.info.participants")}</h5>
-        <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] ">
-          {((table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && participants.filter((participant) => participant.type === "round_robin").length) || (participants && participants.length)} / {table_data.size}{" "}
-        </p>
+      <div className="flex gap-2 items-center justify-between w-full">
+        <div className="flex gap-2 items-center">
+          <h5 className="font-medium">{(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? t("admin.tournaments.groups.participants.subgroups") : t("admin.tournaments.info.participants")}</h5>
+          <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] ">
+            {((table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && participants.filter((participant) => participant.type === "round_robin").length) || (participants && participants.length)} / {table_data.size}{" "}
+          </p>
+        </div>
+        <Button
+          onClick={handleDownloadTemplate}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-1.5"
+        >
+          <Download className="h-4 w-4" />
+          {t('admin.tournaments.groups.import.download_template', 'Download Template')}
+        </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 w-full">
+      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 w-full">
         <div className="flex flex-col sm:flex-row gap-2 flex-1">
           <Button
             onClick={handleOrder}
