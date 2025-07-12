@@ -46,7 +46,13 @@
       "clubs": "Klubid",
       "contact": "Kontakt"
     },
-    "links": "Menüü"
+    "links": "Menüü",
+    "newsletter": {
+      "title": "Uudiskiri",
+      "description": "Jälgi uusimaid uudiseid ja võistlusi",
+      "placeholder": "Sisesta oma e-posti aadress",
+      "button": "Telli"
+    }
   },
   "homepage": {
     "title": "Eesti Lauatenniseliit",
@@ -137,6 +143,42 @@
       "results": "Tulemused"
     }
   },
+  "contact": {
+    "page_title": "Kontakt",
+    "organization_info": {
+      "title": "Liidu kontaktandmed",
+      "name": "Eesti Lauatenniseliit",
+      "country": "Eesti",
+      "phone": "Telefon",
+      "email": "Meiliaadress",
+      "results": "Tulemused"
+    },
+    "banking": {
+      "title": "Pangaandmed",
+      "address": "Aadress",
+      "bank": "Pank",
+      "account": "Konto"
+    },
+    "office_hours": {
+      "title": "Lahtiolekuajad",
+      "weekdays": "Tööpäevadel",
+      "weekends": "Puhkepäevadel"
+    },
+
+    "location": {
+      "title": "Asukoht",
+      "view_in_maps": "Vaata asukohta kaardilt"
+    },
+    "quick_contact": {
+      "title": "Kiirkontakt",
+      "description": "Siit saad vastused kiireloomulistele küsimustele.",
+      "tournaments": "Võistlused",
+      "memberships": "Liikmelisus",
+      "general": "Üldine"
+    }
+
+  },
+
   "profile": {
     "header": {
       "greeting": "Tere tulemast tagasi",
@@ -317,6 +359,7 @@
       "complete_payment": "Jätka maksmisega"
     },
     "empty_state": "Mängijaid pole veel lisatud. Lisa mängijad litsentside ostmiseks.",
+    "empty_state_title": "Mängijaid pole lisatud",
     "info": {
       "title": "Litsentside hinnakiri",
       "validity": "Kõik litsentsid kehtivad ühe kalendriaasta"
@@ -534,6 +577,29 @@
         "rating_change_graph": {
           "title": "Vorm"
         }
+      },
+      "sections": {
+        "recent_match_history": "Viimased Mängud",
+        "player_information": "Mängija Informatsioon",
+        "rating_progress": "Reitingu Areng"
+      },
+      "fields": {
+        "nationality": "Rahvus",
+        "eltl_id": "ELTL ID",
+        "year_of_birth": "Sünniaasta",
+        "rating": "Reiting",
+        "sex": "Sugu",
+        "rank": "Koht #",
+        "rating_points": "RP"
+      },
+      "values": {
+        "male": "Mees",
+        "female": "Naine",
+        "foreigner": "Välismaalane"
+      },
+      "errors": {
+        "loading_profile": "Viga profiili andmete laadimisel",
+        "no_profile_data": "Profiili andmed pole saadaval"
       }
     }
   },

@@ -208,26 +208,23 @@ export function TournamentsCalendar({ tournaments }: Props) {
 
   const renderYearView = () => {
     return (
-      <div className="space-y-2">
-        <div className="overflow-x-auto pb-2">
-          <div className="min-w-[1100px] ">
-            {/* Month headers */}
-            <div className="grid grid-cols-12 gap-2 px-1 border justify-center">
-              {months.map((month, monthIndex) => {
-                const daysInMonth = daysInMonthArray[monthIndex];
-                return (
-                  <div
-                    key={monthIndex}
-                    className="text-center text-base font-medium py-2 w-full"
-                  >
-                    <div className="mb-1">
-                      {t('calendar.months.' + month.toLowerCase())}
-                    </div>
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <div className="min-w-[1100px]">
+              {/* Month headers */}
+              <div className="grid grid-cols-12 gap-2 p-4 bg-gradient-to-r from-gray-50 to-gray-100">
+                {months.map((month, monthIndex) => {
+                  const daysInMonth = daysInMonthArray[monthIndex];
+                  return (
                     <div
                       key={monthIndex}
-                      className=" "
+                      className="text-center w-full"
                     >
-                      <div className="grid grid-cols-4 gap-0.5">
+                      <div className="text-sm font-semibold text-gray-700 mb-3">
+                        {t('calendar.months.' + month.toLowerCase())}
+                      </div>
+                      <div className="grid grid-cols-4 gap-1 p-2">
                         {/* Generate all cells for this month */}
                         {Array.from({ length: daysInMonth }, (_, i) => {
                           const day = i + 1;
@@ -241,31 +238,30 @@ export function TournamentsCalendar({ tournaments }: Props) {
                           if (hasEvents) {
                             const cellStyle = {
                               backgroundColor: eventsOnDay[0].color,
-
                             };
 
                             const tooltipContent = (
-                              <div className="p-2 space-y-1">
-                                <div className="font-medium">
+                              <div className="p-3 space-y-2 max-w-xs">
+                                <div className="font-semibold text-gray-900">
                                   {formatDate(selectedYear, monthIndex, day)}
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-2">
                                   {eventsOnDay.map((event) => (
                                     <Link key={event.id} to={event.isGameday ? `/voistlused/${event.parentTournamentId}` : `/voistlused/${event.id}`}>
-                                      <div className="flex items-start gap-1 hover:bg-gray-100 p-1 rounded-sm">
+                                      <div className="flex items-start gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors">
                                         <div
-                                          className="w-3 h-3 mt-1 rounded-none flex-shrink-0"
+                                          className="w-3 h-3 mt-1 rounded-sm flex-shrink-0 shadow-sm"
                                           style={{ backgroundColor: event.color }}
                                         />
-                                        <div>
-                                          <div className="text-sm font-medium">
+                                        <div className="min-w-0">
+                                          <div className="text-sm font-medium text-gray-900 line-clamp-2">
                                             {event.name}
-                                            {(event.isGameday && event.order) && event.eventType === "winner" ? (
-                                              <p className="text-xs self-start">{t('calendar.play_off')}</p>
-                                            ) :
-                                              <p className="text-xs self-start">{t('calendar.game_day')} {event.order}</p>
-                                            }
                                           </div>
+                                          {(event.isGameday && event.order) && (
+                                            <div className="text-xs text-gray-600 mt-1">
+                                              {event.eventType === "winner" ? t('calendar.play_off') : `${t('calendar.game_day')} ${event.order}`}
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     </Link>
@@ -279,20 +275,20 @@ export function TournamentsCalendar({ tournaments }: Props) {
                                 <TooltipTrigger asChild>
                                   <div className="aspect-square w-full">
                                     <div
-                                      className={`flex items-center justify-center relative w-full h-full cursor-pointer hover:ring-1 hover:ring-primary ${eventsOnDay.length > 1 ? "ring-1 ring-white" : ""} `}
+                                      className={`flex items-center justify-center relative w-full h-full cursor-pointer hover:scale-105 transition-transform duration-200 rounded-sm shadow-sm ${eventsOnDay.length > 1 ? "ring-2 ring-blue-200" : ""} `}
                                       style={eventsOnDay.length > 1 ? {
                                         backgroundColor: "#D1F9F9",
                                       } : cellStyle}
                                     >
                                       {(eventsOnDay.length > 1) && (
-                                        <div className="flex items-center justify-center text-sm font-medium text-gray-600 rounded-full ">
+                                        <div className="flex items-center justify-center text-xs font-bold text-blue-600">
                                           +{eventsOnDay.length - 1}
                                         </div>
                                       )}
                                     </div>
                                   </div>
                                 </TooltipTrigger>
-                                <TooltipContent sideOffset={5}>
+                                <TooltipContent sideOffset={5} className="bg-white border-2 border-gray-100 shadow-xl rounded-xl p-0">
                                   {tooltipContent}
                                 </TooltipContent>
                               </Tooltip>
@@ -302,25 +298,27 @@ export function TournamentsCalendar({ tournaments }: Props) {
                               <div className="aspect-square w-full"
                                 key={`${monthIndex}-${day}`}
                               >
-                                <div
-                                  className="w-full h-full bg-gray-200"
-                                />
+                                <div className="w-full h-full bg-gray-100 rounded-sm" />
                               </div>
                             );
                           }
                         })}
                       </div>
-                    </div>
 
-                  </div>
-                )
-              })}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="border rounded-lg p-4 bg-card space-y-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+            <h3 className="text-lg font-semibold text-gray-900">Tournament Categories</h3>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Array.from(new Set(events.map((e) => e.category))).map(
               (category) => {
@@ -330,23 +328,22 @@ export function TournamentsCalendar({ tournaments }: Props) {
                 if (categories.length === 0) return null;
 
                 return (
-                  <div key={category} className="flex items-center gap-2">
+                  <div key={category} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <div
                       style={{ backgroundColor: categories[0].color }}
-                      className="w-3 h-3 rounded-none"
+                      className="w-4 h-4 rounded-sm shadow-sm"
                     />
-                    <span className="text-sm">{category}</span>
+                    <span className="text-sm font-medium text-gray-700">{category}</span>
                   </div>
                 );
               }
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <div
-
-              className="w-3 h-3 rounded-none flex items-center justify-center bg-[#D1F9F9]"
-            ><Plus /></div>
-            <span className="text-sm">{t('calendar.multiple_tournaments_placeholder')}</span>
+          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+            <div className="w-4 h-4 rounded-sm flex items-center justify-center bg-[#D1F9F9] border border-blue-200">
+              <Plus className="w-2 h-2 text-blue-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">{t('calendar.multiple_tournaments_placeholder')}</span>
           </div>
         </div>
       </div>
@@ -360,41 +357,45 @@ export function TournamentsCalendar({ tournaments }: Props) {
 
     return (
       <Link to={linkPath} key={event.id}>
-        <div className="mb-3 flex flex-row justify-between hover:bg-white/10 bg-white/50 items-start gap-2 p-2">
-          <h6 className="px-1 font-semibold w-2/3">
-            {event.name}
-            {/* {event.isGameday && event.order && (
-              <p className="font-normal text-sm">{t('calendar.game_day')} {event.order}</p>
-            )} */}
-            {(event.isGameday && event.order) && event.eventType === "winner" ? (
-              <p className="text-xs self-start">{t('calendar.play_off')}</p>
-            ) :
-              <p className="text-xs self-start">{t('calendar.game_day')} {event.order}</p>
-            }
-
-          </h6>
-
-          <div className="flex items-center gap-2">
-            <div className="px-2 py-1 bg-white text-center font-bold border-t-2 border-red-600 rounded-t-[2px] text-stone-800 shadow-sm">
-              <div className="text-xs text-center ">
-                {getAbbreviatedMonth(event.start_date)}
-              </div>
-              {formatDateRange(event.start_date, event.end_date).split(" - ")[0]}
-            </div>
-            {event.end_date !== event.start_date && (
-              <>
-                <span className="font-semibold">-</span>
-                <div className="px-2 py-1 bg-white text-center font-bold border-t-2 border-red-600 rounded-t-[2px] text-stone-800">
-                  <div className="text-xs text-center">
-                    {event.end_date !== event.start_date &&
-                      new Date(event.start_date).getMonth() !== new Date(event.end_date).getMonth()
-                      ? getAbbreviatedMonth(event.end_date)
-                      : getAbbreviatedMonth(event.start_date)}
-                  </div>
-                  {formatDateRange(event.start_date, event.end_date).split(" - ")[1]}
+        <div className="group bg-white border border-gray-200 rounded-xl p-4 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300 mb-4">
+          <div className="flex flex-row justify-between items-start gap-4">
+            <div className="flex-1 min-w-0">
+              <h6 className="font-semibold text-gray-900 group-hover:text-[#4C97F1] transition-colors duration-200 line-clamp-2 leading-tight mb-2">
+                {event.name}
+              </h6>
+              {(event.isGameday && event.order) && (
+                <div className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800">
+                  {event.eventType === "winner" ? t('calendar.play_off') : `${t('calendar.game_day')} ${event.order}`}
                 </div>
-              </>
-            )}
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="bg-[#4C97F1] text-white px-3 py-2 rounded-lg text-center font-bold shadow-sm">
+                <div className="text-xs font-medium opacity-90">
+                  {getAbbreviatedMonth(event.start_date)}
+                </div>
+                <div className="text-lg font-bold leading-none">
+                  {formatDateRange(event.start_date, event.end_date).split(" - ")[0]}
+                </div>
+              </div>
+              {event.end_date !== event.start_date && (
+                <>
+                  <div className="w-3 h-px bg-gray-300"></div>
+                  <div className="bg-[#4C97F1] text-white px-3 py-2 rounded-lg text-center font-bold shadow-sm">
+                    <div className="text-xs font-medium opacity-90">
+                      {event.end_date !== event.start_date &&
+                        new Date(event.start_date).getMonth() !== new Date(event.end_date).getMonth()
+                        ? getAbbreviatedMonth(event.end_date)
+                        : getAbbreviatedMonth(event.start_date)}
+                    </div>
+                    <div className="text-lg font-bold leading-none">
+                      {formatDateRange(event.start_date, event.end_date).split(" - ")[1]}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </Link>
@@ -405,49 +406,53 @@ export function TournamentsCalendar({ tournaments }: Props) {
     return (
       <div>
         {/* Desktop view */}
-        <div className="hidden md:block space-y-6 ">
-          <div className="flex flex-col items-start justify-around gap-4 mb-8 ">
-            <div className="flex flex-col items-start gap-4">
-              <h5 className="font-medium">
-                {t("calendar.months." + months[zoomStartMonth].toLowerCase())} - {t('calendar.months.' + months[zoomStartMonth + 2].toLowerCase())}
-              </h5>
-              <div className="flex items-center gap-2 ">
-                <Button
-                  size="icon"
-                  onClick={handlePrevMonths}
-                  disabled={zoomStartMonth === 0}
-                  className="bg-[#e9e9e9] hover:bg-stone-100 rounded-md disabled:opacity-50 border-2 border-[#5c5c5c] text-[#737373]"
-                >
-                  <ChevronLeft strokeWidth={2.5} />
-                </Button>
-
-                <Button
-                  size="icon"
-                  onClick={handleNextMonths}
-                  disabled={zoomStartMonth >= 9}
-                  className="bg-[#e9e9e9] hover:bg-stone-100  p-2 rounded-md disabled:opacity-50 border-2 border-[#5c5c5c] text-[#737373]"
-                >
-                  <ChevronRight strokeWidth={2.5} />
-                </Button>
-
-                <div className="flex-1 flex items-center ml-8 w-[400px]">
+        <div className="hidden md:block space-y-8">
+          <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center justify-between">
+                <h5 className="text-xl font-semibold text-gray-900">
+                  {t("calendar.months." + months[zoomStartMonth].toLowerCase())} - {t('calendar.months.' + months[zoomStartMonth + 2].toLowerCase())}
+                </h5>
+                <div className="flex items-center gap-3">
+                  <Button
+                    size="icon"
+                    onClick={handlePrevMonths}
+                    disabled={zoomStartMonth === 0}
+                    className="bg-white hover:bg-[#4C97F1] hover:text-white border-2 border-gray-200 hover:border-[#4C97F1] text-gray-600 rounded-xl disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-gray-600 disabled:hover:border-gray-200 transition-all duration-300"
+                  >
+                    <ChevronLeft strokeWidth={2} />
+                  </Button>
+                  <Button
+                    size="icon"
+                    onClick={handleNextMonths}
+                    disabled={zoomStartMonth >= 9}
+                    className="bg-white hover:bg-[#4C97F1] hover:text-white border-2 border-gray-200 hover:border-[#4C97F1] text-gray-600 rounded-xl disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-gray-600 disabled:hover:border-gray-200 transition-all duration-300"
+                  >
+                    <ChevronRight strokeWidth={2} />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-center">
+                <div className="flex items-center gap-2 max-w-2xl w-full">
                   {months.map((month, index) => (
                     <React.Fragment key={index}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div
-                            className={`h-6 w-6 rounded-full flex items-center justify-center cursor-pointer  ${index >= zoomStartMonth &&
+                            className={`h-3 w-3 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 ${index >= zoomStartMonth &&
                               index < zoomStartMonth + 3
-                              ? "bg-[#3177a5] border-2 border-[#737373]"
-                              : "bg-[#E6E6E6] hover:bg-[#90D3FF] border-2 border-[#CBCBCB]"
+                              ? "bg-[#4C97F1] ring-2 ring-[#4C97F1]/30 scale-125"
+                              : "bg-gray-300 hover:bg-[#4C97F1]/60 hover:scale-110"
                               }`}
                             onClick={() => handleMonthCircleClick(index)}
                           />
                         </TooltipTrigger>
-                        <TooltipContent>{month}</TooltipContent>
+                        <TooltipContent className="bg-gray-900 text-white border-0 rounded-lg">
+                          {t('calendar.months.' + month.toLowerCase())}
+                        </TooltipContent>
                       </Tooltip>
-
-                      {index < 11 && <div className="h-0.5 flex-1 bg-gray-300" />}
+                      {index < 11 && <div className="h-px flex-1 bg-gray-200" />}
                     </React.Fragment>
                   ))}
                 </div>
@@ -456,7 +461,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
           </div>
 
           {/* Month columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {visibleMonths.map((monthInfo) => {
               const monthEvents = getEventsForMonth(
                 selectedYear,
@@ -464,22 +469,31 @@ export function TournamentsCalendar({ tournaments }: Props) {
               );
 
               return (
-                <div key={monthInfo.index} className="space-y-4 p-2">
-                  <h2 className="text-xl font-bold">
-                    {t('calendar.months.' + monthInfo.name.toLowerCase())}</h2>
-
-                  {/* Event cards for the month */}
-                  {monthEvents.length > 0 ? (
-                    <div className="space-y-8">
-                      {monthEvents.map((event) => (
-                        <EventCard key={event.id} event={event} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-muted-foreground text-sm p-2 ">
-                      {t('calendar.no_tournaments')}
-                    </div>
-                  )}
+                <div key={monthInfo.index} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                  <div className="bg-[#4C97F1] px-6 py-4">
+                    <h2 className="text-xl font-bold text-white">
+                      {t('calendar.months.' + monthInfo.name.toLowerCase())}
+                    </h2>
+                  </div>
+                  
+                  <div className="p-6">
+                    {monthEvents.length > 0 ? (
+                      <div className="space-y-4">
+                        {monthEvents.map((event) => (
+                          <EventCard key={event.id} event={event} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                          <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                        </div>
+                        <p className="text-gray-500 text-sm font-medium">
+                          {t('calendar.no_tournaments')}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -489,9 +503,9 @@ export function TournamentsCalendar({ tournaments }: Props) {
         <div className="md:hidden">
           <div
             ref={mobileContainerRef}
-            className="px-2 relative min-h-[75vh] overflow-y-auto max-h-[75vh]"
+            className="relative min-h-[75vh] overflow-y-auto max-h-[75vh] bg-white rounded-xl border border-gray-200"
           >
-            <div className="space-y-6">
+            <div className="p-4 space-y-6">
               {months.map((month, index) => {
                 const monthEvents = getEventsForMonth(
                   selectedYear,
@@ -504,16 +518,26 @@ export function TournamentsCalendar({ tournaments }: Props) {
                     ref={el => monthRefs.current[index] = el}
                     className={`${index === currentMonth && selectedYear === currentYear ? "scroll-mt-4" : ""}`}
                   >
-                    <h6 className="font-semibold mb-2">{t('calendar.months.' + month.toLowerCase())}</h6>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+                      <h6 className="text-lg font-bold text-gray-900">
+                        {t('calendar.months.' + month.toLowerCase())}
+                      </h6>
+                    </div>
                     {monthEvents.length > 0 ? (
-                      <div className="space-y-8">
+                      <div className="space-y-4">
                         {monthEvents.map((event) => (
                           <EventCard key={event.id} event={event} />
                         ))}
                       </div>
                     ) : (
-                      <div className="text-muted-foreground text-sm p-2">
-                        {t('calendar.no_tournaments')}
+                      <div className="text-center py-8">
+                        <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+                          <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+                        </div>
+                        <p className="text-gray-500 text-sm">
+                          {t('calendar.no_tournaments')}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -528,19 +552,19 @@ export function TournamentsCalendar({ tournaments }: Props) {
   };
 
   return (
-    <div className=" w-full max-w-7xl mx-auto">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center">
+    <div className="w-full max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
+        <div className="flex items-center gap-4">
           <Select
             value={selectedYear.toString()}
             onValueChange={(value) => setSelectedYear(Number.parseInt(value))}
           >
-            <SelectTrigger className=" bg-stone-100 text-black/70 space-x-4 rounded-sm border-stone-300 font-medium ">
+            <SelectTrigger className="bg-white border-2 border-gray-200 hover:border-[#4C97F1]/50 text-gray-700 font-semibold rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-[#4C97F1]/20 transition-all">
               <SelectValue placeholder="Select Year" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
               {availableYears.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
+                <SelectItem key={year} value={year.toString()} className="rounded-lg hover:bg-[#4C97F1]/10">
                   {year}
                 </SelectItem>
               ))}
@@ -550,16 +574,16 @@ export function TournamentsCalendar({ tournaments }: Props) {
 
         <div>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 gap-1">
+            <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-xl border border-gray-200">
               <TabsTrigger
                 value="three-month"
-                className="data-[state=active]:bg-stone-800 bg-[#ececec] text-stone-800 rounded-sm"
+                className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg bg-transparent text-gray-600 rounded-lg transition-all duration-300 font-medium"
               >
                 {t('calendar.3_months')}
               </TabsTrigger>
               <TabsTrigger
                 value="year"
-                className="data-[state=active]:bg-stone-800 bg-[#ececec] text-stone-800 rounded-sm"
+                className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg bg-transparent text-gray-600 rounded-lg transition-all duration-300 font-medium"
               >
                 {t('calendar.full_year')}
               </TabsTrigger>
@@ -568,7 +592,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
         </div>
       </div>
 
-      <div className=" rounded-lg px-1 py-6">
+      <div className="bg-gray-50/50 rounded-2xl p-6">
         <TooltipProvider>
           {activeTab === "three-month"
             ? renderThreeMonthView()

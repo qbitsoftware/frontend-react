@@ -1,4 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlayerProfileModal } from "./player-profile-modal";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect, useRef } from "react"
@@ -14,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@/types/users";
+import { UseGetClubsQuery } from "@/queries/clubs";
+import placeholderImg from "@/assets/placheolderImg.svg";
 
 interface UserTableProps {
   users: User[]
@@ -29,6 +32,16 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const windowScrollRef = useRef(0);
+  
+  // Fetch clubs data to get club images
+  const { data: clubsData } = UseGetClubsQuery();
+  const clubs = clubsData?.data || [];
+
+  // Helper function to get club image by name
+  const getClubImage = (clubName: string) => {
+    const club = clubs.find(club => club.name === clubName);
+    return club?.image_url || '';
+  };
 
   const getSexAndCombined = (tab: string) => {
     switch (tab) {
@@ -187,8 +200,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
               <TableHeader className="rounded-lg">
                 <TableRow className="bg-white sticky top-0 z-10">
                   <TableHead className="md:px-6 py-3 text-left font-medium">NR</TableHead>
-                  <TableHead className="px-1 md:px-6 py-3 text-left font-medium">{t('rating.table.head.last_name')}</TableHead>
-                  <TableHead className="px-1 md:px-6 py-3 text-left font-medium">{t('rating.table.head.first_name')}</TableHead>
+                  <TableHead className="px-1 md:px-6 py-3 text-left font-medium">{t('rating.table.head.player')}</TableHead>
                   <TableHead className="md:px-6 py-3 text-left font-medium">PP</TableHead>
                   <TableHead className="md:px-6 py-3 text-left font-medium">RP</TableHead>
                   <TableHead className="md:px-6 py-3 text-left font-medium">ID</TableHead>
@@ -203,21 +215,37 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     key={user.id}
                     className="group cursor-pointer bg-white transition-colors"
                   >
-                    <TableCell className="md:px-6 py-3 text-sm font-bold">
+                    <TableCell className="md:px-6 py-3 text-lg font-bold text-[#4C97F1]">
                       {user.rate_order}
                     </TableCell>
-                    <TableCell
-                      className="px-1 md:px-6 py-3 text-sm font-semibold group-hover:text-blue-600 group-hover:underline"
-                    >
-                      {user.last_name}
+                    <TableCell className="px-1 py-3 flex items-center space-x-3">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src="" alt={`${user.first_name} ${user.last_name}'s profile`} />
+                        <AvatarFallback>
+                          <img src={placeholderImg} className="rounded-full h-full w-full object-cover" alt="Profile" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold group-hover:text-blue-600 group-hover:underline">
+                          {user.last_name}
+                        </span>
+                        <span className="text-sm text-gray-600">{user.first_name}</span>
+                      </div>
                     </TableCell>
-                    <TableCell className="px-1 md:px-6 py-3 text-sm">{user.first_name}</TableCell>
 
                     <TableCell className="md:px-6 py-3 text-sm">{user.rate_pl_points}</TableCell>
                     <TableCell className="md:px-6 py-3 text-sm">{user.rate_points}</TableCell>
                     <TableCell className="md:px-6 py-3 text-sm">{user.eltl_id}</TableCell>
                     <TableCell className="md:px-6 py-3 text-sm">{getYear(user.birth_date)}</TableCell>
-                    <TableCell className="md:px-6 py-3 text-sm">{user.club_name}</TableCell>
+                    <TableCell className="px-1 md:px-6 py-3 flex items-center space-x-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={getClubImage(user.club_name)} alt={`${user.club_name} logo`} />
+                        <AvatarFallback className="text-xs font-semibold bg-gray-100">
+                          {user.club_name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm">{user.club_name}</span>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

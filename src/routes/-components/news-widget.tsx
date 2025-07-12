@@ -1,7 +1,7 @@
 import { Blog } from "@/types/blogs";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Clock } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -22,9 +22,17 @@ const NewsWidget = ({ blogs, isEmpty }: Props) => {
 
   if (isEmpty) {
     return (
-      <div className="border-2 border-dashed rounded-md py-12 px-8">
-        <p className="pb-1 text-center font-medium text-stone-700">
+      <div className="border-2 border-dashed border-gray-300 rounded-xl py-16 px-8 text-center bg-gray-50/50">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 flex items-center justify-center">
+          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2m-4-3v6m0 0l-3-3m3 3l3-3" />
+          </svg>
+        </div>
+        <p className="text-lg font-medium text-gray-700 mb-2">
           {t("homepage.news.missing")}
+        </p>
+        <p className="text-sm text-gray-500">
+          Check back soon for the latest updates
         </p>
       </div>
     );
@@ -35,37 +43,55 @@ const NewsWidget = ({ blogs, isEmpty }: Props) => {
   }
 
   return (
-    <div>
-      <ul className="divide-y">
-        {blogs.slice(0, 3).map((post) => (
-          <li key={post.id} className="py-3 first:pt-0 last:pb-0">
-            <Link
-              href={`/uudised/${post.id}`}
-              className="flex items-start space-x-3 group hover:bg-neutral-50 rounded p-2 -m-2 transition-colors"
-            >
-              <div className="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded overflow-hidden">
+    <div className="space-y-3">
+      {blogs.slice(0, 3).map((post) => (
+        <Link
+          key={post.id}
+          href={`/uudised/${post.id}`}
+          className="group block"
+        >
+          <article className="bg-white border border-gray-200 rounded-xl p-3 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
+            <div className="flex items-start gap-3">
+              {/* Featured Image */}
+              <div className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
                 <img
                   src={post.image_url || "/blog_placeholder.jpg"}
                   alt={post.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <div className="flex-grow">
-                <h6 className="font-medium text-sm sm:text-base leading-tight group-hover:underline line-clamp-2">
-                  {post.title}
-                </h6>
-                <div className="text-neutral-600 text-xs sm:text-sm mt-1 line-clamp-2 leading-relaxed">
-                  {post.description}
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-gray-900 text-base group-hover:text-[#4C97F1] transition-colors duration-200 line-clamp-2 leading-tight">
+                    {post.title}
+                  </h3>
+                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#4C97F1] group-hover:translate-x-1 transition-all duration-200 flex-shrink-0 mt-0.5" />
                 </div>
-                <div className="flex items-center mt-2 text-neutral-500 text-xs">
-                  <Clock className="w-3 h-3 mr-1" />
-                  <span>{formatDate(post.created_at)}</span>
+                
+                <p className="text-gray-600 text-sm mt-1.5 line-clamp-2 leading-relaxed">
+                  {post.description}
+                </p>
+                
+                <div className="flex items-center justify-between mt-2">
+                  <div className="flex items-center text-gray-500 text-xs">
+                    <Clock className="w-3 h-3 mr-1.5" />
+                    <time dateTime={post.created_at}>
+                      {formatDate(post.created_at)}
+                    </time>
+                  </div>
+                  
+                  {/* News Badge */}
+                  <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-[#4C97F1]/10 text-[#4C97F1]">
+                    News
+                  </span>
                 </div>
               </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
+            </div>
+          </article>
+        </Link>
+      ))}
     </div>
   );
 };

@@ -46,7 +46,13 @@
       "clubs": "Clubs",
       "contact": "Contact"
     },
-    "links": "Quick links"
+    "links": "Quick links",
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "Stay updated with the latest news and tournaments",
+      "placeholder": "Enter your email",
+      "button": "Subscribe"
+    }
   },
   "homepage": {
     "title": "Estonian Table Tennis Association",
@@ -140,6 +146,40 @@
       "good_read": "Good read",
       "results": "Results"
     }
+  },
+  "contact": {
+    "page_title": "Contact",
+    "organization_info": {
+      "title": "Organization Contact",
+      "name": "Estonian Table Tennis Federation",
+      "country": "Estonia",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "banking": {
+      "title": "Banking Details",
+      "address": "Address",
+      "bank": "Bank",
+      "account": "Account"
+    },
+    "office_hours": {
+      "title": "Office Hours",
+      "weekdays": "Weekdays",
+      "weekends": "Puhkepäevadel"
+    },
+
+    "location": {
+      "title": "Location",
+      "view_in_maps": "View location on map"
+    },
+    "quick_contact": {
+      "title": "Fast-contact",
+      "description": "Here you can get answers to your urgent questions.",
+      "tournaments": "Tournaments",
+      "memberships": "Memberships",
+      "general": "General"
+    }
+
   },
   "profile": {
     "header": {
@@ -286,6 +326,7 @@
       "complete_payment": "Continue To Payment"
     },
     "empty_state": "No players added yet. Add players above to purchase licenses.",
+    "empty_state_title": "No Players Added",
     "info": {
       "title": "License Pricing",
       "validity": "All licenses are valid for one calendar year"
@@ -497,12 +538,35 @@
         "latest_matches": {
           "title": "Latest matches"
         },
-        "temp_placeholder": {
+        "player_profile": {
           "title": "Player information"
         },
         "rating_change_graph": {
           "title": "Rank trend"
         }
+      },
+      "sections": {
+        "recent_match_history": "Recent Match History",
+        "player_information": "Player Information",
+        "rating_progress": "Rating Progress"
+      },
+      "fields": {
+        "nationality": "Nationality",
+        "eltl_id": "ELTL ID",
+        "year_of_birth": "Year of birth",
+        "rating": "Rating",
+        "sex": "Sex",
+        "rank": "Rank #",
+        "rating_points": "RP"
+      },
+      "values": {
+        "male": "Male",
+        "female": "Female",
+        "foreigner": "Foreigner"
+      },
+      "errors": {
+        "loading_profile": "Error loading profile data",
+        "no_profile_data": "No profile data available"
       }
     }
   },
