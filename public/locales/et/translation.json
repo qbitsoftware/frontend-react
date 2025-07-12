@@ -399,7 +399,9 @@
       "status_scheduled": "Tulemas",
       "status_all": "Kõik Mängud",
       "bracket": "Koht",
-      "final": "Finaal",
+      "final": "FINAAL",
+      "semifinal": "POOLFINAAL",
+      "quarterfinal": "VEERANDFINAAL",
       "winner": "Võitja",
       "matches": "Mängud",
       "timetable": "Ajakava"
@@ -730,7 +732,7 @@
           "matches": "Mängud",
           "tables": "Tabelid",
           "view_all": "Vaata kõiki",
-          "view_all_description": "Halda kõiki turniiri gruppe"
+          "view_all_description": "Halda kõiki turniiri klasse"
         },
         "images": {
           "title": "Pildigrupid",
@@ -810,7 +812,20 @@
             "select_p2": "Vali teine mängija vahetamiseks",
             "player_selected": "Mängija valitud"
           },
-          "print": "Prindi tabel"
+          "print": "Lae alla PDF",
+          "pdf_preview": "PDF Eelvaade",
+          "print_settings": "Printimise seaded",
+          "white_background": "Valge taust (säästab tinti)",
+          "high_quality": "Kõrge kvaliteet",
+          "updating": "Uuendamine...",
+          "update_preview": "Uuenda eelvaadet",
+          "generating_preview": "Eelvaate genereerimine...",
+          "preview_first_section": "Eelvaade (esimene osa)",
+          "no_preview_available": "Eelvaade pole saadaval",
+          "cancel": "Tühista",
+          "generating_pdf": "PDF-i genereerimine...",
+          "download_pdf": "Laadi PDF alla",
+          "pages_count": "{{count}} lehte prinditakse"
         },
         "img_modal": {
           "title": "Muuda pilti",
@@ -1127,6 +1142,7 @@
     },
     "forfeit": {
       "title": "Loobumisvõit",
+      "enable": "Määra Loobumisvõit",
       "description": "Märgi võitja",
       "delete": "Kustuta loobumisvõit",
       "delete_confirm": "Kinnita loobumisvõit",

@@ -90,14 +90,18 @@ function RouteComponent() {
     }
     // If activeDay is "all", don't filter by date - show all matches
 
-    // Filter out matches without any players
     matches = matches.filter((match) => {
-      // Check if both players exist and have valid IDs
       const hasPlayer1 = match.p1 && match.p1.id && match.p1.id !== "";
       const hasPlayer2 = match.p2 && match.p2.id && match.p2.id !== "";
 
-      // Only show matches that have at least one player assigned
-      return hasPlayer1 || hasPlayer2;
+      if (!hasPlayer1 || !hasPlayer2) {
+        return false;
+      }
+
+      const isByeGame = match.p1?.name?.toLowerCase().includes("bye") || 
+                       match.p2?.name?.toLowerCase().includes("bye");
+
+      return !isByeGame;
     });
 
     // Filter by status

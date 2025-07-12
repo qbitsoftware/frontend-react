@@ -74,7 +74,7 @@ const TableStatusSidebar = () => {
   };
 
   return (
-    <div className="hidden min-w-[16rem] lg:flex flex-col border-l h-screen">
+    <div className="hidden min-w-[16rem] lg:flex flex-col border-l h-screen z-10">
       <div className="flex items-center justify-between h-[68px] px-2 border-b">
         <h3 className="text-lg font-semibold">
           {t("admin.tournaments.tables.title")}{" "}
@@ -88,7 +88,7 @@ const TableStatusSidebar = () => {
             onClick={() => handleRowClick(table)}
             key={table.id}
             className={cn(
-              "w-full flex items-center gap-4 justify-between h-12 px-2 overflow-hidden border-b",
+              "w-full flex items-center gap-4 justify-between h-10 px-2 overflow-hidden border-b",
               table.tournament_table_id && "cursor-pointer",
             )}
           >

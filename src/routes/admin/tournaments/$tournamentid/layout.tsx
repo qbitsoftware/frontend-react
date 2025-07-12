@@ -130,14 +130,13 @@ function RouteComponent() {
               </TabsList>
             </Tabs>
 
-            {/* Groups Dropdown - positioned absolutely relative to the tabs container */}
             {showGroupsDropdown &&
               tournament_tables &&
               tournament_tables.data &&
               tournament_tables.data.data && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden flex flex-col"
+                  className="absolute top-full mt-2 w-100 bg-white border border-gray-200 rounded-xl shadow-2xl z-[999999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-visible flex flex-col"
                   style={{
                     left: dropdownPosition.left,
                     right: dropdownPosition.right,
