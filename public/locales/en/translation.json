@@ -610,6 +610,11 @@
         }
       },
       "create_tournament": {
+        "dialog_type": "Team Type",
+        "dialog_type_placeholder": "Select team type",
+        "team_leagues": "Team Leagues",
+        "doubles": "Doubles",
+        "fixed_doubles": "Fixed Doubles",
         "errors": {
           "location": "Location is required",
           "name_min": "Tournament name must be at least 4 characters long",
@@ -744,7 +749,8 @@
         "errors": {
           "class": "Group name is required",
           "type": "Tournament type is required",
-          "min_team_size": "Minimum team size is 2"
+          "min_team_size": "Minimum team size is 2",
+          "dialog_type": "Team type is required"
         },
         "solo": "Solo",
         "team": "Teams",

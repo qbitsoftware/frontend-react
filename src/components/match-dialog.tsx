@@ -69,6 +69,9 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   const [forfeitWinner, setForfeitWinner] = useState<string>("");
 
 
+  useEffect(() => {
+    console.log("forfeit value", isForfeit)
+  }, [isForfeit])
 
   useEffect(() => {
     if (match && open) {
@@ -125,6 +128,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 
   const handleSubmit = async (data: MatchFormValues) => {
     let sendMatch: Match
+    console.log("isforfeit", isForfeit)
     if (isForfeit) {
       sendMatch = match.match
       sendMatch.winner_id = forfeitWinner 
@@ -150,7 +154,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         location: match.match.location,
         start_date: new Date().toISOString(),
         bracket: match.match.bracket,
-        forfeit: match.match.forfeit,
+        forfeit: isForfeit,
         state: match.match.state,
         use_sets: useSets,
         extra_data: {

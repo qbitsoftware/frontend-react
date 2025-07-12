@@ -20,7 +20,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         if (match.match.table_type === "champions_league") {
             return player === ParticipantType.P1 ? match.match.extra_data.team_1_total || 0 : match.match.extra_data.team_2_total || 0
         }
-        
+
         const scores = match.match.extra_data.score
         if (!scores) return 0
 
@@ -37,10 +37,17 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         return match.match.winner_id === match.match.p1_id ? match.p1.name : match.p2.name
     }
 
+    const getRowClassName = (match: MatchWrapper) => {
+        const state = match.match.state
+        if (state === 'finished') return 'opacity-60 bg-gray-50'
+        if (state === 'ongoing') return 'bg-green-50 border-green-200'
+        return ''
+    }
+
     const renderPlayer = (match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
-        
+
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
         return <>{playerName}</>
@@ -66,7 +73,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                     </TableHeader>
                     <TableBody>
                         {matches.map((match, index) => (
-                            <TableRow key={`match-${match.match.id}`}>
+                            <TableRow key={`match-${match.match.id}`} className={getRowClassName(match)}>
                                 <TableCell>
                                     <Button
                                         disabled={match.p1.id === "" || match.p2.id === ""}
@@ -96,7 +103,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                     {getScore(match, ParticipantType.P1)}
                                 </TableCell>
                                 <TableCell>
-                                    {getScore(match, ParticipantType.P2 )}
+                                    {getScore(match, ParticipantType.P2)}
                                 </TableCell>
                                 <TableCell>
                                     {renderPlayer(match, ParticipantType.P2)}
