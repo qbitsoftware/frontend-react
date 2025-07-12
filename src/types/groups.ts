@@ -1,10 +1,19 @@
 import { Participant } from "./participants";
 
+export enum DialogType {
+  DT_TEAM_LEAGUES = "team_leagues",
+  DT_DOUBLES = "doubles",
+  DT_FIXED_DOUBLES = "fixed_doubles",
+}
+
+
+
 export type TournamentTable = {
   created_at: string;
   deleted_at: string | null;
   id: number;
   updated_at: string;
+  dialog_type: DialogType;
   tournament_id: number;
   class: string;
   state: number;

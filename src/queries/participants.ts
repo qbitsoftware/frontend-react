@@ -157,18 +157,20 @@ export function UseDeleteParticipant(tournament_id: number, table_id: number) {
             })
             return data;
         },
-        onSuccess: (data: ParticipantResponse, variables: string) => {
+        onSuccess: (data: ParticipantResponse) => {
             // Update cache by filtering out the deleted participant
             queryClient.setQueryData(["participants", table_id],
                 (oldData: ParticipantsResponse | undefined) => {
+                    // if (!oldData || !oldData.data) return oldData;
+                    if (data) return data
                     if (!oldData || !oldData.data) return oldData;
 
-                    return {
-                        ...oldData,
-                        data: oldData.data.filter(participant => participant.id !== variables),
-                        message: data.message,
-                        error: null
-                    };
+                    // return {
+                    //     ...oldData,
+                    //     data: oldData.data.filter(participant => participant.id !== variables),
+                    //     message: data.message,
+                    //     error: null
+                    // };
                 }
             )
         }

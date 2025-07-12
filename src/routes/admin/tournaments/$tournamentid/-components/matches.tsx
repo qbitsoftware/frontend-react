@@ -11,7 +11,7 @@ import ReGrouping from "./regrouping";
 import TimeEditingModal from "./time-editing-modal";
 import { useTranslation } from "react-i18next";
 import { MatchState, MatchWrapper } from "@/types/matches";
-import { TournamentTable } from "@/types/groups";
+import { DialogType, TournamentTable } from "@/types/groups";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ProtocolModalProvider } from "@/providers/protocolProvider";
 import { TableTennisProtocolModal } from "./tt-modal/tt-modal";
@@ -165,7 +165,7 @@ export const Matches: React.FC<MatchesProps> = ({
                         matches={filteredData}
                         handleRowClick={handleCardClick}
                     />
-                    {selectedMatch && tournament_table.solo ? (
+                    {selectedMatch && (tournament_table.solo || (!tournament_table.solo && tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES) )  ? (
                         <MatchDialog
                             open={isOpen}
                             onClose={() => setIsOpen(false)}
@@ -174,7 +174,7 @@ export const Matches: React.FC<MatchesProps> = ({
                         />
                     ) : (
                         selectedMatch &&
-                        !tournament_table.solo && (
+                        tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES && (
                             <ProtocolModalProvider
                                 isOpen={isOpen}
                                 onClose={() => setIsOpen(false)}
