@@ -17,7 +17,6 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
   const { p1_sets, p2_sets } = extractMatchSets(match);
   const scores = match.match?.extra_data?.score || [];
   
-  // Check if all sets are 11-0 (indicates set-based scoring rather than point-based)
   const hasActualPointScores = scores.some((score: any) => 
     !(score.p1_score === 11 && score.p2_score === 0) && 
     !(score.p1_score === 0 && score.p2_score === 11)
@@ -25,24 +24,53 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
 
   if (!visible) return null;
 
+  const tooltipWidth = 280;
+  const tooltipHeight = 250;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const margin = 15; 
+  
+  // Since we're using fixed positioning, use viewport coordinates directly
+  let left = position.x + margin;
+  let top = position.y - margin;
+  const transform = "translateY(0)";
+  
+  // If tooltip would go off the right edge, position it to the left instead
+  if (left + tooltipWidth > viewportWidth - margin) {
+    left = position.x - tooltipWidth - margin;
+  }
+  
+  // Ensure tooltip doesn't go off the left edge
+  if (left < margin) {
+    left = margin;
+  }
+  
+  // Ensure tooltip doesn't go off the top edge
+  if (top < margin) {
+    top = margin;
+  }
+  
+  // Ensure tooltip doesn't go off the bottom edge  
+  if (top + tooltipHeight > viewportHeight - margin) {
+    top = viewportHeight - tooltipHeight - margin;
+  }
+
   return (
     <div
-      className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[280px] pointer-events-none"
+      className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] pointer-events-none"
       style={{
-        left: position.x + 10,
-        top: position.y - 10,
-        transform: "translateY(-100%)",
+        left: left,
+        top: top,
+        transform: transform,
       }}
     >
       <div className="space-y-3">
-        {/* Match Header */}
         <div className="border-b border-gray-100 pb-2">
           <div className="text-sm font-semibold text-gray-700">
             Match {match.match.readable_id > 0 ? match.match.readable_id : ""}
           </div>
         </div>
 
-        {/* Players */}
         <div className="space-y-2">
           <div className={cn(
             "flex items-center justify-between p-2 rounded",

@@ -12,6 +12,7 @@ import { TableNumberForm } from "@/routes/admin/tournaments/$tournamentid/-compo
 import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import MatchHoverTooltip from "./match-hover-tooltip";
 
 interface EliminationMatchProps {
@@ -37,6 +38,7 @@ const EliminationMatch = ({
   const { p1_sets, p2_sets } = extractMatchSets(match);
   const [showTooltip, setShowTooltip] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isTransformed, setIsTransformed] = useState(false);
 
 
   const handlePlayerHover = (playerId: string | null) => {
@@ -44,8 +46,39 @@ const EliminationMatch = ({
   };
 
   const handleMatchMouseEnter = (event: React.MouseEvent) => {
-    setMousePosition({ x: event.clientX, y: event.clientY });
-    setShowTooltip(true);
+    // Only show tooltip if both participants are defined and not empty
+    const hasValidParticipants = 
+      match.participant_1.id && 
+      match.participant_2.id && 
+      match.participant_1.id !== "" && 
+      match.participant_2.id !== "" &&
+      match.participant_1.id !== "empty" && 
+      match.participant_2.id !== "empty";
+    
+    if (hasValidParticipants) {
+      // Get the element's bounding rect to calculate position relative to the viewport
+      const rect = event.currentTarget.getBoundingClientRect();
+      
+      // Debug logging for problematic matches
+      console.log('BRACKETT:', match.match.bracket);
+      console.log('Element rect:', rect);
+      console.log('Scroll posiTion:', window.scrollX, window.scrollY);
+      
+      // Check if this match is in an absolutely positioned container (placement matches)
+      const parentElement = event.currentTarget.parentElement;
+      const hasTransform = parentElement?.classList.contains('-translate-y-1/2');
+      const hasBronzePosition = parentElement?.classList.contains('top-[60px]');
+      
+      console.log('Has transform:', hasTransform, 'Has bronze position:', hasBronzePosition);
+      console.log('Parent element classes:', parentElement?.className);
+      
+      setMousePosition({ 
+        x: rect.right, 
+        y: rect.top
+      });
+      setIsTransformed(hasTransform || false);
+      setShowTooltip(true);
+    }
   };
 
   const handleMatchMouseLeave = () => {
@@ -53,7 +86,11 @@ const EliminationMatch = ({
   };
 
   const handleMatchMouseMove = (event: React.MouseEvent) => {
-    setMousePosition({ x: event.clientX, y: event.clientY });
+    const rect = event.currentTarget.getBoundingClientRect();
+    setMousePosition({ 
+      x: rect.right, 
+      y: rect.top
+    });
   };
 
   const isTournamentWinner = (
@@ -238,11 +275,24 @@ const EliminationMatch = ({
       </div>
       </div>
 
-      <MatchHoverTooltip
-        match={match}
-        visible={showTooltip}
-        position={mousePosition}
-      />
+      {/* Render tooltip using portal when transformed to avoid CSS transform issues */}
+      {isTransformed && showTooltip && createPortal(
+        <MatchHoverTooltip
+          match={match}
+          visible={showTooltip}
+          position={mousePosition}
+        />,
+        document.body
+      )}
+      
+      {/* Render tooltip normally when not transformed */}
+      {!isTransformed && (
+        <MatchHoverTooltip
+          match={match}
+          visible={showTooltip}
+          position={mousePosition}
+        />
+      )}
     </>
   );
 };

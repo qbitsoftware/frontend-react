@@ -246,7 +246,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                         {t("protocol.forfeit.title", "Forfeit")}
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            {t("protocol.forfeit.enable", "Enable Forfeit")}
+                            {t("protocol.forfeit.enable")}
                           </span>
                           <Switch
                             checked={isForfeit}
