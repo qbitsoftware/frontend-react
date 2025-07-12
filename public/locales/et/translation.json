@@ -647,6 +647,11 @@
         }
       },
       "create_tournament": {
+        "dialog_type": "Tiimi tüüp",
+        "dialog_type_placeholder": "Vali tiimi tüüp",
+        "team_leagues": "Võistkondlikud",
+        "doubles": "Paarismäng",
+        "fixed_doubles": "Igamehe paarismäng",
         "errors": {
           "location": "Asukoht on kohustuslik",
           "name_min": "Turniiri nimi peab olema vähemalt 4 tähemärki pikk",
@@ -781,7 +786,8 @@
         "errors": {
           "class": "Grupi nimi on kohustuslik",
           "type": "Turniiri tüüp on kohustuslik",
-          "min_team_size": "Minimaalne tiimi suurus on 2"
+          "min_team_size": "Minimaalne tiimi suurus on 2",
+          "dialog_type": "Tiimi tüübi valik on nõutud"
         },
         "solo": "Üksik",
         "team": "Meeskondadega",

@@ -30,9 +30,18 @@ const createFormSchema = (t: TFunction) => z.object({
   min_team_size: z.number().optional(),
   max_team_size: z.number().optional(),
   woman_weight: z.number().min(1).max(10),
+  dialog_type: z.string().optional(),
   size: z.number(),
 }).superRefine((data, ctx) => {
   if (data.solo) return;
+
+  if (data.dialog_type == "") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: t('admin.tournaments.groups.errors.dialog_type'),
+      path: ['dialog_type']
+    });
+  }
 
   if (data.min_team_size === undefined) {
     ctx.addIssue({
@@ -97,6 +106,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
         class: "",
         type: "",
         solo: false,
+        dialog_type: "",
         min_team_size: 2,
         max_team_size: 2,
         size: 16,
@@ -266,23 +276,65 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                   </FormItem>
                 )}
 
+
+
                 <FormField
                   control={form.control}
                   name="solo"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 mb-3">
-                      <div className="space-y-0.5">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="">
                         <FormLabel className="text-base">{t("admin.tournaments.create_tournament.team")}</FormLabel>
                         <FormDescription>{t("admin.tournaments.create_tournament.team_description")}</FormDescription>
                       </div>
                       <FormControl>
-                        <Switch checked={!field.value} onCheckedChange={(checked) => field.onChange(!checked)} />
+                        <Switch
+                          checked={!field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(!checked);
+                            if (!checked) {
+                              form.setValue("dialog_type", "");
+                            }
+                          }}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
                 />
+
+                {!form.watch("solo") && (
+                  <FormField
+                    control={form.control}
+                    name="dialog_type"
+                    render={({ field }) => (
+                      <FormItem className='mb-4'>
+                        <FormLabel>{t("admin.tournaments.create_tournament.dialog_type")}</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t("admin.tournaments.create_tournament.dialog_type_placeholder")} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="team_leagues">
+                              {t("admin.tournaments.create_tournament.team_leagues")}
+                            </SelectItem>
+                            <SelectItem value="doubles">
+                              {t("admin.tournaments.create_tournament.doubles")}
+                            </SelectItem>
+                            <SelectItem value="fixed_doubles">
+                              {t("admin.tournaments.create_tournament.fixed_doubles")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
               </div>
-              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", form.getValues().solo ? "hidden" : "")}>
+              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", form.watch("solo") ? "hidden" : "")}>
                 <FormField
                   control={form.control}
                   name="min_team_size"

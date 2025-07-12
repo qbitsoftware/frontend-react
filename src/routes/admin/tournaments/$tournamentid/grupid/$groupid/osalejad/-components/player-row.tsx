@@ -225,7 +225,7 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                 <Input className="w-[60px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Rank" onChange={(e) => updateField(`players.${index}.rank`, Number(e.target.value))} value={participant.players[index].rank || 0} />
             </TableCell>
             <TableCell className="text-center">
-                <Input className="w-[120px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField(`players.${index}.birthdate`, e.target.value)} value={participant.players[index].birthdate || ''} />
+                <Input className="w-[120px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField(`players.${index}.birthdate`, e.target.value)} value={formatDateStringYearMonthDay(participant.players[index].birthdate) || ''} />
             </TableCell>
             <TableCell className="text-center">
                 <Checkbox

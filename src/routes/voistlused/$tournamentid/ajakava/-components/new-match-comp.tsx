@@ -8,6 +8,7 @@ import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import blueprofile from "@/assets/blue-profile.png";
 import { Clock, MapPin } from "lucide-react";
+import { extractMatchSets } from "@/components/utils/utils";
 
 interface ITTFMatchComponentProps {
   match: MatchWrapper;
@@ -25,6 +26,8 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
   if (!table_data) {
     return <Skeleton className="h-20 w-full" />;
   }
+
+  const { p1_sets, p2_sets } = extractMatchSets(match);
 
   const isMatchCompleted = match.match.winner_id !== "";
   const matchDate = match.match.start_date;
@@ -45,8 +48,7 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
             {isMatchCompleted ? (
               <div>
                 <p className="text-2xl font-bold">
-                  {match.match.extra_data.team_1_total}:
-                  {match.match.extra_data.team_2_total}
+                  {match.match.forfeit ? "-" : `${p1_sets}:${p2_sets}`}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">Completed</p>
               </div>
@@ -143,10 +145,10 @@ const ITTFMatchUserComponent = ({
     return <SkeletonMatchUserComponent />;
   }
 
+  const { p1_sets, p2_sets } = extractMatchSets(match)
+
   const totalScore =
-    playerNumber === 1
-      ? match.match.extra_data.team_1_total
-      : match.match.extra_data.team_2_total;
+    playerNumber === 1 ? p1_sets : p2_sets
 
   return (
     <div
@@ -192,7 +194,7 @@ const ITTFMatchUserComponent = ({
         {match.match.extra_data.score &&
           match.match.extra_data.score.length > 0 && (
             <div className="flex gap-1.5">
-              {match.match.extra_data.score.map((set, index) => {
+              {!match.match.use_sets && match.match.extra_data.score.map((set, index) => {
                 const score = playerNumber === 1 ? set.p1_score : set.p2_score;
                 const opponentScore =
                   playerNumber === 1 ? set.p2_score : set.p1_score;
@@ -222,7 +224,10 @@ const ITTFMatchUserComponent = ({
             isWinner ? "text-green-700" : "text-gray-700",
           )}
         >
-          {totalScore}
+          {match.match.forfeit
+            ? (isWinner ? "w" : "o")
+            : totalScore
+          }
         </div>
       </div>
     </div>

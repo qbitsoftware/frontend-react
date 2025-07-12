@@ -1,5 +1,6 @@
 import { BracketType, TableMatch } from "@/types/brackets";
 import { BRACKET_CONSTANTS } from "@/types/brackets";
+import { MatchWrapper } from "@/types/matches";
 
 /**
  * Organizes tournament matches by their rounds
@@ -82,7 +83,7 @@ export function calculateRoundLineHeight(
  * @param match The match to extract sets from
  * @returns Object containing sets won by each player/team
  */
-export function extractMatchSets(match: TableMatch | undefined) {
+export function extractMatchSets(match: TableMatch | undefined | MatchWrapper) {
   const score = match?.match?.extra_data?.score;
   const totals = match?.match?.extra_data;
 

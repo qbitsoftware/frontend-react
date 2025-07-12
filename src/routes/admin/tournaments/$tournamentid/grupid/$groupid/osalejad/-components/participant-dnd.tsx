@@ -279,7 +279,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                 <Input className="w-[60px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Rank" onChange={(e) => updateField("rank", Number(e.target.value))} value={participantState.rank || 0} />
             </TableCell>
             <TableCell className="text-center">
-                <Input className="w-[120px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField("players.0.birthdate", e.target.value)} value={participantState.players[0].birthdate || ''} />
+                <Input className="w-[120px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField("players.0.birthdate", e.target.value)} value={formatDateStringYearMonthDay(participantState.players[0].birthdate) || ''} />
             </TableCell>
             <TableCell>
                 <Checkbox

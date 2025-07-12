@@ -157,18 +157,20 @@ export function UseDeleteParticipant(tournament_id: number, table_id: number) {
             })
             return data;
         },
-        onSuccess: (data: ParticipantResponse, variables: string) => {
+        onSuccess: (data: ParticipantResponse) => {
             // Update cache by filtering out the deleted participant
             queryClient.setQueryData(["participants", table_id],
                 (oldData: ParticipantsResponse | undefined) => {
+                    // if (!oldData || !oldData.data) return oldData;
+                    if (data) return data
                     if (!oldData || !oldData.data) return oldData;
 
-                    return {
-                        ...oldData,
-                        data: oldData.data.filter(participant => participant.id !== variables),
-                        message: data.message,
-                        error: null
-                    };
+                    // return {
+                    //     ...oldData,
+                    //     data: oldData.data.filter(participant => participant.id !== variables),
+                    //     message: data.message,
+                    //     error: null
+                    // };
                 }
             )
         }
@@ -228,5 +230,36 @@ export function UsePostOrderReset(tournament_id: number, table_id: number) {
             queryClient.resetQueries({ queryKey: ["matches", table_id] })
             queryClient.resetQueries({ queryKey: ["tournament_table", table_id] })
         },
+    })
+}
+
+export function UseImportParticipants(tournament_id: number, table_id: number) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const formData = new FormData();
+            formData.append('excel_file', file);
+
+            const { data } = await axiosInstance.post(
+                `/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/import`,
+                formData,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            )
+            return data;
+        },
+        onSuccess: (new_data: ParticipantsResponse) => {
+            // queryClient.resetQueries({ queryKey: ["participants", table_id] })
+            queryClient.setQueryData(["participants", table_id], (oldData: ParticipantsResponse) => {
+                if (!oldData || !oldData.data) return oldData;
+                return {
+                    ...new_data,
+                };
+            })
+        }
     })
 }

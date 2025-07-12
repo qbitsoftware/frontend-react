@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { MatchesResponse, UseGetMatchesQuery } from "@/queries/match";
-import { UsePostOrder, UsePostSeeding, UsePostOrderReset } from "@/queries/participants";
-import { useEffect, useState } from "react";
+import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants } from "@/queries/participants";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import seeds3 from "@/assets/seeds3.png";
 import { TournamentTable } from "@/types/groups";
@@ -21,6 +21,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Upload, Download } from "lucide-react";
+import * as XLSX from 'xlsx';
 
 interface SeedingHeaderProps {
   tournament_id: number;
@@ -41,7 +43,9 @@ const SeedingHeader = ({
   const updateSeeding = UsePostSeeding(tournament_id, table_data.id);
   const updateOrder = UsePostOrder(tournament_id, table_data.id);
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
+  const importMutation = UseImportParticipants(tournament_id, table_data.id)
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getClosestPowerOf2 = (num: number): number => {
     if (num <= 8) return 8;
@@ -134,16 +138,84 @@ const SeedingHeader = ({
     }
   };
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+      toast.error(t('toasts.participants.invalid_file_format', 'Please select an Excel file (.xlsx or .xls)'));
+      return;
+    }
+
+    try {
+      await importMutation.mutateAsync(file)
+
+      toast.message(t('toasts.participants.import_success', 'Participants imported successfully'));
+    } catch (error: any) {
+      toast.error(error.response?.data.error);
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    let headers: string[];
+    let filename: string;
+
+    const isRoundRobin = table_data.type === GroupType.ROUND_ROBIN || table_data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
+    const hasTeams = !table_data.solo;
+
+    if (isRoundRobin && hasTeams) {
+      headers = ['id', 'name', 'team', 'group'];
+      filename = 'participants_roundrobin_teams_template.xlsx';
+    } else if (isRoundRobin && !hasTeams) {
+      headers = ['id', 'name', 'group'];
+      filename = 'participants_roundrobin_solo_template.xlsx';
+    } else if (!isRoundRobin && hasTeams) {
+      headers = ['id', 'name', 'team'];
+      filename = 'participants_teams_template.xlsx';
+    } else {
+      headers = ['id', 'name'];
+      filename = 'participants_solo_template.xlsx';
+    }
+
+    const wsData = [headers];
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Participants');
+
+    XLSX.writeFile(wb, filename);
+  };
+
   return (
     <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-      <div className="flex gap-2 items-center">
-        <h5 className="font-medium">{(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? t("admin.tournaments.groups.participants.subgroups") : t("admin.tournaments.info.participants")}</h5>
-        <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] ">
-          {((table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && participants.filter((participant) => participant.type === "round_robin").length) || (participants && participants.length)} / {table_data.size}{" "}
-        </p>
+      <div className="flex gap-2 items-center justify-between w-full">
+        <div className="flex gap-2 items-center">
+          <h5 className="font-medium">{(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? t("admin.tournaments.groups.participants.subgroups") : t("admin.tournaments.info.participants")}</h5>
+          <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] ">
+            {((table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && participants.filter((participant) => participant.type === "round_robin").length) || (participants && participants.length)} / {table_data.size}{" "}
+          </p>
+        </div>
+        <Button
+          onClick={handleDownloadTemplate}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-1.5"
+        >
+          <Download className="h-4 w-4" />
+          {t('admin.tournaments.groups.import.download_template', 'Download Template')}
+        </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 w-full">
+      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 w-full">
         <div className="flex flex-col sm:flex-row gap-2 flex-1">
           <Button
             onClick={handleOrder}
@@ -163,6 +235,25 @@ const SeedingHeader = ({
           >
             <span>{t("admin.tournaments.groups.order.title")}</span>
             <img src={seeds3} className="h-4 w-4 object-contain" />
+          </Button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+
+          <Button
+            onClick={handleImportClick}
+            disabled={disabled}
+            variant="outline"
+            size="sm"
+            className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5"
+          >
+            <Upload className="h-4 w-4" />
+            <span>{t("admin.tournaments.groups.import.title", "Import Excel")}</span>
           </Button>
         </div>
 

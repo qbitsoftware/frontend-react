@@ -1,7 +1,7 @@
 import { BracketReponse } from "@/queries/tournaments";
 import React, { useEffect, useState } from "react";
 import GroupStageBracket from "@/components/group-stage-bracket";
-import { TournamentTable } from "@/types/groups";
+import { DialogType, TournamentTable } from "@/types/groups";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { EliminationBrackets } from "@/components/elimination-brackets";
@@ -124,27 +124,29 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
           </CardContent>
         </div>
       </Card>
-      {selectedMatch && tournament_table.solo ? (
+
+      {selectedMatch && (tournament_table.solo || (!tournament_table.solo && tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
         <MatchDialog
           open={isOpen}
           onClose={() => setIsOpen(false)}
           match={selectedMatch}
           tournamentId={tournament_table.tournament_id}
         />
-      ) : (
-        selectedMatch &&
-        !tournament_table.solo && (
-          <ProtocolModalProvider
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
-            tournamentId={tournament_table.tournament_id}
-            match={selectedMatch}
-            playerCount={tournament_table.min_team_size}
-          >
-            <TableTennisProtocolModal />
-          </ProtocolModalProvider>
-        )
-      )}
+      )
+        : (
+          selectedMatch &&
+          tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES && (
+            <ProtocolModalProvider
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+              tournamentId={tournament_table.tournament_id}
+              match={selectedMatch}
+              playerCount={tournament_table.min_team_size}
+            >
+              <TableTennisProtocolModal />
+            </ProtocolModalProvider>
+          )
+        )}
     </div>
   );
 };
