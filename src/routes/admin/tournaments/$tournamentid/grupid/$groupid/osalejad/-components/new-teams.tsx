@@ -30,6 +30,9 @@ export const NewTeams = ({ participant_data, tournament_table, tournament_id }: 
                     return participant
                 }
                 const sortedPlayers = [...participant.players].sort((a, b) => {
+                    if (a.rank === 0 && b.rank !== 0) return 1
+                    if (b.rank === 0 && a.rank !== 0) return -1
+                    if (a.rank === 0 && b.rank === 0) return 0
                     return a.rank - b.rank
                 })
                 return {
