@@ -48,47 +48,47 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
       .sort((a, b) => a.rate_order - b.rate_order);
 
     return (
-      <div className="h-[600px] md:h-[790px] flex flex-col relative space-y-0 border rounded-t-[12px]">
-        <div className="w-full border-b border-stone-200 pt-1 mb-0 rounded-t-[12px] bg-[#EBEFF5]">
+      <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col relative space-y-0 border rounded-[8px] sm:rounded-[12px]">
+        <div className="w-full border-b border-stone-200 pt-1 mb-0 rounded-t-[8px] sm:rounded-t-[12px] bg-[#EBEFF5]">
           <Tabs
             defaultValue="men"
             value={activeTab}
             onValueChange={setActiveTab}
-            className="w-full "
+            className="w-full"
           >
-            <TabsList className="w-full rounded-[2px] py-2 gap-1 flex flex-col lg:flex-row justify-start">
+            <TabsList className="w-full rounded-[2px] py-1 sm:py-2 gap-0.5 sm:gap-1 flex flex-row justify-start">
               <TabsTrigger
                 value="women"
-                className=" w-full rounded-[4px] flex-1"
+                className="w-full rounded-[4px] flex-1 text-xs sm:text-sm"
               >
                 {t("rating.filtering.buttons.women")}
               </TabsTrigger>
-              <TabsTrigger value="men" className="w-full rounded-[4px] flex-1">
+              <TabsTrigger value="men" className="w-full rounded-[4px] flex-1 text-xs sm:text-sm">
                 {t("rating.filtering.buttons.men")}
               </TabsTrigger>
               <TabsTrigger
                 value="combined"
-                className="w-full rounded-[4px] flex-1"
+                className="w-full rounded-[4px] flex-1 text-xs sm:text-sm"
               >
                 {t("rating.filtering.buttons.combined")}
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        <div className="overflow-y-scroll max-h-[50vh] md:max-h-[135vh]">
+        <div className="overflow-y-scroll flex-1">
           <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg">
             <TableHeader className="rounded-lg bg-white">
-              <TableRow className=" sticky top-0 z-10">
-                <TableHead className="px-6 py-3 text-left font-medium">
+              <TableRow className="sticky top-0 z-10">
+                <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
                   NR
                 </TableHead>
-                <TableHead className="px-6 py-3 text-left font-medium">
+                <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
                   {t("rating.table.head.player")}
                 </TableHead>
-                <TableHead className="px-6 py-3 text-left font-medium">
+                <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
                   RP
                 </TableHead>
-                <TableHead className="px-6 py-3 text-left font-medium">
+                <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
                   PP
                 </TableHead>
               </TableRow>
@@ -103,27 +103,27 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
                   key={user.id}
                   className="group cursor-pointer"
                 >
-                  <TableCell className="px-6 py-3 text-lg font-bold text-[#4C97F1]">
+                  <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-sm sm:text-base lg:text-lg font-bold text-[#4C97F1]">
                     {user.rate_order}
                   </TableCell>
-                  <TableCell className="px-6 py-3 flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
+                  <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">
+                    <Avatar className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 flex-shrink-0">
                       <AvatarImage src="" alt={`${user.first_name} ${user.last_name}'s profile`} />
                       <AvatarFallback>
                         <img src={placeholderImg} className="rounded-full h-full w-full object-cover" alt="Profile" />
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold group-hover:text-blue-600 group-hover:underline">
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="text-xs sm:text-sm font-semibold group-hover:text-blue-600 group-hover:underline truncate">
                         {user.last_name}
                       </span>
-                      <span className="text-sm text-gray-600">{user.first_name}</span>
+                      <span className="text-xs sm:text-sm text-gray-600 truncate">{user.first_name}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-3 text-sm">
+                  <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
                     {user.rate_points}
                   </TableCell>
-                  <TableCell className="px-6 py-3 text-sm">
+                  <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
                     {user.rate_pl_points}
                   </TableCell>
                 </TableRow>

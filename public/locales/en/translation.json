@@ -352,7 +352,7 @@
     "dates": "Dates",
     "start": "Start",
     "end": "End",
-    "location": "Location",
+    "location": "Venue",
     "organizer": "Organizer",
     "tables": "Total tables",
     "bracket": "Bracket",
@@ -435,6 +435,30 @@
       "guide": "Guide",
       "sponsors": "Sponsors",
       "media": "Media"
+    },
+    "status": {
+      "ended": "Tournament Ended",
+      "ongoing": "Tournament Ongoing",
+      "upcoming": "Registration Open"
+    },
+    "loading_location": "Loading location...",
+    "get_directions": "Get Directions",
+    "getting_location": "Getting your location...",
+    "show_location_only": "Show Location Only",
+    "geolocation_not_supported": "Geolocation is not supported by this browser.",
+    "location_error": "Unable to get your location. Please check your browser permissions.",
+    "registration": "Registration",
+    "registration_info": "Registration required for participation",
+    "welcome_message": "Welcome to this tournament! Registration is available on-site.",
+    "onsite_registration_only": "Registration only on-site",
+    "about_event": "About This Event",
+    "view_in_maps": "View in Maps",
+    "contact_organizer": "Contact Organizer",
+    "report_issue": "Report Issue",
+    "share": {
+      "title": "Share this tournament",
+      "button": "Copy Link",
+      "copied": "Link Copied!"
     }
   },
   "calendar": {
@@ -496,6 +520,7 @@
       "combined": "Combined"
     },
     "last_updated": "Last updated",
+    "abbreviations": "Abbreviations: NR = rank in rating, PP = placement points, RP = rating points, ID = ELTLID, YOB = year of birth",
     "filtering": {
       "buttons": {
         "men": "Men",
