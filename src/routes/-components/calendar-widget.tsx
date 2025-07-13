@@ -61,18 +61,18 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
 
     return (
       <Link to={linkPath} key={event.id}>
-        <div className="group mb-3 relative">
+        <div className="group mb-2 sm:mb-3 relative">
           <div className={`
-            flex items-center gap-4 p-4 rounded-xl border transition-all duration-300
+            flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border transition-all duration-300
             ${isUpcoming 
               ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20 hover:border-[#4C97F1]/40 hover:shadow-lg hover:shadow-[#4C97F1]/10' 
               : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
             }
           `}>
             {/* Date Display */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <div className={`
-                px-3 py-2 rounded-lg text-center font-medium shadow-sm border
+                px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
                 ${isUpcoming 
                   ? 'bg-[#4C97F1] text-white border-[#4C97F1]' 
                   : 'bg-gray-100 text-gray-700 border-gray-200'
@@ -81,16 +81,16 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
                 <div className="text-xs font-medium opacity-90">
                   {getAbbreviatedMonth(event.start_date)}
                 </div>
-                <div className="text-lg font-bold leading-none">
+                <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
                   {formatDateRange(event.start_date, event.end_date).split(" - ")[0]}
                 </div>
               </div>
               
               {event.end_date !== event.start_date && (
                 <>
-                  <div className="w-3 h-px bg-gray-300"></div>
+                  <div className="w-2 sm:w-3 h-px bg-gray-300"></div>
                   <div className={`
-                    px-3 py-2 rounded-lg text-center font-medium shadow-sm border
+                    px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
                     ${isUpcoming 
                       ? 'bg-[#4C97F1] text-white border-[#4C97F1]' 
                       : 'bg-gray-100 text-gray-700 border-gray-200'
@@ -103,7 +103,7 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
                         ? getAbbreviatedMonth(event.end_date)
                         : getAbbreviatedMonth(event.start_date)}
                     </div>
-                    <div className="text-lg font-bold leading-none">
+                    <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
                       {formatDateRange(event.start_date, event.end_date).split(" - ")[1]}
                     </div>
                   </div>
@@ -114,20 +114,20 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
             {/* Event Content */}
             <div className="flex-1 min-w-0">
               <h6 className={`
-                font-semibold text-base mb-1 truncate group-hover:text-[#4C97F1] transition-colors duration-200
+                font-semibold text-sm sm:text-base mb-0.5 sm:mb-1 truncate group-hover:text-[#4C97F1] transition-colors duration-200
                 ${isUpcoming ? 'text-gray-900' : 'text-gray-800'}
               `} title={event.name}>
                 {event.name}
               </h6>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 {event.isGameday && event.order ? (
-                  <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800">
+                  <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
                     {t("calendar.game_day")} {event.order}
                   </span>
                 ) : (
                   <span className={`
-                    text-sm truncate
+                    text-xs sm:text-sm truncate
                     ${isUpcoming ? 'text-gray-600' : 'text-gray-500'}
                   `}>
                     {event.category}
@@ -139,7 +139,7 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
             {/* Status Indicator */}
             <div className="flex-shrink-0">
               <div className={`
-                w-3 h-3 rounded-full
+                w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full
                 ${isUpcoming ? 'bg-green-400' : 'bg-gray-400'}
               `}></div>
             </div>
@@ -229,16 +229,16 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-6 bg-[#4C97F1] rounded-full"></div>
-          <h6 className="text-lg font-semibold text-gray-900">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-1.5 sm:w-2 h-4 sm:h-6 bg-[#4C97F1] rounded-full"></div>
+          <h6 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
             {t("calendar.upcoming")}
           </h6>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {upcomingEvents.length > 0
             ? upcomingEvents.map((event) => (
                 <EventCard key={event.id} event={event} isUpcoming={true} />
@@ -249,14 +249,14 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-6 bg-gray-400 rounded-full"></div>
-          <h6 className="text-lg font-semibold text-gray-900">
+      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-1.5 sm:w-2 h-4 sm:h-6 bg-gray-400 rounded-full"></div>
+          <h6 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
             {t("calendar.finished")}
           </h6>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {pastEvents.length > 0
             ? pastEvents.map((event) => (
                 <EventCard key={event.id} event={event} isUpcoming={false} />

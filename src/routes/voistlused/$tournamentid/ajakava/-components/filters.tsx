@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface ScheduleFiltersProps {
   gamedays: string[];
@@ -114,57 +115,72 @@ export const Filters = ({
   const StatusIcon = getStatusIcon();
 
   return (
-    <div className="flex flex-col md:flex-row flex-wrap gap-4 justify-between rounded-[10px]">
-      <div className="flex items-center gap-4 px-2">
-        {/* Class Filter */}
-        {classes.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#f1f2f7]/70"
-              >
-                <span>
-                  {activeClass === "all"
-                    ? t("competitions.timetable.all_groups")
-                    : `${activeClass}`}
-                </span>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="space-y-1">
-              <DropdownMenuItem
-                onClick={() => setActiveClass("all")}
-                className={activeClass === "all" ? "bg-slate-100" : ""}
-              >
-                {t("competitions.timetable.all_groups")}
-              </DropdownMenuItem>
-              {classes.map((classValue) => (
-                <DropdownMenuItem
-                  key={classValue}
-                  onClick={() => setActiveClass(classValue)}
-                  className={activeClass === classValue ? "bg-slate-100" : ""}
+    <div className="flex flex-col gap-3 sm:gap-4 rounded-[10px] mb-4 sm:mb-6">
+      {/* Class Navigation Bar */}
+      {classes.length > 0 && (
+        <div className="bg-white border border-gray-200 shadow-sm mb-4 sm:mb-6 rounded-lg">
+          <div className="px-2 sm:px-4">
+            <div className="flex overflow-x-auto scrollbar-hide">
+              <div className="flex space-x-1 sm:space-x-2 py-3">
+                {/* All Classes Button */}
+                <button
+                  onClick={() => setActiveClass("all")}
+                  className={cn(
+                    "flex-shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 border-b-2 rounded-t-md min-w-[80px] sm:min-w-[100px]",
+                    activeClass === "all"
+                      ? "border-[#4C97F1] text-gray-800 bg-blue-50/30"
+                      : "border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                  )}
                 >
-                  {classValue}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="font-medium max-w-[100px] sm:max-w-[130px] text-center">
+                      {t("competitions.timetable.all_groups")}
+                    </span>
+                  </div>
+                </button>
+                
+                {/* Individual Class Buttons */}
+                {classes.map((classValue) => (
+                  <button
+                    key={classValue}
+                    onClick={() => setActiveClass(classValue)}
+                    className={cn(
+                      "flex-shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 border-b-2 rounded-t-md min-w-[80px] sm:min-w-[100px]",
+                      activeClass === classValue
+                        ? "border-[#4C97F1] text-gray-800 bg-blue-50/30"
+                        : "border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                    )}
+                  >
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="font-medium max-w-[100px] sm:max-w-[130px] text-center">
+                        {classValue}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile: Stack all filters vertically */}
+      {/* Desktop: Original layout */}
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 lg:gap-4">
 
         {/* Date Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#f1f2f7]/70"
+              className="flex items-center justify-between sm:justify-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm bg-[#f1f2f7]/70 w-full sm:w-auto"
             >
-              <span>{getActiveDayDisplay()}</span>
-              <ChevronDown className="h-4 w-4" />
+              <span className="truncate">{getActiveDayDisplay()}</span>
+              <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="space-y-1 max-h-[240px] overflow-y-scroll">
+          <DropdownMenuContent className="space-y-1 max-h-[240px] overflow-y-scroll w-64 sm:w-auto">
             {/* All Dates Option */}
             <DropdownMenuItem
               onClick={() => setActiveDay("all")}
@@ -191,7 +207,7 @@ export const Filters = ({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm ${
+              className={`flex items-center justify-between sm:justify-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm w-full sm:w-auto ${
                 activeStatus === "all"
                   ? "bg-[#f1f2f7]/70"
                   : activeStatus === "upcoming"
@@ -201,14 +217,16 @@ export const Filters = ({
                       : "bg-green-50 border-green-200 text-green-700"
               }`}
             >
-              {StatusIcon && <StatusIcon className="h-4 w-4" />}
-              <span>
-                {statusOptions.find((opt) => opt.value === activeStatus)?.label}
-              </span>
-              <ChevronDown className="h-4 w-4" />
+              <div className="flex items-center space-x-1 sm:space-x-2 truncate">
+                {StatusIcon && <StatusIcon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />}
+                <span className="truncate">
+                  {statusOptions.find((opt) => opt.value === activeStatus)?.label}
+                </span>
+              </div>
+              <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="space-y-1">
+          <DropdownMenuContent className="space-y-1 w-64 sm:w-auto">
             {statusOptions.map((option) => {
               const Icon = option.icon;
               return (
@@ -226,20 +244,23 @@ export const Filters = ({
         </DropdownMenu>
       </div>
 
-      <div className="flex items-start md:items-center flex-col gap-4 md:flex-row md:gap-2 px-2">
-        <div className="relative">
+      {/* Search and Results */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="relative flex-1 sm:max-w-xs">
           <Input
             type="text"
             placeholder={t("competitions.timetable.search_placeholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-10 pl-4 pr-10 py-2 text-slate-900 bg-[#FCFCFD] focus:outline-none focus:ring-1 focus:ring-gray-300 border-[#EBEEF4]"
+            className="h-9 sm:h-10 pl-4 pr-10 py-2 text-slate-900 bg-[#FCFCFD] focus:outline-none focus:ring-1 focus:ring-gray-300 border-[#EBEEF4] text-sm"
           />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-4 sm:w-4" />
         </div>
-        <p className="text-[#15803D] bg-[#EBFEF2] py-1 px-4 flex items-center rounded-lg font-medium text-sm">
-          {filteredMatchCount} games
-        </p>
+        <div className="text-center sm:text-left">
+          <p className="text-[#15803D] bg-[#EBFEF2] py-1.5 sm:py-1 px-3 sm:px-4 flex items-center justify-center rounded-lg font-medium text-xs sm:text-sm">
+            {filteredMatchCount} games
+          </p>
+        </div>
       </div>
     </div>
   );

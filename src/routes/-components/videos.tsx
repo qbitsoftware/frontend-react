@@ -30,8 +30,8 @@ const VideoBoard = () => {
   };
 
   return (
-    <div className="h-[600px] md:h-[790px] flex flex-col border rounded-xl bg-white overflow-hidden">
-      <div className="h-full overflow-y-auto space-y-4 p-4">
+    <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col border rounded-lg sm:rounded-xl bg-white overflow-hidden">
+      <div className="h-full overflow-y-auto space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-4">
         {videos.map((video, index) => {
           const videoId = getVideoId(video.url);
           if (!videoId) return null;
@@ -39,8 +39,8 @@ const VideoBoard = () => {
           const isPlaying = playingVideos.has(index);
 
           return (
-            <div key={index} className="group bg-gray-50 border border-gray-200 rounded-xl p-4 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#4C97F1] transition-colors duration-200">
+            <div key={index} className="group bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-2 sm:mb-3 line-clamp-2 group-hover:text-[#4C97F1] transition-colors duration-200">
                 {video.title}
               </h3>
               <div className="relative">
@@ -49,7 +49,7 @@ const VideoBoard = () => {
                     <img
                       src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
                       alt={video.title}
-                      className="w-full aspect-video rounded-lg object-cover cursor-pointer transition-transform duration-300 group-hover:scale-[1.02]"
+                      className="w-full aspect-video rounded-md sm:rounded-lg object-cover cursor-pointer transition-transform duration-300 group-hover:scale-[1.02]"
                       onError={(e) => {
                         // Fallback to lower quality thumbnail if maxresdefault doesn't exist
                         e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
@@ -60,9 +60,9 @@ const VideoBoard = () => {
                       className="absolute inset-0 flex items-center justify-center cursor-pointer"
                       onClick={() => handlePlayVideo(index)}
                     >
-                      <div className="bg-black/70 rounded-full p-4 group-hover:bg-[#4C97F1]/90 group-hover:scale-110 transition-all duration-300">
+                      <div className="bg-black/70 rounded-full p-2 sm:p-3 lg:p-4 group-hover:bg-[#4C97F1]/90 group-hover:scale-110 transition-all duration-300">
                         <svg
-                          className="w-8 h-8 text-white"
+                          className="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -74,7 +74,7 @@ const VideoBoard = () => {
                 ) : (
                   <iframe
                     src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`}
-                    className="w-full aspect-video rounded-lg border-2 border-[#4C97F1]/20"
+                    className="w-full aspect-video rounded-md sm:rounded-lg border-2 border-[#4C97F1]/20"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />

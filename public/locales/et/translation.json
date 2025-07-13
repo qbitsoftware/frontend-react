@@ -385,7 +385,7 @@
     "dates": "Kuupäevad",
     "start": "Algus",
     "end": "Lõpp",
-    "location": "Toimumiskoht",
+    "location": "Saali asukoht",
     "organizer": "Korraldaja",
     "tables": "Laudu kokku",
     "bracket": "Tabelid",
@@ -468,6 +468,29 @@
       "guide": "Juhend",
       "sponsors": "Sponsorid",
       "media": "Meedia"
+    },
+    "status": {
+      "ended": "Turniir Lõppenud",
+      "ongoing": "Turniir Käimasolev",
+      "upcoming": "Registreerimine Avatud"
+    },
+    "loading_location": "Laen asukohta...",
+    "get_directions": "Teekond minu asukohast",
+    "getting_location": "Otsin teie asukohta...",
+    "show_location_only": "Näita Ainult Asukohta",
+    "geolocation_not_supported": "See brauser ei toeta asukoha tuvastamist.",
+    "location_error": "Ei suuda teie asukohta tuvastada. Palun kontrollige brauseri õigusi.",
+    "registration": "Registreerimine",
+    "registration_info": "Osalemiseks on vajalik registreerimine",
+    "onsite_registration_only": "Sellele võistlusele registreerimine kohapeal",
+    "about_event": "Kirjeldus",
+    "view_in_maps": "Vaata kaardilt",
+    "contact_organizer": "Võta ühendust korraldajaga",
+    "report_issue": "Teata probleemist",
+    "share": {
+      "title": "Jaga seda turniiri",
+      "button": "Kopeeri Link",
+      "copied": "Link Kopeeritud!"
     }
   },
   "calendar": {
@@ -529,6 +552,7 @@
       "combined": "Ühine"
     },
     "last_updated": "Viimati uuendatud",
+    "abbreviations": "Lühendid: NR = koht reitingus, PP = paigutuspunktid, RP = reitingupunktid, ID = ELTLID, SA = sünniaasta",
     "filtering": {
       "buttons": {
         "men": "Mehed",

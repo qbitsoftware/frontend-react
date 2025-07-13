@@ -43,17 +43,17 @@ const NewsWidget = ({ blogs, isEmpty }: Props) => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2 sm:space-y-3">
       {blogs.slice(0, 3).map((post) => (
         <Link
           key={post.id}
           href={`/uudised/${post.id}`}
           className="group block"
         >
-          <article className="bg-white border border-gray-200 rounded-xl p-3 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
-            <div className="flex items-start gap-3">
+          <article className="bg-white border border-gray-200 rounded-lg sm:rounded-xl p-2 sm:p-3 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
+            <div className="flex items-start gap-2 sm:gap-3">
               {/* Featured Image */}
-              <div className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+              <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-md sm:rounded-lg overflow-hidden">
                 <img
                   src={post.image_url || "/blog_placeholder.jpg"}
                   alt={post.title}
@@ -61,29 +61,27 @@ const NewsWidget = ({ blogs, isEmpty }: Props) => {
                 />
               </div>
 
-              {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold text-gray-900 text-base group-hover:text-[#4C97F1] transition-colors duration-200 line-clamp-2 leading-tight">
+                <div className="flex items-start justify-between gap-1 sm:gap-2">
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base group-hover:text-[#4C97F1] transition-colors duration-200 line-clamp-2 leading-tight">
                     {post.title}
                   </h3>
-                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#4C97F1] group-hover:translate-x-1 transition-all duration-200 flex-shrink-0 mt-0.5" />
+                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-[#4C97F1] group-hover:translate-x-1 transition-all duration-200 flex-shrink-0 mt-0.5" />
                 </div>
                 
-                <p className="text-gray-600 text-sm mt-1.5 line-clamp-2 leading-relaxed">
+                <p className="text-gray-600 text-xs sm:text-sm mt-1 sm:mt-1.5 line-clamp-1 sm:line-clamp-2 leading-relaxed">
                   {post.description}
                 </p>
                 
-                <div className="flex items-center justify-between mt-2">
+                <div className="flex items-center justify-between mt-1.5 sm:mt-2">
                   <div className="flex items-center text-gray-500 text-xs">
-                    <Clock className="w-3 h-3 mr-1.5" />
+                    <Clock className="w-3 h-3 mr-1 sm:mr-1.5" />
                     <time dateTime={post.created_at}>
                       {formatDate(post.created_at)}
                     </time>
                   </div>
                   
-                  {/* News Badge */}
-                  <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-[#4C97F1]/10 text-[#4C97F1]">
+                  <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-[#4C97F1]/10 text-[#4C97F1]">
                     News
                   </span>
                 </div>
