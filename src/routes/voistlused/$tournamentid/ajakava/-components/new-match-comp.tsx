@@ -22,6 +22,16 @@ const truncateName = (name: string, maxLength: number = 10): string => {
   return `${name.substring(0, maxLength)}..`;
 };
 
+const truncateNameResponsive = (name: string): string => {
+  // Mobile: 12 chars, Tablet: 15 chars, Desktop: 18 chars
+  if (window.innerWidth < 640) {
+    return truncateName(name, 12);
+  } else if (window.innerWidth < 1024) {
+    return truncateName(name, 15);
+  }
+  return truncateName(name, 18);
+};
+
 const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
   if (!table_data) {
     return <Skeleton className="h-20 w-full" />;
@@ -33,30 +43,30 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
   const matchDate = match.match.start_date;
 
   return (
-    <Card className="pb-0 border-[#EFF0EF] !shadow-scheduleCard hover:shadow-lg transition-shadow duration-200">
-      <div className="flex flex-col p-4">
+    <Card className="pb-0 border-[#EFF0EF] !shadow-scheduleCard hover:shadow-lg transition-shadow duration-200 w-full">
+      <div className="flex flex-col p-3 sm:p-4">
         {/* Header Section */}
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-gray-700">
+        <div className="flex justify-between items-start mb-2 sm:mb-3">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-semibold text-gray-700 truncate">
               {table_data.class}
             </p>
           </div>
 
           {/* Match Score or Status */}
-          <div className="text-right">
+          <div className="text-right flex-shrink-0 ml-2">
             {isMatchCompleted ? (
               <div>
-                <p className="text-2xl font-bold">
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold">
                   {match.match.forfeit ? "-" : `${p1_sets}:${p2_sets}`}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Completed</p>
+                <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">Completed</p>
               </div>
             ) : (
               <div className="text-center">
-                <p className="text-sm font-medium text-gray-600">Upcoming</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Upcoming</p>
                 {matchDate && (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">
                     {formatDateGetHours(matchDate)}
                   </p>
                 )}
@@ -66,16 +76,16 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
         </div>
 
         {matchDate && (
-          <div className="flex items-center gap-2 mb-3 text-xs text-gray-600 bg-gray-50 rounded-md px-2 py-1.5">
-            <Clock className="h-3 w-3" />
-            <span>{formatDateGetDayMonthYear(matchDate)}</span>
-            <span className="font-semibold">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 text-xs text-gray-600 bg-gray-50 rounded-md px-2 py-1 sm:py-1.5">
+            <Clock className="h-3 w-3 flex-shrink-0" />
+            <span className="truncate">{formatDateGetDayMonthYear(matchDate)}</span>
+            <span className="font-semibold flex-shrink-0">
               {formatDateGetHours(matchDate)}
             </span>
           </div>
         )}
 
-        <div className="flex flex-col gap-3 mb-3">
+        <div className="flex flex-col gap-2 sm:gap-3 mb-2 sm:mb-3">
           <ITTFMatchUserComponent
             participant={match.p1}
             match={match}
@@ -85,7 +95,7 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
           />
 
           {/* VS Divider */}
-          <div className="flex items-center gap-2 px-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-1 sm:px-2">
             <div className="flex-1 h-px bg-gray-200"></div>
             <span className="text-xs text-gray-400 font-medium">VS</span>
             <div className="flex-1 h-px bg-gray-200"></div>
@@ -101,18 +111,18 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
         </div>
 
         {/* Footer Section */}
-        <div className="pt-3 border-t border-gray-100">
+        <div className="pt-2 sm:pt-3 border-t border-gray-100">
           <div className="flex items-center justify-between text-xs text-gray-500">
             {/* Location & Table */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               {match.match.location && (
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  <span>{match.match.location}</span>
+                <div className="flex items-center gap-1 min-w-0">
+                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">{match.match.location}</span>
                 </div>
               )}
               {match.match.extra_data.table && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <span className="font-medium">
                     Table {match.match.extra_data.table}
                   </span>
@@ -153,12 +163,12 @@ const ITTFMatchUserComponent = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-between rounded-lg p-2 transition-colors",
+        "flex items-center justify-between rounded-lg p-1.5 sm:p-2 transition-colors",
         isWinner && "bg-green-50 border border-green-200",
       )}
     >
-      <div className="flex items-center gap-3 flex-1">
-        <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+        <Avatar className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 border-2 border-white shadow-sm flex-shrink-0">
           <AvatarImage
             src={
               table_data.solo
@@ -170,30 +180,31 @@ const ITTFMatchUserComponent = ({
           <AvatarFallback>
             <img
               src={blueprofile}
-              className="rounded-full h-10 w-10"
+              className="rounded-full h-full w-full object-cover"
               alt="Player"
             />
           </AvatarFallback>
         </Avatar>
 
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <p
             className={cn(
-              "text-sm",
+              "text-xs sm:text-sm truncate",
               isWinner ? "font-semibold text-gray-900" : "text-gray-700",
             )}
+            title={participant.name}
           >
-            {truncateName(participant.name, 15)}
+            {truncateNameResponsive(participant.name)}
           </p>
         </div>
       </div>
 
       {/* Score Section */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 flex-shrink-0">
         {/* Set Scores */}
         {match.match.extra_data.score &&
           match.match.extra_data.score.length > 0 && (
-            <div className="flex gap-1.5">
+            <div className="flex gap-0.5 sm:gap-1 lg:gap-1.5">
               {!match.match.use_sets && match.match.extra_data.score.map((set, index) => {
                 const score = playerNumber === 1 ? set.p1_score : set.p2_score;
                 const opponentScore =
@@ -204,7 +215,7 @@ const ITTFMatchUserComponent = ({
                   <div
                     key={index}
                     className={cn(
-                      "min-w-[20px] text-center text-xs font-medium px-1 py-0.5 rounded",
+                      "min-w-[16px] sm:min-w-[18px] lg:min-w-[20px] text-center text-xs font-medium px-0.5 sm:px-1 py-0.5 rounded",
                       wonSet
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 text-gray-600",
@@ -220,7 +231,7 @@ const ITTFMatchUserComponent = ({
         {/* Total Score */}
         <div
           className={cn(
-            "text-xl font-bold min-w-[30px] text-right",
+            "text-lg sm:text-xl font-bold min-w-[24px] sm:min-w-[30px] text-right",
             isWinner ? "text-green-700" : "text-gray-700",
           )}
         >
@@ -236,23 +247,22 @@ const ITTFMatchUserComponent = ({
 
 const SkeletonMatchUserComponent = () => {
   return (
-    <div className="flex items-center justify-between w-full p-2">
-      <div className="flex items-center gap-3 flex-1">
-        <Skeleton className="h-10 w-10 rounded-full" />
+    <div className="flex items-center justify-between w-full p-1.5 sm:p-2">
+      <div className="flex items-center gap-2 sm:gap-3 flex-1">
+        <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 rounded-full" />
         <div className="flex-1">
-          <Skeleton className="h-4 w-24 mb-1" />
-          <Skeleton className="h-3 w-16" />
+          <Skeleton className="h-3 sm:h-4 w-16 sm:w-24 mb-1" />
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <div className="flex gap-1.5">
+      <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+        <div className="flex gap-0.5 sm:gap-1 lg:gap-1.5">
           {Array(3)
             .fill(0)
             .map((_, index) => (
-              <Skeleton key={index} className="h-5 w-5" />
+              <Skeleton key={index} className="h-4 w-4 sm:h-5 sm:w-5" />
             ))}
         </div>
-        <Skeleton className="h-6 w-8" />
+        <Skeleton className="h-5 w-6 sm:h-6 sm:w-8" />
       </div>
     </div>
   );

@@ -233,8 +233,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="">
-      <h4 className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
+    <div className="px-2 sm:px-4 lg:px-6">
+      <h4 className="font-bold mb-3 sm:mb-4 md:mb-8 text-center md:text-left text-gray-700 text-lg sm:text-xl">
         {t("competitions.timetable.matches")}
       </h4>
 
@@ -253,7 +253,7 @@ function RouteComponent() {
         filteredMatchCount={displayMatchCount}
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-y-4 md:gap-y-12 gap-x-4 my-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 my-4 sm:my-6">
         {displayMatches.map((match, index) => (
           <ITTFMatchComponent
             key={`${match.match.id}-${index}`}

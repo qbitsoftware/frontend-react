@@ -262,8 +262,8 @@ function RouteComponent() {
 
           {!showManualEntry ? (
             <div>
-              <div className="flex gap-4 items-start">
-                <div className="relative flex-grow max-w-md">
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                <div className="relative flex-grow w-full sm:max-w-md">
                   <Popover
                     open={popoverOpen}
                     onOpenChange={(open) => {
@@ -324,10 +324,10 @@ function RouteComponent() {
                     )}
                   </Popover>
                 </div>
-                <div className="border-l-2 border-gray-200 pl-4 ml-4">
+                <div className="w-full sm:w-auto sm:border-l-2 sm:border-gray-200 sm:pl-4 sm:ml-4">
                   <button
                     onClick={() => setShowManualEntry(true)}
-                    className="bg-[#4C97F1] hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap flex items-center shadow-lg hover:shadow-xl"
+                    className="w-full sm:w-auto bg-[#4C97F1] hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap flex items-center justify-center shadow-lg hover:shadow-xl"
                     title={t("licenses.add_player.add_new_player")}
                   >
                     <UserPlus className="w-5 h-5 mr-2" />
@@ -365,7 +365,7 @@ function RouteComponent() {
                   {t("licenses.add_player.back_to_search")}
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <input
                   type="text"
                   placeholder={t("licenses.add_player.first_name")}
@@ -394,10 +394,10 @@ function RouteComponent() {
                   className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm"
                 />
               </div>
-              <div className="flex items-start gap-4 mt-6">
+              <div className="flex flex-col sm:flex-row items-start gap-4 mt-6">
                 <button
                   onClick={addPlayer}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center shadow-lg hover:shadow-xl"
+                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   {t("licenses.add_player.add_to_list")}
@@ -422,26 +422,26 @@ function RouteComponent() {
                   </h2>
                 </div>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="overflow-x-auto -mx-2 sm:mx-0">
+                <table className="w-full min-w-[600px]">
                   <thead className="bg-gradient-to-r from-[#4C97F1]/5 to-blue-50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                      <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                         {t("licenses.table.player")}
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                      <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                         {t("licenses.table.birth_year")}
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                      <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                         {t("licenses.table.club")}
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                      <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                         {t("licenses.table.license_type")}
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                      <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                         {t("licenses.table.price")}
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">
+                      <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                         {t("licenses.table.action")}
                       </th>
                     </tr>
@@ -453,42 +453,42 @@ function RouteComponent() {
                       );
                       return (
                         <tr key={player.id} className="hover:bg-[#4C97F1]/5 transition-colors">
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-[#4C97F1] rounded-full flex items-center justify-center text-white font-bold">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#4C97F1] rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                                 {player.first_name.charAt(0)}{player.last_name.charAt(0)}
                               </div>
-                              <div>
-                                <div className="text-sm font-semibold text-gray-900">
+                              <div className="min-w-0 flex-1">
+                                <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                                   {player.first_name} {player.last_name}
                                 </div>
                                 {player.eltl_id && player.eltl_id > 0 && (
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-gray-500 hidden sm:block">
                                     {t("licenses.table.eltl_id")}: {player.eltl_id}
                                   </div>
                                 )}
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-700">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                            <div className="text-xs sm:text-sm font-medium text-gray-700">
                               {player.birth_date
                                 ? new Date(player.birth_date).getFullYear()
                                 : "---"}
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="text-sm text-gray-600">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5">
+                            <div className="text-xs sm:text-sm text-gray-600 truncate max-w-[100px] sm:max-w-none">
                               {player.club_name || "---"}
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
                             <select
                               value={player.licenseType}
                               onChange={(e) =>
                                 handleLicenseTypeChange(player.id, e.target.value)
                               }
-                              className="px-3 py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-sm focus:outline-none transition-all"
+                              className="w-full px-2 sm:px-3 py-1 sm:py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-xs sm:text-sm focus:outline-none transition-all"
                             >
                               {getAvailableLicenseTypes(player).map((type) => (
                                 <option key={type.id} value={type.id}>
@@ -497,19 +497,19 @@ function RouteComponent() {
                               ))}
                             </select>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="text-lg font-bold text-[#4C97F1]">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                            <div className="text-sm sm:text-lg font-bold text-[#4C97F1]">
                               €{license
                                 ? license.price
                                 : getLicenseTypePrice(player.licenseType)}
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
                             <button
                               onClick={() => removePlayer(player.id)}
-                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                              className="p-1 sm:p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
                             >
-                              <X className="w-5 h-5" />
+                              <X className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                           </td>
                         </tr>
@@ -523,7 +523,7 @@ function RouteComponent() {
 
           {players.length > 0 && (
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-1 h-6 bg-green-600 rounded-full"></div>
@@ -539,7 +539,7 @@ function RouteComponent() {
                     {t("licenses.summary.selected")}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="w-full sm:w-auto text-left sm:text-right">
                   <p className="text-sm text-gray-600 mb-1">
                     {t("licenses.summary.total_amount")}
                   </p>
@@ -578,11 +578,11 @@ function RouteComponent() {
                 {t("licenses.info.title")}
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {licenseTypes.map((type) => (
-                <div key={type.id} className="bg-white p-4 rounded-lg border border-blue-200 flex justify-between items-center">
-                  <span className="font-medium text-blue-800">{type.name}</span>
-                  <span className="font-bold text-blue-600 text-lg">€{type.price}</span>
+                <div key={type.id} className="bg-white p-3 sm:p-4 rounded-lg border border-blue-200 flex justify-between items-center">
+                  <span className="font-medium text-blue-800 text-sm sm:text-base">{type.name}</span>
+                  <span className="font-bold text-blue-600 text-base sm:text-lg">€{type.price}</span>
                 </div>
               ))}
             </div>
