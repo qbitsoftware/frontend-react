@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import { UseDeleteTournamentTable, UsePatchTournamentTable, UsePostTournamentTable } from '@/queries/tables'
 import { UseGetTournamentSizes, UseGetTournamentTypes } from '@/queries/tournaments'
-import { TournamentTable } from '@/types/groups'
+import { DialogType, TournamentTable } from '@/types/groups'
 import { GroupType } from '@/types/matches'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useRouter } from '@tanstack/react-router'
@@ -334,7 +334,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                 )}
 
               </div>
-              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", form.watch("solo") ? "hidden" : "")}>
+              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", form.watch("dialog_type") !== DialogType.DT_TEAM_LEAGUES ? "hidden" : "")}>
                 <FormField
                   control={form.control}
                   name="min_team_size"
