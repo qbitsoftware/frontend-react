@@ -35,19 +35,20 @@ export const EliminationBrackets = ({
   return (
     <div className='border-grey-200 border-x border-b'>
       <div className="z-40 top-0 w-full">
-        <div className="px-4 w-full bg-[#F8F9FA] rounded-t pdf-background">
-          <div className="flex justify-between items-center py-3">
+        <div className="px-2 sm:px-4 w-full bg-[#F8F9FA] rounded-t pdf-background">
+          {/* Mobile: Stack vertically, Desktop: Side by side */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 gap-3 sm:gap-0">
             {/* Bracket Jump-to Tabs */}
             <Tabs
               defaultValue={data?.eliminations[0]?.elimination[0].name}
-              className="z-10 flex-1"
+              className="z-10 flex-1 order-2 sm:order-1"
             >
-              <TabsList className="flex justify-start gap-4 px-0 text-black bg-transparent overflow-x-auto scrollbar-hide">
+              <TabsList className="flex justify-start gap-1 sm:gap-2 lg:gap-4 px-0 text-black bg-transparent overflow-x-auto scrollbar-hide">
                 {data.eliminations.map((item, index) => (
                   <TabsTrigger
                     key={index}
                     value={item.elimination[0].name}
-                    className="flex-shrink-0 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-sm bg-[#4C97F1] text-white"
+                    className="flex-shrink-0 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-sm bg-[#4C97F1] text-white min-w-[60px] sm:min-w-[80px] text-center"
                     onClick={() => {
                       const container = scrollContainerRef.current;
                       const targetElement = document.getElementById(
@@ -69,7 +70,9 @@ export const EliminationBrackets = ({
                       }
                     }}
                   >
-                    {item.elimination[0].name}
+                    <span className="truncate">
+                      {item.elimination[0].name}
+                    </span>
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -78,11 +81,13 @@ export const EliminationBrackets = ({
             {/* Print Button */}
             <Button
               variant="outline"
-              className="ml-4 flex-shrink-0"
+              className="flex-shrink-0 order-1 sm:order-2 sm:ml-4 self-end sm:self-auto"
               onClick={handlePrint}
             >
-              <Printer className="mr-2 h-4 w-4" />
-              {t("admin.tournaments.groups.tables.print")}
+              <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs sm:text-sm">
+                {t("admin.tournaments.groups.tables.print")}
+              </span>
             </Button>
           </div>
           <Separator className="border-gray-300" />
@@ -94,7 +99,7 @@ export const EliminationBrackets = ({
         className="bg-[#F8F9FA] relative h-[85vh] flex flex-col overflow-auto"
         id="bracket-container"
       >
-        <div className="flex flex-col gap-10 px-10 min-w-max">
+        <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-2 sm:px-4 lg:px-10 min-w-max">
           {data.eliminations.map((eliminations, eliminationIndex) => {
             return eliminations.elimination.map((table, tableIndex) => {
               const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;
@@ -102,7 +107,9 @@ export const EliminationBrackets = ({
 
               return (
                 <div key={uniqueKey}>
-                  <div className="font-bold text-xl py-4">{table.name}</div>
+                  <div className="font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0">
+                    {table.name}
+                  </div>
                   {table.name !== BracketType.MIINUSRING ? (
                     <div className="" id={uniqueId}>
                       <SingleElimination

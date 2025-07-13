@@ -13,8 +13,7 @@ import StandingsProtocol from "./-components/standings-protocol";
 import Loader from "@/components/loader";
 import Protocol from "./-components/protocol";
 import { EliminationBrackets } from "@/components/elimination-brackets";
-import { cn } from "@/lib/utils";
-import { User } from "lucide-react";
+import { ClassFilters } from "./-components/class-filters";
 
 export const Route = createFileRoute(
   "/voistlused/$tournamentid/tulemused/$groupid/"
@@ -112,7 +111,14 @@ function RouteComponent() {
   const availableTables = tablesQuery.data.data || [];
 
   return (
-    <div className="min-h-screen p-2">
+    <div className="min-h-screen px-2 sm:px-4 lg:px-6">
+      {/* Class Navigation - Show at the top for all views */}
+      <ClassFilters
+        availableTables={availableTables}
+        activeGroupId={groupId}
+        onGroupChange={handleGroupChange}
+      />
+      
       <div className="flex justify-center">
         <Tabs
           value={activeTab}
@@ -121,24 +127,24 @@ function RouteComponent() {
           defaultValue={activeTab}
         >
           <div className="flex flex-col items-start">
-            <TabsList className="h-10 space-x-2 bg-transparent">
+            <TabsList className="h-10 space-x-1 sm:space-x-2 bg-transparent">
               {isMeistrikad && (
                 <>
                   <TabsTrigger
                     value="bracket"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700"
+                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     {t("competitions.bracket")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="placement"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700"
+                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     {t("competitions.play_off")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="leaderboard"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700"
+                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     {t("competitions.navbar.standings")}
                   </TabsTrigger>
@@ -149,13 +155,13 @@ function RouteComponent() {
                 <>
                   <TabsTrigger
                     value="bracket"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700"
+                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     {t("competitions.bracket")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="leaderboard"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700"
+                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     {t("competitions.navbar.standings")}
                   </TabsTrigger>
@@ -166,13 +172,13 @@ function RouteComponent() {
                 <>
                   <TabsTrigger
                     value="placement"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700"
+                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     {t("competitions.play_off")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="leaderboard"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700"
+                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     {t("competitions.navbar.standings")}
                   </TabsTrigger>
@@ -183,40 +189,6 @@ function RouteComponent() {
 
           {hasBracketData && (
             <TabsContent value="bracket" className="w-full mt-2">
-              {/* Group Selection Navbar - only show for bracket tabs */}
-              {availableTables.length > 1 && (
-                <div className="bg-white border-b border-gray-200 shadow-sm mb-9 rounded-lg">
-                  <div className="px-1">
-                    <div className="flex overflow-x-auto scrollbar-hide">
-                      <div className="flex space-x-1 py-3">
-                        {availableTables.map((table) => (
-                          <button
-                            key={table.id}
-                            onClick={() => handleGroupChange(table.id)}
-                            className={cn(
-                              "flex-shrink-0 px-3 py-2 text-sm font-medium transition-all duration-200 border-b-2",
-                              groupId === table.id
-                                ? "border-[#4C97F1] text-gray-800"
-                                : "border-transparent text-gray-600 hover:text-gray-800"
-                            )}
-                          >
-                            <div className="flex flex-col items-center">
-                              <span className="font-medium">{table.class}</span>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <User className="h-3 w-3 text-gray-500" />
-                                <span className="text-xs text-gray-500">
-                                  {table.participants.length}
-                                </span>
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
               {isMeistrikad && bracketQuery.data?.data?.round_robins?.[0] && (
                 <GroupBracket
                   brackets={bracketQuery.data.data.round_robins[0]}
@@ -235,39 +207,6 @@ function RouteComponent() {
           )}
 
           <TabsContent value="placement" className="w-full mt-2">
-            {availableTables.length > 1 && (
-              <div className="bg-white border-x border-gray-200 shadow-sm rounded-t-lg">
-                <div className="">
-                  <div className="flex overflow-x-auto scrollbar-hide">
-                    <div className="flex space-x-1 py-0">
-                      {availableTables.map((table) => (
-                        <button
-                          key={table.id}
-                          onClick={() => handleGroupChange(table.id)}
-                          className={cn(
-                            "flex-shrink-0 px-3 py-2 text-sm font-medium transition-all duration-200 border-b-2",
-                            groupId === table.id
-                              ? "border-[#4C97F1] text-gray-800"
-                              : "border-transparent text-gray-600 hover:text-gray-800"
-                          )}
-                        >
-                          <div className="flex flex-col items-center">
-                            <span className="font-medium">{table.class}</span>
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <User className="h-3 w-3 text-gray-500" />
-                              <span className="text-xs text-gray-500">
-                                {table.participants.length}
-                              </span>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            
             {isFreeForAll ? (
               <div className="text-center text-stone-700">
                 {t("competitions.errors.no_groups")}

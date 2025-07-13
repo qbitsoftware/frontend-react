@@ -131,34 +131,36 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
   };
 
   return (
-    <div className="py-4">
-      <div className="lg:rounded-lg px-4 lg:px-12 py-6">
-        <div className="space-y-4">
-          <h2 className="font-bold">
+    <div className="py-2 sm:py-4">
+      <div className="lg:rounded-lg px-2 sm:px-4 lg:px-12 py-4 sm:py-6">
+        <div className="space-y-3 sm:space-y-4">
+          <h2 className="font-bold text-lg sm:text-xl lg:text-2xl">
             {modifyTitleDependingOnFilter(t, showCombined, sex, ageClass)}
           </h2>
-          <p className="font-medium pb-1">{t('rating.last_updated')}: <span className="bg-[#FBFBFB] px-3 py-1 rounded-full border border-[#EAEAEA]">{getMondayOfCurrentWeek()}</span></p>
-          <p className="pb-8">Lühendid: NR = koht reitingus, PP = paigutuspunktid, RP = reitingupunktid, KL = kaalud, ID = ELTLID, SA = sünniaasta</p>
+          <p className="font-medium pb-1 text-sm sm:text-base">{t('rating.last_updated')}: <span className="bg-[#FBFBFB] px-2 sm:px-3 py-1 rounded-full border border-[#EAEAEA] text-xs sm:text-sm">{getMondayOfCurrentWeek()}</span></p>
+          <p className="pb-6 sm:pb-8 text-xs sm:text-sm text-gray-600">{t('rating.abbreviations')}</p>
         </div>
 
         <div className="border rounded-t-[12px]">
-          <div className="border-b border-stone-200 bg-[#EBEFF5] rounded-t-[12px] grid grid-cols-1 lg:grid-cols-12 gap-4 items-center w-full p-1 mb-1">
-            <div className="relative w-full md:col-span-3">
+          <div className="border-b border-stone-200 bg-[#EBEFF5] rounded-t-[12px] flex flex-col gap-3 sm:gap-4 lg:grid lg:grid-cols-12 lg:gap-4 items-stretch lg:items-center w-full p-3 sm:p-4 lg:p-1 mb-1">
+            {/* Search Input */}
+            <div className="relative w-full lg:col-span-3">
               <Input
                 type="text"
                 placeholder={t('rating.filtering.search_placeholder')}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 w-full pl-4 pr-10 py-2 border rounded-lg text-sm bg-[#F7F6F7] focus:outline-none focus:ring-1 focus:ring-gray-300"
+                className="h-10 sm:h-12 w-full pl-4 pr-10 py-2 border rounded-lg text-xs sm:text-sm bg-[#F7F6F7] focus:outline-none focus:ring-1 focus:ring-gray-300"
               />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
             </div>
 
-            <div className="md:col-span-3">
+            {/* Age Class Select */}
+            <div className="w-full lg:col-span-3">
               <Select
                 value={ageClass}
                 onValueChange={handleAgeClassChange}
               >
-                <SelectTrigger className="w-full h-12 flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#F7F6F7]">
+                <SelectTrigger className="w-full h-10 sm:h-12 flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm bg-[#F7F6F7]">
                   <SelectValue placeholder={t('rating.filtering.select.options.all')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -173,21 +175,22 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
               </Select>
             </div>
 
-            <div className="md:col-span-4">
+            {/* Gender Tabs */}
+            <div className="w-full lg:col-span-4">
               <Tabs
                 defaultValue="men"
                 value={activeTab}
                 onValueChange={handleTabChange}
                 className="w-full"
               >
-                <TabsList className="justify-start w-full rounded-[2px] py-2 gap-1">
-                  <TabsTrigger value="women" className="rounded-[4px] flex-1">
+                <TabsList className="justify-start w-full rounded-[2px] py-1.5 sm:py-2 gap-0.5 sm:gap-1 h-10 sm:h-auto">
+                  <TabsTrigger value="women" className="rounded-[4px] flex-1 text-xs sm:text-sm px-2 sm:px-3">
                     {t('rating.filtering.buttons.women')}
                   </TabsTrigger>
-                  <TabsTrigger value="men" className="rounded-[4px] flex-1">
+                  <TabsTrigger value="men" className="rounded-[4px] flex-1 text-xs sm:text-sm px-2 sm:px-3">
                     {t('rating.filtering.buttons.men')}
                   </TabsTrigger>
-                  <TabsTrigger value="combined" className="rounded-[4px] flex-1">
+                  <TabsTrigger value="combined" className="rounded-[4px] flex-1 text-xs sm:text-sm px-2 sm:px-3">
                     {t('rating.filtering.buttons.combined')}
                   </TabsTrigger>
                 </TabsList>
@@ -199,52 +202,54 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
             <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg">
               <TableHeader className="rounded-lg">
                 <TableRow className="bg-white sticky top-0 z-10">
-                  <TableHead className="md:px-6 py-3 text-left font-medium">NR</TableHead>
-                  <TableHead className="px-1 md:px-6 py-3 text-left font-medium">{t('rating.table.head.player')}</TableHead>
-                  <TableHead className="md:px-6 py-3 text-left font-medium">PP</TableHead>
-                  <TableHead className="md:px-6 py-3 text-left font-medium">RP</TableHead>
-                  <TableHead className="md:px-6 py-3 text-left font-medium">ID</TableHead>
-                  <TableHead className="md:px-6 py-3 text-left font-medium">{t('rating.table.head.birthyear')}</TableHead>
-                  <TableHead className="md:px-6 py-3 text-left font-medium">{t('rating.table.head.club')}</TableHead>
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">NR</TableHead>
+                  <TableHead className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">{t('rating.table.head.player')}</TableHead>
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">PP</TableHead>
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">RP</TableHead>
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">ID</TableHead>
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm hidden sm:table-cell">{t('rating.table.head.birthyear')}</TableHead>
+                  <TableHead className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">{t('rating.table.head.club')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.map((user) => (
+                {filteredUsers.map((user, index) => (
                   <TableRow
                     onClick={() => handleModalOpen(user)}
                     key={user.id}
-                    className="group cursor-pointer bg-white transition-colors"
+                    className={`group cursor-pointer transition-colors ${
+                      index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50/30 hover:bg-blue-50/50'
+                    }`}
                   >
-                    <TableCell className="md:px-6 py-3 text-lg font-bold text-[#4C97F1]">
+                    <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-sm sm:text-lg font-bold text-[#4C97F1]">
                       {user.rate_order}
                     </TableCell>
-                    <TableCell className="px-1 py-3 flex items-center space-x-3">
-                      <Avatar className="w-10 h-10">
+                    <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">
+                      <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
                         <AvatarImage src="" alt={`${user.first_name} ${user.last_name}'s profile`} />
                         <AvatarFallback>
                           <img src={placeholderImg} className="rounded-full h-full w-full object-cover" alt="Profile" />
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-semibold group-hover:text-blue-600 group-hover:underline">
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs sm:text-sm font-semibold group-hover:text-blue-600 group-hover:underline truncate">
                           {user.last_name}
                         </span>
-                        <span className="text-sm text-gray-600">{user.first_name}</span>
+                        <span className="text-xs sm:text-sm text-gray-600 truncate">{user.first_name}</span>
                       </div>
                     </TableCell>
 
-                    <TableCell className="md:px-6 py-3 text-sm">{user.rate_pl_points}</TableCell>
-                    <TableCell className="md:px-6 py-3 text-sm">{user.rate_points}</TableCell>
-                    <TableCell className="md:px-6 py-3 text-sm">{user.eltl_id}</TableCell>
-                    <TableCell className="md:px-6 py-3 text-sm">{getYear(user.birth_date)}</TableCell>
-                    <TableCell className="px-1 md:px-6 py-3 flex items-center space-x-2">
-                      <Avatar className="w-8 h-8">
+                    <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">{user.rate_pl_points}</TableCell>
+                    <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">{user.rate_points}</TableCell>
+                    <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">{user.eltl_id}</TableCell>
+                    <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden sm:table-cell">{getYear(user.birth_date)}</TableCell>
+                    <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-1 sm:space-x-2">
+                      <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
                         <AvatarImage src={getClubImage(user.club_name)} alt={`${user.club_name} logo`} />
-                        <AvatarFallback className="text-xs font-semibold bg-gray-100">
+                        <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-gray-100">
                           {user.club_name.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm">{user.club_name}</span>
+                      <span className="text-xs sm:text-sm truncate min-w-0">{user.club_name}</span>
                     </TableCell>
                   </TableRow>
                 ))}
