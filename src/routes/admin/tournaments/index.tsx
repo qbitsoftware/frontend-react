@@ -29,26 +29,23 @@ function RouteComponent() {
     const { t } = useTranslation()
 
     return (
-        <div className='py-8 px-2 md:p-8 '>
-            <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-                <div className='flex items-center justify-center flex-col text-center mb-4 md:mb-0 md:justify-start md:items-start'>
-                    <h3 className="font-bold text-gray-900">
+        <div className='py-4 px-3 sm:py-6 sm:px-4 md:p-8'>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+                <div className='flex flex-col'>
+                    <h3 className="font-bold text-gray-900 text-lg sm:text-xl">
                         {t('admin.tournaments.title')}
                     </h3>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 mt-1 text-sm sm:text-base">
                         {t('admin.tournaments.description')}
                     </p>
                 </div>
-                <div className='flex items-center justify-center gap-4'>
-                    {/* <HelpCircle className='cursor-pointer' onClick={() => startFlow('tournament-creation')} /> */}
-                    <Link href='/admin/tournaments/new'>
-                        <Button className=' px-4 z-60' id='tutorial-tournament-add'>
-                            <PlusCircle className="w-4 h-4 mr-1" />
-
+                <div className='flex items-center justify-center w-full sm:w-auto'>
+                    <Link href='/admin/tournaments/new' className="w-full sm:w-auto">
+                        <Button className='w-full sm:w-auto px-4 z-60' id='tutorial-tournament-add'>
+                            <PlusCircle className="w-4 h-4 mr-2" />
                             {t('admin.tournaments.add_new')}
                         </Button>
                     </Link>
-
                 </div>
             </div>
 

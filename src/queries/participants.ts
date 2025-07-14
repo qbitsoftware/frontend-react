@@ -16,7 +16,6 @@ export type ParticipantsResponse = {
     error: string | null
 }
 
-// Praegu ei huvita
 export function UseGetTournamentParticipants(tournament_id: number) {
     return queryOptions<ParticipantsResponse>({
         queryKey: ["participants", tournament_id],

@@ -50,10 +50,10 @@ export const PlayerProfileData = ({ profile }: PlayerProfileDataProps) => {
         </div>
       </TabsContent>
 
-      <TabsContent value="temp-placeholder" className="mt-6">
-        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200/50">
-          <h3 className="font-semibold text-xl text-gray-900 mb-6 flex items-center gap-3">
-            <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+      <TabsContent value="temp-placeholder" className="mt-4 sm:mt-6 flex-1 overflow-y-auto">
+        <div className="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-lg border border-gray-200/50">
+          <h3 className="font-semibold text-lg sm:text-xl text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <div className="w-1 h-4 sm:h-6 bg-[#4C97F1] rounded-full"></div>
             {t("rating.player_modal.sections.player_information")}
           </h3>
 
@@ -98,10 +98,10 @@ export const PlayerProfileData = ({ profile }: PlayerProfileDataProps) => {
         </div>
       </TabsContent>
 
-      <TabsContent value="rating-change" className="mt-6">
-        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200/50">
-          <h3 className="font-semibold text-xl text-gray-900 mb-6 flex items-center gap-3">
-            <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
+      <TabsContent value="rating-change" className="mt-4 sm:mt-6 flex-1 overflow-y-auto">
+        <div className="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-lg border border-gray-200/50">
+          <h3 className="font-semibold text-lg sm:text-xl text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <div className="w-1 h-4 sm:h-6 bg-[#4C97F1] rounded-full"></div>
             {t("rating.player_modal.sections.rating_progress")}
           </h3>
           <div className="w-full">

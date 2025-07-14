@@ -24,15 +24,6 @@ export function AppSidebar() {
                 { name: t('navbar.menu.news.results'), href: `/uudised?category=results` },
             ]
         },
-        // {
-        //     name: t('navbar.menu.eltl'),
-        //     href: '/eltl',
-        //     dropdownItems: [
-        //         { name: 'About Us', href: '/eltl/about' },
-        //         { name: 'History', href: '/eltl/history' },
-        //         { name: 'Board Members', href: '/eltl/board' },
-        //     ]
-        // },
         {
             name: t('navbar.menu.competition'),
             href: '/voistlused',
@@ -44,6 +35,7 @@ export function AppSidebar() {
         { name: t('navbar.menu.ratings'), href: '/reiting' },
         { name: t('navbar.menu.rules'), href: '/reeglid' },
         { name: t('navbar.menu.contact'), href: '/kontakt' },
+        { name: t('navbar.menu.license'), href: '/litsents' },
     ]
 
     const toggleDropdown = (item: string) => {
@@ -125,23 +117,25 @@ export function AppSidebar() {
                         </li>
 
                     ))}
-                    {user && user.role == 'admin' &&
-                        <Link
-                            href={"/admin/dashboard"}
-                            onClick={() => {
-                                setActiveItem("Admin")
-                                setOpenDropdown(null)
-                                setOpen(false)
-                                setOpenMobile(false)
-                            }}
-                            className={cn(
-                                "block px-4 py-1 hover:bg-gray-100 transition-colors",
-                                activeItem === "Admin" && "bg-gray-200 font-semibold"
-                            )}
-                        >
-                            {"Admin"}
-                        </Link>
-                    }
+                    {user?.role.includes("admin") && (
+                        <li className="border-b">
+                            <Link
+                                href={"/admin/dashboard"}
+                                onClick={() => {
+                                    setActiveItem("Admin")
+                                    setOpenDropdown(null)
+                                    setOpen(false)
+                                    setOpenMobile(false)
+                                }}
+                                className={cn(
+                                    "block px-4 py-2 transition-colors rounded-lg mx-2 mb-2 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200",
+                                    activeItem === "Admin" && "bg-blue-100 font-semibold"
+                                )}
+                            >
+                                {t('navbar.menu.admin')}
+                            </Link>
+                        </li>
+                    )}
                 </ul>
                 <AuthButton className="w-full mt-4 rounded-md" />
             </SidebarContent>

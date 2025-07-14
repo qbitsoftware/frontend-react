@@ -12,7 +12,7 @@ import { PlayerProfileModal } from "../reiting/-components/player-profile-modal"
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@/types/users";
-import placeholderImg from "@/assets/placheolderImg.svg";
+import placeholderImg from "@/assets/blue-profile.png";
 
 interface Props {
   users: User[] | null;
