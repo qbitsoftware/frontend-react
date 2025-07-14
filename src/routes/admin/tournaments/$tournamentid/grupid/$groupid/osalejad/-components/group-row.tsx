@@ -17,19 +17,20 @@ import { NewPlayer, NewPlayerFromName } from "@/types/players"
 import { Button } from "@/components/ui/button"
 import ParticipantHeader from "./table-header"
 import EditImgModal from "../../../../-components/edit-img-modal"
+import { DialogType, TournamentTable } from "@/types/groups"
 
 interface GroupRowProps {
     participant: Participant
     index: number
     tournament_id: number
-    tournament_table_id: number
+    tournament_table: TournamentTable
     globalEdit: boolean
     setGlobalEdit: (value: boolean) => void
     forceDisableOrdering: boolean
 }
 
-export default function GroupRow({ participant, index, tournament_id, tournament_table_id, globalEdit, setGlobalEdit, forceDisableOrdering }: GroupRowProps) {
-    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table_id)
+export default function GroupRow({ participant, index, tournament_id, tournament_table, globalEdit, setGlobalEdit, forceDisableOrdering }: GroupRowProps) {
+    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
     const { t } = useTranslation()
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: participant.id })
@@ -148,7 +149,7 @@ export default function GroupRow({ participant, index, tournament_id, tournament
     return (
         <Accordion type="single" collapsible className="w-full mb-2" ref={setNodeRef} style={style}>
             <AccordionItem value={participant.id} className="border rounded-md ">
-                <AccordionTrigger className="hover:no-underline px-4 py-2 [&>svg]:ml-auto [&>svg]:mr-0 flex w-full items-center justify-between  "
+                <AccordionTrigger className="hover:no-underline px-4 py-2 [&>svg]:ml-auto [&>svg]:mr-0 flex w-full items-center justify-between"
                 >
                     <div className="flex items-center space-x-4">
                         {!globalEdit && !forceDisableOrdering ? <div
@@ -237,9 +238,11 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                 </div>
                             }
                         </div>
-                        <div onClick={(e) => { e.stopPropagation() }}>
-                            <EditImgModal id={participantState.id} playerName={participantState.name} img={participant.extra_data.image_url} type="participant" />
-                        </div>
+                        {tournament_table.dialog_type !== DialogType.DT_DOUBLES && tournament_table.dialog_type !== DialogType.DT_FIXED_DOUBLES && (
+                            <div onClick={(e) => { e.stopPropagation() }}>
+                                <EditImgModal id={participantState.id} playerName={participantState.name} img={participant.extra_data.image_url} type="participant" />
+                            </div>
+                        )}
                     </div>
 
                 </AccordionTrigger>
@@ -250,9 +253,9 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                             <ParticipantHeader team={true} />
                             <TableBody>
                                 {participantState.players && participantState.players.map((player, idx) => (
-                                    <PlayerRow key={idx} player={player} participant={participantState} index={idx} updateField={(field, value) => updateField(field, value)} tournament_id={tournament_id} tournament_table_id={tournament_table_id} />
+                                    <PlayerRow key={idx} player={player} participant={participantState} index={idx} updateField={(field, value) => updateField(field, value)} tournament_id={tournament_id} tournament_table_id={tournament_table.id} />
                                 ))}
-                                <TableRow>
+                                {(tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) && participantState.players && participantState.players.length >= 2 ? <div></div> : (<TableRow>
                                     <TableCell>
                                     </TableCell>
                                     <TableCell className="">
@@ -374,6 +377,7 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                         </Button>
                                     </TableCell>
                                 </TableRow>
+                                )}
                             </TableBody>
                         </Table>
 

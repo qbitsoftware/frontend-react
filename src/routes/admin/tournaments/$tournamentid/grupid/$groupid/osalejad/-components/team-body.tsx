@@ -1,5 +1,5 @@
 import { useParticipantUtils } from "@/hooks/useParticipantUtils"
-import { TournamentTable } from "@/types/groups"
+import { DialogType, TournamentTable } from "@/types/groups"
 import { Participant } from "@/types/participants"
 import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
@@ -125,12 +125,12 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
                         strategy={verticalListSortingStrategy}
                     >
                         {participants && participants.map((participant, key) => (
-                            <GroupRow key={participant.id} participant={participant} index={key} tournament_id={tournament_id} tournament_table_id={tournament_table.id} globalEdit={globalEdit} setGlobalEdit={setGlobalEdit} forceDisableOrdering={forceDisableOrdering} />
+                            <GroupRow key={participant.id} participant={participant} index={key} tournament_id={tournament_id} tournament_table={tournament_table} globalEdit={globalEdit} setGlobalEdit={setGlobalEdit} forceDisableOrdering={forceDisableOrdering} />
                         ))}
 
                     </SortableContext>
                 </DndContext>
-                {((tournament_table.type != GroupType.ROUND_ROBIN && tournament_table.type != GroupType.ROUND_ROBIN_FULL_PLACEMENT) && tournament_table.size > participants.length) && <div className="flex gap-3">
+                {((tournament_table.type != GroupType.ROUND_ROBIN && tournament_table.type != GroupType.ROUND_ROBIN_FULL_PLACEMENT) && tournament_table.size > participants.length) && tournament_table.dialog_type !== DialogType.DT_DOUBLES && tournament_table.dialog_type !== DialogType.DT_FIXED_DOUBLES && <div className="flex gap-3">
                     <Input
                         type="text"
                         autoComplete='off'

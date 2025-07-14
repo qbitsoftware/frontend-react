@@ -8,6 +8,8 @@ import { NewTeams } from './-components/new-teams'
 import { UseGetParticipantsQuery } from '@/queries/participants'
 import SeedingHeader from './-components/seeding-header'
 import { UseGetTournamentAdmin } from '@/queries/tournaments'
+import { DialogType } from '@/types/groups'
+import NewDouble from './-components/new-double'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -63,7 +65,28 @@ function RouteComponent() {
                 participants={participant_data.data}
               />
 
-              {table_data.data.solo ? (
+              {table_data.data.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                <NewTeams
+                  participant_data={participant_data}
+                  tournament_id={Number(tournamentid)}
+                  tournament_table={table_data.data}
+                />
+              )
+                : table_data.data.solo ? (
+                  <NewSolo
+                    participant_data={participant_data}
+                    tournament_id={Number(tournamentid)}
+                    tournament_table={table_data.data}
+                  />
+                )
+                  : <NewDouble
+                    participant_data={participant_data}
+                    tournament_id={Number(tournamentid)}
+                    tournament_table={table_data.data}
+                  />
+              }
+
+              {/* {table_data.data.solo ? (
                 <NewSolo
                   participant_data={participant_data}
                   tournament_id={Number(tournamentid)}
@@ -75,7 +98,7 @@ function RouteComponent() {
                   tournament_id={Number(tournamentid)}
                   tournament_table={table_data.data}
                 />
-              )}
+              )} */}
             </>
           )}
       </div>
