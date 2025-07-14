@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { MatchesResponse, UseGetMatchesQuery } from "@/queries/match";
-import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants } from "@/queries/participants";
+import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantDoublePairs } from "@/queries/participants";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import seeds3 from "@/assets/seeds3.png";
@@ -43,6 +43,7 @@ const SeedingHeader = ({
   const updateSeeding = UsePostSeeding(tournament_id, table_data.id);
   const updateOrder = UsePostOrder(tournament_id, table_data.id);
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
+  const assignPairs = UsePostParticipantDoublePairs(tournament_id, table_data.id)
   const importMutation = UseImportParticipants(tournament_id, table_data.id)
   const [showWarningModal, setShowWarningModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -164,6 +165,16 @@ const SeedingHeader = ({
     }
   };
 
+  const handleDoublePairing = async () => {
+    try {
+      await assignPairs.mutateAsync()
+      toast.message(t('toasts.participants.double_pairing_success', 'Double pairs assigned successfully'));
+    } catch (error) {
+      void error
+      toast.error(t('toasts.participants.double_pairing_error', 'Error assigning double pairs'));
+    }
+  }
+
   const handleDownloadTemplate = () => {
     let headers: string[];
     let filename: string;
@@ -235,6 +246,15 @@ const SeedingHeader = ({
           >
             <span>{t("admin.tournaments.groups.order.title")}</span>
             <img src={seeds3} className="h-4 w-4 object-contain" />
+          </Button>
+
+          <Button
+            disabled={disabled}
+            onClick={handleDoublePairing}
+            size="sm"
+            className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+          >
+            <span>Pane paarid hakkama</span>
           </Button>
 
           <input
