@@ -58,7 +58,7 @@ function RouteComponent() {
       value: 'osalejad',
       label: t('admin.tournaments.groups.layout.participants'),
     },
-    { value: 'mangud', label: t('admin.tournaments.groups.layout.matches') },
+    { value: 'mangud', label: t('admin.tournaments.groups.layout.games') },
     { value: 'tabelid', label: t('admin.tournaments.groups.layout.tables') },
   ]
 

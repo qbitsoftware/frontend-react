@@ -8,7 +8,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
-import { Settings, Play, Pause, RotateCcw, Calendar } from 'lucide-react'
+import { Settings, Play, Pause, RotateCcw } from 'lucide-react'
 import { TournamentTable } from "@/types/groups"
 import { UseGenerateTimeTable } from "@/queries/tables"
 
@@ -107,24 +107,22 @@ export default function TimetableForm({ tournament_table }: Props) {
                 <div className="lg:col-span-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 p-3 text-lg">
                                 <Settings className="h-5 w-5" />
-                                {t("admin.tournaments.timetable.settings", "Timetable Settings")}
+                                {t("admin.tournaments.timetable.settings")}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(handleGenerateTimetable)} className="space-y-6">
-                                    {/* Date and Time Section */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <FormField
                                             control={form.control}
                                             name="start_date"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="flex items-center gap-2">
-                                                        <Calendar className="h-4 w-4" />
-                                                        {t("admin.tournaments.timetable.start_date", "Tournament Start Date")}
+                                                    <FormLabel>
+                                                        {t("admin.tournaments.timetable.start_date")}
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input
@@ -143,7 +141,7 @@ export default function TimetableForm({ tournament_table }: Props) {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>
-                                                        {t("admin.tournaments.timetable.start_time", "Tournament Start Time")}
+                                                        {t("admin.tournaments.timetable.start_time")}
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input
@@ -165,7 +163,7 @@ export default function TimetableForm({ tournament_table }: Props) {
                                             name="avg_match_duration"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{t("admin.tournaments.timetable.match_duration", "Average Match Duration")}</FormLabel>
+                                                    <FormLabel>{t("admin.tournaments.timetable.match_duration")}</FormLabel>
                                                     <div className="grid grid-cols-[1fr,80px] items-center gap-4">
                                                         <FormControl>
                                                             <Slider
@@ -217,7 +215,7 @@ export default function TimetableForm({ tournament_table }: Props) {
                                                         </FormControl>
                                                     </div>
                                                     <FormDescription>
-                                                        {t("admin.tournaments.timetable.match_duration_desc", "Expected time per match (5-120 minutes)")}
+                                                        {t("admin.tournaments.timetable.match_duration_desc")}
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -229,7 +227,7 @@ export default function TimetableForm({ tournament_table }: Props) {
                                             name="break_duration"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{t("admin.tournaments.timetable.break_duration", "Break Between Matches")}</FormLabel>
+                                                    <FormLabel>{t("admin.tournaments.timetable.break_duration")}</FormLabel>
                                                     <div className="grid grid-cols-[1fr,80px] items-center gap-4">
                                                         <FormControl>
                                                             <Slider
@@ -281,7 +279,7 @@ export default function TimetableForm({ tournament_table }: Props) {
                                                         </FormControl>
                                                     </div>
                                                     <FormDescription>
-                                                        {t("admin.tournaments.timetable.break_duration_desc", "Buffer time between matches (0-60 minutes)")}
+                                                        {t("admin.tournaments.timetable.break_duration_desc")}
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -294,18 +292,18 @@ export default function TimetableForm({ tournament_table }: Props) {
                                             {isGenerating ? (
                                                 <>
                                                     <Pause className="h-4 w-4 animate-spin" />
-                                                    {t("admin.tournaments.timetable.generating", "Generating...")}
+                                                    {t("admin.tournaments.timetable.generating")}
                                                 </>
                                             ) : (
                                                 <>
                                                     <Play className="h-4 w-4" />
-                                                    {t("admin.tournaments.timetable.generate", "Generate Timetable")}
+                                                    {t("admin.tournaments.timetable.generate")}
                                                 </>
                                             )}
                                         </Button>
                                         <Button type="button" variant="outline" onClick={handleResetTimetable} className="flex items-center gap-2">
                                             <RotateCcw className="h-4 w-4" />
-                                            {t("admin.tournaments.timetable.reset", "Reset")}
+                                            {t("admin.tournaments.timetable.reset")}
                                         </Button>
                                     </div>
                                 </form>

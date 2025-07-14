@@ -24,16 +24,22 @@ export const LastMatch = ({ last_game }: Props) => {
 
     const { p1_score, p2_score } = calcScore(last_game.match.extra_data)
     return (
-        <div className="flex items-center justify-between border-l-2 border-gray-300 px-3 py-2 bg-white">
-            <div className="flex items-center space-x-4">
-                <span className="text-xs text-gray-500">{formatDateToNumber(last_game.match.start_date)}</span>
-                <span className="text-sm">
-                    {capitalizeWords(last_game.p1.name)}
-                </span>
-                <span className="font-bold text-sm">{p1_score}</span>
-                <span className="text-xs">:</span>
-                <span className="font-bold text-sm">{p2_score}</span>
-                <span className="text-sm">{capitalizeWords(last_game.p2.name)}</span>
+        <div className="border-l-2 border-gray-300 px-2 sm:px-3 py-2 bg-white rounded-r-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0">
+                <span className="text-xs text-gray-500 order-first sm:order-none">{formatDateToNumber(last_game.match.start_date)}</span>
+                <div className="flex items-center justify-between sm:justify-start sm:space-x-4 flex-1">
+                    <span className="text-sm truncate max-w-[120px] sm:max-w-none">
+                        {capitalizeWords(last_game.p1.name)}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                        <span className="font-bold text-sm">{p1_score}</span>
+                        <span className="text-xs">:</span>
+                        <span className="font-bold text-sm">{p2_score}</span>
+                    </div>
+                    <span className="text-sm truncate max-w-[120px] sm:max-w-none">
+                        {capitalizeWords(last_game.p2.name)}
+                    </span>
+                </div>
             </div>
         </div>
     )

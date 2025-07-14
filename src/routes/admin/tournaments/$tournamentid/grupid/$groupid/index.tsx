@@ -4,6 +4,7 @@ import { UseGetTournamentTable } from '@/queries/tables'
 import ErrorPage from '@/components/error'
 import { ErrorResponse } from '@/types/errors'
 import TimetableForm from '../-components/timetable-form'
+import { useState } from 'react'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/',
@@ -32,14 +33,23 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { table_data } = Route.useLoaderData()
+  const [showTimetable, setShowTimetable] = useState<boolean>(
+    table_data?.data?.timetabled || false
+  )
 
   if (!table_data || !table_data.data) {
     return <></>
   }
+  
   return (
     <div>
-      <TournamentTableForm initial_data={table_data.data} />
-      <TimetableForm tournament_table={table_data.data} />
+      <TournamentTableForm 
+        initial_data={table_data.data} 
+        onTimetableToggle={setShowTimetable}
+      />
+      {showTimetable && (
+        <TimetableForm tournament_table={table_data.data} />
+      )}
     </div>
   )
 }

@@ -53,15 +53,15 @@ function RouteComponent() {
   ];
 
   return (
-    <div className="">
-      <div className="bg-transparent shadow-sm border-b mb-6">
-        <nav className="flex space-x-8" aria-label="Tabs">
+    <div className="p-4 sm:p-6 md:p-8">
+      <div className="bg-transparent shadow-sm border-b mb-4 sm:mb-6">
+        <nav className="flex space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                flex items-center gap-1 sm:gap-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap flex-shrink-0
                 ${activeTab === tab.id
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -71,8 +71,7 @@ function RouteComponent() {
               <img
                 src={tab.icon}
                 alt={`${tab.label} icon`}
-                className={`w-4 h-4 
-                `}
+                className="w-3 h-3 sm:w-4 sm:h-4"
               />
               {t(`admin.layout.${tab.label}`)}
             </button>

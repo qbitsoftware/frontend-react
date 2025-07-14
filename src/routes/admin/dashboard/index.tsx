@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Tournament } from "@/types/tournaments";
 import { useUsersCount } from "@/queries/users";
 import { UseGetTournamentsAdmin } from "@/queries/tournaments";
+import { useUser } from "@/providers/userProvider";
 
 
 export const Route = createFileRoute("/admin/dashboard/")({
@@ -43,8 +44,20 @@ export default function RouteComponent() {
   const { tournaments_data } = Route.useLoaderData();
   const router = useRouter();
   const { t } = useTranslation();
+  const { user } = useUser();
 
   const { count } = useUsersCount()
+
+  const getTimeBasedGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      return t("admin.dashboard.greeting.good_morning");
+    } else if (hour < 18) {
+      return t("admin.dashboard.greeting.good_day");
+    } else {
+      return t("admin.dashboard.greeting.good_evening");
+    }
+  };
 
   const processChartData = (tournaments: Tournament[]) => {
     const monthMap = new Map();
@@ -110,7 +123,6 @@ export default function RouteComponent() {
     );
   }
 
-  // Process data for display if we have valid data
   const chartData = processChartData(tournaments_data.data);
   const stats = getStats(tournaments_data.data);
 
@@ -123,13 +135,15 @@ export default function RouteComponent() {
         new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
     );
 
-  // Main content when everything is working properly
   return (
-    <div className="space-y-6 h-full p-8">
-      <h3 className="text-stone-800 font-bold">{t("admin.dashboard.name")}</h3>
+    <div className="space-y-3 sm:space-y-6 h-full p-4 sm:p-8">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <h3 className="text-stone-800 font-bold text-lg sm:text-2xl">
+          {getTimeBasedGreeting()}, {user?.username || 'Admin'}!
+        </h3>
+      </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
         <StatsCard
           Icon={Target}
           iconColor="text-green-600"
@@ -153,22 +167,22 @@ export default function RouteComponent() {
         />
       </div>
 
-      {/* Charts and Tables */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
         <Card>
-          <CardHeader>
-            <h5 className="font-medium">{t("admin.dashboard.upcoming_tournaments")}</h5>
-            <CardDescription>
+          <CardHeader className="p-3 sm:p-6">
+            <h5 className="font-medium text-sm sm:text-lg">{t("admin.dashboard.upcoming_tournaments")}</h5>
+            <CardDescription className="text-xs sm:text-sm">
               {t("admin.dashboard.upcoming_tournaments_description")}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Table>
+          <CardContent className="p-0 sm:p-6 sm:pt-0">
+            <div className="overflow-x-auto">
+              <Table className="min-w-[400px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("admin.dashboard.utils.name")}</TableHead>
-                  <TableHead>{t("admin.dashboard.utils.status")}</TableHead>
-                  <TableHead>
+                  <TableHead className="text-xs sm:text-sm px-2 sm:px-4">{t("admin.dashboard.utils.name")}</TableHead>
+                  <TableHead className="text-xs sm:text-sm px-2 sm:px-4">{t("admin.dashboard.utils.status")}</TableHead>
+                  <TableHead className="text-xs sm:text-sm px-2 sm:px-4">
                     {t("admin.dashboard.utils.start_date")}
                   </TableHead>
                 </TableRow>
@@ -184,35 +198,37 @@ export default function RouteComponent() {
                       });
                     }}
                   >
-                    <TableCell>{tournament.name}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs sm:text-sm px-2 sm:px-4 max-w-[120px] sm:max-w-none truncate">{tournament.name}</TableCell>
+                    <TableCell className="px-2 sm:px-4">
                       <TournamentStatusBadge status={tournament.state} />
                     </TableCell>
-                    <TableCell className="truncate">
+                    <TableCell className="text-xs sm:text-sm px-2 sm:px-4 truncate">
                       {formatDateString(tournament.start_date)}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <h5 className="font-medium">
+          <CardHeader className="p-3 sm:p-6">
+            <h5 className="font-medium text-sm sm:text-lg">
               {t("admin.dashboard.recently_created_tournaments")}
             </h5>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               {t("admin.dashboard.recently_created_tournaments_description")}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Table>
+          <CardContent className="p-0 sm:p-6 sm:pt-0">
+            <div className="overflow-x-auto">
+              <Table className="min-w-[400px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("admin.dashboard.utils.name")}</TableHead>
-                  <TableHead>{t("admin.dashboard.utils.status")}</TableHead>
-                  <TableHead>
+                  <TableHead className="text-xs sm:text-sm px-2 sm:px-4">{t("admin.dashboard.utils.name")}</TableHead>
+                  <TableHead className="text-xs sm:text-sm px-2 sm:px-4">{t("admin.dashboard.utils.status")}</TableHead>
+                  <TableHead className="text-xs sm:text-sm px-2 sm:px-4">
                     {t("admin.dashboard.utils.start_date")}
                   </TableHead>
                 </TableRow>
@@ -228,33 +244,44 @@ export default function RouteComponent() {
                       });
                     }}
                   >
-                    <TableCell>{tournament.name}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs sm:text-sm px-2 sm:px-4 max-w-[120px] sm:max-w-none truncate">{tournament.name}</TableCell>
+                    <TableCell className="px-2 sm:px-4">
                       <TournamentStatusBadge status={tournament.state} />
                     </TableCell>
-                    <TableCell className="truncate">
+                    <TableCell className="text-xs sm:text-sm px-2 sm:px-4 truncate">
                       {formatDateString(tournament.start_date)}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
       <Card>
-        <CardHeader className="mb-2">
-          <h5 className="font-medium">{t("admin.dashboard.tournament_activity")}</h5>
-          <CardDescription>
+        <CardHeader className="mb-1 p-3 sm:p-6 sm:mb-2">
+          <h5 className="font-medium text-sm sm:text-lg">{t("admin.dashboard.tournament_activity")}</h5>
+          <CardDescription className="text-xs sm:text-sm">
             {t("admin.dashboard.tournament_activity_description")}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="90%" height={240}>
+        <CardContent className="p-3 sm:p-6 pt-0">
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Bar dataKey="tournaments" fill="#4C97F1" />
+              <XAxis 
+                dataKey="name" 
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis 
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                width={30}
+              />
+              <Bar dataKey="tournaments" fill="#4C97F1" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -280,14 +307,14 @@ const StatsCard: React.FC<StatsCardProps> = ({
 }) => {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-base font-medium">{description}</CardTitle>
-        <div className={`p-2 ${bgColor} rounded-full`}>
-          <Icon className={`w-4 h-4 ${iconColor}`} />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-3 pt-3 sm:px-6">
+        <CardTitle className="text-xs sm:text-base font-medium">{description}</CardTitle>
+        <div className={`p-1 sm:p-2 ${bgColor} rounded-full`}>
+          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-4xl font-bold">{title}</div>
+      <CardContent className="px-3 pb-2 sm:px-6 sm:pb-4">
+        <div className="text-lg sm:text-4xl font-bold">{title}</div>
       </CardContent>
     </Card>
   );
@@ -300,5 +327,5 @@ interface TournamentStatusBadgeProps {
 const TournamentStatusBadge: React.FC<TournamentStatusBadgeProps> = ({
   status,
 }) => {
-  return <Badge className={"bg-gray-100 text-gray-800 hover:bg-stone-200"}>{status}</Badge>;
+  return <Badge className="bg-gray-100 text-gray-800 hover:bg-stone-200 text-xs sm:text-sm px-2 py-1">{status}</Badge>;
 };

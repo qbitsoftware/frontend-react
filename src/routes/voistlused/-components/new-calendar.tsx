@@ -110,7 +110,6 @@ export function TournamentsCalendar({ tournaments }: Props) {
     return Array.from(yearsSet).sort((a, b) => a - b);
   }, [tournaments, currentYear]);
 
-  // Get visible months for 3-month view
   const visibleMonths = months
     .slice(zoomStartMonth, zoomStartMonth + 3)
     .map((month, index) => ({
@@ -118,7 +117,6 @@ export function TournamentsCalendar({ tournaments }: Props) {
       index: zoomStartMonth + index,
     }));
 
-  // Handle month navigation for 3-month view
   const handlePrevMonths = () => {
     if (zoomStartMonth > 0) {
       setZoomStartMonth(zoomStartMonth - 1);
@@ -131,21 +129,17 @@ export function TournamentsCalendar({ tournaments }: Props) {
     }
   };
 
-  // Handle month circle click
   const handleMonthCircleClick = (monthIndex: number) => {
     const newStartMonth = Math.min(Math.max(0, monthIndex), 9);
     setZoomStartMonth(newStartMonth);
   };
 
-  // Create a map of dates to events
-  // "2025-03-24 ===>>> {EventObject}"
   const eventsByDate = new Map<string, ProcessedEvent[]>();
 
   events.forEach((event) => {
     const startDate = new Date(event.start_date);
     const endDate = new Date(event.end_date);
 
-    // Skip if not in the selected year
     if (
       startDate.getFullYear() !== selectedYear &&
       endDate.getFullYear() !== selectedYear
@@ -153,10 +147,8 @@ export function TournamentsCalendar({ tournaments }: Props) {
       return;
     }
 
-    // Iterate through each day of the event
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
-      // Skip if not in the selected year
       if (currentDate.getFullYear() !== selectedYear) {
         currentDate.setDate(currentDate.getDate() + 1);
         continue;
@@ -169,27 +161,22 @@ export function TournamentsCalendar({ tournaments }: Props) {
 
       eventsByDate.get(dateKey)!.push(event);
 
-      // Move to next day
       currentDate.setDate(currentDate.getDate() + 1);
     }
   });
 
-  // Get events for a specific date
   const getEventsForDate = (year: number, month: number, day: number) => {
     const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     return eventsByDate.get(dateKey) || [];
   };
 
-  // Get events for a specific month
   const getEventsForMonth = (year: number, month: number) => {
     const events: ProcessedEvent[] = [];
     const eventIds = new Set<string>();
 
-    // Iterate through each day of the month
     for (let day = 1; day <= daysInMonthArray[month]; day++) {
       const eventsOnDay = getEventsForDate(year, month, day);
 
-      // Add unique events
       eventsOnDay.forEach((event) => {
         if (!eventIds.has(String(event.id))) {
           eventIds.add(String(event.id));
@@ -198,7 +185,6 @@ export function TournamentsCalendar({ tournaments }: Props) {
       });
     }
 
-    // Sort by start date
     return events.sort(
       (a, b) =>
         new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
@@ -314,12 +300,12 @@ export function TournamentsCalendar({ tournaments }: Props) {
         </div>
 
         {/* Legend */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
-            <h3 className="text-lg font-semibold text-gray-900">Tournament Categories</h3>
+        <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <div className="w-1 h-5 sm:h-6 bg-[#4C97F1] rounded-full"></div>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Tournament Categories</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {Array.from(new Set(events.map((e) => e.category))).map(
               (category) => {
                 const categories = events.filter(
@@ -328,22 +314,22 @@ export function TournamentsCalendar({ tournaments }: Props) {
                 if (categories.length === 0) return null;
 
                 return (
-                  <div key={category} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div key={category} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                     <div
                       style={{ backgroundColor: categories[0].color }}
-                      className="w-4 h-4 rounded-sm shadow-sm"
+                      className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm shadow-sm flex-shrink-0"
                     />
-                    <span className="text-sm font-medium text-gray-700">{category}</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">{category}</span>
                   </div>
                 );
               }
             )}
           </div>
-          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-            <div className="w-4 h-4 rounded-sm flex items-center justify-center bg-[#D1F9F9] border border-blue-200">
-              <Plus className="w-2 h-2 text-blue-600" />
+          <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-blue-50 rounded-lg">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm flex items-center justify-center bg-[#D1F9F9] border border-blue-200 flex-shrink-0">
+              <Plus className="w-1.5 h-1.5 sm:w-2 sm:h-2 text-blue-600" />
             </div>
-            <span className="text-sm font-medium text-gray-700">{t('calendar.multiple_tournaments_placeholder')}</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-700">{t('calendar.multiple_tournaments_placeholder')}</span>
           </div>
         </div>
       </div>
@@ -357,39 +343,39 @@ export function TournamentsCalendar({ tournaments }: Props) {
 
     return (
       <Link to={linkPath} key={event.id}>
-        <div className="group bg-white border border-gray-200 rounded-xl p-4 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300 mb-4">
-          <div className="flex flex-row justify-between items-start gap-4">
+        <div className="group bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300 mb-3 sm:mb-4 active:scale-[0.98] touch-manipulation">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
-              <h6 className="font-semibold text-gray-900 group-hover:text-[#4C97F1] transition-colors duration-200 line-clamp-2 leading-tight mb-2">
+              <h6 className="font-semibold text-gray-900 group-hover:text-[#4C97F1] transition-colors duration-200 line-clamp-2 leading-tight mb-2 text-sm sm:text-base">
                 {event.name}
               </h6>
               {(event.isGameday && event.order) && (
-                <div className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800">
+                <div className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800 mt-1">
                   {event.eventType === "winner" ? t('calendar.play_off') : `${t('calendar.game_day')} ${event.order}`}
                 </div>
               )}
             </div>
 
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="bg-[#4C97F1] text-white px-3 py-2 rounded-lg text-center font-bold shadow-sm">
+            <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-center">
+              <div className="bg-[#4C97F1] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center font-bold shadow-sm">
                 <div className="text-xs font-medium opacity-90">
                   {getAbbreviatedMonth(event.start_date)}
                 </div>
-                <div className="text-lg font-bold leading-none">
+                <div className="text-base sm:text-lg font-bold leading-none">
                   {formatDateRange(event.start_date, event.end_date).split(" - ")[0]}
                 </div>
               </div>
               {event.end_date !== event.start_date && (
                 <>
                   <div className="w-3 h-px bg-gray-300"></div>
-                  <div className="bg-[#4C97F1] text-white px-3 py-2 rounded-lg text-center font-bold shadow-sm">
+                  <div className="bg-[#4C97F1] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center font-bold shadow-sm">
                     <div className="text-xs font-medium opacity-90">
                       {event.end_date !== event.start_date &&
                         new Date(event.start_date).getMonth() !== new Date(event.end_date).getMonth()
                         ? getAbbreviatedMonth(event.end_date)
                         : getAbbreviatedMonth(event.start_date)}
                     </div>
-                    <div className="text-lg font-bold leading-none">
+                    <div className="text-base sm:text-lg font-bold leading-none">
                       {formatDateRange(event.start_date, event.end_date).split(" - ")[1]}
                     </div>
                   </div>
@@ -484,11 +470,11 @@ export function TournamentsCalendar({ tournaments }: Props) {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-center py-12">
-                        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                          <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                      <div className="text-center py-8 lg:py-12">
+                        <div className="w-10 h-10 lg:w-12 lg:h-12 mx-auto mb-3 lg:mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                          <div className="w-5 h-5 lg:w-6 lg:h-6 bg-gray-300 rounded-full"></div>
                         </div>
-                        <p className="text-gray-500 text-sm font-medium">
+                        <p className="text-gray-500 text-xs lg:text-sm font-medium">
                           {t('calendar.no_tournaments')}
                         </p>
                       </div>
@@ -525,17 +511,17 @@ export function TournamentsCalendar({ tournaments }: Props) {
                       </h6>
                     </div>
                     {monthEvents.length > 0 ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {monthEvents.map((event) => (
                           <EventCard key={event.id} event={event} />
                         ))}
                       </div>
                     ) : (
-                      <div className="text-center py-8">
-                        <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
-                          <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+                      <div className="text-center py-6">
+                        <div className="w-8 h-8 mx-auto mb-2 rounded-full bg-gray-100 flex items-center justify-center">
+                          <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
                         </div>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-gray-500 text-xs">
                           {t('calendar.no_tournaments')}
                         </p>
                       </div>
@@ -553,13 +539,13 @@ export function TournamentsCalendar({ tournaments }: Props) {
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="flex items-center gap-4">
           <Select
             value={selectedYear.toString()}
             onValueChange={(value) => setSelectedYear(Number.parseInt(value))}
           >
-            <SelectTrigger className="bg-white border-2 border-gray-200 hover:border-[#4C97F1]/50 text-gray-700 font-semibold rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-[#4C97F1]/20 transition-all">
+            <SelectTrigger className="bg-white border-2 border-gray-200 hover:border-[#4C97F1]/50 text-gray-700 font-semibold rounded-xl px-3 sm:px-4 py-2 sm:py-3 shadow-sm focus:ring-2 focus:ring-[#4C97F1]/20 transition-all text-sm sm:text-base">
               <SelectValue placeholder="Select Year" />
             </SelectTrigger>
             <SelectContent className="rounded-xl border-2 border-gray-100 shadow-xl">
@@ -574,16 +560,16 @@ export function TournamentsCalendar({ tournaments }: Props) {
 
         <div>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-xl border border-gray-200">
+            <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-xl border border-gray-200 h-9 sm:h-10">
               <TabsTrigger
                 value="three-month"
-                className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg bg-transparent text-gray-600 rounded-lg transition-all duration-300 font-medium"
+                className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg bg-transparent text-gray-600 rounded-lg transition-all duration-300 font-medium text-xs sm:text-sm px-2 sm:px-3"
               >
                 {t('calendar.3_months')}
               </TabsTrigger>
               <TabsTrigger
                 value="year"
-                className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg bg-transparent text-gray-600 rounded-lg transition-all duration-300 font-medium"
+                className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-lg bg-transparent text-gray-600 rounded-lg transition-all duration-300 font-medium text-xs sm:text-sm px-2 sm:px-3"
               >
                 {t('calendar.full_year')}
               </TabsTrigger>
@@ -592,7 +578,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
         </div>
       </div>
 
-      <div className="bg-gray-50/50 rounded-2xl p-6">
+      <div className="bg-gray-50/50 rounded-xl sm:rounded-2xl p-3 sm:p-6">
         <TooltipProvider>
           {activeTab === "three-month"
             ? renderThreeMonthView()

@@ -33,7 +33,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({ tournament }) => {
                                 {tournament.name}
                             </CardTitle>
                             <Badge variant={tournament.state === 'started' ? 'outline' : 'destructive'}>
-                                {tournament.state}
+                                {tournament.state} hh
                             </Badge>
                         </div>
                         <CardDescription className="text-gray-500 mt-1">

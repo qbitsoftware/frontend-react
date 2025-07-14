@@ -74,7 +74,7 @@ function RouteComponent() {
           <SidebarProvider defaultOpen={defaultOpen}>
             <AdminSidebar />
             {/* Main Content */}
-            <div className="w-full overflow-x-auto">
+            <div className="w-full overflow-x-auto pb-20 lg:pb-0">
               <Outlet />
             </div>
             <TableStatusSidebar />
