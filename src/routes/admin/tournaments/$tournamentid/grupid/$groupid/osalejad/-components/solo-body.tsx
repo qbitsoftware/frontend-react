@@ -18,6 +18,7 @@ import { PlusCircle } from 'lucide-react'
 import ParticipantDND from './participant-dnd'
 import ParticipantHeader from './table-header'
 import { TTState } from '@/types/matches'
+import { selectedTeams } from './new-double'
 
 interface SoloParticipantsProps {
     participants: Participant[]
@@ -26,9 +27,14 @@ interface SoloParticipantsProps {
     tournament_table: TournamentTable
     setParticipantsState: Dispatch<SetStateAction<Participant[]>>
     addOrUpdateParticipant: (values: ParticipantFormValues, participantId?: string) => Promise<void>
+    // Experimental
+    selectedTeams?: selectedTeams | undefined
+    setSelectedTeams?: (teams: selectedTeams) => void
+
 }
 
-export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant }: SoloParticipantsProps) {
+export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams }: SoloParticipantsProps) {
+
     const { t } = useTranslation()
 
     const [forceDisableOrdering, setForceDisableOrdering] = useState(false)
@@ -125,7 +131,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                             <ParticipantHeader />
                             <TableBody>
                                 {participants && participants.map((participant, key) => (
-                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table_id={tournament_table.id} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} />
+                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} />
                                 ))}
 
                                 {(tournament_table.size > participants.length || group_participant) && <TableRow>

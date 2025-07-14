@@ -1,5 +1,5 @@
 import { useParticipantUtils } from "@/hooks/useParticipantUtils"
-import { capitalize, formatDateStringYearMonthDay, useDebounce } from "@/lib/utils"
+import { capitalize, cn, formatDateStringYearMonthDay, useDebounce } from "@/lib/utils"
 import { UseGetUsersDebounce } from "@/queries/users"
 import { Participant } from "@/types/participants"
 import { useSortable } from "@dnd-kit/sortable"
@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import EditImgModal from "../../../../-components/edit-img-modal"
+import { TournamentTable } from "@/types/groups"
+import { selectedTeams } from "./new-double"
 
 interface Props {
     participant: Participant
@@ -22,14 +24,20 @@ interface Props {
     setDisableOrdering: (value: boolean) => void
     forceDisableOrdering: boolean
     tournament_id: number
-    tournament_table_id: number
+    tournament_table: TournamentTable
     participants_len: number
+
+    // Experimental
+    selectedTeams?: selectedTeams | undefined
+    setSelectedTeams?: (teams: selectedTeams) => void
+
 }
 
-export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table_id, participants_len }: Props) {
+export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams }: Props) {
+
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: participant.id })
 
-    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table_id)
+    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
 
     const [editing, setIsEditing] = useState(false)
 
@@ -98,7 +106,8 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
         }
     }, [debouncedSearchTerm]);
 
-    const handleStartEditing = () => {
+    const handleStartEditing = (e: React.MouseEvent) => {
+        e.stopPropagation()
         setIsEditing(true)
         setDisableOrdering(true)
     }
@@ -142,13 +151,45 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
         handleStopEditing()
     }
 
+    const handleRowClick = () => {
+        if (editing) return
+
+        if (setSelectedTeams) {
+            // Check if clicking on the same participant that's already selected
+            if (selectedTeams &&
+                (selectedTeams.p1_id === participantState.id || selectedTeams.p2_id === participantState.id)) {
+                // Reset selection if clicking on already selected participant
+                setSelectedTeams({ p1_id: "", p2_id: "" })
+                return
+            }
+
+            let test: selectedTeams = {
+                p1_id: "",
+                p2_id: "",
+            }
+
+            if (selectedTeams && selectedTeams.p1_id !== "") {
+                test.p1_id = selectedTeams.p1_id
+                test.p2_id = participantState.id
+            } else if (selectedTeams && selectedTeams.p2_id !== "") {
+                test.p1_id = participantState.id
+                test.p2_id = selectedTeams.p2_id
+            } else {
+                test.p1_id = participantState.id
+            }
+            setSelectedTeams(test)
+        }
+        console.log("selectedTeams", selectedTeams)
+        console.log("Row clicked")
+    }
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
     }
 
     return (
-        <TableRow ref={setNodeRef} style={style} className="bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40">
+        <TableRow ref={setNodeRef} style={style} onClick={handleRowClick} className={cn("bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40 hover:border hover:border-blue-500 cursor-pointer", selectedTeams && (selectedTeams.p1_id == participantState.id || selectedTeams.p2_id == participantState.id) ? "bg-blue-100 hover:bg-blue-100" : "")}>
             <TableCell className='text-center'>
                 { }
                 {disableOrdering || forceDisableOrdering ? <div className="flex items-center justify-center hover:bg-indigo-50 gap-1 p-2 rounded-sm">
