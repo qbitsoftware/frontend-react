@@ -915,6 +915,10 @@
             "uploading": "Uploading..."
           }
         },
+        "import": {
+          "title": "Import Excel",
+          "download_template": "Download Template"
+        },
         "participants": {
           "teams": "Teams",
           "groups": "Groups",
@@ -966,6 +970,7 @@
               "reminder": "This action is non-reversible."
             },
             "cancel": "Cancel",
+            "continue_anyway": "Continue Anyway",
             "edit_team": "Edit team",
             "delete_team": "Delete team",
             "update_team": "Update team",
@@ -977,6 +982,10 @@
             "team_dialog_description": "This team will be added to the selected group.",
             "team_name": "Team name",
             "team_name_placeholder": "Insert team name",
+            "name_placeholder": "Name",
+            "generate_pairs": "Generate Pairs",
+            "download_template": "Download Template",
+            "import_excel": "Import Excel",
             "add_player": {
               "add": "Add player",
               "title": "Add player to team",
@@ -1012,6 +1021,14 @@
             "nationality": "Country",
             "image": "Image",
             "foreign_player": "Foreigner"
+          },
+          "doubles": {
+            "individual_participants": "Individual Participants",
+            "individual_participants_description": "Select two individual participants to create a doubles pair",
+            "pairs_participants": "Doubles Participants",
+            "pairs_participants_description": "Already created doubles participants",
+            "teams_merged_successfully": "Teams merged successfully",
+            "teams_merge_error": "Error merging teams"
           }
         }
       },

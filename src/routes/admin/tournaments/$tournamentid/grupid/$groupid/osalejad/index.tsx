@@ -54,7 +54,7 @@ function RouteComponent() {
     table_data.data
   ) {
     return (
-      <div className="">
+      <div className="min-h-screen bg-gray-50">
         {tournament_data &&
           table_data &&
           participant_data &&

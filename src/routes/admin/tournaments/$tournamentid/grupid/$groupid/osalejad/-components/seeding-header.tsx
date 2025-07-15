@@ -254,7 +254,7 @@ const SeedingHeader = ({
             size="sm"
             className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
           >
-            <span>Pane paarid hakkama</span>
+            <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
           </Button>
 
           <input
@@ -287,10 +287,10 @@ const SeedingHeader = ({
             </DialogHeader>
             <DialogFooter>
               <Button variant="outline" onClick={handleWarningCancel}>
-                Cancel
+                {t("admin.tournaments.groups.participants.actions.cancel")}
               </Button>
               <Button onClick={handleWarningConfirm}>
-                Continue Anyway
+                {t("admin.tournaments.groups.participants.actions.continue_anyway")}
               </Button>
             </DialogFooter>
           </DialogContent>

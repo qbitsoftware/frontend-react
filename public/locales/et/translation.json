@@ -953,6 +953,10 @@
             "uploading": "Pildi üleslaadimine..."
           }
         },
+        "import": {
+          "title": "Impordi Excel",
+          "download_template": "Laadi alla mall"
+        },
         "participants": {
           "teams": "Meeskonnad",
           "groups": "Grupid",
@@ -1004,6 +1008,7 @@
               "reminder": "Seda käsklust ei saa tagasi võtta."
             },
             "cancel": "Katkesta",
+            "continue_anyway": "Jätka ikka",
             "edit_team": "Muuda meeskonda",
             "delete_team": "Kustuta meeskond",
             "update_team": "Uuenda meeskond",
@@ -1015,6 +1020,10 @@
             "team_dialog_description": "See meeskond lisatakse antud grupi alla.",
             "team_name": "Meeskonna nimi",
             "team_name_placeholder": "Lisa meeskonna nimi",
+            "name_placeholder": "Nimi",
+            "generate_pairs": "Genereeri Paarid",
+            "download_template": "Laadi alla mall",
+            "import_excel": "Impordi Excel",
             "add_player": {
               "add": "Lisa mängija",
               "title": "Lisa meeskonda mängija",
@@ -1050,6 +1059,14 @@
             "nationality": "Riik",
             "image": "Pilt",
             "foreign_player": "Välismängija"
+          },
+          "doubles": {
+            "individual_participants": "Üksikosalejad",
+            "individual_participants_description": "Vali kaks üksikosalejat paarismangu loomiseks",
+            "pairs_participants": "Paarismangu osalejad",
+            "pairs_participants_description": "Juba moodustatud paarismangu osalejad",
+            "teams_merged_successfully": "Meeskonnad ühendati edukalt",
+            "teams_merge_error": "Meeskondade ühendamisel tekkis viga"
           }
         }
       },
