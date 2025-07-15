@@ -127,14 +127,16 @@
   },
   "news": {
     "title": "Uudised",
+    "subtitle": "Püsi kursis viimaste uudiste ja teadaannetega",
     "all_news": "Kõik uudised",
     "published": "Avaldatud",
     "loading": "Laadimine...",
     "search_category": "Otsi kategooria järgi:",
-    "search_content": "Otsi sisu järgi",
+    "search_content": "Otsi postitusi...",
     "no_image": "Pilt pole saadaval",
     "no_news": "Blogi postitused puuduvad",
     "no_news_subtitle": "Hetkel ei ole ühtegi blogi postitust.",
+    "read_more": "Loe edasi",
     "categories": {
       "all": "Kõik",
       "news": "Teadaanded",
@@ -496,7 +498,7 @@
   "calendar": {
     "title": "Kalender",
     "all_categories": "Kõik kategooriad",
-    "no_tournaments": "Turniirid puuduvad",
+    "no_tournaments": "Võistlused puuduvad",
     "no_tournaments_subtitle": "Hetkel ei ole kalendris ühtki turniiri.",
     "search_placeholder": "Otsi turniiri...",
     "upcoming": "Tulemas",
@@ -522,7 +524,7 @@
     }
   },
   "tournaments": {
-    "header": "Turniirid",
+    "header": "Võistlused",
     "inputs": {
       "search": "Otsi turniiri...",
       "start_date": "Alguskuupäev",
@@ -687,7 +689,7 @@
     "layout": {
       "sidebar": {
         "dashboard": "Töölaud",
-        "tournaments": "Turniirid",
+        "tournaments": "Võistlused",
         "blogs": "Blogi",
         "clubs": "Klubid",
         "feedback": "Tagasiside"
@@ -702,17 +704,22 @@
     },
     "dashboard": {
       "name": "Töölaud",
+      "greeting": {
+        "good_morning": "Tere hommikust",
+        "good_day": "Tere päevast",
+        "good_evening": "Tere õhtust"
+      },
       "missing": "Töölaud puudub",
       "missing_subtitle": "Töölauda pole. Loo ja vii läbi turniire, et töölauda näha.",
-      "total_tournaments": "Turniire kokku",
-      "active_tournaments": "Aktiivseid turniire",
+      "total_tournaments": "Minu võistlusi kokku",
+      "active_tournaments": "Minu aktiivseid võistlusi",
       "users_in_db": "Mängijaid andmebaasis",
-      "upcoming_tournaments": "Tulevased turniirid",
+      "upcoming_tournaments": "Minu tulevased turniirid",
       "upcoming_tournaments_description": "Ülevaade tulevastest turniiridest",
-      "recently_created_tournaments": "Hiljuti loodud turniirid",
-      "recently_created_tournaments_description": "Ülevaade viimati loodud turniiridest",
-      "tournament_activity": "Turniirid kuude lõikes",
-      "tournament_activity_description": "Turniiride arv kuude lõikes",
+      "recently_created_tournaments": "Minu hiljuti loodud võistlused",
+      "recently_created_tournaments_description": "Ülevaade viimati loodud võistlustest",
+      "tournament_activity": "Minu võistlused kuude lõikes",
+      "tournament_activity_description": "Graafik näitab visuaalselt sinu turniiriorganiseerimis ajalugu",
       "utils": {
         "name": "Nimi",
         "status": "Staatus",
@@ -720,10 +727,10 @@
       }
     },
     "tournaments": {
-      "title": "Turniirid",
-      "description": "Turniiride loomine ja haldamine",
-      "add_new": "Uus Turniir",
-      "delete": "Kustuta turniir",
+      "title": "Minu võistlused",
+      "description": "Võistluste loomine ja haldamine",
+      "add_new": "Uus Võistlus",
+      "delete": "Kustuta Võistlus",
       "tournaments": {
         "title": "Tournaments",
         "description": "Manage and organize tournaments",
@@ -756,13 +763,13 @@
         "tournament_tables": {
           "single_elimination": "Klassikaline Üksikeliminatsioon",
           "single_elimination_bronze": "Üksikeliminatsioon (kolmanda koha väljamängimisega)",
-          "double_elimination_full_placement": "Klassikaline Kaksikeliminatsioon",
-          "double_elimination_full_placement_top_heavy": "Kaksikeliminatsioon (poolfinaali kaotajad kolmanda koha peale)",
-          "double_elimination_tabletennis": "Klassikaline Kaksikeliminatsioon (lauatennis)",
-          "double_elimination_tabletennis_top_heavy": "Kaksikeliminatsioon (poolfinaali kaotajad kolmanda koha peale) (lauatennis)",
+          "double_elimination_full_placement": "Klassikaline Täiseliminatsioon",
+          "double_elimination_full_placement_top_heavy": "Täiseliminatsioon (poolfinaali kaotajad kolmanda koha peale)",
+          "double_elimination_tabletennis": "Klassikaline Täiseliminatsioon",
+          "double_elimination_tabletennis_top_heavy": "Täiseliminatsioon (poolfinaali kaotajad kolmanda koha peale)",
           "champions_league": "Võistkondlikud liigad",
           "free_for_all": "Tänavapinks",
-          "round_robin_full_placement": "Round Robin (2 roundiga)",
+          "round_robin_full_placement": "Round Robin (2 raundiga)",
           "round_robin": "Round Robin"
         },
         "back": "Tagasi",
@@ -825,6 +832,7 @@
           "participants": "Osalejad",
           "timetable": "Ajakava",
           "matches": "Mängud",
+          "games": "Mängud",
           "tables": "Tabelid",
           "view_all": "Vaata kõiki",
           "view_all_description": "Halda kõiki turniiri klasse"
@@ -945,6 +953,10 @@
             "uploading": "Pildi üleslaadimine..."
           }
         },
+        "import": {
+          "title": "Impordi Excel",
+          "download_template": "Laadi alla mall"
+        },
         "participants": {
           "teams": "Meeskonnad",
           "groups": "Grupid",
@@ -996,6 +1008,7 @@
               "reminder": "Seda käsklust ei saa tagasi võtta."
             },
             "cancel": "Katkesta",
+            "continue_anyway": "Jätka ikka",
             "edit_team": "Muuda meeskonda",
             "delete_team": "Kustuta meeskond",
             "update_team": "Uuenda meeskond",
@@ -1007,6 +1020,10 @@
             "team_dialog_description": "See meeskond lisatakse antud grupi alla.",
             "team_name": "Meeskonna nimi",
             "team_name_placeholder": "Lisa meeskonna nimi",
+            "name_placeholder": "Nimi",
+            "generate_pairs": "Genereeri Paarid",
+            "download_template": "Laadi alla mall",
+            "import_excel": "Impordi Excel",
             "add_player": {
               "add": "Lisa mängija",
               "title": "Lisa meeskonda mängija",
@@ -1042,6 +1059,14 @@
             "nationality": "Riik",
             "image": "Pilt",
             "foreign_player": "Välismängija"
+          },
+          "doubles": {
+            "individual_participants": "Üksikosalejad",
+            "individual_participants_description": "Vali kaks üksikosalejat paarismangu loomiseks",
+            "pairs_participants": "Paarismangu osalejad",
+            "pairs_participants_description": "Juba moodustatud paarismangu osalejad",
+            "teams_merged_successfully": "Meeskonnad ühendati edukalt",
+            "teams_merge_error": "Meeskondade ühendamisel tekkis viga"
           }
         }
       },
@@ -1145,6 +1170,20 @@
         "not_found": "Turniiri tabelit ei leitud",
         "not_found_description": "Turniiri tabelit ei leitud. Palun kontrollige, kas turniir on lõppenud või pole veel alanud.",
         "refresh": "Uuendage lehte"
+      },
+      "timetable": {
+        "settings": "Ajakava seaded",
+        "start_date": "Turniiri alguskuupäev",
+        "start_time": "Turniiri algusaeg",
+        "match_duration": "Keskmine mängu kestus",
+        "match_duration_desc": "Eeldatav aeg mängu kohta (5-120 minutit)",
+        "break_duration": "Paus mängude vahel",
+        "break_duration_desc": "Puhver aeg mängude vahel (0-60 minutit)",
+        "generate": "Genereeri ajakava",
+        "reset": "Lähtesta",
+        "generating": "Genereeritakse...",
+        "timetabled_tournament": "Ajakavaga turniir",
+        "timetabled_tournament_desc": "Lülita sisse ajakava sätete näitamiseks ja mängude automaatseks ajastamiseks"
       }
     },
     "blogs": {

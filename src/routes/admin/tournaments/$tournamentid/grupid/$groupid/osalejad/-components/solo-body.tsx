@@ -18,6 +18,7 @@ import { PlusCircle } from 'lucide-react'
 import ParticipantDND from './participant-dnd'
 import ParticipantHeader from './table-header'
 import { TTState } from '@/types/matches'
+import { selectedTeams } from './new-double'
 
 interface SoloParticipantsProps {
     participants: Participant[]
@@ -26,9 +27,14 @@ interface SoloParticipantsProps {
     tournament_table: TournamentTable
     setParticipantsState: Dispatch<SetStateAction<Participant[]>>
     addOrUpdateParticipant: (values: ParticipantFormValues, participantId?: string) => Promise<void>
+    // Experimental
+    selectedTeams?: selectedTeams | undefined
+    setSelectedTeams?: (teams: selectedTeams) => void
+
 }
 
-export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant }: SoloParticipantsProps) {
+export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams }: SoloParticipantsProps) {
+
     const { t } = useTranslation()
 
     const [forceDisableOrdering, setForceDisableOrdering] = useState(false)
@@ -125,121 +131,125 @@ export default function SoloParticipants({ participants, group_participant, tour
                             <ParticipantHeader />
                             <TableBody>
                                 {participants && participants.map((participant, key) => (
-                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table_id={tournament_table.id} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} />
+                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} />
                                 ))}
 
                                 {(tournament_table.size > participants.length || group_participant) && <TableRow>
                                     <TableCell colSpan={2}></TableCell>
-                                    <TableCell className="">
-                                        <Popover
-                                            open={popoverOpen}
-                                            onOpenChange={(open) => {
-                                                setPopoverOpen(open)
-                                            }}
-                                        >
-                                            <PopoverTrigger asChild>
-                                                <Input
-                                                    type="text"
-                                                    autoComplete='off'
-                                                    placeholder={"Nimi"}
-                                                    value={searchTerm}
-                                                    onChange={(e) => { setSearchTerm(e.target.value) }}
-                                                />
-                                            </PopoverTrigger>
-                                            {playerSuggestions && playerSuggestions.data &&
-                                                <PopoverContent
-                                                    className="p-0 w-[200px] max-h-[400px] overflow-y-auto suggestion-dropdown"
-                                                    align="start"
-                                                    sideOffset={5}
-                                                    onInteractOutside={(e) => {
-                                                        if ((e.target as HTMLElement).closest('input')) {
-                                                            e.preventDefault()
-                                                        } else {
-                                                            setPopoverOpen(false)
-                                                        }
-                                                    }}
-                                                    onOpenAutoFocus={(e) => {
-                                                        e.preventDefault()
+                                    <TableCell colSpan={6} className="p-4">
+                                        <div className="flex gap-3 items-center max-w-xs">
+                                            <div className="flex-1 min-w-0">
+                                                <Popover
+                                                    open={popoverOpen}
+                                                    onOpenChange={(open) => {
+                                                        setPopoverOpen(open)
                                                     }}
                                                 >
-                                                    {playerSuggestions && playerSuggestions.data.map((user, i) => (
-                                                        <div
-                                                            key={i}
-                                                            className="px-3 py-2 cursor-pointer hover:bg-accent"
-                                                            onClick={async () => {
-                                                                setPopoverOpen(false)
-                                                                const new_player = NewPlayer(user)
-                                                                const new_participant: ParticipantFormValues = {
-                                                                    name: `${capitalizeWords(user.first_name)} ${capitalizeWords(user.last_name)}`,
-                                                                    players: [new_player],
-                                                                    sport_type: "tabletennis",
-                                                                    group: 0,
-                                                                    group_name: "",
-                                                                    order: participants.length + 1,
-                                                                    tournament_id,
-                                                                    class: "",
-                                                                    group_id: group_participant?.id,
-                                                                }
-
-                                                                setSearchTerm('')
-                                                                try {
-                                                                    await addOrUpdateParticipant(new_participant)
-                                                                    toast.message(t("toasts.participants.created"))
-                                                                } catch (error) {
-                                                                    void error
-                                                                    toast.error(t("toasts.participants.created_error"))
+                                                    <PopoverTrigger asChild>
+                                                        <Input
+                                                            type="text"
+                                                            autoComplete='off'
+                                                            placeholder={t("admin.tournaments.groups.participants.actions.name_placeholder")}
+                                                            value={searchTerm}
+                                                            onChange={(e) => { setSearchTerm(e.target.value) }}
+                                                            className="w-full"
+                                                        />
+                                                    </PopoverTrigger>
+                                                    {playerSuggestions && playerSuggestions.data &&
+                                                        <PopoverContent
+                                                            className="p-0 w-[300px] max-h-[400px] overflow-y-auto suggestion-dropdown"
+                                                            align="start"
+                                                            sideOffset={5}
+                                                            onInteractOutside={(e) => {
+                                                                if ((e.target as HTMLElement).closest('input')) {
+                                                                    e.preventDefault()
+                                                                } else {
+                                                                    setPopoverOpen(false)
                                                                 }
                                                             }}
+                                                            onOpenAutoFocus={(e) => {
+                                                                e.preventDefault()
+                                                            }}
                                                         >
-                                                            {capitalizeWords(user.first_name)}{" "}
-                                                            {capitalizeWords(user.last_name)}{" "}
-                                                            {user.eltl_id}
-                                                        </div>
-                                                    ))}
-                                                </PopoverContent>
-                                            }
-                                        </Popover>
+                                                            {playerSuggestions && playerSuggestions.data.map((user, i) => (
+                                                                <div
+                                                                    key={i}
+                                                                    className="px-3 py-2 cursor-pointer hover:bg-accent"
+                                                                    onClick={async () => {
+                                                                        setPopoverOpen(false)
+                                                                        const new_player = NewPlayer(user)
+                                                                        const new_participant: ParticipantFormValues = {
+                                                                            name: `${capitalizeWords(user.first_name)} ${capitalizeWords(user.last_name)}`,
+                                                                            players: [new_player],
+                                                                            sport_type: "tabletennis",
+                                                                            group: 0,
+                                                                            group_name: "",
+                                                                            order: participants.length + 1,
+                                                                            tournament_id,
+                                                                            class: "",
+                                                                            group_id: group_participant?.id,
+                                                                        }
 
-                                    </TableCell>
-                                    <TableCell colSpan={6}></TableCell>
-                                    <TableCell className="sticky right-0 p-3">
-                                        <Button
-                                            onClick={async () => {
-                                                if (searchTerm.trim() === "") {
-                                                    return
-                                                }
-                                                const nameParts = searchTerm.trim().split(/\s+/)
-                                                if (nameParts.length > 0) {
-                                                    const firstName = nameParts[0]
-                                                    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
-                                                    const newPlayer = NewPlayerFromName(searchTerm)
-                                                    const new_participant: ParticipantFormValues = {
-                                                        name: `${capitalizeWords(firstName)} ${capitalizeWords(lastName)}`,
-                                                        players: [newPlayer],
-                                                        sport_type: "tabletennis",
-                                                        group: 0,
-                                                        group_name: "",
-                                                        order: participants.length + 1,
-                                                        tournament_id,
-                                                        class: "",
-                                                        group_id: group_participant?.id,
+                                                                        setSearchTerm('')
+                                                                        try {
+                                                                            await addOrUpdateParticipant(new_participant)
+                                                                            toast.message(t("toasts.participants.created"))
+                                                                        } catch (error) {
+                                                                            void error
+                                                                            toast.error(t("toasts.participants.created_error"))
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {capitalizeWords(user.first_name)}{" "}
+                                                                    {capitalizeWords(user.last_name)}{" "}
+                                                                    {user.eltl_id}
+                                                                </div>
+                                                            ))}
+                                                        </PopoverContent>
                                                     }
-                                                    setSearchTerm('')
-                                                    try {
-                                                        await addOrUpdateParticipant(new_participant)
-                                                        toast.message(t("toasts.participants.created"))
-                                                    } catch (error) {
-                                                        void error
-                                                        toast.error(t("toasts.participants.created_error"))
+                                                </Popover>
+                                            </div>
+                                            <Button
+                                                onClick={async () => {
+                                                    if (searchTerm.trim() === "") {
+                                                        return
+                                                    }
+                                                    const nameParts = searchTerm.trim().split(/\s+/)
+                                                    if (nameParts.length > 0) {
+                                                        const firstName = nameParts[0]
+                                                        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
+                                                        const newPlayer = NewPlayerFromName(searchTerm)
+                                                        const new_participant: ParticipantFormValues = {
+                                                            name: `${capitalizeWords(firstName)} ${capitalizeWords(lastName)}`,
+                                                            players: [newPlayer],
+                                                            sport_type: "tabletennis",
+                                                            group: 0,
+                                                            group_name: "",
+                                                            order: participants.length + 1,
+                                                            tournament_id,
+                                                            class: "",
+                                                            group_id: group_participant?.id,
+                                                        }
+                                                        setSearchTerm('')
+                                                        try {
+                                                            await addOrUpdateParticipant(new_participant)
+                                                            toast.message(t("toasts.participants.created"))
+                                                        } catch (error) {
+                                                            void error
+                                                            toast.error(t("toasts.participants.created_error"))
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            }
-                                        >
-                                            {t("admin.tournaments.groups.participants.actions.submit")}{" "}
-                                            <PlusCircle />
-                                        </Button>
+                                                }
+                                                className="flex-shrink-0"
+                                                size="sm"
+                                            >
+                                                {t("admin.tournaments.groups.participants.actions.submit")}{" "}
+                                                <PlusCircle />
+                                            </Button>
+                                        </div>
                                     </TableCell>
+                                    <TableCell colSpan={3}></TableCell>
                                 </TableRow>
                                 }
                             </TableBody>

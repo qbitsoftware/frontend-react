@@ -2,6 +2,7 @@ import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/r
 import { axiosInstance } from "./axiosconf";
 import { ParticipantFormValues } from "@/routes/admin/tournaments/$tournamentid/-components/participant-forms/form-utils";
 import { Participant } from "@/types/participants";
+import { selectedTeams } from "@/routes/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/-components/new-double";
 
 export type ParticipantResponse = {
     data: Participant | null
@@ -15,7 +16,6 @@ export type ParticipantsResponse = {
     error: string | null
 }
 
-// Praegu ei huvita
 export function UseGetTournamentParticipants(tournament_id: number) {
     return queryOptions<ParticipantsResponse>({
         queryKey: ["participants", tournament_id],
@@ -263,3 +263,35 @@ export function UseImportParticipants(tournament_id: number, table_id: number) {
         }
     })
 }
+
+export function UsePostParticipantMerge(tournament_id: number, table_id: number) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (formdata: selectedTeams) => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/merge`, formdata, {
+                withCredentials: true,
+            })
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.resetQueries({ queryKey: ["participants", table_id] })
+        },
+    })
+}
+
+export function UsePostParticipantDoublePairs(tournament_id: number, table_id: number) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async () => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/doubles`, {}, {
+                withCredentials: true,
+            })
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.resetQueries({ queryKey: ["participants", table_id] })
+        },
+    })
+}
+
+

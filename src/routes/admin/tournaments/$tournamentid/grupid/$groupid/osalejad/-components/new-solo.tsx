@@ -10,15 +10,18 @@ import { GroupType } from "@/types/matches"
 import { filterGroups } from "./participant-utils"
 import GroupInput from "./group-input"
 import SoloParticipants from "./solo-body"
+import { selectedTeams } from "./new-double"
 
 
 interface NewSoloProps {
     participant_data: ParticipantsResponse
     tournament_id: number
     tournament_table: TournamentTable
+    selectedTeams?: selectedTeams | undefined
+    setSelectedTeams?: (teams: selectedTeams) => void
 }
 
-export const NewSolo = ({ participant_data, tournament_id, tournament_table }: NewSoloProps) => {
+export const NewSolo = ({ participant_data, tournament_id, tournament_table, selectedTeams, setSelectedTeams }: NewSoloProps) => {
     const { addOrUpdateParticipant, addNewRoundRobinGroup } = useParticipantUtils(tournament_id, tournament_table.id)
 
     const [participants, setParticipantsState] = useState<Participant[]>([])
@@ -45,6 +48,8 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table }: N
                                 tournament_table={tournament_table}
                                 setParticipantsState={setParticipantsState}
                                 addOrUpdateParticipant={addOrUpdateParticipant}
+                                selectedTeams={selectedTeams}
+                                setSelectedTeams={setSelectedTeams}
                             />
                         </div>
                     )
@@ -69,6 +74,8 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table }: N
             tournament_table={tournament_table}
             setParticipantsState={setParticipantsState}
             addOrUpdateParticipant={addOrUpdateParticipant}
+            selectedTeams={selectedTeams}
+            setSelectedTeams={setSelectedTeams}
         />
     )
 }

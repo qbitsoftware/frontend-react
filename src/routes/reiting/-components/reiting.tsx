@@ -16,7 +16,7 @@ import { Search } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@/types/users";
 import { UseGetClubsQuery } from "@/queries/clubs";
-import placeholderImg from "@/assets/placheolderImg.svg";
+import placeholderImg from "@/assets/blue-profile.png";
 
 interface UserTableProps {
   users: User[]

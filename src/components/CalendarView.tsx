@@ -1,6 +1,6 @@
 import TournamentCard from './TournamentCard';
 import { useTranslation } from 'react-i18next';
-import { Search } from "lucide-react";
+import { Search, CalendarX2 } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -112,20 +112,25 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ tournaments }) => {
 
     if (tournaments) {
         return (
-            <div className="py-4">
-                <div className="lg:rounded-lg bg-white px-4 sm:px-6 md:px-12 py-6 space-y-4">
-                    <h2 className="font-bold">{t("calendar.title")}</h2>
+            <div className="py-4 sm:py-6 lg:py-8">
+                <div className="lg:rounded-2xl bg-white shadow-lg border border-gray-200 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+                    <div className="text-center sm:text-left">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{t("calendar.title")}</h1>
+                        <p className="text-gray-600 text-sm sm:text-base">{t("calendar.subtitle", "Discover upcoming tournaments and events")}</p>
+                    </div>
 
-                    <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
-                        <div className="relative w-full lg:w-1/3">
+                    <div className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-6">
+                        <div className="relative flex-1 lg:max-w-md">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Search className="h-5 w-5 text-gray-400" />
+                            </div>
                             <input
                                 type="text"
-                                placeholder={t("calendar.search_placeholder") || "Search tournament"}
-                                className="h-12 w-full pl-4 pr-10 py-2 border rounded-lg text-sm bg-[#F7F6F7] focus:outline-none focus:ring-1 focus:ring-gray-300"
+                                placeholder={t("calendar.search_placeholder") || "Search tournaments..."}
+                                className="h-12 sm:h-14 w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm sm:text-base bg-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         </div>
 
                         <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
@@ -134,7 +139,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ tournaments }) => {
                                 onValueChange={handleCategoryChange}
                                 defaultValue='all'
                             >
-                                <SelectTrigger className="h-12 flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#F7F6F7] w-full sm:w-[180px]">
+                                <SelectTrigger className="h-12 sm:h-14 flex items-center space-x-2 px-4 py-3 rounded-2xl border-2 border-gray-200 text-sm sm:text-base bg-white w-full sm:w-[200px] focus:border-blue-500 transition-colors shadow-sm">
                                     <SelectValue placeholder={t("calendar.all_categories") || "All categories"} />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -153,7 +158,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ tournaments }) => {
                                 value={selectedYear.toString()}
                                 onValueChange={handleYearChange}
                             >
-                                <SelectTrigger className="h-12 flex items-center space-x-2 px-4 py-2 rounded-lg border text-sm bg-[#F7F6F7] w-full sm:w-[120px]">
+                                <SelectTrigger className="h-12 sm:h-14 flex items-center space-x-2 px-4 py-3 rounded-2xl border-2 border-gray-200 text-sm sm:text-base bg-white w-full sm:w-[140px] focus:border-blue-500 transition-colors shadow-sm">
                                     <SelectValue placeholder={t("calendar.select_year") || "Select Year"} />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -167,19 +172,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ tournaments }) => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pt-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 pt-2">
                         {columns.map((columnMonths, columnIndex) => (
-                            <div key={columnIndex} className="space-y-6 md:space-y-8">
+                            <div key={columnIndex} className="space-y-8">
                                 {columnMonths.map(month => (
                                     <div
                                         key={month.name}
-                                        className={`mb-4 md:mb-6 ${month.tournaments.length === 0 ? 'opacity-70' : ''}`}
+                                        className={`${month.tournaments.length === 0 ? 'opacity-70' : ''}`}
                                     >
-                                        <h2 className={`text-lg md:text-xl font-bold pb-2 pl-1 ${month.tournaments.length > 0 ? 'text-stone-700' : 'text-stone-400'}`}>
-                                            {month.name} {selectedYear}
-                                        </h2>
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="w-1 h-6 sm:h-8 bg-blue-500 rounded-full"></div>
+                                            <h2 className={`text-lg sm:text-xl lg:text-2xl font-bold ${month.tournaments.length > 0 ? 'text-gray-900' : 'text-gray-400'}`}>
+                                                {month.name} {selectedYear}
+                                            </h2>
+                                        </div>
 
-                                        <div className="space-y-2">
+                                        <div className="space-y-3">
                                             {month.tournaments.length > 0 ? (
                                                 month.tournaments.map(tournament => (
                                                     <TournamentCard
@@ -194,8 +202,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ tournaments }) => {
                                                     />
                                                 ))
                                             ) : (
-                                                <div className="text-stone-400 italic py-2 bg-gray-50 px-3 rounded-md select-none">
-                                                    {t("calendar.no_tournaments")}
+                                                <div className="bg-gray-50/80 border-2 border-dashed border-gray-200 rounded-xl py-6 px-4 text-center">
+                                                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                        <CalendarX2 className="h-6 w-6 text-gray-400" />
+                                                    </div>
+                                                    <p className="text-gray-500 text-sm font-medium">{t("calendar.no_tournaments")}</p>
                                                 </div>
                                             )}
                                         </div>

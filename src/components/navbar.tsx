@@ -41,15 +41,6 @@ export default function Navbar() {
         },
       ],
     },
-    // {
-    //     name: t('navbar.menu.eltl'),
-    //     href: '/eltl',
-    //     dropdownItems: [
-    //         { name: 'About Us', href: '/eltl/about' },
-    //         { name: 'History', href: '/eltl/history' },
-    //         { name: 'Board Members', href: '/eltl/board' },
-    //     ]
-    // },
     {
       name: t("navbar.menu.competition"),
       href: "/voistlused",
@@ -134,10 +125,10 @@ export default function Navbar() {
                     <NavigationMenuLink
                       href={"/admin/dashboard"}
                       className={
-                        "text-sm font-medium px-2 transition-colors hover:text-primary text-gray-700 hover:text-blue-600"
+                        "text-sm font-medium px-3 py-2 transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg border border-blue-200"
                       }
                     >
-                      Admin
+                      {t('navbar.menu.admin')}
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 )}

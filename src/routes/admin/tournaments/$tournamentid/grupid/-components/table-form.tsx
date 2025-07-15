@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import { UseDeleteTournamentTable, UsePatchTournamentTable, UsePostTournamentTable } from '@/queries/tables'
 import { UseGetTournamentSizes, UseGetTournamentTypes } from '@/queries/tournaments'
-import { TournamentTable } from '@/types/groups'
+import { DialogType, TournamentTable } from '@/types/groups'
 import { GroupType } from '@/types/matches'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useRouter } from '@tanstack/react-router'
@@ -32,6 +32,7 @@ const createFormSchema = (t: TFunction) => z.object({
   woman_weight: z.number().min(1).max(10),
   dialog_type: z.string().optional(),
   size: z.number(),
+  timetabled: z.boolean(),
 }).superRefine((data, ctx) => {
   if (data.solo) return;
 
@@ -76,9 +77,10 @@ export type TournamentTableForm = z.infer<ReturnType<typeof createFormSchema>>
 
 interface TableFormProps {
   initial_data: TournamentTable | undefined
+  onTimetableToggle?: (enabled: boolean) => void
 }
 
-export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) => {
+export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, onTimetableToggle }) => {
 
   const { t } = useTranslation()
 
@@ -113,6 +115,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
         woman_weight: 1,
         start_time: "",
         avg_match_duration: 15,
+        timetabled: false,
       },
   })
 
@@ -334,7 +337,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                 )}
 
               </div>
-              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", form.watch("solo") ? "hidden" : "")}>
+              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", form.watch("dialog_type") !== DialogType.DT_TEAM_LEAGUES ? "hidden" : "")}>
                 <FormField
                   control={form.control}
                   name="min_team_size"
@@ -417,20 +420,16 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                           onChange={(e) => {
                             const value = e.target.value;
 
-                            // Always update the display value
                             setWomanWeightInputValue(value);
 
-                            // Allow completely empty string
                             if (value === '') {
                               return;
                             }
 
-                            // Allow numbers with decimal point
                             if (!/^\d*\.?\d*$/.test(value)) {
                               return;
                             }
 
-                            // Cap the value at 10 immediately
                             const numValue = parseFloat(value);
                             if (!isNaN(numValue)) {
                               if (numValue > 10) {
@@ -445,7 +444,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                             }
                           }}
                           onBlur={() => {
-                            // Only apply defaults/bounds when user leaves the field
                             if (womanWeightInputValue === '') {
                               field.onChange(1);
                               setWomanWeightInputValue('1');
@@ -458,7 +456,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                                 field.onChange(10);
                                 setWomanWeightInputValue('10');
                               } else {
-                                // Value is valid, make sure form field is in sync
                                 field.onChange(numValue);
                               }
                             }
@@ -475,6 +472,29 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="timetabled"
+                render={({ field }) => (
+                  <FormItem className="mt-5 flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">{t("admin.tournaments.timetable.timetabled_tournament")}</FormLabel>
+                      <FormDescription>
+                        {t("admin.tournaments.timetable.timetabled_tournament_desc")}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch 
+                        checked={field.value} 
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked)
+                          onTimetableToggle?.(checked)
+                        }} 
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
               <div className="flex justify-between gap-4 mt-10">
                 {initial_data && (

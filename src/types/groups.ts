@@ -26,5 +26,6 @@ export type TournamentTable = {
   participants: Participant[];
   avg_match_duration: number;
   start_date: string;
-  break_duration: number,
+  break_duration: number;
+  timetabled: boolean;
 }

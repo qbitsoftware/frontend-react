@@ -1,5 +1,5 @@
 import { useParticipantUtils } from "@/hooks/useParticipantUtils"
-import { capitalize, formatDateStringYearMonthDay, useDebounce } from "@/lib/utils"
+import { capitalize, cn, formatDateStringYearMonthDay, useDebounce } from "@/lib/utils"
 import { UseGetUsersDebounce } from "@/queries/users"
 import { Participant } from "@/types/participants"
 import { useSortable } from "@dnd-kit/sortable"
@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import EditImgModal from "../../../../-components/edit-img-modal"
+import { TournamentTable } from "@/types/groups"
+import { selectedTeams } from "./new-double"
 
 interface Props {
     participant: Participant
@@ -22,14 +24,20 @@ interface Props {
     setDisableOrdering: (value: boolean) => void
     forceDisableOrdering: boolean
     tournament_id: number
-    tournament_table_id: number
+    tournament_table: TournamentTable
     participants_len: number
+
+    // Experimental
+    selectedTeams?: selectedTeams | undefined
+    setSelectedTeams?: (teams: selectedTeams) => void
+
 }
 
-export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table_id, participants_len }: Props) {
+export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams }: Props) {
+
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: participant.id })
 
-    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table_id)
+    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
 
     const [editing, setIsEditing] = useState(false)
 
@@ -98,7 +106,8 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
         }
     }, [debouncedSearchTerm]);
 
-    const handleStartEditing = () => {
+    const handleStartEditing = (e: React.MouseEvent) => {
+        e.stopPropagation()
         setIsEditing(true)
         setDisableOrdering(true)
     }
@@ -142,17 +151,49 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
         handleStopEditing()
     }
 
+    const handleRowClick = () => {
+        if (editing) return
+
+        if (setSelectedTeams) {
+            // Check if clicking on the same participant that's already selected
+            if (selectedTeams &&
+                (selectedTeams.p1_id === participantState.id || selectedTeams.p2_id === participantState.id)) {
+                // Reset selection if clicking on already selected participant
+                setSelectedTeams({ p1_id: "", p2_id: "" })
+                return
+            }
+
+            let test: selectedTeams = {
+                p1_id: "",
+                p2_id: "",
+            }
+
+            if (selectedTeams && selectedTeams.p1_id !== "") {
+                test.p1_id = selectedTeams.p1_id
+                test.p2_id = participantState.id
+            } else if (selectedTeams && selectedTeams.p2_id !== "") {
+                test.p1_id = participantState.id
+                test.p2_id = selectedTeams.p2_id
+            } else {
+                test.p1_id = participantState.id
+            }
+            setSelectedTeams(test)
+        }
+        console.log("selectedTeams", selectedTeams)
+        console.log("Row clicked")
+    }
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
     }
 
     return (
-        <TableRow ref={setNodeRef} style={style} className="bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40">
-            <TableCell className='text-center'>
+        <TableRow ref={setNodeRef} style={style} onClick={handleRowClick} className={cn("h-10 bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40 hover:border hover:border-blue-500 cursor-pointer", selectedTeams && (selectedTeams.p1_id == participantState.id || selectedTeams.p2_id == participantState.id) ? "bg-blue-100 hover:bg-blue-100" : "")}>
+            <TableCell className='text-center py-2 px-3'>
                 { }
                 {disableOrdering || forceDisableOrdering ? <div className="flex items-center justify-center hover:bg-indigo-50 gap-1 p-2 rounded-sm">
-                    <Input className="w-[40px] p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing || forceDisableOrdering} placeholder="Pos" value={participantState.order}
+                    <Input className="w-[40px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing || forceDisableOrdering} placeholder="Pos" value={participantState.order}
                         onChange={(e) => {
                             const newValue = Number(e.target.value);
                             if (newValue <= 0) {
@@ -166,7 +207,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                             }
                         }}
                     />
-                    <GripVertical className="h-4 w-4" />
+                    <GripVertical className="h-3 w-3" />
                 </div>
                     :
                     <div className="flex items-center justify-center hover:bg-sky-100/40 gap-1 p-2 rounded-sm"
@@ -174,38 +215,38 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                         {...listeners}
                     >
                         {index + 1}
-                        <GripVertical className="h-4 w-4" />
+                        <GripVertical className="h-3 w-3" />
                     </div>
                 }
             </TableCell>
-            <TableCell className="text-center ">
+            <TableCell className="text-center py-2 px-3">
                 {editing ?
                     <div className="flex gap-2">
-                        <div className="h-8 w-8 flex items-center justify-center bg-green-100 cursor-pointer rounded-sm"
+                        <div className="h-6 w-6 flex items-center justify-center bg-green-100 cursor-pointer rounded-sm"
                             onClick={handleSubmit}
                         >
-                            <Check className="h-4 w-4" />
+                            <Check className="h-3 w-3" />
                         </div>
-                        <div className="h-8 w-8 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm"
+                        <div className="h-6 w-6 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm"
                             onClick={handleCancel}
                         >
-                            <X className="h-4 w-4 cursor-pointer" />
+                            <X className="h-3 w-3 cursor-pointer" />
                         </div>
-                        <div className="h-8 w-8 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm"
+                        <div className="h-6 w-6 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm"
                             onClick={handleDeleteParticipant}
                         >
-                            <Trash className="h-4 w-4 cursor-pointer" />
+                            <Trash className="h-3 w-3 cursor-pointer" />
                         </div>
                     </div> :
-                    <div className="w-8 h-8 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm"
+                    <div className="w-6 h-6 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm"
                         onClick={handleStartEditing}
                     >
-                        <Pencil className="h-4 w-4 cursor-pointer" />
+                        <Pencil className="h-3 w-3 cursor-pointer" />
 
                     </div>
                 }
             </TableCell>
-            <TableCell className="font-medium">
+            <TableCell className="font-medium py-2 px-3">
                 <Popover
                     open={popoverOpen}
                     onOpenChange={(open) => {
@@ -213,7 +254,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                     }}
                 >
                     <PopoverTrigger asChild>
-                        <Input className="w-[180px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900"
+                        <Input className="w-[180px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900"
                             type="text"
                             disabled={!editing}
                             placeholder="Participant name"
@@ -272,16 +313,16 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                     }
                 </Popover>
             </TableCell>
-            <TableCell className="text-center">
-                <Input className="w-[40px] p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="ELTL ID" value={participantState.players[0].extra_data.eltl_id || 0} onChange={(e) => updateField("players.0.extra_data.eltl_id", Number(e.target.value))} />
+            <TableCell className="text-center py-2 px-3">
+                <Input className="w-[40px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="ELTL ID" value={participantState.players[0].extra_data.eltl_id || 0} onChange={(e) => updateField("players.0.extra_data.eltl_id", Number(e.target.value))} />
             </TableCell>
-            <TableCell className="text-center">
-                <Input className="w-[60px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Rank" onChange={(e) => updateField("rank", Number(e.target.value))} value={participantState.rank || 0} />
+            <TableCell className="text-center py-2 px-3">
+                <Input className="w-[60px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Rank" onChange={(e) => updateField("rank", Number(e.target.value))} value={participantState.rank || 0} />
             </TableCell>
-            <TableCell className="text-center">
-                <Input className="w-[120px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField("players.0.birthdate", e.target.value)} value={formatDateStringYearMonthDay(participantState.players[0].birthdate) || ''} />
+            <TableCell className="text-center py-2 px-3">
+                <Input className="w-[120px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField("players.0.birthdate", e.target.value)} value={formatDateStringYearMonthDay(participantState.players[0].birthdate) || ''} />
             </TableCell>
-            <TableCell>
+            <TableCell className="py-2 px-3">
                 <Checkbox
                     checked={participantState.players[0].extra_data.foreign_player === true}
                     disabled={!editing}
@@ -292,15 +333,15 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                     className=""
                 />
             </TableCell>
-            <TableCell className="text-center">
-                <Input className="w-[160px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Club name" onChange={(e) => updateField("players.0.extra_data.club", e.target.value)} value={participantState.players[0].extra_data.club || ""} />
+            <TableCell className="text-center py-2 px-3">
+                <Input className="w-[160px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Club name" onChange={(e) => updateField("players.0.extra_data.club", e.target.value)} value={participantState.players[0].extra_data.club || ""} />
             </TableCell>
-            <TableCell className="text-center">
-                <Input className="w-[60px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Riik" onChange={(e) => updateField("players.0.nationality", e.target.value)} value={participantState.players[0].nationality || ""} />
+            <TableCell className="text-center py-2 px-3">
+                <Input className="w-[60px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Riik" onChange={(e) => updateField("players.0.nationality", e.target.value)} value={participantState.players[0].nationality || ""} />
             </TableCell>
-            <TableCell className="text-center">
+            <TableCell className="text-center py-2 px-3">
                 <Select value={participantState.players[0].sex} disabled={!editing} onValueChange={(value) => updateField("players.0.sex", value)}>
-                    <SelectTrigger className="w-[80px] disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900">
+                    <SelectTrigger className="w-[80px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900">
                         <SelectValue placeholder="Sex" />
                     </SelectTrigger>
                     <SelectContent>
@@ -312,7 +353,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                     </SelectContent>
                 </Select>
             </TableCell>
-            <TableCell className="text-center">
+            <TableCell className="text-center py-2 px-3">
                 <EditImgModal id={participantState.players[0].id} playerName={`${participantState.players[0].first_name} ${participantState.players[0].last_name}`} img={participantState.players[0].extra_data.image_url} type="player" />
             </TableCell>
 

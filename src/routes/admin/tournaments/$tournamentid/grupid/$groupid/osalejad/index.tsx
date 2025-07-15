@@ -8,6 +8,9 @@ import { NewTeams } from './-components/new-teams'
 import { UseGetParticipantsQuery } from '@/queries/participants'
 import SeedingHeader from './-components/seeding-header'
 import { UseGetTournamentAdmin } from '@/queries/tournaments'
+import { DialogType } from '@/types/groups'
+import NewDouble from './-components/new-double'
+import { GroupType } from '@/types/matches'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -51,7 +54,7 @@ function RouteComponent() {
     table_data.data
   ) {
     return (
-      <div className="">
+      <div className="min-h-screen bg-gray-50">
         {tournament_data &&
           table_data &&
           participant_data &&
@@ -63,19 +66,26 @@ function RouteComponent() {
                 participants={participant_data.data}
               />
 
-              {table_data.data.solo ? (
-                <NewSolo
-                  participant_data={participant_data}
-                  tournament_id={Number(tournamentid)}
-                  tournament_table={table_data.data}
-                />
-              ) : (
+              {table_data.data.dialog_type === DialogType.DT_TEAM_LEAGUES || table_data.data.type === GroupType.ROUND_ROBIN || table_data.data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ? (
                 <NewTeams
                   participant_data={participant_data}
                   tournament_id={Number(tournamentid)}
                   tournament_table={table_data.data}
                 />
-              )}
+              )
+                : table_data.data.solo ? (
+                  <NewSolo
+                    participant_data={participant_data}
+                    tournament_id={Number(tournamentid)}
+                    tournament_table={table_data.data}
+                  />
+                )
+                  : <NewDouble
+                    participant_data={participant_data}
+                    tournament_id={Number(tournamentid)}
+                    tournament_table={table_data.data}
+                  />
+              }
             </>
           )}
       </div>
