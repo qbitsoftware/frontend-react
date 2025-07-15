@@ -93,7 +93,7 @@ const RatingWidget = ({ users, isEmpty }: Props) => {
                 </TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="bg-white/60">
+            <TableBody className="bg-white/80">
               {filteredUsers.map((user) => (
                 <TableRow
                   onClick={() => {
