@@ -10,6 +10,12 @@ interface Props {
 
 export default function GroupDropdown({ groups, tournament_id }: Props) {
     const { t } = useTranslation()
+    
+    const truncateClassName = (className: string, maxLength: number = 15) => {
+        if (className.length <= maxLength) return className
+        return className.substring(0, maxLength) + '...'
+    }
+    
     return (
         <>
             <div className="flex-1 overflow-y-auto min-h-0">
@@ -27,7 +33,12 @@ export default function GroupDropdown({ groups, tournament_id }: Props) {
                                     <span className="text-sm font-bold text-blue-700">{group.size}</span>
                                 </div>
                                 <div className="flex flex-col min-w-0 flex-1">
-                                    <span className="text-sm font-medium text-gray-900 group-hover:text-blue-900 truncate">{group.class}</span>
+                                    <span 
+                                        className="text-sm font-medium text-gray-900 group-hover:text-blue-900"
+                                        title={group.class}
+                                    >
+                                        {truncateClassName(group.class)}
+                                    </span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">

@@ -1,17 +1,26 @@
 import { useState } from "react";
 
-const videos = [
+interface Video {
+  url: string;
+  title: string;
+  thumbnail?: string;
+}
+
+const videos: Video[] = [
+  {
+    url: "https://www.youtube.com/watch?v=UBTGfE6J39Y&t=3530s",
+    title: "Eesti Meistrivõistlused '25 Finaal",
+    thumbnail: "/thumbnails/emv_thumbnail.png",
+  },
   {
     url: "https://www.youtube.com/watch?v=9ss7SA0LnPQ&ab_channel=EestiLauatenniseliit",
     title: "Meistriliiga '25 TalTech vs Viimsi PINX",
+    thumbnail: "/thumbnails/taltech-pinx.png",
   },
   {
     url: "https://www.youtube.com/watch?v=-rcQ7cwEZAo",
     title: "Meistriliiga '25 Viimsi PINX vs Tartu SS Kalev",
-  },
-  {
-    url: "https://www.youtube.com/watch?v=UBTGfE6J39Y&t=3530s",
-    title: "Eesti Meistrivõistlused '25 Finaal",
+    thumbnail: "/thumbnails/pinx-kalev.png",
   },
 ];
 
@@ -31,7 +40,7 @@ const VideoBoard = () => {
 
   return (
     <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col border rounded-lg sm:rounded-xl bg-white overflow-hidden">
-      <div className="h-full overflow-y-auto space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-4">
+      <div className="h-full overflow-y-auto space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-0">
         {videos.map((video, index) => {
           const videoId = getVideoId(video.url);
           if (!videoId) return null;
@@ -47,12 +56,15 @@ const VideoBoard = () => {
                 {!isPlaying ? (
                   <>
                     <img
-                      src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+                      src={video.thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
                       alt={video.title}
                       className="w-full aspect-video rounded-md sm:rounded-lg object-cover cursor-pointer transition-transform duration-300 group-hover:scale-[1.02]"
                       onError={(e) => {
-                        // Fallback to lower quality thumbnail if maxresdefault doesn't exist
-                        e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                        if (video.thumbnail && e.currentTarget.src === video.thumbnail) {
+                          e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                        } else {
+                          e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                        }
                       }}
                       onClick={() => handlePlayVideo(index)}
                     />

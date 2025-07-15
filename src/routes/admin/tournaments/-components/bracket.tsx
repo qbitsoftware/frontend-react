@@ -57,7 +57,12 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
     tournament_table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
 
   const handleSelectMatch = (match: MatchWrapper) => {
+    // Prevent clicking on matches where both participants are empty
     if ((match.match.p1_id === "" || match.match.p1_id === "empty") && (match.match.p2_id === "" || match.match.p2_id === "empty")) {
+      return
+    }
+    // Prevent clicking on matches where at least one participant is a bye
+    if (match.match.p1_id === "empty" || match.match.p2_id === "empty") {
       return
     }
     setSelectedMatch(match);
