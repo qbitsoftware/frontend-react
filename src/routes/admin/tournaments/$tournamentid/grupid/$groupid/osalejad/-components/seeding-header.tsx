@@ -5,7 +5,7 @@ import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants,
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import seeds3 from "@/assets/seeds3.png";
-import { TournamentTable } from "@/types/groups";
+import { DialogType, TournamentTable } from "@/types/groups";
 import { toast } from 'sonner';
 import { GroupType } from "@/types/matches";
 import { Participant } from "@/types/participants";
@@ -180,7 +180,7 @@ const SeedingHeader = ({
     let filename: string;
 
     const isRoundRobin = table_data.type === GroupType.ROUND_ROBIN || table_data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
-    const hasTeams = !table_data.solo;
+    const hasTeams = !table_data.solo && table_data.dialog_type !== DialogType.DT_DOUBLES && table_data.dialog_type !== DialogType.DT_FIXED_DOUBLES;
 
     if (isRoundRobin && hasTeams) {
       headers = ['id', 'name', 'team', 'group'];
@@ -248,14 +248,17 @@ const SeedingHeader = ({
             <img src={seeds3} className="h-4 w-4 object-contain" />
           </Button>
 
-          <Button
-            disabled={disabled}
-            onClick={handleDoublePairing}
-            size="sm"
-            className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
-          >
-            <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
-          </Button>
+          {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
+            <Button
+              disabled={disabled}
+              onClick={handleDoublePairing}
+              size="sm"
+              className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+            >
+              <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+            </Button>
+
+          )}
 
           <input
             ref={fileInputRef}
