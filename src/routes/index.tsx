@@ -34,8 +34,6 @@ export const Route = createFileRoute("/")({
 });
 
 
-
-
 function Index() {
   const { tournaments, users, articles_data, dataStatus } = Route.useLoaderData();
 

@@ -17,6 +17,7 @@ export const UseGetFreeVenues = (tournament_id: number, includeAll: boolean = fa
                 params: includeAll ? { all: true } : {}
             })
             return data
-        }
+        },
+        refetchInterval: 10000
     })
 }
