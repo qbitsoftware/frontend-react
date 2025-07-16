@@ -67,33 +67,31 @@ function RouteComponent() {
                 table_data={table_data.data}
                 participants={participant_data.data}
               />
-              {/* <div className="border-b border-gray-200 mb-4">
+              <div className="border-b border-gray-200 mb-4">
                 <nav className="-mb-px flex space-x-8">
                   <button
                     onClick={() => setActiveTab('roundrobin')}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === 'roundrobin'
+                    className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'roundrobin'
                         ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     Round Robin Participants
                   </button>
                   <button
                     onClick={() => setActiveTab('doubleelim')}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === 'doubleelim'
+                    className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'doubleelim'
                         ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     Double Elimination Participants
                   </button>
                 </nav>
-              </div> */}
+              </div>
 
               {/* Tab Content */}
-              {/* {activeTab === 'roundrobin' ? (
+              {activeTab === 'roundrobin' ? (
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <h3 className="text-lg font-semibold mb-2">Round Robin Participants</h3>
                   <p className="text-gray-600">Round Robin participants content will go here...</p>
@@ -103,7 +101,7 @@ function RouteComponent() {
                   <h3 className="text-lg font-semibold mb-2">Double Elimination Participants</h3>
                   <p className="text-gray-600">Double Elimination participants content will go here...</p>
                 </div>
-              )} */}
+              )}
 
               {table_data.data.dialog_type === DialogType.DT_TEAM_LEAGUES || table_data.data.type === GroupType.ROUND_ROBIN || table_data.data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ? (
                 <NewTeams
