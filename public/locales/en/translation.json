@@ -793,7 +793,8 @@
         "double_elimination": "Main Draw Participants", 
         "round_robin_content": "Participants added here will be split into round robin subgroups.",
         "double_elimination_content": "Participants visible here will be playing in the main bracket.",
-        "players": "unpaired players"
+        "players": "unpaired players",
+        "pairs": "Pairs"
       },
       "groups": {
         "layout": {

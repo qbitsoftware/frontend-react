@@ -831,7 +831,8 @@
         "double_elimination": "Põhitabelis osalejad",
         "round_robin_content": "Siia lisatud mängijad jaotatakse alagruppide vahel ning igast alagrupist pääseb teatud arv mängijaid põhitabelisse.",
         "double_elimination_content": "Siia lisatud mängijad osalevad põhitabeliturniiris.",
-        "players": "paaripanemata mängijat"
+        "players": "paaripanemata mängijat",
+          "pairs": "Paare"
       },
       "groups": {
         "layout": {
