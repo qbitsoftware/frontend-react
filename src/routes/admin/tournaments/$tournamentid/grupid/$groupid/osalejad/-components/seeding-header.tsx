@@ -54,7 +54,14 @@ const SeedingHeader = ({
   };
 
   const checkPowerOf2Warning = (): boolean => {
-    const closestPowerOf2 = getClosestPowerOf2(participants?.length);
+    // For doubles tournaments, use pair count instead of individual participant count
+    let participantCount = participants?.length || 0;
+    if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+      const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
+      participantCount = pairs.length;
+    }
+    
+    const closestPowerOf2 = getClosestPowerOf2(participantCount);
     return closestPowerOf2 !== table_data.size;
   };
 
@@ -115,8 +122,15 @@ const SeedingHeader = ({
   };
 
   const getWarningMessage = () => {
-    const closestPowerOf2 = getClosestPowerOf2(participants?.length || 0);
-    return t('admin.tournaments.warnings.bracket_size_mismatch.body', { participants: participants?.length, closestPowerOf2, tableSize: table_data.size });
+    // For doubles tournaments, use pair count instead of individual participant count
+    let participantCount = participants?.length || 0;
+    if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+      const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
+      participantCount = pairs.length;
+    }
+    
+    const closestPowerOf2 = getClosestPowerOf2(participantCount);
+    return t('admin.tournaments.warnings.bracket_size_mismatch.body', { participants: participantCount, closestPowerOf2, tableSize: table_data.size });
   };
 
   const handleOrder = async () => {
@@ -156,8 +170,11 @@ const SeedingHeader = ({
       await importMutation.mutateAsync(file)
 
       toast.message(t('toasts.participants.import_success', 'Participants imported successfully'));
-    } catch (error: any) {
-      toast.error(error.response?.data.error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data: { error: string } } }).response?.data.error 
+        : 'Import failed';
+      toast.error(errorMessage);
     }
 
     if (fileInputRef.current) {
@@ -208,12 +225,29 @@ const SeedingHeader = ({
 
   return (
     <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-      <div className="flex gap-2 items-center justify-between w-full">
-        <div className="flex gap-2 items-center">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 items-start sm:items-center justify-between w-full">
+        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
           <h5 className="font-medium">{(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? t("admin.tournaments.groups.participants.subgroups") : t("admin.tournaments.info.participants")}</h5>
-          <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] ">
-            {((table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && participants.filter((participant) => participant.type === "round_robin").length) || (participants && participants.length)} / {table_data.size}{" "}
-          </p>
+          <div className="flex flex-wrap gap-2 items-center">
+            <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] text-sm">
+              {(() => {
+                if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                  // For doubles, count pairs (participants where is_parent=true) 
+                  const pairs = participants.filter((participant) => participant.extra_data?.is_parent === true);
+                  return pairs.length;
+                }
+                if (table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+                  return participants.filter((participant) => participant.type === "round_robin").length;
+                }
+                return participants.length;
+              })()} / {table_data.size}{" "}
+            </p>
+            {(table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) && (
+              <p className="bg-blue-50 font-medium px-3 py-1 rounded-full border border-blue-200 text-blue-700 text-sm">
+                {participants.filter((participant) => participant.extra_data?.is_parent === false).length} {t('admin.tournaments.participants.players')}
+              </p>
+            )}
+          </div>
         </div>
         <Button
           onClick={handleDownloadTemplate}
