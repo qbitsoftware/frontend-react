@@ -826,6 +826,12 @@
         "free": "Vaba",
         "empty_placeholder": "Laud on mänguks vaba"
       },
+      "participants": {
+        "round_robin": "Alagruppides osalejad",
+        "double_elimination": "Põhitabelis osalejad",
+        "round_robin_content": "Siia lisatud mängijad jaotatakse alagruppide vahel ning igast alagrupist pääseb teatud arv mängijaid põhitabelisse.",
+        "double_elimination_content": "Siia lisatud mängijad osalevad põhitabeliturniiris."
+      },
       "groups": {
         "layout": {
           "info": "Info",

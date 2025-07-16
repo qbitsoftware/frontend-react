@@ -788,6 +788,12 @@
         "free": "Free",
         "empty_placeholder": "Table available for matches"
       },
+      "participants": {
+        "round_robin": "Round Robin Participants",
+        "double_elimination": "Double Elimination Participants", 
+        "round_robin_content": "Round Robin participants content will go here...",
+        "double_elimination_content": "Double Elimination participants content will go here..."
+      },
       "groups": {
         "layout": {
           "info": "Info",

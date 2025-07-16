@@ -12,6 +12,7 @@ import { DialogType } from '@/types/groups'
 import NewDouble from './-components/new-double'
 import { GroupType } from '@/types/matches'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -36,6 +37,7 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const { t } = useTranslation()
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid, groupid } = Route.useParams()
   const [activeTab, setActiveTab] = useState<string>('roundrobin')
@@ -76,7 +78,7 @@ function RouteComponent() {
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                   >
-                    Round Robin Participants
+                    {t('admin.tournaments.participants.round_robin')}
                   </button>
                   <button
                     onClick={() => setActiveTab('doubleelim')}
@@ -85,7 +87,7 @@ function RouteComponent() {
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                   >
-                    Double Elimination Participants
+                    {t('admin.tournaments.participants.double_elimination')}
                   </button>
                 </nav>
               </div>
@@ -93,13 +95,13 @@ function RouteComponent() {
               {/* Tab Content */}
               {activeTab === 'roundrobin' ? (
                 <div className="p-4 bg-gray-50 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2">Round Robin Participants</h3>
-                  <p className="text-gray-600">Round Robin participants content will go here...</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('admin.tournaments.participants.round_robin')}</h3>
+                  <p className="text-gray-600">{t('admin.tournaments.participants.round_robin_content')}</p>
                 </div>
               ) : (
                 <div className="p-4 bg-blue-50 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2">Double Elimination Participants</h3>
-                  <p className="text-gray-600">Double Elimination participants content will go here...</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('admin.tournaments.participants.double_elimination')}</h3>
+                  <p className="text-gray-600">{t('admin.tournaments.participants.double_elimination_content')}</p>
                 </div>
               )}
 
