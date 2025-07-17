@@ -11,6 +11,7 @@ import { filterGroups } from "./participant-utils"
 import GroupInput from "./group-input"
 import SoloParticipants from "./solo-body"
 import { selectedTeams } from "./new-double"
+import { cn } from "@/lib/utils"
 
 
 interface NewSoloProps {
@@ -19,9 +20,11 @@ interface NewSoloProps {
     tournament_table: TournamentTable
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
+    activeTab?: number
+    renderRR?: boolean
 }
 
-export const NewSolo = ({ participant_data, tournament_id, tournament_table, selectedTeams, setSelectedTeams }: NewSoloProps) => {
+export const NewSolo = ({ participant_data, tournament_id, tournament_table, selectedTeams, setSelectedTeams, activeTab = 0, renderRR = false }: NewSoloProps) => {
     const { addOrUpdateParticipant, addNewRoundRobinGroup } = useParticipantUtils(tournament_id, tournament_table.id)
 
     const [participants, setParticipantsState] = useState<Participant[]>([])
@@ -31,15 +34,26 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table, sel
         }
     }, [participant_data])
 
+    const handleTeamClick = (group_id: string) => {
+        if (tournament_table.type !== GroupType.DYNAMIC) {
+            return
+        }
+        if (setSelectedTeams) {
+            if (selectedTeams) {
+                setSelectedTeams({ p1_id: selectedTeams.p1_id, p2_id: group_id, type: 'round_robin' })
+            }
+        }
+    }
+
     const { t } = useTranslation()
 
-    if (tournament_table.type == GroupType.ROUND_ROBIN || tournament_table.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+    if (tournament_table.type == GroupType.ROUND_ROBIN || tournament_table.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT || (tournament_table.type == GroupType.DYNAMIC && renderRR)) {
         const groups = filterGroups(participants)
         return (
-            <div>
+            <div className="">
                 {groups.map((p, key) => {
                     return (
-                        <div key={key} className="mt-5">
+                        <div key={key} onClick={() => handleTeamClick(p.groupParticipant.id)} className={cn("mt-5", tournament_table.type === GroupType.DYNAMIC && selectedTeams ? "cursor-pointer hover:bg-blue-100" : "")}>
                             <GroupInput group={p.groupParticipant} tournament_id={tournament_id} tournament_table_id={tournament_table.id} />
                             <SoloParticipants
                                 participants={p.participants}
@@ -50,11 +64,13 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table, sel
                                 addOrUpdateParticipant={addOrUpdateParticipant}
                                 selectedTeams={selectedTeams}
                                 setSelectedTeams={setSelectedTeams}
+                                activeTab={activeTab}
+                                renderRR={renderRR}
                             />
                         </div>
                     )
                 })}
-                {groups.length < tournament_table.size && <div className="mt-2">
+                {groups.length < tournament_table.size && tournament_table.type !== GroupType.DYNAMIC && <div className="mt-2">
                     <Button
                         className="w-full h-24"
                         variant="outline"
@@ -76,6 +92,7 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table, sel
             addOrUpdateParticipant={addOrUpdateParticipant}
             selectedTeams={selectedTeams}
             setSelectedTeams={setSelectedTeams}
+            activeTab={activeTab}
         />
     )
 }

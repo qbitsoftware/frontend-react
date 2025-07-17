@@ -35,6 +35,7 @@ export enum GroupType {
   DOUBLE_ELIM_TABLETENNIS_TOP_HEAVY = "double_elimination_tabletennis_top_heavy",
   CHAMPIONS_LEAGUE = "champions_league",
   ROUND_ROBIN = "round_robin",
+  DYNAMIC = "dynamic",
   FREE_FOR_ALL = "free_for_all",
   ROUND_ROBIN_FULL_PLACEMENT = "round_robin_full_placement",
 }

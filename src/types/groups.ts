@@ -16,6 +16,7 @@ export type TournamentTable = {
   dialog_type: DialogType;
   tournament_id: number;
   class: string;
+  second_class: string;
   state: number;
   type: string;
   solo: boolean;
@@ -27,5 +28,5 @@ export type TournamentTable = {
   avg_match_duration: number;
   start_date: string;
   break_duration: number;
-  timetabled: boolean;
+  time_table: boolean;
 }

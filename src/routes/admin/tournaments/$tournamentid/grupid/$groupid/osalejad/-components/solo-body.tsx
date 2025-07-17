@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button'
 import { PlusCircle } from 'lucide-react'
 import ParticipantDND from './participant-dnd'
 import ParticipantHeader from './table-header'
-import { TTState } from '@/types/matches'
+import { GroupType, TTState } from '@/types/matches'
 import { selectedTeams } from './new-double'
 
 interface SoloParticipantsProps {
@@ -30,10 +30,11 @@ interface SoloParticipantsProps {
     // Experimental
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
-
+    activeTab: number
+    renderRR?: boolean
 }
 
-export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams }: SoloParticipantsProps) {
+export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams, activeTab, renderRR }: SoloParticipantsProps) {
 
     const { t } = useTranslation()
 
@@ -131,7 +132,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                             <ParticipantHeader />
                             <TableBody>
                                 {participants && participants.map((participant, key) => (
-                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} />
+                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} renderRR={renderRR} />
                                 ))}
 
                                 {(tournament_table.size > participants.length || group_participant) && <TableRow>
@@ -178,12 +179,14 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                                     onClick={async () => {
                                                                         setPopoverOpen(false)
                                                                         const new_player = NewPlayer(user)
+                                                                        const group_number = activeTab
+                                                                        const group_name = activeTab === 1 ? GroupType.ROUND_ROBIN : tournament_table.second_class
                                                                         const new_participant: ParticipantFormValues = {
                                                                             name: `${capitalizeWords(user.first_name)} ${capitalizeWords(user.last_name)}`,
                                                                             players: [new_player],
                                                                             sport_type: "tabletennis",
-                                                                            group: 0,
-                                                                            group_name: "",
+                                                                            group: group_number,
+                                                                            group_name: group_name,
                                                                             order: participants.length + 1,
                                                                             tournament_id,
                                                                             class: "",
@@ -219,12 +222,14 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                         const firstName = nameParts[0]
                                                         const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
                                                         const newPlayer = NewPlayerFromName(searchTerm)
+                                                        const group_number = activeTab
+                                                        const group_name = activeTab === 1 ? GroupType.ROUND_ROBIN : tournament_table.second_class
                                                         const new_participant: ParticipantFormValues = {
                                                             name: `${capitalizeWords(firstName)} ${capitalizeWords(lastName)}`,
                                                             players: [newPlayer],
                                                             sport_type: "tabletennis",
-                                                            group: 0,
-                                                            group_name: "",
+                                                            group: group_number,
+                                                            group_name: group_name,
                                                             order: participants.length + 1,
                                                             tournament_id,
                                                             class: "",

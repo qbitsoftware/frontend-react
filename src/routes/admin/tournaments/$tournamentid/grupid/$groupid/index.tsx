@@ -34,7 +34,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { table_data } = Route.useLoaderData()
   const [showTimetable, setShowTimetable] = useState<boolean>(
-    table_data?.data?.timetabled || false
+    table_data?.data?.time_table|| false
   )
 
   if (!table_data || !table_data.data) {

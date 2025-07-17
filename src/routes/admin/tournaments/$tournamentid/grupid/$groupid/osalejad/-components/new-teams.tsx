@@ -15,9 +15,10 @@ interface NewTeamsProps {
     participant_data: ParticipantsResponse
     tournament_table: TournamentTable
     tournament_id: number
+    activeTab?: number
 }
 
-export const NewTeams = ({ participant_data, tournament_table, tournament_id }: NewTeamsProps) => {
+export const NewTeams = ({ participant_data, tournament_table, tournament_id, activeTab = 0 }: NewTeamsProps) => {
     const { addNewRoundRobinGroup } = useParticipantUtils(tournament_id, tournament_table.id)
     const [participants, setParticipantsState] = useState<Participant[]>([])
 

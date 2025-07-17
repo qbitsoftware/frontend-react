@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { MatchesResponse, UseGetMatchesQuery } from "@/queries/match";
-import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantDoublePairs } from "@/queries/participants";
+import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantJoin } from "@/queries/participants";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import seeds3 from "@/assets/seeds3.png";
@@ -43,7 +43,8 @@ const SeedingHeader = ({
   const updateSeeding = UsePostSeeding(tournament_id, table_data.id);
   const updateOrder = UsePostOrder(tournament_id, table_data.id);
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
-  const assignPairs = UsePostParticipantDoublePairs(tournament_id, table_data.id)
+  const assignPairs = UsePostParticipantJoin(tournament_id, table_data.id, 'doubles')
+  const assignRoundRobin = UsePostParticipantJoin(tournament_id, table_data.id, 'dynamic')
   const importMutation = UseImportParticipants(tournament_id, table_data.id)
   const [showWarningModal, setShowWarningModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,7 +60,7 @@ const SeedingHeader = ({
       const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
       participantCount = pairs.length;
     }
-    
+
     const closestPowerOf2 = getClosestPowerOf2(participantCount);
     return closestPowerOf2 !== table_data.size;
   };
@@ -126,7 +127,7 @@ const SeedingHeader = ({
       const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
       participantCount = pairs.length;
     }
-    
+
     const closestPowerOf2 = getClosestPowerOf2(participantCount);
     return t('admin.tournaments.warnings.bracket_size_mismatch.body', { participants: participantCount, closestPowerOf2, tableSize: table_data.size });
   };
@@ -169,8 +170,8 @@ const SeedingHeader = ({
 
       toast.message(t('toasts.participants.import_success', 'Participants imported successfully'));
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error && 'response' in error 
-        ? (error as { response?: { data: { error: string } } }).response?.data.error 
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data: { error: string } } }).response?.data.error
         : 'Import failed';
       toast.error(errorMessage);
     }
@@ -183,6 +184,16 @@ const SeedingHeader = ({
   const handleDoublePairing = async () => {
     try {
       await assignPairs.mutateAsync()
+      toast.message(t('toasts.participants.double_pairing_success', 'Double pairs assigned successfully'));
+    } catch (error) {
+      void error
+      toast.error(t('toasts.participants.double_pairing_error', 'Error assigning double pairs'));
+    }
+  }
+
+  const handleRoundRobinPairing = async () => {
+    try {
+      await assignRoundRobin.mutateAsync()
       toast.message(t('toasts.participants.double_pairing_success', 'Double pairs assigned successfully'));
     } catch (error) {
       void error
@@ -293,6 +304,17 @@ const SeedingHeader = ({
             <Button
               disabled={disabled}
               onClick={handleDoublePairing}
+              size="sm"
+              className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+            >
+              <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+            </Button>
+
+          )}
+          {table_data.type === GroupType.DYNAMIC && (
+            <Button
+              disabled={disabled}
+              onClick={handleRoundRobinPairing}
               size="sm"
               className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
             >
