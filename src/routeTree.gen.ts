@@ -26,6 +26,8 @@ import { Route as KontaktIndexImport } from './routes/kontakt/index'
 import { Route as KlubidIndexImport } from './routes/klubid/index'
 import { Route as KalenderIndexImport } from './routes/kalender/index'
 import { Route as UudisedBlogidImport } from './routes/uudised/$blogid'
+import { Route as LitsentsSuccessImport } from './routes/litsents/success'
+import { Route as LitsentsCancelImport } from './routes/litsents/cancel'
 import { Route as VoistlusedTournamentidLayoutImport } from './routes/voistlused/$tournamentid/layout'
 import { Route as AdminTournamentsLayoutImport } from './routes/admin/tournaments/layout'
 import { Route as AdminDashboardLayoutImport } from './routes/admin/dashboard/layout'
@@ -153,6 +155,18 @@ const KalenderIndexRoute = KalenderIndexImport.update({
 const UudisedBlogidRoute = UudisedBlogidImport.update({
   id: '/uudised/$blogid',
   path: '/uudised/$blogid',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LitsentsSuccessRoute = LitsentsSuccessImport.update({
+  id: '/litsents/success',
+  path: '/litsents/success',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LitsentsCancelRoute = LitsentsCancelImport.update({
+  id: '/litsents/cancel',
+  path: '/litsents/cancel',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -459,6 +473,20 @@ declare module '@tanstack/react-router' {
       path: '/voistlused/$tournamentid'
       fullPath: '/voistlused/$tournamentid'
       preLoaderRoute: typeof VoistlusedTournamentidLayoutImport
+      parentRoute: typeof rootRoute
+    }
+    '/litsents/cancel': {
+      id: '/litsents/cancel'
+      path: '/litsents/cancel'
+      fullPath: '/litsents/cancel'
+      preLoaderRoute: typeof LitsentsCancelImport
+      parentRoute: typeof rootRoute
+    }
+    '/litsents/success': {
+      id: '/litsents/success'
+      path: '/litsents/success'
+      fullPath: '/litsents/success'
+      preLoaderRoute: typeof LitsentsSuccessImport
       parentRoute: typeof rootRoute
     }
     '/uudised/$blogid': {
@@ -974,6 +1002,8 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AdminDashboardLayoutRouteWithChildren
   '/admin/tournaments': typeof AdminTournamentsLayoutRouteWithChildren
   '/voistlused/$tournamentid': typeof VoistlusedTournamentidLayoutRouteWithChildren
+  '/litsents/cancel': typeof LitsentsCancelRoute
+  '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/kalender': typeof KalenderIndexRoute
   '/klubid': typeof KlubidIndexRoute
@@ -1023,6 +1053,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminLayoutRouteWithChildren
+  '/litsents/cancel': typeof LitsentsCancelRoute
+  '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/kalender': typeof KalenderIndexRoute
   '/klubid': typeof KlubidIndexRoute
@@ -1077,6 +1109,8 @@ export interface FileRoutesById {
   '/admin/dashboard': typeof AdminDashboardLayoutRouteWithChildren
   '/admin/tournaments': typeof AdminTournamentsLayoutRouteWithChildren
   '/voistlused/$tournamentid': typeof VoistlusedTournamentidLayoutRouteWithChildren
+  '/litsents/cancel': typeof LitsentsCancelRoute
+  '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/kalender/': typeof KalenderIndexRoute
   '/klubid/': typeof KlubidIndexRoute
@@ -1134,6 +1168,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/tournaments'
     | '/voistlused/$tournamentid'
+    | '/litsents/cancel'
+    | '/litsents/success'
     | '/uudised/$blogid'
     | '/kalender'
     | '/klubid'
@@ -1182,6 +1218,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/litsents/cancel'
+    | '/litsents/success'
     | '/uudised/$blogid'
     | '/kalender'
     | '/klubid'
@@ -1234,6 +1272,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/tournaments'
     | '/voistlused/$tournamentid'
+    | '/litsents/cancel'
+    | '/litsents/success'
     | '/uudised/$blogid'
     | '/kalender/'
     | '/klubid/'
@@ -1286,6 +1326,8 @@ export interface RootRouteChildren {
   AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
   ProfileLayoutRoute: typeof ProfileLayoutRouteWithChildren
   VoistlusedTournamentidLayoutRoute: typeof VoistlusedTournamentidLayoutRouteWithChildren
+  LitsentsCancelRoute: typeof LitsentsCancelRoute
+  LitsentsSuccessRoute: typeof LitsentsSuccessRoute
   UudisedBlogidRoute: typeof UudisedBlogidRoute
   KalenderIndexRoute: typeof KalenderIndexRoute
   KlubidIndexRoute: typeof KlubidIndexRoute
@@ -1305,6 +1347,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileLayoutRoute: ProfileLayoutRouteWithChildren,
   VoistlusedTournamentidLayoutRoute:
     VoistlusedTournamentidLayoutRouteWithChildren,
+  LitsentsCancelRoute: LitsentsCancelRoute,
+  LitsentsSuccessRoute: LitsentsSuccessRoute,
   UudisedBlogidRoute: UudisedBlogidRoute,
   KalenderIndexRoute: KalenderIndexRoute,
   KlubidIndexRoute: KlubidIndexRoute,
@@ -1332,6 +1376,8 @@ export const routeTree = rootRoute
         "/admin",
         "/profile",
         "/voistlused/$tournamentid",
+        "/litsents/cancel",
+        "/litsents/success",
         "/uudised/$blogid",
         "/kalender/",
         "/klubid/",
@@ -1412,6 +1458,12 @@ export const routeTree = rootRoute
         "/voistlused/$tournamentid/tulemused/",
         "/voistlused/$tournamentid/tulemused/$groupid/"
       ]
+    },
+    "/litsents/cancel": {
+      "filePath": "litsents/cancel.tsx"
+    },
+    "/litsents/success": {
+      "filePath": "litsents/success.tsx"
     },
     "/uudised/$blogid": {
       "filePath": "uudised/$blogid.tsx"

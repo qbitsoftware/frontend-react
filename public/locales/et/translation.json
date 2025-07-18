@@ -338,9 +338,95 @@
       "back_to_search": "Tagasi otsingusse",
       "first_name": "Eesnimi",
       "surname": "Perekonnanimi",
+      "birth_date": "Sünnipäev",
       "birth_year": "Sünniaasta",
+      "isikukood": "Eesti Isikukood",
+      "club": "Klubi nimi",
+      "gender": "Sugu",
+      "gender_male": "Mees",
+      "gender_female": "Naine",
       "add_to_list": "Lisa mängija nimekirja",
-      "manual_help_text": "Sisesta andmebaasis puuduva mängija andmed. Kõik väljad on kohustuslikud."
+      "manual_help_text": "Sisesta andmebaasis puuduva mängija andmed. Kõik väljad on kohustuslikud.",
+      "club_help": "Jäta tühjaks või sisesta 'KLUBITU' kui mängijal pole klubikuuluvust",
+      "no_estonian_id": "Mul pole Eesti isikukoodi",
+      "search_club": "Otsi klubi...",
+      "no_clubs_found": "Klube ei leitud"
+    },
+    "payment": {
+      "email_label": "E-posti aadress",
+      "email_placeholder": "Sisesta e-post arve jaoks",
+      "email_help": "Saadame arve sellele e-posti aadressile",
+      "processing": "Makse töötlemine...",
+      "complete_payment": "Lõpeta makse",
+      "payment_failed": "Makse ebaõnnestus. Palun proovige uuesti.",
+      "status": {
+        "success": "Litsents edukalt ostetud!",
+        "pending": "Makse on töötlemisel...",
+        "failed": "Makse ebaõnnestus. Palun proovige uuesti.",
+        "check_failed": "Makse staatust ei õnnestunud kontrollida. Palun võtke ühendust toe meeskonnaga."
+      }
+    },
+    "success": {
+      "title": "Makse edukas!",
+      "subtitle": "Teie litsentsi makse on edukalt töödeldud.",
+      "order_details": "Tellimuse üksikasjad",
+      "license_details": "Litsentsi üksikasjad",
+      "license_details_count": "{{count}} mängija",
+      "license_details_count_plural": "{{count}} mängijat",
+      "what_happens_next": "Mis edasi saab?",
+      "next_steps": {
+        "invoice_sent": "Arve on saadetud teie e-posti aadressile",
+        "licenses_processing": "Litsentsid töödeldakse ja väljastatakse peagi",
+        "confirmation_email": "Saate kinnituskirja litsentsi üksikasjadega",
+        "processing_time": "Litsents aktiveerub mõne minuti jooksul ning on kajastatud reitingutabelis"
+      },
+      "need_help": "Vajate abi?",
+      "help_info": {
+        "questions": "Kui teil on küsimusi litsentsi ostu kohta:",
+        "contact_email": "Kontakt: eltl@eltl.ee",
+        "contact_phone": "Telefon: +372 XXX XXXX",
+        "include_reference": "Palun lisage oma tellimuse viide kõikidesse kirjadesse"
+      },
+      "order_info": {
+        "order_id": "Tellimuse ID:",
+        "amount": "Summa:",
+        "status": "Staatus:",
+        "customer": "Klient:",
+        "reference": "Viide:",
+        "transaction": "Tehing:"
+      },
+      "license_info": {
+        "eltl_id": "ELTL ID:",
+        "license_type": "Litsentsi tüüp:",
+        "cost": "Maksumus:",
+        "total_amount": "Kogusumma:"
+      },
+      "buttons": {
+        "purchase_more": "Osta rohkem litsentse",
+        "return_home": "Tagasi avalehele"
+      }
+    },
+    "cancel": {
+      "title": "Makse tühistatud",
+      "subtitle": "Teie makse tühistati. Teie kontolt ei võetud raha.",
+      "what_you_can_do": {
+        "title": "Mida saate nüüd teha",
+        "try_again": "Proovige makseprotsessi uuesti",
+        "check_payment": "Kontrollige oma makseviisi andmeid",
+        "contact_support": "Võtke ühendust toega, kui teil on probleeme",
+        "selections_saved": "Teie litsentside valikud on salvestatud"
+      },
+      "need_assistance": {
+        "title": "Vajate abi?",
+        "description": "Kui teil on makseprotsessiga probleeme:",
+        "contact_email": "Kontakt: eltl@eltl.ee",
+        "contact_phone": "Telefon: +372 XXX XXXX",
+        "help_text": "Oleme siin, et aidata teil litsentsi ostu lõpule viia"
+      },
+      "buttons": {
+        "try_again": "Proovige makset uuesti",
+        "return_home": "Tagasi avalehele"
+      }
     },
     "table": {
       "title": "Registreeritavad mängijad",
@@ -350,7 +436,8 @@
       "license_type": "Litsentsi tüüp",
       "price": "Hind",
       "action": "Tegevus",
-      "eltl_id": "ELTL ID"
+      "eltl_id": "ELTL ID",
+      "foreigner": "Välismaalane"
     },
     "summary": {
       "title": "Kokkuvõte",
@@ -364,7 +451,7 @@
     "empty_state_title": "Mängijaid pole lisatud",
     "info": {
       "title": "Litsentside hinnakiri",
-      "validity": "Kõik litsentsid kehtivad ühe kalendriaasta"
+      "validity": "Kõik litsentsid kehtivad poolteist kalendriaastat, v.a ühekordne litsents mis kehtib üheks võistluseks"
     },
     "types": {
       "adult": "Täiskasvanu litsents",
@@ -379,6 +466,10 @@
       "player_added": "Mängija edukalt lisatud",
       "player_removed": "Mängija eemaldatud",
       "redirecting": "Litsentisde ostmise funktsionaalsus on hetkel arenduses"
+    },
+    "validation": {
+      "invalid_isikukood": "Vigane isikukoodi formaat",
+      "birth_date_mismatch": "Sünnipäev ei kattu isikukoodiga"
     }
   },
   "competitions": {
@@ -582,11 +673,16 @@
         "profile": "Profiil",
         "club": "Klubi",
         "player": "Mängija",
-        "sex": "Sugu"
+        "sex": "Sugu",
+        "license": "Litsents"
       },
       "body": {
         "profile_button": "Mängija profiil"
       }
+    },
+    "license_status": {
+      "active": "Aktiivne",
+      "missing": "Puudub"
     },
     "player_modal": {
       "basic_information": {

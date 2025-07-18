@@ -24,9 +24,11 @@ export type User = {
   rate_pl_points: number;
   rate_points: number;
   rate_weigth: number;
-  oragnization_id: number;
   role: number;
-  licenseType: LicenseType;
+  license: string | null;
+  expiration_date: string | null;
+  isikukood?: string; 
+  selectedLicenseType?: LicenseType; 
 };
 
 export type UserLogin = {
