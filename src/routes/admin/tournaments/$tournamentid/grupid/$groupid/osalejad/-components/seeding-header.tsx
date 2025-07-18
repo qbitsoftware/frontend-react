@@ -280,15 +280,18 @@ const SeedingHeader = ({
 
       <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 w-full">
         <div className="flex flex-col sm:flex-row gap-2 flex-1">
-          <Button
-            onClick={handleOrder}
-            disabled={disabled}
-            variant="outline"
-            size="sm"
-            className="w-full sm:flex-1 h-9 text-sm font-medium"
-          >
-            {t("admin.tournaments.groups.order.order_by_rating")}
-          </Button>
+
+          {table_data.type !== GroupType.DYNAMIC && (
+            <Button
+              onClick={handleOrder}
+              disabled={disabled}
+              variant="outline"
+              size="sm"
+              className="w-full sm:flex-1 h-9 text-sm font-medium"
+            >
+              {t("admin.tournaments.groups.order.order_by_rating")}
+            </Button>
+          )}
 
           <Button
             disabled={disabled}
@@ -299,6 +302,7 @@ const SeedingHeader = ({
             <span>{t("admin.tournaments.groups.order.title")}</span>
             <img src={seeds3} className="h-4 w-4 object-contain" />
           </Button>
+
 
           {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
             <Button

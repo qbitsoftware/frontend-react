@@ -49,7 +49,7 @@ export default function SoloParticipants({ participants, group_participant, tour
         UseGetUsersDebounce(debouncedSearchTerm);
 
     useEffect(() => {
-        if (tournament_table.state >= TTState.TT_STATE_STARTED) {
+        if (tournament_table.state >= TTState.TT_STATE_STARTED || (tournament_table.type === GroupType.DYNAMIC && renderRR)) {
             setForceDisableOrdering(true)
         }
     }, [tournament_table])
