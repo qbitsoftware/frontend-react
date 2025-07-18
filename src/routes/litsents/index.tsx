@@ -15,11 +15,14 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { UseGetUsersDebounce } from "@/queries/users";
+import { UseGetClubsQuery } from "@/queries/clubs";
 import { capitalizeWords, useDebounce } from "@/lib/utils";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { User } from "@/types/users";
 import { LicenseType } from "@/types/license";
+import { useCreatePayment, useCheckPaymentStatus } from "@/queries/licenses";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Route = createFileRoute("/litsents/")({
   component: RouteComponent,
@@ -52,13 +55,30 @@ function RouteComponent() {
     first_name: "",
     last_name: "",
     birth_date: "",
+    isikukood: "",
+    club_name: "",
+    sex: "",
   });
+  const [validationErrors, setValidationErrors] = useState({
+    isikukood: "",
+    birth_date: "",
+  });
+  const [noEstonianId, setNoEstonianId] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [showManualEntry, setShowManualEntry] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const { data: playerSuggestions } = UseGetUsersDebounce(debouncedSearchTerm);
+  const { data: clubsData } = UseGetClubsQuery();
+  const createPaymentMutation = useCreatePayment();
+  const checkPaymentStatusMutation = useCheckPaymentStatus();
+  
+  const clubs = clubsData?.data || [];
+  const [clubDropdownOpen, setClubDropdownOpen] = useState(false);
+  const [clubSearchTerm, setClubSearchTerm] = useState("");
 
   const licenseTypes = [
     {
@@ -111,19 +131,86 @@ function RouteComponent() {
     }
   }, [debouncedSearchTerm]);
 
-  const addPlayer = () => {
-    if (newPlayer.first_name && newPlayer.last_name && newPlayer.birth_date) {
-      const currentYear = new Date().getFullYear();
-      const birthYear = parseInt(newPlayer.birth_date);
-      const age = currentYear - birthYear;
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+    const status = urlParams.get('status');
 
-      let defaultLicenseType = LicenseType.ADULT;
-      if (age < 15) {
-        defaultLicenseType = LicenseType.CHILD;
-      } else if (age >= 15 && age <= 19) {
-        defaultLicenseType = LicenseType.YOUTH;
-      } else if (age >= 65) {
-        defaultLicenseType = LicenseType.SENIOR;
+    if (status === 'cancel') {
+      toast.message('Payment was cancelled');
+      window.location.href = '/litsents/cancel';
+      return;
+    } else if (status === 'failed') {
+      toast.error(t('licenses.payment.status.failed'));
+      window.location.href = '/litsents/cancel';
+      return;
+    }
+
+    if (orderId || status === 'success') {
+      const orderIdToCheck = orderId || new URLSearchParams(window.location.search).get('order_id');
+      
+      if (orderIdToCheck) {
+        checkPaymentStatusMutation.mutateAsync(orderIdToCheck)
+          .then((result) => {
+            if (result.data?.status === 'active') {
+              toast.success(t('licenses.payment.status.success'));
+              window.location.href = '/litsents/success';
+            } else if (result.data?.status === 'pending') {
+              toast.message(t('licenses.payment.status.pending'));
+            } else {
+              toast.error(t('licenses.payment.status.failed'));
+              // Redirect to cancel page
+              window.location.href = '/litsents/cancel';
+            }
+          })
+          .catch((error) => {
+            console.error('Payment status check failed:', error);
+            toast.error(t('licenses.payment.status.check_failed'));
+          });
+      } else if (status === 'success') {
+        toast.success(t('licenses.payment.status.success'));
+        window.location.href = '/litsents/success';
+      }
+    }
+  }, [t]);
+
+  const addPlayer = () => {
+    const requiredFieldsPresent = newPlayer.first_name && newPlayer.last_name && 
+        newPlayer.birth_date && newPlayer.sex && (noEstonianId || newPlayer.isikukood);
+    
+    
+    if (requiredFieldsPresent) {
+      if (!noEstonianId && newPlayer.isikukood) {
+        const validation = validateIsikukoodWithBirthDate(newPlayer.isikukood, newPlayer.birth_date);
+        if (!validation.isValid) {
+          validateForm(newPlayer.isikukood, newPlayer.birth_date);
+          toast.error(validation.message);
+          return;
+        }
+      }
+      
+      const birthDate = new Date(newPlayer.birth_date);
+      const currentDate = new Date();
+      const age = currentDate.getFullYear() - birthDate.getFullYear();
+
+      const clubName = newPlayer.club_name.trim() || "KLUBITU";
+
+      let defaultLicenseType = LicenseType.NO_CLUB;
+      let foreignerStatus = 0;
+      
+      if (noEstonianId) {
+        defaultLicenseType = LicenseType.FOREIGNER;
+        foreignerStatus = 1;
+      } else if (clubName !== "KLUBITU") {
+        if (age < 15) {
+          defaultLicenseType = LicenseType.CHILD;
+        } else if (age >= 15 && age <= 19) {
+          defaultLicenseType = LicenseType.YOUTH;
+        } else if (age >= 65) {
+          defaultLicenseType = LicenseType.SENIOR;
+        } else {
+          defaultLicenseType = LicenseType.ADULT;
+        }
       }
 
       const newUser: User = {
@@ -135,23 +222,48 @@ function RouteComponent() {
         created_at: new Date().toISOString(),
         eltl_id: 0,
         birth_date: newPlayer.birth_date,
-        sex: "",
-        foreigner: 0,
-        club_name: "",
+        sex: newPlayer.sex,
+        foreigner: foreignerStatus,
+        club_name: clubName,
         rate_order: 0,
         rate_pl_points: 0,
         rate_points: 0,
         rate_weigth: 0,
-        oragnization_id: 0,
         role: 0,
-        licenseType: defaultLicenseType,
+        license: null,
+        expiration_date: null,
+        isikukood: noEstonianId ? undefined : newPlayer.isikukood,
+        selectedLicenseType: defaultLicenseType,
       };
 
       setPlayers([...players, newUser]);
-      setNewPlayer({ first_name: "", last_name: "", birth_date: "" });
+      setNewPlayer({ 
+        first_name: "", 
+        last_name: "", 
+        birth_date: "", 
+        isikukood: "", 
+        club_name: "", 
+        sex: "" 
+      });
+      setValidationErrors({
+        isikukood: "",
+        birth_date: "",
+      });
+      setNoEstonianId(false);
+      setClubDropdownOpen(false);
+      setClubSearchTerm("");
       setSearchTerm("");
       setShowManualEntry(false);
       toast.success(t("licenses.toasts.player_added"));
+    } else {
+      const missingFields = [];
+      if (!newPlayer.first_name) missingFields.push("First name");
+      if (!newPlayer.last_name) missingFields.push("Last name");
+      if (!newPlayer.birth_date) missingFields.push("Birth date");
+      if (!newPlayer.sex) missingFields.push("Gender");
+      if (!noEstonianId && !newPlayer.isikukood) missingFields.push("Estonian ID code");
+      
+      toast.error(`Please fill in all required fields: ${missingFields.join(", ")}`);
     }
   };
 
@@ -170,6 +282,8 @@ function RouteComponent() {
       defaultLicenseType = LicenseType.SENIOR;
     }
 
+    const finalLicenseType = user.club_name === "KLUBITU" ? LicenseType.NO_CLUB : defaultLicenseType;
+
     const newUser: User = {
       id: Date.now(),
       email: "",
@@ -186,9 +300,10 @@ function RouteComponent() {
       rate_pl_points: 0,
       rate_points: 0,
       rate_weigth: 0,
-      oragnization_id: 0,
       role: 0,
-      licenseType: defaultLicenseType,
+      license: null,
+      expiration_date: null,
+      selectedLicenseType: finalLicenseType,
     };
 
     setPlayers([...players, newUser]);
@@ -204,7 +319,7 @@ function RouteComponent() {
 
   const updateLicenseType = (playerId: number, licenseType: LicenseType) => {
     setPlayers(
-      players.map((p) => (p.id === playerId ? { ...p, licenseType } : p)),
+      players.map((p) => (p.id === playerId ? { ...p, selectedLicenseType: licenseType } : p)),
     );
   };
 
@@ -214,36 +329,227 @@ function RouteComponent() {
   };
 
   const getAvailableLicenseTypes = (player: User) => {
-    // Get the player's age-based default license type
-    const currentYear = new Date().getFullYear();
-    const birthDate = player.birth_date || "";
-    const birthYear = birthDate ? parseInt(birthDate) : 0;
-    const age = birthYear ? currentYear - birthYear : 0;
+    let availableTypes = [];
 
-    let defaultLicenseType = LicenseType.ADULT;
-    if (age < 15) {
-      defaultLicenseType = LicenseType.CHILD;
-    } else if (age >= 15 && age <= 19) {
-      defaultLicenseType = LicenseType.YOUTH;
-    } else if (age >= 65) {
-      defaultLicenseType = LicenseType.SENIOR;
+    if (player.foreigner === 1) {
+      availableTypes = licenseTypes.filter(type => 
+        type.id === LicenseType.FOREIGNER || 
+        type.id === LicenseType.ONE_TIME
+      );
+    }
+    else if (player.club_name === "KLUBITU") {
+      availableTypes = licenseTypes.filter(type => 
+        type.id === LicenseType.NO_CLUB || 
+        type.id === LicenseType.FOREIGNER || 
+        type.id === LicenseType.ONE_TIME
+      );
+    }
+    else {
+      const currentYear = new Date().getFullYear();
+      const birthDate = player.birth_date || "";
+      let age = 0;
+      
+      if (birthDate.includes("-")) {
+        age = currentYear - new Date(birthDate).getFullYear();
+      } else {
+        const birthYear = parseInt(birthDate);
+        age = birthYear ? currentYear - birthYear : 0;
+      }
+
+      let defaultLicenseType = LicenseType.ADULT;
+      if (age < 15) {
+        defaultLicenseType = LicenseType.CHILD;
+      } else if (age >= 15 && age <= 19) {
+        defaultLicenseType = LicenseType.YOUTH;
+      } else if (age >= 65) {
+        defaultLicenseType = LicenseType.SENIOR;
+      }
+
+      availableTypes = licenseTypes.filter(type => 
+        type.id === defaultLicenseType || 
+        type.id === LicenseType.FOREIGNER || 
+        type.id === LicenseType.ONE_TIME
+      );
     }
 
-    // Return only the default license type and foreigner license
-    return licenseTypes.filter(type => 
-      type.id === defaultLicenseType || type.id === LicenseType.FOREIGNER
-    );
+    const hasOneTime = availableTypes.some(type => type.id === LicenseType.ONE_TIME);
+    if (!hasOneTime) {
+      const oneTimeType = licenseTypes.find(type => type.id === LicenseType.ONE_TIME);
+      if (oneTimeType) {
+        availableTypes.push(oneTimeType);
+      }
+    }
+
+    return availableTypes;
   };
 
   const calculateTotal = () => {
     return players.reduce((total, player) => {
-      return total + getLicenseTypePrice(player.licenseType);
+      return total + getLicenseTypePrice(player.selectedLicenseType || LicenseType.ADULT);
     }, 0);
   };
 
-  const handleCompletePayment = () => {
-    // Here you would implement the payment logic
-    toast.success(t("licenses.toasts.redirecting"));
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const getClubImage = (clubName: string) => {
+    const club = clubs.find((club) => club.name === clubName);
+    return club?.image_url || "";
+  };
+
+  const filteredClubs = clubs.filter(club => 
+    club.name.toLowerCase().includes(clubSearchTerm.toLowerCase())
+  );
+
+  const clubOptions = [
+    { name: "KLUBITU", image_url: "" },
+    ...filteredClubs.filter(club => club.name !== "KLUBITU")
+  ];
+
+  const handleClubSelect = (clubName: string) => {
+    setNewPlayer({ ...newPlayer, club_name: clubName });
+    setClubDropdownOpen(false);
+    setClubSearchTerm("");
+  };
+
+  const extractBirthDateFromIsikukood = (isikukood: string) => {
+    if (!isikukood || isikukood.length < 7) return null;
+    
+    const firstDigit = parseInt(isikukood[0]);
+    const year = isikukood.substring(1, 3);
+    const month = isikukood.substring(3, 5);
+    const day = isikukood.substring(5, 7);
+    
+    let century;
+    if (firstDigit >= 1 && firstDigit <= 2) {
+      century = 1800;
+    } else if (firstDigit >= 3 && firstDigit <= 4) {
+      century = 1900;
+    } else if (firstDigit >= 5 && firstDigit <= 6) {
+      century = 2000;
+    } else if (firstDigit >= 7 && firstDigit <= 8) {
+      century = 2100;
+    } else {
+      return null; 
+    }
+    
+    const fullYear = century + parseInt(year);
+    
+    const monthNum = parseInt(month);
+    const dayNum = parseInt(day);
+    
+    if (monthNum < 1 || monthNum > 12 || dayNum < 1 || dayNum > 31) {
+      return null;
+    }
+    
+    return {
+      year: fullYear,
+      month: monthNum,
+      day: dayNum,
+      dateString: `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    };
+  };
+
+  const validateIsikukoodWithBirthDate = (isikukood: string, birthDate: string) => {
+    if (!isikukood || !birthDate) return { isValid: true, message: "" };
+    
+    const extractedDate = extractBirthDateFromIsikukood(isikukood);
+    if (!extractedDate) {
+      return { 
+        isValid: false, 
+        message: t("licenses.validation.invalid_isikukood") 
+      };
+    }
+    
+    if (extractedDate.dateString !== birthDate) {
+      return { 
+        isValid: false, 
+        message: t("licenses.validation.birth_date_mismatch") 
+      };
+    }
+    
+    return { isValid: true, message: "" };
+  };
+
+  const validateForm = (isikukood: string, birthDate: string, skipIdValidation = false) => {
+    if (skipIdValidation) {
+      setValidationErrors({
+        isikukood: "",
+        birth_date: "",
+      });
+      return;
+    }
+    
+    const validation = validateIsikukoodWithBirthDate(isikukood, birthDate);
+    
+    if (!validation.isValid) {
+      setValidationErrors({
+        isikukood: validation.message,
+        birth_date: validation.message,
+      });
+    } else {
+      setValidationErrors({
+        isikukood: "",
+        birth_date: "",
+      });
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    if (emailError && validateEmail(value)) {
+      setEmailError("");
+    }
+  };
+
+  const handleCompletePayment = async () => {
+    if (!email) {
+      setEmailError("Email address is required");
+      return;
+    }
+    
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+
+    if (players.length === 0) {
+      toast.error("Please add at least one player to continue");
+      return;
+    }
+
+    setEmailError("");
+
+    try {
+      const result = await createPaymentMutation.mutateAsync({
+        email: email,
+        players: players.map(p => ({
+          id: p.id,
+          first_name: p.first_name.toUpperCase(),
+          last_name: p.last_name.toUpperCase(),
+          birth_date: p.birth_date.split(' ')[0], // Only send date part (YYYY-MM-DD)
+          licenseType: p.selectedLicenseType || LicenseType.ADULT,
+          eltl_id: p.eltl_id,
+          club_name: p.club_name,
+          sex: p.sex,
+          isikukood: p.isikukood,
+          foreigner: p.foreigner,
+        })),
+        total: calculateTotal(),
+        currency: 'EUR'
+      });
+      
+      if (result.data?.payment_url) {
+        window.location.href = result.data.payment_url;
+      } else {
+        toast.error(result.error || t("licenses.payment.payment_failed"));
+      }
+    } catch (error) {
+      console.error('Payment initialization error:', error);
+      toast.error(t("licenses.payment.payment_failed"));
+    }
   };
 
   return (
@@ -357,7 +663,17 @@ function RouteComponent() {
                       first_name: "",
                       last_name: "",
                       birth_date: "",
+                      isikukood: "",
+                      club_name: "",
+                      sex: "",
                     });
+                    setValidationErrors({
+                      isikukood: "",
+                      birth_date: "",
+                    });
+                    setNoEstonianId(false);
+                    setClubDropdownOpen(false);
+                    setClubSearchTerm("");
                   }}
                   className="text-gray-600 hover:text-[#4C97F1] flex items-center text-sm font-medium transition-colors"
                 >
@@ -365,7 +681,7 @@ function RouteComponent() {
                   {t("licenses.add_player.back_to_search")}
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input
                   type="text"
                   placeholder={t("licenses.add_player.first_name")}
@@ -385,14 +701,146 @@ function RouteComponent() {
                   className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm"
                 />
                 <input
-                  type="number"
-                  placeholder={t("licenses.add_player.birth_year")}
+                  type="date"
+                  placeholder={t("licenses.add_player.birth_date")}
                   value={newPlayer.birth_date}
+                  onChange={(e) => {
+                    const newBirthDate = e.target.value;
+                    setNewPlayer({ ...newPlayer, birth_date: newBirthDate });
+                    validateForm(newPlayer.isikukood, newBirthDate, noEstonianId);
+                  }}
+                  className={`px-4 py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm ${
+                    validationErrors.birth_date 
+                      ? "border-red-300 hover:border-red-400 focus:border-red-500" 
+                      : "border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1]"
+                  }`}
+                />
+                <input
+                  type="text"
+                  placeholder={t("licenses.add_player.isikukood")}
+                  value={newPlayer.isikukood}
+                  onChange={(e) => {
+                    const newIsikukood = e.target.value;
+                    setNewPlayer({ ...newPlayer, isikukood: newIsikukood });
+                    validateForm(newIsikukood, newPlayer.birth_date, noEstonianId);
+                  }}
+                  className={`px-4 py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm ${
+                    validationErrors.isikukood 
+                      ? "border-red-300 hover:border-red-400 focus:border-red-500" 
+                      : "border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1]"
+                  }`}
+                  disabled={noEstonianId}
+                />
+                
+                {/* Checkbox for no Estonian ID */}
+                <div className="sm:col-span-2 flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="noEstonianId"
+                    checked={noEstonianId}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setNoEstonianId(checked);
+                      if (checked) {
+                        // Clear isikukood and validation errors when opting out
+                        setNewPlayer({ ...newPlayer, isikukood: "" });
+                        setValidationErrors({ isikukood: "", birth_date: "" });
+                      }
+                      // Re-validate form with new state
+                      validateForm(newPlayer.isikukood, newPlayer.birth_date, checked);
+                    }}
+                    className="w-4 h-4 text-[#4C97F1] border-2 border-gray-300 rounded focus:ring-[#4C97F1] focus:ring-2"
+                  />
+                  <label htmlFor="noEstonianId" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    {t("licenses.add_player.no_estonian_id")}
+                  </label>
+                </div>
+                
+                <div className="relative">
+                  <Popover open={clubDropdownOpen} onOpenChange={setClubDropdownOpen}>
+                    <PopoverTrigger asChild>
+                      <div className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm cursor-pointer bg-white">
+                        {newPlayer.club_name ? (
+                          <div className="flex items-center space-x-2">
+                            <Avatar className="w-6 h-6 flex-shrink-0">
+                              <AvatarImage
+                                src={getClubImage(newPlayer.club_name)}
+                                alt={`${newPlayer.club_name} logo`}
+                              />
+                              <AvatarFallback className="text-xs font-semibold bg-gray-100">
+                                {newPlayer.club_name.substring(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">{newPlayer.club_name}</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-500 text-sm">{t("licenses.add_player.club")}</span>
+                        )}
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-0" align="start">
+                      <div className="p-3">
+                        <Input
+                          placeholder={t("licenses.add_player.search_club")}
+                          value={clubSearchTerm}
+                          onChange={(e) => setClubSearchTerm(e.target.value)}
+                          className="mb-2"
+                        />
+                        <div className="max-h-48 overflow-y-auto">
+                          {clubOptions.map((club, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
+                              onClick={() => handleClubSelect(club.name)}
+                            >
+                              <Avatar className="w-8 h-8 flex-shrink-0">
+                                <AvatarImage
+                                  src={club.image_url}
+                                  alt={`${club.name} logo`}
+                                />
+                                <AvatarFallback className="text-xs font-semibold bg-gray-100">
+                                  {club.name.substring(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-sm font-medium">{club.name}</span>
+                            </div>
+                          ))}
+                          {clubOptions.length === 0 && (
+                            <div className="p-2 text-sm text-gray-500 text-center">
+                              {t("licenses.add_player.no_clubs_found")}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <select
+                  value={newPlayer.sex}
                   onChange={(e) =>
-                    setNewPlayer({ ...newPlayer, birth_date: e.target.value })
+                    setNewPlayer({ ...newPlayer, sex: e.target.value })
                   }
                   className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm"
-                />
+                >
+                  <option value="">{t("licenses.add_player.gender")}</option>
+                  <option value="M">{t("licenses.add_player.gender_male")}</option>
+                  <option value="N">{t("licenses.add_player.gender_female")}</option>
+                </select>
+              </div>
+              
+              {/* Validation errors */}
+              {(validationErrors.isikukood || validationErrors.birth_date) && (
+                <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-200">
+                  <p className="text-sm text-red-700">
+                    {validationErrors.isikukood || validationErrors.birth_date}
+                  </p>
+                </div>
+              )}
+              
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700">
+                  {t("licenses.add_player.club_help")}
+                </p>
               </div>
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-6">
                 <button
@@ -449,7 +897,7 @@ function RouteComponent() {
                   <tbody className="divide-y divide-gray-100">
                     {players.map((player) => {
                       const license = licenseTypes.find(
-                        (l) => l.id === player.licenseType,
+                        (l) => l.id === player.selectedLicenseType,
                       );
                       return (
                         <tr key={player.id} className="hover:bg-[#4C97F1]/5 transition-colors">
@@ -461,6 +909,11 @@ function RouteComponent() {
                               <div className="min-w-0 flex-1">
                                 <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                                   {player.first_name} {player.last_name}
+                                  {player.foreigner === 1 && (
+                                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                      {t("licenses.table.foreigner")}
+                                    </span>
+                                  )}
                                 </div>
                                 {player.eltl_id && player.eltl_id > 0 && (
                                   <div className="text-xs text-gray-500 hidden sm:block">
@@ -484,7 +937,7 @@ function RouteComponent() {
                           </td>
                           <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
                             <select
-                              value={player.licenseType}
+                              value={player.selectedLicenseType || LicenseType.ADULT}
                               onChange={(e) =>
                                 handleLicenseTypeChange(player.id, e.target.value)
                               }
@@ -501,7 +954,7 @@ function RouteComponent() {
                             <div className="text-sm sm:text-lg font-bold text-[#4C97F1]">
                               €{license
                                 ? license.price
-                                : getLicenseTypePrice(player.licenseType)}
+                                : getLicenseTypePrice(player.selectedLicenseType || LicenseType.ADULT)}
                             </div>
                           </td>
                           <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
@@ -551,12 +1004,40 @@ function RouteComponent() {
                 </div>
               </div>
 
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("licenses.payment.email_label")}
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  placeholder={t("licenses.payment.email_placeholder")}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm ${
+                    emailError 
+                      ? 'border-red-300 focus:border-red-500' 
+                      : 'border-gray-200 hover:border-green-400 focus:border-green-500'
+                  }`}
+                />
+                {emailError && (
+                  <p className="mt-2 text-sm text-red-600">{emailError}</p>
+                )}
+                <p className="mt-2 text-sm text-gray-600">
+                  {t("licenses.payment.email_help")}
+                </p>
+              </div>
+
               <button
                 onClick={handleCompletePayment}
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 px-6 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                disabled={createPaymentMutation.isPending}
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
               >
-                <ShoppingCart className="w-5 h-5 mr-3" />
-                {t("licenses.summary.complete_payment")}
+                {createPaymentMutation.isPending ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                ) : (
+                  <ShoppingCart className="w-5 h-5 mr-3" />
+                )}
+                {createPaymentMutation.isPending ? t("licenses.payment.processing") : t("licenses.payment.complete_payment")}
               </button>
             </div>
           )}

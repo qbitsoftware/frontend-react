@@ -305,9 +305,95 @@
       "back_to_search": "Back to search",
       "first_name": "First Name",
       "surname": "Surname",
+      "birth_date": "Date of Birth",
       "birth_year": "Birth Year",
+      "isikukood": "Estonian National ID Code",
+      "club": "Club Name",
+      "gender": "Gender",
+      "gender_male": "Male",
+      "gender_female": "Female",
       "add_to_list": "Add Player to List",
-      "manual_help_text": "Enter details for a player not in the database. All fields are required."
+      "manual_help_text": "Enter details for a player not in the database. All fields are required.",
+      "club_help": "Leave empty or enter 'KLUBITU' if player has no club affiliation",
+      "no_estonian_id": "I don't have an Estonian ID code",
+      "search_club": "Search for club...",
+      "no_clubs_found": "No clubs found"
+    },
+    "payment": {
+      "email_label": "Email Address",
+      "email_placeholder": "Enter email for invoice",
+      "email_help": "We'll send the invoice to this email address",
+      "processing": "Processing payment...",
+      "complete_payment": "Complete Payment",
+      "payment_failed": "Payment failed. Please try again.",
+      "status": {
+        "success": "License purchased successfully!",
+        "pending": "Payment is being processed...",
+        "failed": "Payment was not successful. Please try again.",
+        "check_failed": "Unable to verify payment status. Please contact support."
+      }
+    },
+    "success": {
+      "title": "Payment Successful!",
+      "subtitle": "Your license payment has been processed successfully.",
+      "order_details": "Order Details",
+      "license_details": "License Details",
+      "license_details_count": "{{count}} player",
+      "license_details_count_plural": "{{count}} players",
+      "what_happens_next": "What happens next?",
+      "next_steps": {
+        "invoice_sent": "Invoice has been sent to your email address",
+        "licenses_processing": "Licenses are being processed and will be issued shortly",
+        "confirmation_email": "You will receive a confirmation email with license details",
+        "processing_time": "Licenses will be activated within 5 minutes and visible from the ranking chart."
+      },
+      "need_help": "Need help?",
+      "help_info": {
+        "questions": "If you have any questions about your license purchase:",
+        "contact_email": "Contact: eltl@eltl.ee",
+        "contact_phone": "Phone: +372 XXX XXXX",
+        "include_reference": "Please include your order reference in any correspondence"
+      },
+      "order_info": {
+        "order_id": "Order ID:",
+        "amount": "Amount:",
+        "status": "Status:",
+        "customer": "Customer:",
+        "reference": "Reference:",
+        "transaction": "Transaction:"
+      },
+      "license_info": {
+        "eltl_id": "ELTL ID:",
+        "license_type": "License Type:",
+        "cost": "Cost:",
+        "total_amount": "Total Amount:"
+      },
+      "buttons": {
+        "purchase_more": "Purchase More Licenses",
+        "return_home": "Return to Homepage"
+      }
+    },
+    "cancel": {
+      "title": "Payment Cancelled",
+      "subtitle": "Your payment was cancelled. No charges have been made to your account.",
+      "what_you_can_do": {
+        "title": "What you can do now",
+        "try_again": "Try the payment process again",
+        "check_payment": "Check your payment method details",
+        "contact_support": "Contact support if you're experiencing issues",
+        "selections_saved": "Your license selections have been saved"
+      },
+      "need_assistance": {
+        "title": "Need assistance?",
+        "description": "If you're having trouble with the payment process:",
+        "contact_email": "Contact: eltl@eltl.ee",
+        "contact_phone": "Phone: +372 XXX XXXX",
+        "help_text": "We're here to help you complete your license purchase"
+      },
+      "buttons": {
+        "try_again": "Try Payment Again",
+        "return_home": "Return to Homepage"
+      }
     },
     "table": {
       "title": "Players to Register",
@@ -317,7 +403,8 @@
       "license_type": "License Type",
       "price": "Price",
       "action": "Action",
-      "eltl_id": "ELTL ID"
+      "eltl_id": "ELTL ID",
+      "foreigner": "Foreigner"
     },
     "summary": {
       "title": "Total Summary",
@@ -331,7 +418,7 @@
     "empty_state_title": "No Players Added",
     "info": {
       "title": "License Pricing",
-      "validity": "All licenses are valid for one calendar year"
+      "validity": "All licenses are valid for 1.5 calendar years, except for the one-time license which is valid for one tournament."
     },
     "types": {
       "adult": "Adult license",
@@ -346,6 +433,10 @@
       "player_added": "Player added successfully",
       "player_removed": "Player removed",
       "redirecting": "License purchasing functionality is currently in development"
+    },
+    "validation": {
+      "invalid_isikukood": "Invalid personal identification code format",
+      "birth_date_mismatch": "Birth date does not match the personal identification code"
     }
   },
   "competitions": {
@@ -550,11 +641,16 @@
         "profile": "Profile",
         "club": "Club",
         "player": "Player",
-        "sex": "Sex"
+        "sex": "Sex",
+        "license": "License"
       },
       "body": {
         "profile_button": "Player profile"
       }
+    },
+    "license_status": {
+      "active": "Active",
+      "missing": "Missing"
     },
     "player_modal": {
       "basic_information": {
