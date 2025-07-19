@@ -317,7 +317,8 @@
       "club_help": "Leave empty or enter 'KLUBITU' if player has no club affiliation",
       "no_estonian_id": "I don't have an Estonian ID code",
       "search_club": "Search for club...",
-      "no_clubs_found": "No clubs found"
+      "no_clubs_found": "No clubs found",
+      "auto_generated": "Auto-generated from ID code"
     },
     "payment": {
       "email_label": "Email Address",
@@ -437,6 +438,13 @@
     "validation": {
       "invalid_isikukood": "Invalid personal identification code format",
       "birth_date_mismatch": "Birth date does not match the personal identification code"
+    },
+    "verification": {
+      "verifying_id": "Verifying Estonian ID...",
+      "verification_failed": "ID verification failed. Please check your details.",
+      "name_id_mismatch": "The provided name does not match the Estonian ID records.",
+      "verification_unavailable": "ID verification service is temporarily unavailable.",
+      "verification_success": "Estonian ID verified successfully."
     }
   },
   "competitions": {
@@ -614,6 +622,12 @@
     },
     "last_updated": "Last updated",
     "abbreviations": "Abbreviations: NR = rank in rating, PP = placement points, RP = rating points, ID = ELTLID, YOB = year of birth",
+    "license_info": {
+      "title": "License Information",
+      "message": "Licenses will be required starting from January 1, 2026, and can be bought",
+      "link_text": "here",
+      "additional_info": "Before then, they are not required for participating in tournaments."
+    },
     "filtering": {
       "buttons": {
         "men": "Men",
