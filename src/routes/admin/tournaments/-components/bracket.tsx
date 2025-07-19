@@ -54,7 +54,8 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
   const isMeistrikad = tournament_table.type === GroupType.CHAMPIONS_LEAGUE;
   const isRoundRobinFull =
     tournament_table.type === GroupType.ROUND_ROBIN ||
-    tournament_table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
+    tournament_table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
+    tournament_table.type === GroupType.DYNAMIC;
 
   const handleSelectMatch = (match: MatchWrapper) => {
     // Prevent clicking on matches where both participants are empty

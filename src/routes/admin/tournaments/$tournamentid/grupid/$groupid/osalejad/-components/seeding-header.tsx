@@ -281,20 +281,18 @@ const SeedingHeader = ({
       <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 w-full">
         <div className="flex flex-col sm:flex-row gap-2 flex-1">
 
-          {table_data.type !== GroupType.DYNAMIC && (
-            <Button
-              onClick={handleOrder}
-              disabled={disabled}
-              variant="outline"
-              size="sm"
-              className="w-full sm:flex-1 h-9 text-sm font-medium"
-            >
-              {t("admin.tournaments.groups.order.order_by_rating")}
-            </Button>
-          )}
+          <Button
+            onClick={handleOrder}
+            disabled={disabled}
+            variant="outline"
+            size="sm"
+            className="w-full sm:flex-1 h-9 text-sm font-medium"
+          >
+            {t("admin.tournaments.groups.order.order_by_rating")}
+          </Button>
 
           <Button
-            disabled={disabled}
+            disabled={false}
             onClick={() => handleSeeding("rating")}
             size="sm"
             className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"

@@ -112,7 +112,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                     {getWinnerName(match)}
                                 </TableCell>
                                 <TableCell>
-                                    {match.match.type === "winner" ? t("admin.tournaments.matches.table.winner_bracket") : t("admin.tournaments.matches.table.loser_bracket")}
+                                    {match.match.type === "winner" ? t("admin.tournaments.matches.table.winner_bracket") : match.match.type === "loser" ? t("admin.tournaments.matches.table.loser_bracket") : ""}
                                 </TableCell>
                             </TableRow>
                         ))}

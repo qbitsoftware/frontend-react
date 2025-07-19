@@ -271,26 +271,45 @@ export default function GroupStageBracket({
                     >
                         {find_matches[index] ? (
                             <>
-                                <span className="font-bold text-sm text-blue-600">
-                                    {find_matches[index].match.winner_id === p1_id
-                                        ? 2
-                                        : find_matches[index].match.winner_id !== ""
-                                            ? 1
-                                            : 0}
-                                </span>
-                                <div className="flex items-center space-x-1">
-                                    <p className="w-6 text-center font-medium">
-                                        {find_matches[index].match.p1_id === p1_id
-                                            ? find_matches[index].match.extra_data.team_1_total
-                                            : find_matches[index].match.extra_data.team_2_total}
-                                    </p>
-                                    <span className="text-gray-500">-</span>
-                                    <p className="w-6 text-center font-medium">
-                                        {find_matches[index].match.p1_id === p1_id
-                                            ? find_matches[index].match.extra_data.team_2_total
-                                            : find_matches[index].match.extra_data.team_1_total}
-                                    </p>
-                                </div>
+                                {find_matches[index].match.forfeit ? (
+                                    <>
+                                        <span className="font-bold text-sm text-blue-600">
+                                            {find_matches[index].match.winner_id === p1_id ? 2 : find_matches[index].match.winner_id !== "" ? 1 : 0}
+                                        </span>
+                                        <div className="flex items-center space-x-1">
+                                            <p className={`w-6 text-center ${find_matches[index].match.winner_id === p1_id ? 'font-bold' : 'font-normal'}`}>
+                                                w
+                                            </p>
+                                            <span className="text-gray-500">-</span>
+                                            <p className={`w-6 text-center ${find_matches[index].match.winner_id !== p1_id && find_matches[index].match.winner_id !== "" ? 'font-bold' : 'font-normal'}`}>
+                                                o
+                                            </p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="font-bold text-sm text-blue-600">
+                                            {find_matches[index].match.winner_id === p1_id
+                                                ? 2
+                                                : find_matches[index].match.winner_id !== ""
+                                                    ? 1
+                                                    : 0}
+                                        </span>
+                                        <div className="flex items-center space-x-1">
+                                            <p className="w-6 text-center font-medium">
+                                                {find_matches[index].match.p1_id === p1_id
+                                                    ? find_matches[index].match.extra_data.team_1_total
+                                                    : find_matches[index].match.extra_data.team_2_total}
+                                            </p>
+                                            <span className="text-gray-500">-</span>
+                                            <p className="w-6 text-center font-medium">
+                                                {find_matches[index].match.p1_id === p1_id
+                                                    ? find_matches[index].match.extra_data.team_2_total
+                                                    : find_matches[index].match.extra_data.team_1_total}
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
                             </>
                         ) : (
                             <>
@@ -425,9 +444,19 @@ export default function GroupStageBracket({
 
     return (
         <div className="container mx-auto">
-            {roundRobins.map((roundRobinBracket, index) =>
-                renderGroupTable(roundRobinBracket, index)
-            )}
+            {roundRobins
+                .sort((a, b) => {
+                    const groupA = a.find(bracket => bracket.participant.group_id === "");
+                    const groupB = b.find(bracket => bracket.participant.group_id === "");
+
+                    const orderA = groupA?.participant.order ?? 0;
+                    const orderB = groupB?.participant.order ?? 0;
+
+                    return orderA - orderB;
+                })
+                .map((roundRobinBracket, index) =>
+                    renderGroupTable(roundRobinBracket, index)
+                )}
         </div>
     );
 }
