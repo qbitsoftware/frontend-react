@@ -28,6 +28,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@/types/users";
 import { UseGetClubsQuery } from "@/queries/clubs";
 import placeholderImg from "@/assets/blue-profile.png";
+import { Link } from "@tanstack/react-router";
 
 interface UserTableProps {
   users: User[];
@@ -54,19 +55,38 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
     return club?.image_url || "";
   };
 
-  const getLicenseStatus = (license: string | null, expirationDate: string | null) => {
+  const getLicenseInfo = (license: string | null, expirationDate: string | null) => {
     if (license && license !== null && license !== "") {
       // Check if license is expired
       if (expirationDate) {
         const expDate = new Date(expirationDate);
         const now = new Date();
         if (expDate < now) {
-          return t("rating.license_status.missing");
+          return {
+            text: t("rating.license_status.missing"),
+            isActive: false
+          };
         }
+        // Format expiration date (DD.MM.YYYY)
+        const formattedDate = expDate.toLocaleDateString('et-EE', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+        return {
+          text: formattedDate,
+          isActive: true
+        };
       }
-      return t("rating.license_status.active");
+      return {
+        text: t("rating.license_status.active"),
+        isActive: true
+      };
     }
-    return t("rating.license_status.missing");
+    return {
+      text: t("rating.license_status.missing"),
+      isActive: false
+    };
   };
 
   const getSexAndCombined = (tab: string) => {
@@ -175,12 +195,35 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
               {getMondayOfCurrentWeek()}
             </span>
           </p>
-          <p className="pb-6 sm:pb-8 text-xs sm:text-sm text-gray-600">
+          <p className="pb-4 text-xs sm:text-sm text-gray-600">
             {t("rating.abbreviations")}
           </p>
+          
+          <div className="mb-6 sm:mb-12 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-white text-sm font-bold">i</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-blue-900 mb-1">
+                  {t("rating.license_info.title", "License Information")}
+                </p>
+                <p className="text-sm text-blue-700">
+                  {t("rating.license_info.message", "Licenses will be required starting from January 1, 2026, and can be bought")} {" "}
+                  <Link 
+                    to="/litsents" 
+                    className="text-blue-600 hover:text-blue-800 underline font-medium"
+                  >
+                    {t("rating.license_info.link_text", "here")}
+                  </Link>
+                  . {t("rating.license_info.additional_info", "Before then, they are not required for participating in tournaments.")}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="border rounded-t-[12px]">
+        <div className="mt-5 border rounded-t-[12px]">
           <div className="border-b border-stone-200 bg-[#EBEFF5] rounded-t-[12px] flex flex-col gap-3 sm:gap-4 lg:grid lg:grid-cols-12 lg:gap-4 items-stretch lg:items-center w-full p-3 sm:p-4 lg:p-1 mb-1">
             <div className="relative w-full lg:col-span-3">
               <Input
@@ -192,7 +235,6 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
             </div>
 
-            {/* Age Class Select */}
             <div className="w-full lg:col-span-3">
               <Select value={ageClass} onValueChange={handleAgeClassChange}>
                 <SelectTrigger className="w-full h-10 sm:h-12 flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm bg-[#F7F6F7]">
@@ -226,7 +268,6 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
               </Select>
             </div>
 
-            {/* Gender Tabs */}
             <div className="w-full lg:col-span-4">
               <Tabs
                 defaultValue="men"
@@ -353,15 +394,20 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                       </span>
                     </TableCell>
                     <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden lg:table-cell">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          user.license && user.license !== ""
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {getLicenseStatus(user.license, user.expiration_date)}
-                      </span>
+                      {(() => {
+                        const licenseInfo = getLicenseInfo(user.license, user.expiration_date);
+                        return (
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              licenseInfo.isActive
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {licenseInfo.text}
+                          </span>
+                        );
+                      })()}
                     </TableCell>
                   </TableRow>
                 ))}

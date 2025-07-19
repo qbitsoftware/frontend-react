@@ -350,7 +350,8 @@
       "club_help": "Jäta tühjaks või sisesta 'KLUBITU' kui mängijal pole klubikuuluvust",
       "no_estonian_id": "Mul pole Eesti isikukoodi",
       "search_club": "Otsi klubi...",
-      "no_clubs_found": "Klube ei leitud"
+      "no_clubs_found": "Klube ei leitud",
+      "auto_generated": "Automaatselt genereeritud isikukoodist"
     },
     "payment": {
       "email_label": "E-posti aadress",
@@ -470,6 +471,13 @@
     "validation": {
       "invalid_isikukood": "Vigane isikukoodi formaat",
       "birth_date_mismatch": "Sünnipäev ei kattu isikukoodiga"
+    },
+    "verification": {
+      "verifying_id": "Kontrollin Eesti isikukoodi...",
+      "verification_failed": "Isikukoodi kontrollimine ebaõnnestus. Palun kontrollige andmeid.",
+      "name_id_mismatch": "Sisestatud nimi ei kattu isikukoodi registriga.",
+      "verification_unavailable": "Isikukoodi kontrollimise teenus on ajutiselt kättesaamatu.",
+      "verification_success": "Eesti isikukood edukalt kontrollitud."
     }
   },
   "competitions": {
@@ -646,6 +654,12 @@
     },
     "last_updated": "Viimati uuendatud",
     "abbreviations": "Lühendid: NR = koht reitingus, PP = paigutuspunktid, RP = reitingupunktid, ID = ELTLID, SA = sünniaasta",
+    "license_info": {
+      "title": "Litsentsi informatsioon",
+      "message": "Litsentsid muutuvad kohustuslikuks alates 1. jaanuarist 2026 ja neid saab osta",
+      "link_text": "siit",
+      "additional_info": "Enne seda pole need turniiridel osalemiseks vajalikud."
+    },
     "filtering": {
       "buttons": {
         "men": "Mehed",

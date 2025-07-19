@@ -79,6 +79,7 @@ function RouteComponent() {
   const clubs = clubsData?.data || [];
   const [clubDropdownOpen, setClubDropdownOpen] = useState(false);
   const [clubSearchTerm, setClubSearchTerm] = useState("");
+  const [isVerifyingId, setIsVerifyingId] = useState(false);
 
   const licenseTypes = [
     {
@@ -174,7 +175,8 @@ function RouteComponent() {
     }
   }, [t]);
 
-  const addPlayer = () => {
+  const addPlayer = async () => {
+    // Birth date is required in all cases - either auto-generated from isikukood or manually entered
     const requiredFieldsPresent = newPlayer.first_name && newPlayer.last_name && 
         newPlayer.birth_date && newPlayer.sex && (noEstonianId || newPlayer.isikukood);
     
@@ -186,6 +188,22 @@ function RouteComponent() {
           validateForm(newPlayer.isikukood, newPlayer.birth_date);
           toast.error(validation.message);
           return;
+        }
+
+        // Perform e-Identity verification
+        const verificationResult = await verifyEstonianId(
+          newPlayer.isikukood, 
+          newPlayer.first_name, 
+          newPlayer.last_name
+        );
+        
+        if (!verificationResult.isValid && verificationResult.message) {
+          toast.error(verificationResult.message);
+          return;
+        }
+
+        if (verificationResult.isValid && verificationResult.message === "") {
+          toast.success(t("licenses.verification.verification_success"));
         }
       }
       
@@ -338,11 +356,19 @@ function RouteComponent() {
       );
     }
     else if (player.club_name === "KLUBITU") {
-      availableTypes = licenseTypes.filter(type => 
-        type.id === LicenseType.NO_CLUB || 
-        type.id === LicenseType.FOREIGNER || 
-        type.id === LicenseType.ONE_TIME
-      );
+      // For players without clubs, exclude FOREIGNER license if they have an Estonian ID code
+      const hasEstonianId = player.isikukood && player.isikukood.trim() !== "";
+      
+      availableTypes = licenseTypes.filter(type => {
+        if (type.id === LicenseType.NO_CLUB || type.id === LicenseType.ONE_TIME) {
+          return true;
+        }
+        // Only include FOREIGNER license if player doesn't have an Estonian ID code
+        if (type.id === LicenseType.FOREIGNER) {
+          return !hasEstonianId;
+        }
+        return false;
+      });
     }
     else {
       const currentYear = new Date().getFullYear();
@@ -365,11 +391,19 @@ function RouteComponent() {
         defaultLicenseType = LicenseType.SENIOR;
       }
 
-      availableTypes = licenseTypes.filter(type => 
-        type.id === defaultLicenseType || 
-        type.id === LicenseType.FOREIGNER || 
-        type.id === LicenseType.ONE_TIME
-      );
+      // For players with clubs, exclude FOREIGNER license if they have an Estonian ID code
+      const hasEstonianId = player.isikukood && player.isikukood.trim() !== "";
+      
+      availableTypes = licenseTypes.filter(type => {
+        if (type.id === defaultLicenseType || type.id === LicenseType.ONE_TIME) {
+          return true;
+        }
+        // Only include FOREIGNER license if player doesn't have an Estonian ID code
+        if (type.id === LicenseType.FOREIGNER) {
+          return !hasEstonianId;
+        }
+        return false;
+      });
     }
 
     const hasOneTime = availableTypes.some(type => type.id === LicenseType.ONE_TIME);
@@ -412,6 +446,50 @@ function RouteComponent() {
     setNewPlayer({ ...newPlayer, club_name: clubName });
     setClubDropdownOpen(false);
     setClubSearchTerm("");
+  };
+
+  // Function to verify Estonian ID with name using e-Identity APIs
+  const verifyEstonianId = async (isikukood: string, firstName: string, lastName: string) => {
+    if (!isikukood || !firstName || !lastName || noEstonianId) {
+      return { isValid: true, message: "" }; // Skip verification if not applicable
+    }
+
+    try {
+      setIsVerifyingId(true);
+      const response = await fetch('/api/v1/verify-estonian-id', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isikukood: isikukood,
+          first_name: firstName.toUpperCase(),
+          last_name: lastName.toUpperCase(),
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        return {
+          isValid: false,
+          message: result.message || t("licenses.verification.verification_failed")
+        };
+      }
+
+      return {
+        isValid: result.isValid,
+        message: result.isValid ? "" : t("licenses.verification.name_id_mismatch")
+      };
+    } catch (error) {
+      console.error('ID verification error:', error);
+      return {
+        isValid: true, // Don't block user if verification service is down
+        message: t("licenses.verification.verification_unavailable")
+      };
+    } finally {
+      setIsVerifyingId(false);
+    }
   };
 
   const extractBirthDateFromIsikukood = (isikukood: string) => {
@@ -700,29 +778,51 @@ function RouteComponent() {
                   }
                   className="px-4 py-3 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl focus:outline-none transition-all shadow-sm"
                 />
-                <input
-                  type="date"
-                  placeholder={t("licenses.add_player.birth_date")}
-                  value={newPlayer.birth_date}
-                  onChange={(e) => {
-                    const newBirthDate = e.target.value;
-                    setNewPlayer({ ...newPlayer, birth_date: newBirthDate });
-                    validateForm(newPlayer.isikukood, newBirthDate, noEstonianId);
-                  }}
-                  className={`px-4 py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm ${
-                    validationErrors.birth_date 
-                      ? "border-red-300 hover:border-red-400 focus:border-red-500" 
-                      : "border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1]"
-                  }`}
-                />
+                {/* Birth date field - only show when no Estonian ID */}
+                {noEstonianId && (
+                  <input
+                    type="date"
+                    placeholder={t("licenses.add_player.birth_date")}
+                    value={newPlayer.birth_date}
+                    onChange={(e) => {
+                      const newBirthDate = e.target.value;
+                      setNewPlayer({ ...newPlayer, birth_date: newBirthDate });
+                      validateForm(newPlayer.isikukood, newBirthDate, noEstonianId);
+                    }}
+                    className={`px-4 py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm ${
+                      validationErrors.birth_date 
+                        ? "border-red-300 hover:border-red-400 focus:border-red-500" 
+                        : "border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1]"
+                    }`}
+                  />
+                )}
+                
+                {/* Show auto-generated birth date when Estonian ID is provided */}
+                {!noEstonianId && newPlayer.birth_date && (
+                  <div className="px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50">
+                    <div className="text-sm text-gray-600 mb-1">{t("licenses.add_player.birth_date")}</div>
+                    <div className="text-sm font-medium text-gray-900">{newPlayer.birth_date}</div>
+                    <div className="text-xs text-gray-500 mt-1">{t("licenses.add_player.auto_generated")}</div>
+                  </div>
+                )}
                 <input
                   type="text"
                   placeholder={t("licenses.add_player.isikukood")}
                   value={newPlayer.isikukood}
                   onChange={(e) => {
                     const newIsikukood = e.target.value;
-                    setNewPlayer({ ...newPlayer, isikukood: newIsikukood });
-                    validateForm(newIsikukood, newPlayer.birth_date, noEstonianId);
+                    
+                    // Auto-generate birth date from isikukood
+                    let updatedPlayer = { ...newPlayer, isikukood: newIsikukood };
+                    if (newIsikukood && !noEstonianId) {
+                      const extractedDate = extractBirthDateFromIsikukood(newIsikukood);
+                      if (extractedDate) {
+                        updatedPlayer = { ...updatedPlayer, birth_date: extractedDate.dateString };
+                      }
+                    }
+                    
+                    setNewPlayer(updatedPlayer);
+                    validateForm(newIsikukood, updatedPlayer.birth_date, noEstonianId);
                   }}
                   className={`px-4 py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm ${
                     validationErrors.isikukood 
@@ -742,12 +842,15 @@ function RouteComponent() {
                       const checked = e.target.checked;
                       setNoEstonianId(checked);
                       if (checked) {
-                        // Clear isikukood and validation errors when opting out
-                        setNewPlayer({ ...newPlayer, isikukood: "" });
+                        // Clear isikukood and auto-generated birth date when opting out
+                        setNewPlayer({ ...newPlayer, isikukood: "", birth_date: "" });
                         setValidationErrors({ isikukood: "", birth_date: "" });
+                      } else {
+                        // Clear manually entered birth date when going back to Estonian ID mode
+                        setNewPlayer({ ...newPlayer, birth_date: "" });
                       }
                       // Re-validate form with new state
-                      validateForm(newPlayer.isikukood, newPlayer.birth_date, checked);
+                      validateForm("", "", checked);
                     }}
                     className="w-4 h-4 text-[#4C97F1] border-2 border-gray-300 rounded focus:ring-[#4C97F1] focus:ring-2"
                   />
@@ -845,10 +948,23 @@ function RouteComponent() {
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-6">
                 <button
                   onClick={addPlayer}
-                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl"
+                  disabled={isVerifyingId}
+                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl"
                 >
-                  <Plus className="w-5 h-5 mr-2" />
-                  {t("licenses.add_player.add_to_list")}
+                  {isVerifyingId ? (
+                    <>
+                      <svg className="w-5 h-5 mr-2 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="m12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
+                      </svg>
+                      {t("licenses.verification.verifying_id")}
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-5 h-5 mr-2" />
+                      {t("licenses.add_player.add_to_list")}
+                    </>
+                  )}
                 </button>
                 <div className="flex-1 p-3 bg-green-50 rounded-lg border border-green-200">
                   <p className="text-sm text-green-700">
