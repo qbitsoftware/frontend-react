@@ -68,7 +68,7 @@
     },
     "news": {
       "name": "Uudised",
-      "missing": "Blogi postitused puuduvad",
+      "missing": "Blogipostitused puuduvad",
       "view_all": "Kõik uudised",
       "read_more": "Loe lähemalt"
     },
@@ -1341,7 +1341,7 @@
       "loading": "Laadimine...",
       "error": "Viga",
       "title": "Klubid",
-      "subtitle": "Loo ja halda klubisid",
+      "subtitle": "Ülevaade ELTL all olevatest klubidest",
       "add_new": "Lisa uus klubi",
       "add_new_details": "Sisestage uue klubi andmed",
       "edit": "Muuda klubi",
@@ -1350,7 +1350,7 @@
       "table": {
         "image": "Pilt",
         "name": "Nimi",
-        "contact_person": "Kontakt isik",
+        "contact_person": "Kontaktisik",
         "phone": "Tel nr",
         "email": "E-mail",
         "address": "Aadress",
@@ -1371,6 +1371,103 @@
       "alert_dialog": {
         "confirmation": "Oled kindel?",
         "description": "Peale toimingut on klubi kustutatud ja seda ei saa tagasi võtta. Kustutamisele kuulub "
+      },
+      "my_clubs": {
+        "title": "Minu Klubid",
+        "subtitle": "Klubid kus oled märgitud administraatoriks",
+        "loading": "Laadin sinu klube...",
+        "empty_state": "Sul pole ühtegi klubi hallata",
+        "count": {
+          "singular": "klubi",
+          "plural": "klubi"
+        }
+      },
+      "buttons": {
+        "manage_info": "Seaded",
+        "manage_players": "Halda Mängijaid"
+      },
+      "players_modal": {
+        "title": "Mängijad - {{clubName}}",
+        "description": "Lisa uusi mängijaid või halda olemasolevaid mängijaid selles klubis",
+        "close_button": "Sulge",
+        "or": "VÕI",
+        "search": {
+          "title": "Otsi mängijat andmebaasist",
+          "placeholder": "Otsi mängijat nime või ELTL ID järgi",
+          "no_results": "Mängijaid ei leitud"
+        },
+        "create_new_button": "Loo esmakordne mängija",
+        "create_new": {
+          "title": "Lisa esmakordne mängija",
+          "back_button": "Tagasi Otsingusse",
+          "form": {
+            "first_name": "Eesnimi",
+            "last_name": "Perekonnanimi",
+            "birth_date": "Sünniaeg",
+            "auto_generated": "Automaatselt genereeritud ID-st",
+            "estonian_id": "Isikukood",
+            "no_estonian_id": "Eesti isikukood puudub",
+            "gender": {
+              "placeholder": "Vali sugu",
+              "male": "Mees",
+              "female": "Naine"
+            },
+            "verifying_id": "Kontrollin ID-d...",
+            "adding_player": "Lisan Mängija...",
+            "add_button": "Lisa Mängija"
+          }
+        },
+        "list": {
+          "title": "Klubi Mängijad",
+          "loading": "Laadimine...",
+          "add_player_button": "Lisa Mängija",
+          "count": {
+            "singular": "mängija",
+            "plural": "mängijat"
+          },
+          "table": {
+            "name": "Nimi",
+            "birth_year": "Sünniaasta",
+            "gender": "Sugu",
+            "gender_male": "Mees",
+            "gender_female": "Naine",
+            "eltl_id": "ELTL ID",
+            "rating_points": "Reitingu Punktid",
+            "rating_position": "Reitingu Positsioon",
+            "actions": "Tegevused"
+          },
+          "empty_state": {
+            "title": "Selles klubis pole mängijaid",
+            "description": "Alusta oma esimese mängija lisamist",
+            "add_first_button": "Lisa Esimene Mängija"
+          }
+        },
+        "remove_confirmation": {
+          "title": "Eemalda Mängija Klubist",
+          "description": "Kas oled kindel, et soovid {{playerName}} eemaldada klubist {{clubName}}?",
+          "note": "See toiming eemaldab mängija klubist, kuid ei kustuta tema kontot.",
+          "cancel": "Tühista",
+          "confirm": "Eemalda Mängija"
+        }
+      },
+      "validation": {
+        "invalid_estonian_id": "Vigane Eesti isikukood",
+        "birth_date_mismatch": "Sünniaeg ei vasta isikukoodile",
+        "name_id_mismatch": "Nimi ja isikukood ei vasta üksteisele",
+        "verification_unavailable": "ID kontrollimise teenus ei ole kättesaadav"
+      },
+      "toast": {
+        "error": "Viga",
+        "success": "Edukas",
+        "failed_to_load_players": "Klubi mängijate laadimine ebaõnnestus",
+        "failed_to_load_my_clubs": "Sinu klubide laadimine ebaõnnestus",
+        "id_verification_success": "ID kontrollimine õnnestus",
+        "player_added": "Mängija lisamine klubi edukas",
+        "player_added_to_club": "{{playerName}} lisamine klubi edukas",
+        "player_removed_from_club": "{{playerName}} eemaldamine klubist edukas",
+        "failed_to_add_player": "Mängija lisamine klubi ebaõnnestus",
+        "failed_to_remove_player": "Mängija eemaldamine klubist ebaõnnestus",
+        "missing_required_fields": "Palun täida kõik nõutavad väljad: {{fields}}"
       }
     },
     "media": {
