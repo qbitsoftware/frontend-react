@@ -279,11 +279,11 @@ export function UsePostParticipantMerge(tournament_id: number, table_id: number)
     })
 }
 
-export function UsePostParticipantDoublePairs(tournament_id: number, table_id: number) {
+export function UsePostParticipantJoin(tournament_id: number, table_id: number, type: 'dynamic' | 'doubles') {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async () => {
-            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/doubles`, {}, {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/join?type=${type}`, {}, {
                 withCredentials: true,
             })
             return data;

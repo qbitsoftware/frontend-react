@@ -15,6 +15,7 @@ interface NewTeamsProps {
     participant_data: ParticipantsResponse
     tournament_table: TournamentTable
     tournament_id: number
+    activeTab?: number
 }
 
 export const NewTeams = ({ participant_data, tournament_table, tournament_id }: NewTeamsProps) => {

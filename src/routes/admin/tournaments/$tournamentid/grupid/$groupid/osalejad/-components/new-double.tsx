@@ -5,8 +5,10 @@ import { NewTeams } from "./new-teams"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
+import { GroupType } from "@/types/matches"
 
 export interface selectedTeams {
+    type: 'double' | 'round_robin'
     p1_id: string
     p2_id: string
 }
@@ -15,13 +17,14 @@ interface Props {
     participant_data: ParticipantsResponse
     tournament_id: number
     tournament_table: TournamentTable
+    acitveTab?: number
 }
 
-export default function NewDouble({ participant_data, tournament_id, tournament_table }: Props) {
+export default function NewDouble({ participant_data, tournament_id, tournament_table, acitveTab = 0 }: Props) {
     const { t } = useTranslation()
     const mergeMutation = UsePostParticipantMerge(tournament_id, tournament_table.id)
-    const soloParticipants = participant_data.data?.filter(p => p.players && p.players.length === 1) || []
-    const teamParticipants = participant_data.data?.filter(p => p.players && p.players.length > 1) || []
+    const soloParticipants = acitveTab == 1 ? participant_data.data?.filter(p => p.group_id === "" && p.type !== "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length === 1) || []
+    const teamParticipants = acitveTab == 1 ? participant_data.data?.filter(p => p.group_id !== "" || p.type === "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length > 1) || []
     const soloData: ParticipantsResponse = {
         ...participant_data,
         data: soloParticipants,
@@ -31,8 +34,6 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
     useEffect(() => {
         const mergeTeams = async () => {
             if (selectedTeams && selectedTeams.p1_id !== "" && selectedTeams.p2_id !== "") {
-                console.log("Selected teams:", selectedTeams)
-                console.log("firing request to backend")
                 try {
                     if (selectedTeams) {
                         await mergeMutation.mutateAsync(selectedTeams)
@@ -41,7 +42,7 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                 } catch (error) {
                     toast.error(t("admin.tournaments.groups.participants.doubles.teams_merge_error"))
                 } finally {
-                    setSelectedTeams({ p1_id: "", p2_id: "" })
+                    setSelectedTeams({ p1_id: "", p2_id: "", type: tournament_table.type === GroupType.DYNAMIC ? 'round_robin' : 'double' })
                 }
             }
         }
@@ -72,10 +73,11 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                         tournament_table={tournament_table}
                         selectedTeams={selectedTeams}
                         setSelectedTeams={setSelectedTeams}
+                        activeTab={acitveTab}
                     />
                 </div>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -86,11 +88,24 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                     </p>
                 </div>
                 <div className="overflow-x-auto">
-                    <NewTeams
-                        participant_data={teamData}
-                        tournament_id={tournament_id}
-                        tournament_table={tournament_table}
-                    />
+                    {acitveTab === 1 ? (
+                        <NewSolo
+                            participant_data={teamData}
+                            tournament_id={tournament_id}
+                            tournament_table={tournament_table}
+                            selectedTeams={selectedTeams}
+                            setSelectedTeams={setSelectedTeams}
+                            activeTab={acitveTab}
+                            renderRR
+                        />
+                    ) : (
+                        <NewTeams
+                            participant_data={teamData}
+                            tournament_id={tournament_id}
+                            tournament_table={tournament_table}
+                            activeTab={acitveTab}
+                        />
+                    )}
                 </div>
             </div>
         </div>

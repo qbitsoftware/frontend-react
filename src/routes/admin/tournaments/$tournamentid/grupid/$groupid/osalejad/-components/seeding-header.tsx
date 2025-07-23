@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { MatchesResponse, UseGetMatchesQuery } from "@/queries/match";
-import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantDoublePairs } from "@/queries/participants";
+import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantJoin } from "@/queries/participants";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import seeds3 from "@/assets/seeds3.png";
-import { TournamentTable } from "@/types/groups";
+import { DialogType, TournamentTable } from "@/types/groups";
 import { toast } from 'sonner';
 import { GroupType } from "@/types/matches";
 import { Participant } from "@/types/participants";
@@ -43,7 +43,8 @@ const SeedingHeader = ({
   const updateSeeding = UsePostSeeding(tournament_id, table_data.id);
   const updateOrder = UsePostOrder(tournament_id, table_data.id);
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
-  const assignPairs = UsePostParticipantDoublePairs(tournament_id, table_data.id)
+  const assignPairs = UsePostParticipantJoin(tournament_id, table_data.id, 'doubles')
+  const assignRoundRobin = UsePostParticipantJoin(tournament_id, table_data.id, 'dynamic')
   const importMutation = UseImportParticipants(tournament_id, table_data.id)
   const [showWarningModal, setShowWarningModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -54,7 +55,13 @@ const SeedingHeader = ({
   };
 
   const checkPowerOf2Warning = (): boolean => {
-    const closestPowerOf2 = getClosestPowerOf2(participants?.length);
+    let participantCount = participants?.length || 0;
+    if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+      const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
+      participantCount = pairs.length;
+    }
+
+    const closestPowerOf2 = getClosestPowerOf2(participantCount);
     return closestPowerOf2 !== table_data.size;
   };
 
@@ -115,8 +122,14 @@ const SeedingHeader = ({
   };
 
   const getWarningMessage = () => {
-    const closestPowerOf2 = getClosestPowerOf2(participants?.length || 0);
-    return t('admin.tournaments.warnings.bracket_size_mismatch.body', { participants: participants?.length, closestPowerOf2, tableSize: table_data.size });
+    let participantCount = participants?.length || 0;
+    if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+      const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
+      participantCount = pairs.length;
+    }
+
+    const closestPowerOf2 = getClosestPowerOf2(participantCount);
+    return t('admin.tournaments.warnings.bracket_size_mismatch.body', { participants: participantCount, closestPowerOf2, tableSize: table_data.size });
   };
 
   const handleOrder = async () => {
@@ -156,8 +169,11 @@ const SeedingHeader = ({
       await importMutation.mutateAsync(file)
 
       toast.message(t('toasts.participants.import_success', 'Participants imported successfully'));
-    } catch (error: any) {
-      toast.error(error.response?.data.error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as { response?: { data: { error: string } } }).response?.data.error
+        : 'Import failed';
+      toast.error(errorMessage);
     }
 
     if (fileInputRef.current) {
@@ -175,12 +191,22 @@ const SeedingHeader = ({
     }
   }
 
+  const handleRoundRobinPairing = async () => {
+    try {
+      await assignRoundRobin.mutateAsync()
+      toast.message(t('toasts.participants.double_pairing_success', 'Double pairs assigned successfully'));
+    } catch (error) {
+      void error
+      toast.error(t('toasts.participants.double_pairing_error', 'Error assigning double pairs'));
+    }
+  }
+
   const handleDownloadTemplate = () => {
     let headers: string[];
     let filename: string;
 
     const isRoundRobin = table_data.type === GroupType.ROUND_ROBIN || table_data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
-    const hasTeams = !table_data.solo;
+    const hasTeams = !table_data.solo && table_data.dialog_type !== DialogType.DT_DOUBLES && table_data.dialog_type !== DialogType.DT_FIXED_DOUBLES;
 
     if (isRoundRobin && hasTeams) {
       headers = ['id', 'name', 'team', 'group'];
@@ -208,12 +234,38 @@ const SeedingHeader = ({
 
   return (
     <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-      <div className="flex gap-2 items-center justify-between w-full">
-        <div className="flex gap-2 items-center">
-          <h5 className="font-medium">{(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? t("admin.tournaments.groups.participants.subgroups") : t("admin.tournaments.info.participants")}</h5>
-          <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] ">
-            {((table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && participants.filter((participant) => participant.type === "round_robin").length) || (participants && participants.length)} / {table_data.size}{" "}
-          </p>
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 items-start sm:items-center justify-between w-full">
+        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+          <h5 className="font-medium">
+            {(() => {
+              if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                return t("admin.tournaments.participants.pairs");
+              }
+              if (table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+                return t("admin.tournaments.groups.participants.subgroups");
+              }
+              return t("admin.tournaments.info.participants");
+            })()}
+          </h5>
+          <div className="flex flex-wrap gap-2 items-center">
+            <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] text-sm">
+              {(() => {
+                if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                  const pairs = participants.filter((participant) => participant.extra_data?.is_parent === true);
+                  return pairs.length;
+                }
+                if (table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+                  return participants.filter((participant) => participant.type === "round_robin").length;
+                }
+                return participants.length;
+              })()} / {table_data.size}{" "}
+            </p>
+            {(table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) && (
+              <p className="bg-blue-50 font-medium px-3 py-1 rounded-full border border-blue-200 text-blue-700 text-sm">
+                {participants.filter((participant) => participant.extra_data?.is_parent === false).length} {t('admin.tournaments.participants.players')}
+              </p>
+            )}
+          </div>
         </div>
         <Button
           onClick={handleDownloadTemplate}
@@ -228,15 +280,18 @@ const SeedingHeader = ({
 
       <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 w-full">
         <div className="flex flex-col sm:flex-row gap-2 flex-1">
-          <Button
-            onClick={handleOrder}
-            disabled={disabled}
-            variant="outline"
-            size="sm"
-            className="w-full sm:flex-1 h-9 text-sm font-medium"
-          >
-            {t("admin.tournaments.groups.order.order_by_rating")}
-          </Button>
+
+          {table_data.type !== GroupType.DYNAMIC && (
+            <Button
+              onClick={handleOrder}
+              disabled={disabled}
+              variant="outline"
+              size="sm"
+              className="w-full sm:flex-1 h-9 text-sm font-medium"
+            >
+              {t("admin.tournaments.groups.order.order_by_rating")}
+            </Button>
+          )}
 
           <Button
             disabled={disabled}
@@ -248,14 +303,29 @@ const SeedingHeader = ({
             <img src={seeds3} className="h-4 w-4 object-contain" />
           </Button>
 
-          <Button
-            disabled={disabled}
-            onClick={handleDoublePairing}
-            size="sm"
-            className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
-          >
-            <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
-          </Button>
+
+          {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
+            <Button
+              disabled={disabled}
+              onClick={handleDoublePairing}
+              size="sm"
+              className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+            >
+              <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+            </Button>
+
+          )}
+          {table_data.type === GroupType.DYNAMIC && (
+            <Button
+              disabled={disabled}
+              onClick={handleRoundRobinPairing}
+              size="sm"
+              className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+            >
+              <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+            </Button>
+
+          )}
 
           <input
             ref={fileInputRef}

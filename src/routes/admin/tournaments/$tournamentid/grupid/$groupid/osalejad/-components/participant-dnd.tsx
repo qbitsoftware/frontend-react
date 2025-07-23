@@ -14,8 +14,9 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import EditImgModal from "../../../../-components/edit-img-modal"
-import { TournamentTable } from "@/types/groups"
+import { DialogType, TournamentTable } from "@/types/groups"
 import { selectedTeams } from "./new-double"
+import { GroupType } from "@/types/matches"
 
 interface Props {
     participant: Participant
@@ -30,10 +31,10 @@ interface Props {
     // Experimental
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
-
+    renderRR?: boolean
 }
 
-export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams }: Props) {
+export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams, renderRR }: Props) {
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: participant.id })
 
@@ -155,32 +156,41 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
         if (editing) return
 
         if (setSelectedTeams) {
-            // Check if clicking on the same participant that's already selected
-            if (selectedTeams &&
-                (selectedTeams.p1_id === participantState.id || selectedTeams.p2_id === participantState.id)) {
-                // Reset selection if clicking on already selected participant
-                setSelectedTeams({ p1_id: "", p2_id: "" })
-                return
-            }
+            // For Round robin
+            if (tournament_table.type === GroupType.DYNAMIC && !renderRR) {
+                if (selectedTeams) {
+                    setSelectedTeams({ p1_id: participantState.id, p2_id: selectedTeams.p2_id, type: 'round_robin' })
+                } else {
+                    setSelectedTeams({ p1_id: participantState.id, p2_id: "", type: 'round_robin' })
+                }
+                // Check if clicking on the same participant that's already selected FOR DOUBLES
+            } else if (tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                if (selectedTeams &&
+                    (selectedTeams.p1_id === participantState.id || selectedTeams.p2_id === participantState.id)) {
+                    // Reset selection if clicking on already selected participant
+                    setSelectedTeams({ p1_id: "", p2_id: "", type: 'double' })
+                    return
+                }
 
-            let test: selectedTeams = {
-                p1_id: "",
-                p2_id: "",
-            }
+                let test: selectedTeams = {
+                    p1_id: "",
+                    p2_id: "",
+                    type: tournament_table.type === GroupType.DYNAMIC ? 'round_robin' : 'double'
+                }
 
-            if (selectedTeams && selectedTeams.p1_id !== "") {
-                test.p1_id = selectedTeams.p1_id
-                test.p2_id = participantState.id
-            } else if (selectedTeams && selectedTeams.p2_id !== "") {
-                test.p1_id = participantState.id
-                test.p2_id = selectedTeams.p2_id
-            } else {
-                test.p1_id = participantState.id
+                if (selectedTeams && selectedTeams.p1_id !== "") {
+                    test.p1_id = selectedTeams.p1_id
+                    test.p2_id = participantState.id
+                } else if (selectedTeams && selectedTeams.p2_id !== "") {
+                    test.p1_id = participantState.id
+                    test.p2_id = selectedTeams.p2_id
+                } else {
+                    test.p1_id = participantState.id
+                }
+                setSelectedTeams(test)
+
             }
-            setSelectedTeams(test)
         }
-        console.log("selectedTeams", selectedTeams)
-        console.log("Row clicked")
     }
 
     const style = {
@@ -189,7 +199,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
     }
 
     return (
-        <TableRow ref={setNodeRef} style={style} onClick={handleRowClick} className={cn("h-10 bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40 hover:border hover:border-blue-500 cursor-pointer", selectedTeams && (selectedTeams.p1_id == participantState.id || selectedTeams.p2_id == participantState.id) ? "bg-blue-100 hover:bg-blue-100" : "")}>
+        <TableRow ref={setNodeRef} style={style} onClick={handleRowClick} className={cn("h-10 bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40 hover:border", tournament_table.dialog_type == DialogType.DT_DOUBLES || tournament_table.dialog_type == DialogType.DT_FIXED_DOUBLES || (tournament_table.type === GroupType.DYNAMIC && !renderRR) ? "hover:border-blue-500 cursor-pointer" : "", selectedTeams && (selectedTeams.p1_id == participantState.id || selectedTeams.p2_id == participantState.id) ? "bg-blue-100 hover:bg-blue-100" : "")}>
             <TableCell className='text-center py-2 px-3'>
                 { }
                 {disableOrdering || forceDisableOrdering ? <div className="flex items-center justify-center hover:bg-indigo-50 gap-1 p-2 rounded-sm">
@@ -292,7 +302,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                                         updateField("players.0.last_name", user.last_name)
                                         updateField("players.0.user_id", user.id)
                                         updateField("players.0.extra_data.rate_order", user.rate_order)
-                                        updateField("players.0.extra_data.club", user.club_name)
+                                        updateField("players.0.extra_data.club", user.club?.name || "KLUBITU")
                                         updateField("players.0.extra_data.eltl_id", user.eltl_id)
                                         updateField("players.0.extra_data.rate_points", user.rate_points)
                                         updateField("players.0.sex", user.sex)

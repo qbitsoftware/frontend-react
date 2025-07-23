@@ -11,6 +11,7 @@ import { UseGetTournamentAdmin } from '@/queries/tournaments'
 import { DialogType } from '@/types/groups'
 import NewDouble from './-components/new-double'
 import { GroupType } from '@/types/matches'
+import { useState } from 'react'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -37,6 +38,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid, groupid } = Route.useParams()
+  const [activeTab, setActiveTab] = useState<number>(1)
   const { data: participant_data } = UseGetParticipantsQuery(
     Number(tournamentid),
     Number(groupid),
@@ -59,35 +61,97 @@ function RouteComponent() {
           table_data &&
           participant_data &&
           participant_data.data && (
-            <>
-              <SeedingHeader
-                tournament_id={Number(tournamentid)}
-                table_data={table_data.data}
-                participants={participant_data.data}
-              />
-
-              {table_data.data.dialog_type === DialogType.DT_TEAM_LEAGUES || table_data.data.type === GroupType.ROUND_ROBIN || table_data.data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ? (
-                <NewTeams
-                  participant_data={participant_data}
-                  tournament_id={Number(tournamentid)}
-                  tournament_table={table_data.data}
-                />
-              )
-                : table_data.data.solo ? (
-                  <NewSolo
-                    participant_data={participant_data}
-                    tournament_id={Number(tournamentid)}
-                    tournament_table={table_data.data}
-                  />
-                )
-                  : <NewDouble
-                    participant_data={participant_data}
-                    tournament_id={Number(tournamentid)}
-                    tournament_table={table_data.data}
-                  />
+            () => {
+              const first_participants = {
+                ...participant_data,
+                data: participant_data.data?.filter((p) => p.group === 1) || []
               }
-            </>
-          )}
+
+              const second_participants = {
+                ...participant_data,
+                data: participant_data.data?.filter((p) => p.group === 2) || []
+              }
+
+              return (
+                <>
+                  {table_data.data.type === GroupType.DYNAMIC && (
+                    <div className="border-b border-gray-200 mb-4">
+                      <nav className="-mb-px flex space-x-8">
+                        <button
+                          onClick={() => setActiveTab(1)}
+                          className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 1
+                            ? 'border-blue-500 text-blue-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                          First (Round Robin)
+                        </button>
+                        <button
+                          onClick={() => setActiveTab(2)}
+                          className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 2
+                            ? 'border-blue-500 text-blue-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                          {table_data.data.second_class}
+                        </button>
+                      </nav>
+                    </div>
+                  )}
+                  <SeedingHeader
+                    tournament_id={Number(tournamentid)}
+                    table_data={table_data.data}
+                    participants={participant_data.data}
+                  />
+
+                  {table_data.data.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                    <NewTeams
+                      participant_data={participant_data}
+                      tournament_id={Number(tournamentid)}
+                      tournament_table={table_data.data}
+                    />
+                  ) : table_data.data.type === GroupType.DYNAMIC ? (
+                    activeTab === 1 ? (
+                      <NewDouble
+                        participant_data={first_participants}
+                        tournament_id={Number(tournamentid)}
+                        tournament_table={table_data.data}
+                        acitveTab={activeTab}
+                      />
+                    ) : (
+                      table_data.data.solo ? (
+                        <NewSolo
+                          participant_data={second_participants}
+                          tournament_id={Number(tournamentid)}
+                          tournament_table={table_data.data}
+                          activeTab={activeTab}
+                        />
+                      ) : (
+                        <NewTeams
+                          participant_data={second_participants}
+                          tournament_id={Number(tournamentid)}
+                          tournament_table={table_data.data}
+                          activeTab={activeTab}
+                        />
+                      )
+                    )
+                  ) : table_data.data.solo ? (
+                    <NewSolo
+                      participant_data={participant_data}
+                      tournament_id={Number(tournamentid)}
+                      tournament_table={table_data.data}
+                    />
+                  ) : (
+                    <NewDouble
+                      participant_data={participant_data}
+                      tournament_id={Number(tournamentid)}
+                      tournament_table={table_data.data}
+                    />
+                  )}
+                </>
+              )
+            })()
+        }
       </div>
     )
   } else {
@@ -98,3 +162,4 @@ function RouteComponent() {
     )
   }
 }
+

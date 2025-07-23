@@ -44,7 +44,7 @@ export const PlayerProfileModal = ({ isOpen, onClose, user }: PlayerProfileModal
 
             <div className="flex flex-col items-center gap-2 sm:gap-3">
               <div className="bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-md">
-                <p className="text-[#4C97F1] font-semibold text-xs sm:text-sm">{user.club_name}</p>
+                <p className="text-[#4C97F1] font-semibold text-xs sm:text-sm">{user.club.name || ""}</p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
                 <div className="flex items-center gap-2">
