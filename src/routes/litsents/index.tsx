@@ -392,7 +392,7 @@ function RouteComponent() {
         (type) =>
           type.id === LicenseType.FOREIGNER || type.id === LicenseType.ONE_TIME
       );
-    } else if (player.club?.name === "KLUBITU") {
+    } else if (!player.club || player.club?.name === "KLUBITU") {
       const hasEstonianId = player.isikukood && player.isikukood.trim() !== "";
 
       availableTypes = licenseTypes.filter((type) => {
