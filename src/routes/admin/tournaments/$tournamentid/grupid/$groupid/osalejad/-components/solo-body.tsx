@@ -135,7 +135,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                                     <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} renderRR={renderRR} />
                                 ))}
 
-                                {(tournament_table.size > participants.length || group_participant) && <TableRow>
+                                {(tournament_table.size > participants.length || group_participant || tournament_table.type == GroupType.DYNAMIC) && <TableRow>
                                     <TableCell colSpan={2}></TableCell>
                                     <TableCell colSpan={6} className="p-4">
                                         <div className="flex gap-3 items-center max-w-xs">

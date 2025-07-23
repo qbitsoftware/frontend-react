@@ -103,7 +103,7 @@ const SeedingHeader = ({
     if (!order) {
       return;
     }
-    const showWarning = !(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && checkPowerOf2Warning();
+    const showWarning = !(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT || table_data.type == GroupType.DYNAMIC) && checkPowerOf2Warning();
     if (showWarning) {
       setShowWarningModal(true);
     } else {
