@@ -1396,6 +1396,7 @@
             "eltl_id": "ELTL ID",
             "rating_points": "Rating Points",
             "rating_position": "Rating Position",
+            "license": "License",
             "actions": "Actions"
           },
           "empty_state": {

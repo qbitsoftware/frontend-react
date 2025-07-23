@@ -1434,6 +1434,7 @@
             "eltl_id": "ELTL ID",
             "rating_points": "Reitingu Punktid",
             "rating_position": "Reitingu Positsioon",
+            "license": "Litsents",
             "actions": "Tegevused"
           },
           "empty_state": {

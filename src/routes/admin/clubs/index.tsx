@@ -179,6 +179,15 @@ function RouteComponent() {
         birth_date: "",
       });
       setNoEstonianId(false);
+      
+      // Ensure focus is properly restored after modal closes
+      setTimeout(() => {
+        document.body.style.pointerEvents = '';
+        const focusableElement = document.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') as HTMLElement;
+        if (focusableElement) {
+          focusableElement.focus();
+        }
+      }, 50);
     }
   }, [isPlayersDialogOpen]);
 
@@ -298,6 +307,39 @@ function RouteComponent() {
         variant: "destructive",
       });
     }
+  };
+
+  // License info function (same as in reiting.tsx)
+  const getLicenseInfo = (license: string | null, expirationDate: string | null) => {
+    if (license && license !== null && license !== "") {
+      if (expirationDate) {
+        const expDate = new Date(expirationDate);
+        const now = new Date();
+        if (expDate < now) {
+          return {
+            text: t("rating.license_status.missing"),
+            isActive: false
+          };
+        }
+        const formattedDate = expDate.toLocaleDateString('et-EE', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+        return {
+          text: formattedDate,
+          isActive: true
+        };
+      }
+      return {
+        text: t("rating.license_status.active"),
+        isActive: true
+      };
+    }
+    return {
+      text: t("rating.license_status.missing"),
+      isActive: false
+    };
   };
 
   // Player management functions
@@ -495,9 +537,12 @@ function RouteComponent() {
         setShowManualEntry(false);
         setShowAddPlayer(false);
         
-        if (selectedClubForPlayers) {
-          fetchClubPlayers(selectedClubForPlayers.name);
-        }
+        // Small delay to allow proper modal cleanup before refetching
+        setTimeout(() => {
+          if (selectedClubForPlayers) {
+            fetchClubPlayers(selectedClubForPlayers.name);
+          }
+        }, 100);
       } catch (error) {
         console.error('Failed to add player to club:', error);
         const errorMessage = error instanceof Error && 'response' in error && 
@@ -547,9 +592,12 @@ function RouteComponent() {
       setSearchTerm("");
       setPopoverOpen(false);
       
-      if (selectedClubForPlayers) {
-        fetchClubPlayers(selectedClubForPlayers.name);
-      }
+      // Small delay to allow proper modal cleanup before refetching
+      setTimeout(() => {
+        if (selectedClubForPlayers) {
+          fetchClubPlayers(selectedClubForPlayers.name);
+        }
+      }, 100);
     } catch (error) {
       console.error('Failed to add player to club:', error);
       const errorMessage = error instanceof Error && 'response' in error && 
@@ -592,6 +640,7 @@ function RouteComponent() {
       setIsRemovePlayerDialogOpen(false);
       setPlayerToRemove(null);
       
+      // Simple cleanup since we no longer have nested modals
       if (selectedClubForPlayers) {
         fetchClubPlayers(selectedClubForPlayers.name);
       }
@@ -1379,6 +1428,7 @@ function RouteComponent() {
                           <TableHead className="font-semibold text-gray-700">{t("admin.clubs.players_modal.list.table.eltl_id")}</TableHead>
                           <TableHead className="font-semibold text-gray-700">{t("admin.clubs.players_modal.list.table.rating_points")}</TableHead>
                           <TableHead className="font-semibold text-gray-700">{t("admin.clubs.players_modal.list.table.rating_position")}</TableHead>
+                          <TableHead className="font-semibold text-gray-700">{t("admin.clubs.players_modal.list.table.license")}</TableHead>
                           <TableHead className="font-semibold text-gray-700">{t("admin.clubs.players_modal.list.table.actions")}</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1419,6 +1469,22 @@ function RouteComponent() {
                               <span className="font-medium">
                                 {player.rate_order || '---'}
                               </span>
+                            </TableCell>
+                            <TableCell>
+                              {(() => {
+                                const licenseInfo = getLicenseInfo(player.license, player.expiration_date);
+                                return (
+                                  <span
+                                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                      licenseInfo.isActive
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-red-100 text-red-800"
+                                    }`}
+                                  >
+                                    {licenseInfo.text}
+                                  </span>
+                                );
+                              })()}
                             </TableCell>
                             <TableCell>
                               <Button
@@ -1464,40 +1530,72 @@ function RouteComponent() {
         </DialogContent>
       </Dialog>
 
-      {/* Remove Player Confirmation Dialog */}
-      <AlertDialog
-        open={isRemovePlayerDialogOpen}
-        onOpenChange={setIsRemovePlayerDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("admin.clubs.players_modal.remove_confirmation.title")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("admin.clubs.players_modal.remove_confirmation.description", {
-                playerName: `${playerToRemove?.first_name} ${playerToRemove?.last_name}`,
-                clubName: selectedClubForPlayers?.name
-              })}
-              <br />
-              <br />
-              {t("admin.clubs.players_modal.remove_confirmation.note")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
+      {/* Remove Player Confirmation Dialog - Custom modal to avoid nesting issues */}
+      {isRemovePlayerDialogOpen && (
+        <div 
+          className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4"
+          onClick={(e) => {
+            // Close on backdrop click
+            if (e.target === e.currentTarget) {
               setIsRemovePlayerDialogOpen(false);
               setPlayerToRemove(null);
-            }}>
-              {t("admin.clubs.players_modal.remove_confirmation.cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={removePlayerFromClub}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {t("admin.clubs.players_modal.remove_confirmation.confirm")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            }
+          }}
+          onKeyDown={(e) => {
+            // Close on Escape key
+            if (e.key === 'Escape') {
+              setIsRemovePlayerDialogOpen(false);
+              setPlayerToRemove(null);
+            }
+          }}
+          tabIndex={-1}
+          style={{ pointerEvents: 'auto' }}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+            style={{ pointerEvents: 'auto' }}
+          >
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {t("admin.clubs.players_modal.remove_confirmation.title")}
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                {t("admin.clubs.players_modal.remove_confirmation.description", {
+                  playerName: `${playerToRemove?.first_name} ${playerToRemove?.last_name}`,
+                  clubName: selectedClubForPlayers?.name
+                })}
+              </p>
+              <p className="text-sm text-gray-500 mb-6">
+                {t("admin.clubs.players_modal.remove_confirmation.note")}
+              </p>
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsRemovePlayerDialogOpen(false);
+                    setPlayerToRemove(null);
+                  }}
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  {t("admin.clubs.players_modal.remove_confirmation.cancel")}
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removePlayerFromClub();
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  {t("admin.clubs.players_modal.remove_confirmation.confirm")}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
