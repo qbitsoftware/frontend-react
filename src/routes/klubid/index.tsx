@@ -29,6 +29,7 @@ function RouteComponent() {
             <h2 className="font-bold">
               {t('clubs.header')}
             </h2>
+
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
