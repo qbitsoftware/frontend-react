@@ -1303,7 +1303,7 @@
       "loading": "Loading...",
       "error": "No club data available",
       "title": "Clubs",
-      "subtitle": "Create and manage clubs",
+      "subtitle": "List of clubs under ELTL",
       "add_new": "Add new club",
       "add_new_details": "Enter the details for the new club",
       "edit": "Edit Club",
@@ -1333,6 +1333,104 @@
       "alert_dialog": {
         "confirmation": "Are you sure?",
         "description": "This action cannot be undone. This will permanently delete the club"
+      },
+      "my_clubs": {
+        "title": "My Clubs",
+        "subtitle": "Clubs you can manage",
+        "loading": "Loading your clubs...",
+        "empty_state": "You don't have any clubs to manage",
+        "count": {
+          "singular": "club",
+          "plural": "clubs"
+        }
+      },
+      "buttons": {
+        "manage_info": "Settings",
+        "manage_players": "Manage Players"
+      },
+      "players_modal": {
+        "title": "Players - {{clubName}}",
+        "description": "Add new players or manage existing players in this club",
+        "close_button": "Close",
+        "or": "OR",
+        "search": {
+          "title": "Search Existing Player",
+          "placeholder": "Search for a player...",
+          "no_results": "No players found"
+        },
+        "create_new_button": "Create New Player",
+        "create_new": {
+          "title": "Create New Player",
+          "back_button": "Back to Search",
+          "form": {
+            "first_name": "First name",
+            "last_name": "Last name",
+            "birth_date": "Birth date",
+            "auto_generated": "Auto-generated from ID",
+            "estonian_id": "Estonian ID code",
+            "no_estonian_id": "No Estonian ID",
+            "gender": {
+              "placeholder": "Select gender",
+              "male": "Male",
+              "female": "Female"
+            },
+            "verifying_id": "Verifying ID...",
+            "adding_player": "Adding Player...",
+            "add_button": "Add Player"
+          }
+        },
+        "list": {
+          "title": "Club Players",
+          "loading": "Loading...",
+          "add_player_button": "Add Player",
+          "count": {
+            "singular": "player",
+            "plural": "players"
+          },
+          "table": {
+            "name": "Name",
+            "birth_year": "Birth Year",
+            "gender": "Gender",
+            "gender_male": "Male",
+            "gender_female": "Female",
+            "eltl_id": "ELTL ID",
+            "rating_points": "Rating Points",
+            "rating_position": "Rating Position",
+            "license": "License",
+            "actions": "Actions"
+          },
+          "empty_state": {
+            "title": "No players in this club",
+            "description": "Get started by adding your first player",
+            "add_first_button": "Add First Player"
+          }
+        },
+        "remove_confirmation": {
+          "title": "Remove Player from Club",
+          "description": "Are you sure you want to remove {{playerName}} from {{clubName}}?",
+          "note": "This action will remove the player from the club but will not delete their account.",
+          "cancel": "Cancel",
+          "confirm": "Remove Player"
+        }
+      },
+      "validation": {
+        "invalid_estonian_id": "Invalid Estonian ID code",
+        "birth_date_mismatch": "Birth date doesn't match Estonian ID code",
+        "name_id_mismatch": "Name and ID code do not match",
+        "verification_unavailable": "ID verification service unavailable"
+      },
+      "toast": {
+        "error": "Error",
+        "success": "Success",
+        "failed_to_load_players": "Failed to load club players",
+        "failed_to_load_my_clubs": "Failed to load your clubs",
+        "id_verification_success": "ID verification successful",
+        "player_added": "Player added to club successfully",
+        "player_added_to_club": "{{playerName}} added to club successfully",
+        "player_removed_from_club": "{{playerName}} removed from club successfully",
+        "failed_to_add_player": "Failed to add player to club",
+        "failed_to_remove_player": "Failed to remove player from club",
+        "missing_required_fields": "Please fill in all required fields: {{fields}}"
       }
     },
     "media": {

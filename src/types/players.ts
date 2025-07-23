@@ -65,7 +65,7 @@ export const NewPlayer = (user: User): Player => {
     updated_at: formatDateStringYearMonthDay(new Date().toISOString()),
     number: 0,
     extra_data: {
-      club: user.club_name,
+      club: user.club?.name || "KLUBITU",
       rate_points: user.rate_points,
       rate_order: user.rate_order,
       eltl_id: user.eltl_id,

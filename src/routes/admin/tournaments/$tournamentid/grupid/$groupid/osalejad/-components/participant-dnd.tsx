@@ -302,7 +302,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                                         updateField("players.0.last_name", user.last_name)
                                         updateField("players.0.user_id", user.id)
                                         updateField("players.0.extra_data.rate_order", user.rate_order)
-                                        updateField("players.0.extra_data.club", user.club_name)
+                                        updateField("players.0.extra_data.club", user.club?.name || "KLUBITU")
                                         updateField("players.0.extra_data.eltl_id", user.eltl_id)
                                         updateField("players.0.extra_data.rate_points", user.rate_points)
                                         updateField("players.0.sex", user.sex)

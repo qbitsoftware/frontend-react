@@ -19,7 +19,20 @@ export type User = {
   birth_date: string;
   sex: string;
   foreigner: number;
-  club_name: string;
+  club: {
+    id: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    name: string;
+    email: string;
+    phone: string;
+    contact_person: string;
+    address: string;
+    website: string;
+    organization_id: number;
+    image_url: string;
+  };
   rate_order: number;
   rate_pl_points: number;
   rate_points: number;
