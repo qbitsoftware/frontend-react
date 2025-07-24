@@ -123,6 +123,7 @@ export const UseGetTournamentMatchesQuery = (tournament_id: number) => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/matches?timetable=true`, {
                 withCredentials: true
             })
+
             return data;
         },
     })

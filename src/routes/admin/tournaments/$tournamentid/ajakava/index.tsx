@@ -40,6 +40,8 @@ function RouteComponent() {
         return Array.from(times).sort()
     }, [tournamentMatches])
 
+    console.log("time slots", timeSlots)
+
     const rounds = useMemo(() => {
         if (timeSlots.length === 0) return []
 
@@ -55,14 +57,14 @@ function RouteComponent() {
 
     const getGroupColor = (tournamentTableId: string) => {
         const colors = [
-            'bg-red-50 border-red-100',
-            'bg-blue-50 border-blue-100',
-            'bg-green-50 border-green-100',
-            'bg-yellow-50 border-yellow-100',
-            'bg-purple-50 border-purple-100',
-            'bg-pink-50 border-pink-100',
-            'bg-indigo-50 border-indigo-100',
-            'bg-orange-50 border-orange-100'
+            'bg-yellow-100 border-yellow-400',
+            'bg-blue-300 border-blue-400',
+            'bg-green-100 border-green-400',
+            'bg-red-100 border-red-400',
+            'bg-purple-100 border-purple-400',
+            'bg-pink-100 border-pink-400',
+            'bg-indigo-300 border-indigo-400',
+            'bg-orange-100 border-orange-400'
         ]
 
         let hash = 0
@@ -140,7 +142,7 @@ function RouteComponent() {
                             return (
                                 <div
                                     key={timeSlot}
-                                    className={`w-28 border-r flex flex-col items-center justify-center p-1 text-xs ${round ? round.color : "bg-gray-100"
+                                    className={`w-28 border-r flex flex-col items-center justify-center p-1 text-xs ${"bg-gray-100"
                                         } ${isBreak ? "bg-orange-50 border-orange-200" : ""}`}
                                 >
                                     <div className="font-medium">{timeSlot}</div>
@@ -179,7 +181,7 @@ function RouteComponent() {
                                     <div
                                         key={timeSlot}
                                         className={`w-28 h-16 border-r flex items-center justify-center p-1 cursor-pointer transition-colors ${match
-                                            ? `${isFinalMatch(match) ? 'bg-red-100 border-red-200' : getGroupColor(String(match.match.tournament_table_id))} hover:opacity-80 border-l-2 ${match.match.state === "ongoing"
+                                            ? `${isFinalMatch(match) ? 'border-red-200' : ""} hover:opacity-80 border-l-2 ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
                                                 ? "border-l-green-500"
                                                 : match.match.state === "finished"
                                                     ? "border-l-blue-500"
@@ -191,15 +193,16 @@ function RouteComponent() {
                                             } ${isHovered ? "ring-2 ring-blue-300" : ""}`}
                                         onMouseEnter={() => setHoveredCell(cellKey)}
                                         onMouseLeave={() => setHoveredCell(null)}
-                                        // onClick={() => match && setSelectedMatch(match)}
+                                    // onClick={() => match && setSelectedMatch(match)}
                                     >
                                         {match ? (
                                             <div className="text-center w-full">
+                                                <div className="text-[8px] text-red-grey font-bold">{match.match.readable_id}</div>
                                                 <div className="text-[10px] font-medium truncate">{match.p1.name}</div>
                                                 <div className="text-[8px] text-gray-600">vs</div>
                                                 <div className="text-[10px] font-medium truncate">{match.p2.name}</div>
                                                 {match.match.extra_data.score && <div className="text-[8px] text-gray-700 font-medium mt-1">{match.match.extra_data.team_1_total} : {match.match.extra_data.team_2_total}</div>}
-                                                {isFinalMatch(match) && <div className="text-[8px] text-red-600 font-bold">FINAL</div>}
+                                                {isFinalMatch(match) && <div className="text-[8px] text-red-600 font-bold">Kohamäng</div>}
                                             </div>
                                         ) : (
                                             <div className="text-[10px] text-gray-400">
