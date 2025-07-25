@@ -548,7 +548,20 @@
       "quarterfinal": "VEERANDFINAAL",
       "winner": "Võitja",
       "matches": "Mängud",
-      "timetable": "Ajakava"
+      "timetable": "Ajakava",
+      "view": {
+        "tournament_classes": "Võistlusklassid",
+        "title": "Orienteeruv ajakava",
+        "match_status": "Mängu staatus",
+        "tables": "Lauad",
+        "vs": "vs",
+        "scheduled": "Planeeritud",
+        "ongoing": "Käimas",
+        "finished": "Lõppenud",
+        "final_match": "Finaal",
+        "bronze_match": "Pronksimäng",
+        "round_prefix": "Voor"
+      }
     },
     "errors": {
       "info_missing": "Turniiri info puudub",
@@ -806,6 +819,7 @@
       },
       "info": "Turniiri info",
       "groups": "Võistlusklassid",
+      "schedule": "Ajakava",
       "media": "Meedia",
       "tables": "Lauad",
       "images": "Pildid",

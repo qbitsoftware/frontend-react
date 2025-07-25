@@ -27,6 +27,7 @@ export const EliminationBrackets = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const [showPreview, setShowPreview] = useState(false);
+  const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
 
   const handlePrint = () => {
     setShowPreview(true);
@@ -117,6 +118,8 @@ export const EliminationBrackets = ({
                         tournament_table={tournament_table}
                         data={table}
                         handleSelectMatch={handleSelectMatch}
+                        hoveredPlayerId={hoveredPlayerId}
+                        onPlayerHover={setHoveredPlayerId}
                       />
                     </div>
                   ) : (
@@ -126,6 +129,8 @@ export const EliminationBrackets = ({
                         tournament_table={tournament_table}
                         data={table}
                         handleSelectMatch={handleSelectMatch}
+                        hoveredPlayerId={hoveredPlayerId}
+                        onPlayerHover={setHoveredPlayerId}
                       />
                     </div>
                   )}

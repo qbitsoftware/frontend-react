@@ -21,7 +21,7 @@ export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
     let tournament_data = undefined;
     try {
       tournament_data = await queryClient.ensureQueryData(
-        UseGetTournamentAdmin(Number(params.tournamentid)),
+        UseGetTournamentAdmin(Number(params.tournamentid))
       );
     } catch (error) {
       const err = error as ErrorResponse;
@@ -88,11 +88,13 @@ function RouteComponent() {
 
   const currentTab = location.pathname.includes("/grupid")
     ? "groups"
-    : location.pathname.includes("/meedia")
-      ? "media"
-      : location.pathname.includes("/pildid")
-        ? "images"
-        : "info";
+    : location.pathname.includes("/ajakava")
+      ? "schedule"
+      : location.pathname.includes("/meedia")
+        ? "media"
+        : location.pathname.includes("/pildid")
+          ? "images"
+          : "info";
 
   return (
     <div className="mx-auto min-h-[95vh] h-full">
@@ -107,12 +109,11 @@ function RouteComponent() {
                 <Link to={`/admin/tournaments/${tournamentid}`}>
                   <TabsTrigger
                     value="info"
-                    className="w-[8rem] py-[6px] flex-shrink-0"
+                    className="w-[7rem] py-[6px] flex-shrink-0"
                   >
                     {t("admin.layout.info")}
                   </TabsTrigger>
                 </Link>
-
                 <div
                   className="relative flex-shrink-0"
                   onMouseEnter={handleGroupsMouseEnter}
@@ -127,7 +128,17 @@ function RouteComponent() {
                     </TabsTrigger>
                   </Link>
                 </div>
-              </TabsList>
+
+                <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
+                  <TabsTrigger
+                    value="schedule"
+                    className="w-[6rem] py-[6px] flex-shrink-0"
+                  >
+                    {t("admin.layout.schedule")}
+                  </TabsTrigger>
+                </Link>
+
+                              </TabsList>
             </Tabs>
 
             {showGroupsDropdown &&
@@ -153,7 +164,7 @@ function RouteComponent() {
               )}
           </div>
         </div>
-        <div className="px-4 md:px-9 pb-8">
+        <div className="px-0 md:px-0 pb-8">
           <Outlet />
         </div>
       </div>

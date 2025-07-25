@@ -515,7 +515,20 @@
       "quarterfinal": "QUARTERFINAL",
       "winner": "Winner",
       "matches": "Matches",
-      "timetable": "Timetable"
+      "timetable": "Timetable",
+      "view": {
+        "title": "Estimated Timetable",
+        "tournament_classes": "Tournament Classes",
+        "match_status": "Match Status",
+        "tables": "Tables",
+        "vs": "vs",
+        "scheduled": "Scheduled",
+        "ongoing": "Ongoing",
+        "finished": "Finished",
+        "final_match": "Final",
+        "bronze_match": "Bronze Match",
+        "round_prefix": "Round"
+      }
     },
     "errors": {
       "info_missing": "No tournament information available",
@@ -773,6 +786,7 @@
         "feedback": "Feedback"
       },
       "info": "Settings",
+      "schedule": "Schedule",
       "tables": "Tables",
       "groups": "Classes",
       "media": "Media",

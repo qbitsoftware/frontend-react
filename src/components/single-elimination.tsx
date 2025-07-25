@@ -12,17 +12,25 @@ interface BracketProps {
     tournament_table: TournamentTable
     data: EliminationBracket;
     handleSelectMatch?: (match: MatchWrapper) => void
+    hoveredPlayerId?: string | null
+    onPlayerHover?: (playerId: string | null) => void
 }
 
 export const SingleElimination = ({
     admin = false,
     tournament_table,
     data,
-    handleSelectMatch
+    handleSelectMatch,
+    hoveredPlayerId: externalHoveredPlayerId,
+    onPlayerHover: externalOnPlayerHover
 }: BracketProps) => {
     const matches = organizeMatchesByRound(data.matches);
-    const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
+    const [internalHoveredPlayerId, setInternalHoveredPlayerId] = useState<string | null>(null);
     const { t } = useTranslation();
+    
+    // Use external state if provided, otherwise fall back to internal state
+    const hoveredPlayerId = externalHoveredPlayerId !== undefined ? externalHoveredPlayerId : internalHoveredPlayerId;
+    const setHoveredPlayerId = externalOnPlayerHover || setInternalHoveredPlayerId;
 
     const shouldHighlightConnector = (match: typeof data.matches[0]) => {
         if (!hoveredPlayerId) return false;
@@ -31,8 +39,19 @@ export const SingleElimination = ({
         
         if (!isPlayerInCurrentMatch) return false;
         
-        // Check if the player won this match and would advance
-        return match.match.winner_id === hoveredPlayerId;
+        // Highlight if player won this match and advances in the main bracket
+        if (match.match.winner_id === hoveredPlayerId) {
+            return true;
+        }
+        
+        // Also highlight if player lost this match and falls to consolation bracket
+        // This shows the connection point where they drop out of the main bracket
+        if (match.match.winner_id && match.match.winner_id !== hoveredPlayerId) {
+            // Player lost this match - check if they have a next_loser_bracket path
+            return !!match.match.next_loser_bracket;
+        }
+        
+        return false;
     };
 
     // Calculate round names based on bracket size
