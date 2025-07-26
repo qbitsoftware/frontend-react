@@ -2,7 +2,7 @@ import { UseGetTournamentMatchesQuery } from '@/queries/match'
 import { UseGetFreeVenues } from '@/queries/venues'
 import { UseGetTournamentTablesQuery } from '@/queries/tables'
 import { createFileRoute, useParams } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback, memo } from 'react'
 import { MatchWrapper } from '@/types/matches'
 import { useTranslation } from 'react-i18next'
 
@@ -12,11 +12,78 @@ export const Route = createFileRoute(
     component: RouteComponent,
 })
 
+// Memoized table row component to prevent unnecessary re-renders
+const TableRow = memo(({
+    table,
+    timeSlots,
+    getMatchForCell,
+    getRoundForTimeSlot,
+    getGroupColor,
+    isPlacementMatch,
+    getPlacementLabel,
+    tournamentClassesData,
+    hoveredCell,
+    setHoveredCell
+}: any) => (
+    <div className="flex border-b hover:bg-gray-50/50 min-h-12">
+        <div className="w-16 bg-gray-50 border-r flex flex-col items-center justify-center p-0.5 min-h-12">
+            <div className="text-[10px] font-medium">{table.name}</div>
+        </div>
+
+        {timeSlots.map((timeSlot: string) => {
+            const match = getMatchForCell(table.name, timeSlot)
+            const cellKey = `${table.id}-${timeSlot}`
+            const isHovered = hoveredCell === cellKey
+            const round = getRoundForTimeSlot(timeSlot)
+            const isBreak = false
+
+            return (
+                <div
+                    key={timeSlot}
+                    className={`w-24 h-12 border-r flex items-center justify-center p-0.5 cursor-pointer transition-colors ${match
+                        ? `${isPlacementMatch(match) ? 'border-red-200' : ""} hover:opacity-80 border-l-2 ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
+                            ? "border-l-green-500"
+                            : match.match.state === "finished"
+                                ? "border-l-blue-500"
+                                : "border-l-yellow-500"
+                        }`
+                        : round
+                            ? `${round.color} hover:opacity-80`
+                            : "hover:bg-gray-50"
+                        } ${isHovered ? "ring-2 ring-blue-300" : ""}`}
+                    onMouseEnter={() => setHoveredCell(cellKey)}
+                    onMouseLeave={() => setHoveredCell(null)}
+                >
+                    {match ? (
+                        <div className="relative text-center w-full h-full flex flex-col justify-center">
+                            <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
+                                {match.match.readable_id}
+                            </div>
+                            <div className="text-[10px] font-medium text-gray-600 leading-tight">
+                                {tournamentClassesData?.data?.find((t: any) => t.id === match.match.tournament_table_id)?.class || 'Class'}
+                            </div>
+                            {isPlacementMatch(match) && (
+                                <div className="text-[8px] text-red-600 font-bold mt-0.5">{getPlacementLabel(match)}</div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="text-[10px] text-gray-400">
+                            {isHovered && table.match_id === "" ? "+" : ""}
+                        </div>
+                    )}
+                </div>
+            )
+        })}
+    </div>
+))
+
 function RouteComponent() {
     const { tournamentid } = useParams({ from: "/admin/tournaments/$tournamentid/ajakava/" })
     const { t } = useTranslation()
     // const [_, setSelectedMatch] = useState<any>(null)
     const [hoveredCell, setHoveredCell] = useState<string | null>(null)
+    const [selectedDay, setSelectedDay] = useState<string>('')
+
     const { data: tournamentTables } = UseGetFreeVenues(
         Number(tournamentid),
         true
@@ -25,11 +92,45 @@ function RouteComponent() {
     const { data: tournamentMatches } = UseGetTournamentMatchesQuery(Number(tournamentid))
     const { data: tournamentClassesData } = UseGetTournamentTablesQuery(Number(tournamentid))
 
-    const timeSlots = useMemo(() => {
+    // Extract unique days from tournament matches
+    const tournamentDays = useMemo(() => {
         if (!tournamentMatches?.data) return []
 
-        const times = new Set<string>()
+        const daysSet = new Set<string>()
         tournamentMatches.data.forEach(match => {
+            if (match.match.start_date && new Date(match.match.start_date).getTime() > 0) {
+                const date = new Date(match.match.start_date)
+                const dayString = date.toISOString().split('T')[0] // YYYY-MM-DD format
+                daysSet.add(dayString)
+            }
+        })
+
+        const sortedDays = Array.from(daysSet).sort()
+
+        // Set the first day as selected if no day is selected yet
+        if (sortedDays.length > 0 && !selectedDay) {
+            setSelectedDay(sortedDays[0])
+        }
+
+        return sortedDays
+    }, [tournamentMatches, selectedDay])
+
+    // Filter matches for the selected day
+    const dayMatches = useMemo(() => {
+        if (!tournamentMatches?.data || !selectedDay) return []
+
+        return tournamentMatches.data.filter(match => {
+            if (!match.match.start_date) return false
+            const matchDay = new Date(match.match.start_date).toISOString().split('T')[0]
+            return matchDay === selectedDay
+        })
+    }, [tournamentMatches, selectedDay])
+
+    const timeSlots = useMemo(() => {
+        if (dayMatches.length === 0) return []
+
+        const times = new Set<string>()
+        dayMatches.forEach(match => {
             if (match.match.start_date && new Date(match.match.start_date).getTime() > 0) {
                 const date = new Date(match.match.start_date)
                 const timeString = date.toLocaleTimeString('en-US', {
@@ -42,9 +143,7 @@ function RouteComponent() {
         })
 
         return Array.from(times).sort()
-    }, [tournamentMatches])
-
-    console.log("time slots", timeSlots)
+    }, [dayMatches])
 
     const rounds = useMemo(() => {
         if (timeSlots.length === 0) return []
@@ -60,8 +159,8 @@ function RouteComponent() {
     }, [timeSlots, t])
 
     const tournamentClasses = useMemo(() => {
-        if (!tournamentMatches?.data || !tournamentClassesData?.data) return []
-        
+        if (!dayMatches.length || !tournamentClassesData?.data) return []
+
         const colorPalette = [
             { bg: 'bg-yellow-100', border: 'border-yellow-400' },
             { bg: 'bg-blue-300', border: 'border-blue-400' },
@@ -72,16 +171,16 @@ function RouteComponent() {
             { bg: 'bg-indigo-300', border: 'border-indigo-400' },
             { bg: 'bg-orange-100', border: 'border-orange-400' }
         ]
-        
+
         const classMap = new Map<number, string>()
         tournamentClassesData.data.forEach(table => {
             classMap.set(table.id, table.class)
         })
-        
+
         const usedClasses = new Set<string>()
         const classColorMap = new Map<string, { bg: string, border: string, tableId: number }>()
-        
-        tournamentMatches.data.forEach(match => {
+
+        dayMatches.forEach(match => {
             const tableId = match.match.tournament_table_id
             const className = classMap.get(tableId)
             if (className && !usedClasses.has(className)) {
@@ -97,61 +196,73 @@ function RouteComponent() {
                 })
             }
         })
-        
+
         return Array.from(classColorMap.entries()).map(([className, colorData]) => ({
             name: className,
             ...colorData
         }))
-    }, [tournamentMatches, tournamentClassesData])
+    }, [dayMatches, tournamentClassesData])
 
-    const getGroupColor = (tournamentTableId: string) => {
+    const getGroupColor = useCallback((tournamentTableId: string) => {
         if (!tournamentClassesData?.data) return 'bg-gray-100 border-gray-400'
-        
+
         const tableId = parseInt(tournamentTableId)
         const table = tournamentClassesData.data.find(t => t.id === tableId)
         if (!table) return 'bg-gray-100 border-gray-400'
-        
+
         const classData = tournamentClasses.find(c => c.name === table.class)
         return classData ? `${classData.bg} ${classData.border}` : 'bg-gray-100 border-gray-400'
-    }
+    }, [tournamentClassesData?.data, tournamentClasses])
 
     // Check if a match is a placement match (1-2 or 3-4) based on bracket positions
-    const isPlacementMatch = (match: MatchWrapper) => {
+    const isPlacementMatch = useCallback((match: MatchWrapper) => {
         const bracket = match.match.bracket
 
         if (!bracket || typeof bracket !== 'string') return false
 
         // Check for exact placement matches: 1-2 (final) or 3-4 (3rd place)
         return bracket === '1-2' || bracket === '3-4'
-    }
+    }, [])
 
     // Get placement match label based on bracket
-    const getPlacementLabel = (match: MatchWrapper) => {
+    const getPlacementLabel = useCallback((match: MatchWrapper) => {
         const bracket = match.match.bracket
         if (bracket === '1-2') return t('competitions.timetable.view.final_match')
         if (bracket === '3-4') return t('competitions.timetable.view.bronze_match')
         return ''
-    }
+    }, [t])
 
-    const getMatchForCell = (tableId: string, timeSlot: string) => {
-        if (!tournamentMatches?.data) return null
+    const [visibleRange, setVisibleRange] = useState({ start: 0, end: 20 })
+    const ITEM_HEIGHT = 48 // 12 * 4px (min-h-12)
+    const BUFFER_SIZE = 5
 
-        return tournamentMatches.data.find((match) => {
-            if (!match.match.start_date) return false
+    // Create a match lookup map for O(1) access instead of O(n) array.find
+    const dayMatchesMap = useMemo(() => {
+        if (!dayMatches.length) return new Map()
 
-            // Extract time from the full date string
-            const matchDate = new Date(match.match.start_date)
-            const matchTime = matchDate.toLocaleTimeString('en-US', {
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-
-            return match.match.extra_data.table === tableId && matchTime === timeSlot
+        const map = new Map<string, MatchWrapper>()
+        dayMatches.forEach(match => {
+            if (match.match.start_date) {
+                const matchDate = new Date(match.match.start_date)
+                const matchTime = matchDate.toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+                const key = `${match.match.extra_data.table}-${matchTime}`
+                map.set(key, match)
+            }
         })
-    }
+        return map
+    }, [dayMatches])
 
-    const getRoundForTimeSlot = (timeSlot: string) => {
+    // Optimize getMatchForCell with memoized lookup
+    const getMatchForCell = useCallback((tableId: string, timeSlot: string) => {
+        const key = `${tableId}-${timeSlot}`
+        return dayMatchesMap.get(key) || null
+    }, [dayMatchesMap])
+
+    const getRoundForTimeSlot = useCallback((timeSlot: string) => {
         return rounds.find((round) => {
             const slotTime = timeSlot.split(":").map(Number)
             const startTime = round.startTime.split(":").map(Number)
@@ -163,16 +274,69 @@ function RouteComponent() {
 
             return slotMinutes >= startMinutes && slotMinutes < endMinutes
         })
-    }
+    }, [rounds])
 
+    // Virtual scrolling handler
+    const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        if (!tournamentTables?.data) return
+
+        const scrollTop = e.currentTarget.scrollTop
+        const containerHeight = e.currentTarget.clientHeight
+
+        const start = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER_SIZE)
+        const visibleCount = Math.ceil(containerHeight / ITEM_HEIGHT)
+        const end = Math.min(tournamentTables.data.length, start + visibleCount + BUFFER_SIZE * 2)
+
+        setVisibleRange({ start, end })
+    }, [tournamentTables?.data])
+
+    // Get visible tables for virtual scrolling
+    const visibleTables = useMemo(() => {
+        if (!tournamentTables?.data) return []
+        return tournamentTables.data.slice(visibleRange.start, visibleRange.end)
+    }, [tournamentTables?.data, visibleRange])
+
+    // Calculate total height for virtual scrolling
+    const totalHeight = (tournamentTables?.data?.length || 0) * ITEM_HEIGHT
+    const offsetY = visibleRange.start * ITEM_HEIGHT
+
+    const formatDayLabel = (dayString: string) => {
+        const date = new Date(dayString + 'T00:00:00')
+        return date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        })
+    }
 
     return (
         <div className="h-screen bg-white flex flex-col">
             <div className="bg-white border-b px-4 py-2">
                 <h1 className="text-lg font-semibold text-gray-600">
-                        {t('competitions.timetable.view.title')}
+                    {t('competitions.timetable.view.title')}
                 </h1>
             </div>
+
+            {/* Day Tabs */}
+            {tournamentDays.length > 1 && (
+                <div className="bg-white border-b px-4 py-2">
+                    <div className="flex gap-1">
+                        {tournamentDays.map((day) => (
+                            <button
+                                key={day}
+                                onClick={() => setSelectedDay(day)}
+                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${selectedDay === day
+                                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                    : 'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                            >
+                                {formatDayLabel(day)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Color Legend */}
             <div className="bg-gray-50 border-b p-3">
                 <div className="flex flex-wrap gap-3">
@@ -199,7 +363,7 @@ function RouteComponent() {
                     </div>
                 </div>
             </div>
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto" onScroll={handleScroll}>
                 <div className="min-w-max">
                     {/* Time Header Row */}
                     <div className="sticky top-0 bg-white border-b flex z-10">
@@ -208,136 +372,40 @@ function RouteComponent() {
                         </div>
                         {timeSlots.map((timeSlot) => {
                             const round = getRoundForTimeSlot(timeSlot)
-                            const isBreak = false
                             return (
                                 <div
                                     key={timeSlot}
-                                    className={`w-24 border-r flex flex-col items-center justify-center p-1 text-xs ${"bg-gray-100"
-                                        } ${isBreak ? "bg-orange-50 border-orange-200" : ""}`}
+                                    className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100"
                                 >
                                     <div className="font-medium">{timeSlot}</div>
                                     {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
-                                    {isBreak && <div className="text-[10px] text-orange-600 font-medium">BREAK</div>}
                                 </div>
                             )
                         })}
                     </div>
 
-                    {tournamentTables && tournamentTables.data && tournamentTables.data.map((table) => (
-                        <div key={table.id} className="flex border-b hover:bg-gray-50/50 min-h-12">
-                            <div className="w-16 bg-gray-50 border-r flex flex-col items-center justify-center p-0.5 min-h-12">
-                                <div className="text-[10px] font-medium">{table.name}</div>
-                            </div>
-
-                            {timeSlots.map((timeSlot) => {
-                                const match = getMatchForCell(table.name, timeSlot)
-                                const cellKey = `${table.id}-${timeSlot}`
-                                const isHovered = hoveredCell === cellKey
-                                const round = getRoundForTimeSlot(timeSlot)
-                                const isBreak = false
-
-                                if (isBreak) {
-                                    return (
-                                        <div
-                                            key={timeSlot}
-                                            className="w-24 h-12 border-r flex items-center justify-center bg-orange-50 text-orange-600"
-                                        >
-                                            <div className="text-[10px] font-medium">BREAK</div>
-                                        </div>
-                                    )
-                                }
-
-                                return (
-                                    <div
-                                        key={timeSlot}
-                                        className={`w-24 h-12 border-r flex items-center justify-center p-0.5 cursor-pointer transition-colors ${match
-                                            ? `${isPlacementMatch(match) ? 'border-red-200' : ""} hover:opacity-80 border-l-2 ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
-                                                ? "border-l-green-500"
-                                                : match.match.state === "finished"
-                                                    ? "border-l-blue-500"
-                                                    : "border-l-yellow-500"
-                                            }`
-                                            : round
-                                                ? `${round.color} hover:opacity-80`
-                                                : "hover:bg-gray-50"
-                                            } ${isHovered ? "ring-2 ring-blue-300" : ""}`}
-                                        onMouseEnter={() => setHoveredCell(cellKey)}
-                                        onMouseLeave={() => setHoveredCell(null)}
-                                    // onClick={() => match && setSelectedMatch(match)}
-                                    >
-                                        {match ? (
-                                            <div className="relative text-center w-full h-full flex flex-col justify-center">
-                                                <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
-                                                    {match.match.readable_id}
-                                                </div>
-                                                <div className="text-[10px] font-medium text-gray-600 leading-tight">
-                                                    {tournamentClassesData?.data?.find(t => t.id === match.match.tournament_table_id)?.class || 'Class'}
-                                                </div>
-                                                {isPlacementMatch(match) && (
-                                                    <div className="text-[8px] text-red-600 font-bold mt-0.5">{getPlacementLabel(match)}</div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <div className="text-[10px] text-gray-400">
-                                                {isHovered && table.match_id === "" ? "+" : ""}
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            })}
+                    {/* Virtual scrolling container */}
+                    <div style={{ height: totalHeight, position: 'relative' }}>
+                        <div style={{ transform: `translateY(${offsetY}px)` }}>
+                            {visibleTables.map((table) => (
+                                <TableRow
+                                    key={table.id}
+                                    table={table}
+                                    timeSlots={timeSlots}
+                                    getMatchForCell={getMatchForCell}
+                                    getRoundForTimeSlot={getRoundForTimeSlot}
+                                    getGroupColor={getGroupColor}
+                                    isPlacementMatch={isPlacementMatch}
+                                    getPlacementLabel={getPlacementLabel}
+                                    tournamentClassesData={tournamentClassesData}
+                                    hoveredCell={hoveredCell}
+                                    setHoveredCell={setHoveredCell}
+                                />
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
             </div>
-
-            {/* Match Details Dialog */}
-            {/* <Dialog open={!!selectedMatch} onOpenChange={() => setSelectedMatch(null)}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            Match Details
-                        </DialogTitle>
-                    </DialogHeader>
-
-                    {selectedMatch && (
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <Badge variant="outline">Table {selectedMatch.tableId}</Badge>
-                                <Badge className={getStatusColor(selectedMatch.status)}>{selectedMatch.status}</Badge>
-                            </div>
-
-                            <div className="text-center space-y-2">
-                                <div className="text-lg font-semibold">{selectedMatch.team1}</div>
-                                <div className="text-sm text-gray-500">vs</div>
-                                <div className="text-lg font-semibold">{selectedMatch.team2}</div>
-                                {selectedMatch.score && (
-                                    <div className="text-xl font-bold text-blue-600 mt-2">{selectedMatch.score}</div>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div className="flex items-center gap-2">
-                                    <Clock className="h-3 w-3" />
-                                    <span>Start: {selectedMatch.startTime}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="h-3 w-3" />
-                                    <span>Duration: 30min</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Trophy className="h-3 w-3" />
-                                    <span>Round: {rounds.find((r) => r.id === selectedMatch.roundId)?.name}</span>
-                                </div>
-                            </div>
-
-                            <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-                                Match includes 25 minutes of play time plus 5 minutes buffer for setup and transitions.
-                            </div>
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog> */}
         </div>
     )
 }
