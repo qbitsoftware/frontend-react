@@ -65,7 +65,6 @@ const SeedingHeader = ({
     return closestPowerOf2 !== table_data.size;
   };
 
-
   const [disabled, setDisabled] = useState(false);
   const isDisabled = (data: MatchesResponse | undefined): boolean => {
     if (!data || !data.data) {
@@ -98,7 +97,6 @@ const SeedingHeader = ({
     }
   };
 
-
   const handleSeeding = async (order: string | undefined) => {
     if (!order) {
       return;
@@ -109,7 +107,6 @@ const SeedingHeader = ({
     } else {
       await executeSeeding(order);
     }
-
   };
 
   const handleWarningConfirm = async () => {
@@ -167,7 +164,6 @@ const SeedingHeader = ({
 
     try {
       await importMutation.mutateAsync(file)
-
       toast.message(t('toasts.participants.import_success', 'Participants imported successfully'));
     } catch (error: unknown) {
       const errorMessage = error instanceof Error && 'response' in error
@@ -223,12 +219,9 @@ const SeedingHeader = ({
     }
 
     const wsData = [headers];
-
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(wsData);
-
     XLSX.utils.book_append_sheet(wb, ws, 'Participants');
-
     XLSX.writeFile(wb, filename);
   };
 
@@ -237,6 +230,8 @@ const SeedingHeader = ({
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 items-start sm:items-center justify-between w-full">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
           <h5 className="font-medium">
+            {table_data.class}
+            {" "}
             {(() => {
               if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
                 return t("admin.tournaments.participants.pairs");
@@ -267,133 +262,143 @@ const SeedingHeader = ({
             )}
           </div>
         </div>
-        <Button
-          onClick={handleDownloadTemplate}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-1.5"
-        >
-          <Download className="h-4 w-4" />
-          {t('admin.tournaments.groups.import.download_template', 'Download Template')}
-        </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 w-full">
-        <div className="flex flex-col sm:flex-row gap-2 flex-1">
-
-          <Button
-            onClick={handleOrder}
-            disabled={disabled}
-            variant="outline"
-            size="sm"
-            className="w-full sm:flex-1 h-9 text-sm font-medium"
-          >
-            {t("admin.tournaments.groups.order.order_by_rating")}
-          </Button>
-
-          <Button
-            disabled={false}
-            onClick={() => handleSeeding("rating")}
-            size="sm"
-            className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
-          >
-            <span>{t("admin.tournaments.groups.order.title")}</span>
-            <img src={seeds3} className="h-4 w-4 object-contain" />
-          </Button>
-
-
-          {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
+      <div className="flex flex-col gap-3 w-full">
+        {/* Excel Import/Export Group */}
+        <div className="flex flex-col gap-2">
+          <div className="text-xs font-medium text-gray-600 sm:hidden">Excel Actions</div>
+          <div className="flex gap-2">
             <Button
-              disabled={disabled}
-              onClick={handleDoublePairing}
+              onClick={handleDownloadTemplate}
+              variant="outline"
               size="sm"
-              className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+              className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5"
             >
-              <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+              <Download className="h-4 w-4" />
+              {t('admin.tournaments.groups.import.download_template', 'Download Template')}
             </Button>
-
-          )}
-          {table_data.type === GroupType.DYNAMIC && (
+            
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileChange}
+              className="hidden"
+            />
             <Button
+              onClick={handleImportClick}
               disabled={disabled}
-              onClick={handleRoundRobinPairing}
+              variant="outline"
               size="sm"
-              className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+              className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5"
             >
-              <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+              <Upload className="h-4 w-4" />
+              <span>{t("admin.tournaments.groups.import.title", "Import Excel")}</span>
             </Button>
-
-          )}
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx,.xls"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-
-          <Button
-            onClick={handleImportClick}
-            disabled={disabled}
-            variant="outline"
-            size="sm"
-            className="w-full sm:flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5"
-          >
-            <Upload className="h-4 w-4" />
-            <span>{t("admin.tournaments.groups.import.title", "Import Excel")}</span>
-          </Button>
+          </div>
         </div>
 
-        <Dialog open={showWarningModal} onOpenChange={setShowWarningModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t("admin.tournaments.groups.order.title")}</DialogTitle>
-              <DialogDescription>
-                {getWarningMessage()}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={handleWarningCancel}>
-                {t("admin.tournaments.groups.participants.actions.cancel")}
-              </Button>
-              <Button onClick={handleWarningConfirm}>
-                {t("admin.tournaments.groups.participants.actions.continue_anyway")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
+        {/* Tournament Management Group */}
+        <div className="flex flex-col gap-2">
+          <div className="text-xs font-medium text-gray-600 sm:hidden">Tournament Management</div>
+          <div className="flex gap-2 flex-wrap">
             <Button
-              variant="ghost"
+              onClick={handleOrder}
+              disabled={disabled}
+              variant="outline"
               size="sm"
-              className="w-full sm:w-auto h-9 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300"
+              className="flex-1 h-9 text-sm font-medium"
             >
-              {t('admin.tournaments.groups.reset_seeding.title')}
+              {t("admin.tournaments.groups.order.order_by_rating")}
             </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {t('admin.tournaments.groups.reset_seeding.title', 'Reset Seeding')}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {t('admin.tournaments.groups.reset_seeding.subtitle', 'Are you sure you want to reset the seeding? This action cannot be undone.')}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>
-                {t('common.cancel', 'Cancel')}
-              </AlertDialogCancel>
-              <AlertDialogAction onClick={handleReset}>
-                {t('common.confirm', 'Confirm')}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
+            <Button
+              disabled={false}
+              onClick={() => handleSeeding("rating")}
+              size="sm"
+              className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+            >
+              <span>{t("admin.tournaments.groups.order.title")}</span>
+              <img src={seeds3} className="h-4 w-4 object-contain" />
+            </Button>
+
+            {/* Pairing buttons (conditionally shown) */}
+            {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
+              <Button
+                disabled={disabled}
+                onClick={handleDoublePairing}
+                size="sm"
+                className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+              >
+                <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+              </Button>
+            )}
+            {table_data.type === GroupType.DYNAMIC && (
+              <Button
+                disabled={disabled}
+                onClick={handleRoundRobinPairing}
+                size="sm"
+                className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+              >
+                <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+              </Button>
+            )}
+
+            {/* Reset button (only show if games are generated - when disabled is true) */}
+            {disabled && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex-1 h-9 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300"
+                  >
+                    {t('admin.tournaments.groups.reset_seeding.title')}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t('admin.tournaments.groups.reset_seeding.title', 'Reset Seeding')}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t('admin.tournaments.groups.reset_seeding.subtitle', 'Are you sure you want to reset the seeding? This action cannot be undone.')}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {t('common.cancel', 'Cancel')}
+                    </AlertDialogCancel>
+                    <AlertDialogAction onClick={handleReset}>
+                      {t('common.confirm', 'Confirm')}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
+            )}
+          </div>
+        </div>
       </div>
+
+      <Dialog open={showWarningModal} onOpenChange={setShowWarningModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("admin.tournaments.groups.order.title")}</DialogTitle>
+            <DialogDescription>
+              {getWarningMessage()}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleWarningCancel}>
+              {t("admin.tournaments.groups.participants.actions.cancel")}
+            </Button>
+            <Button onClick={handleWarningConfirm}>
+              {t("admin.tournaments.groups.participants.actions.continue_anyway")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </CardHeader>
   );
 };

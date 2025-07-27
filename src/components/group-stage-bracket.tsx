@@ -334,7 +334,7 @@ export default function GroupStageBracket({
         const group_participant = roundRobinBracket.find((bracket) => bracket.participant.group_id === "")
         const group_name = group_participant ? group_participant.participant.name : `Group ${groupIndex + 1}`
         return (
-            <div key={groupIndex} className="flex items-center my-10 mx-auto flex-col w-[70vw] overflow-x-auto px-4">
+            <div key={groupIndex} className="flex items-center pb-10 pt-5 mx-auto flex-col w-[70vw] overflow-x-auto px-4 rounded-lg">
                 <h3 className="font-bold mb-4">{group_name}</h3>
                 <Table className="table-fixed min-w-max rounded-lg">
                     <TableHeader>

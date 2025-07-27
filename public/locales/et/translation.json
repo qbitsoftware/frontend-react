@@ -1008,7 +1008,7 @@
         "round_robin_content": "Siia lisatud mängijad jaotatakse alagruppide vahel ning igast alagrupist pääseb teatud arv mängijaid põhitabelisse.",
         "double_elimination_content": "Siia lisatud mängijad osalevad põhitabeliturniiris.",
         "players": "paaripanemata mängijat",
-          "pairs": "Paare"
+        "pairs": "paare"
       },
       "groups": {
         "layout": {
@@ -1074,7 +1074,7 @@
         "solo": "Üksik",
         "team": "Meeskondadega",
         "reset_seeding": {
-          "title": "Lähtesta matšid",
+          "title": "Lähtesta mängud",
           "subtitle": "Kas olete kindel? Pärast kinnitamist ei saa seda tagasi võtta."
         },
         "regroup": "Regrupeeri",
@@ -1138,13 +1138,13 @@
           }
         },
         "import": {
-          "title": "Impordi Excel",
-          "download_template": "Laadi alla mall"
+          "title": "Impordi mängijad Excelist",
+          "download_template": "Lae alla Excel mall"
         },
         "participants": {
           "teams": "Meeskonnad",
           "groups": "Grupid",
-          "subgroups": "Alagrupid",
+          "subgroups": "alagrupid",
           "players": "Mängijad",
           "change_me": "MUUDA MIND",
           "new_group": "Uus alagrupp",
@@ -1206,7 +1206,7 @@
             "team_name_placeholder": "Lisa meeskonna nimi",
             "name_placeholder": "Nimi",
             "generate_pairs": "Genereeri Paarid",
-            "download_template": "Laadi alla mall",
+            "download_template": "Laadi alla Excel mall",
             "import_excel": "Impordi Excel",
             "add_player": {
               "add": "Lisa mängija",
@@ -1304,7 +1304,7 @@
       "info": {
         "type": "Tüüp",
         "location": "Asukoht",
-        "participants": "Osalejad",
+        "participants": "osalejad",
         "duration": "Kestus",
         "registration_period": "Registratsiooni periood",
         "registration_period_opens": "Avaneb",

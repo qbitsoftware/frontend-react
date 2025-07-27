@@ -129,7 +129,7 @@ export const Matches: React.FC<MatchesProps> = ({
                     </Select>
 
                     {tournament_table.type === "champions_league" && (
-                        <div className="flex gap-1 border bg-[#FAFCFE] py-1 px-1 rounded-md">
+                        <div className="flex gap-1 border bg-[#FAFCFE] py-1 px-0 rounded-md">
                             <Button
                                 variant="ghost"
                                 size="sm"

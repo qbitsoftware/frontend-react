@@ -26,6 +26,7 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<MatchWrapper | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("");
   const params = useParams({ strict: false })
 
   const { data: matches } = UseGetMatchesQuery(
@@ -42,7 +43,16 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
         setSelectedMatch(updatedMatch);
       }
     }
-  }, [matches]);
+  }, [matches, selectedMatch]);
+
+  useEffect(() => {
+    if (!bracket.data || !tournament_table) return;
+    
+    const hasEliminations = !!bracket.data.eliminations && bracket.data.eliminations.length > 0;
+    
+    const defaultTab = hasEliminations ? "eliminations" : "round_robins";
+    setActiveTab(defaultTab);
+  }, [bracket.data, tournament_table]);
 
   if (!bracket.data || !tournament_table) {
     return <div>{t('admin.tournaments.groups.tables.no_data')}</div>;
@@ -58,11 +68,9 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
     tournament_table.type === GroupType.DYNAMIC;
 
   const handleSelectMatch = (match: MatchWrapper) => {
-    // Prevent clicking on matches where both participants are empty
     if ((match.match.p1_id === "" || match.match.p1_id === "empty") && (match.match.p2_id === "" || match.match.p2_id === "empty")) {
       return
     }
-    // Prevent clicking on matches where at least one participant is a bye
     if (match.match.p1_id === "empty" || match.match.p2_id === "empty") {
       return
     }
@@ -77,27 +85,26 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
         <div className="flex flex-col">
           <CardContent className="p-0">
             <Tabs
-              defaultValue={hasEliminations ? "eliminations" : "round_robins"}
+              value={activeTab}
+              onValueChange={setActiveTab}
               className="w-full bg-[#F8F9FA]"
             >
-              <TabsList>
-                {hasEliminations && (
+              {hasEliminations && hasRoundRobins && (
+                <TabsList>
                   <TabsTrigger value="eliminations">
                     {t(
                       "admin.tournaments.bracket.eliminations",
                       "Eliminations"
                     )}
                   </TabsTrigger>
-                )}
-                {hasRoundRobins && (
                   <TabsTrigger value="round_robins">
                     {t(
                       "admin.tournaments.bracket.round_robins",
                       "Group Stage"
                     )}
                   </TabsTrigger>
-                )}
-              </TabsList>
+                </TabsList>
+              )}
               {hasEliminations && (
                 <TabsContent value="eliminations">
                   <EliminationBrackets

@@ -56,11 +56,10 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     if (matches.length > 0) {
         return (
             <div className="rounded-md border my-2">
-                <Table className="[&_td]:py-2 [&_th]:py-2">
+                <Table className="[&_td]:py-1 [&_th]:py-1 [&_td]:px-2 [&_th]:px-2 text-sm">
                     <TableHeader>
                         <TableRow className="bg-gray-50">
                             <TableHead>Actions</TableHead>
-                            <TableHead>{t("admin.tournaments.matches.table.serial_number")}</TableHead>
                             <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
                             <TableHead>{t("admin.tournaments.matches.table.table")}</TableHead>
                             <TableHead className="min-w-[120px]">{t("admin.tournaments.matches.table.participant_1")}</TableHead>
@@ -72,19 +71,17 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {matches.map((match, index) => (
+                        {matches.map((match) => (
                             <TableRow key={`match-${match.match.id}`} className={getRowClassName(match)}>
                                 <TableCell>
                                     <Button
                                         disabled={match.p1.id === "" || match.p2.id === ""}
                                         variant="outline"
+                                        size="sm"
                                         onClick={() => handleRowClick(match)}
                                     >
                                         {t("admin.tournaments.matches.table.modify")}
                                     </Button>
-                                </TableCell>
-                                <TableCell>
-                                    {index + 1}
                                 </TableCell>
                                 <TableCell>
                                     {match.match.round}

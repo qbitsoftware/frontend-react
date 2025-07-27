@@ -86,15 +86,21 @@ function RouteComponent() {
     }
   }, [showGroupsDropdown]);
 
-  const currentTab = location.pathname.includes("/grupid")
-    ? "groups"
-    : location.pathname.includes("/ajakava")
-      ? "schedule"
-      : location.pathname.includes("/meedia")
-        ? "media"
-        : location.pathname.includes("/pildid")
-          ? "images"
-          : "info";
+  const currentTab = location.pathname.includes("/osalejad")
+    ? "participants"
+    : location.pathname.includes("/mangud")
+      ? "matches"
+      : location.pathname.includes("/tabelid")
+        ? "brackets"
+        : location.pathname.includes("/ajakava")
+          ? "schedule"
+          : location.pathname.includes("/grupid")
+            ? "groups"
+            : location.pathname.includes("/meedia")
+              ? "media"
+              : location.pathname.includes("/pildid")
+                ? "images"
+                : "info";
 
   return (
     <div className="mx-auto min-h-[95vh] h-full">
@@ -129,6 +135,35 @@ function RouteComponent() {
                   </Link>
                 </div>
 
+                <Link to={`/admin/tournaments/${tournamentid}/osalejad`}>
+                  <TabsTrigger
+                    value="participants"
+                    className="w-[7rem] py-[6px] flex-shrink-0"
+                  >
+                    {t(
+                      "admin.tournaments.groups.layout.participants",
+                      "Osalejad"
+                    )}
+                  </TabsTrigger>
+                </Link>
+
+                <Link to={`/admin/tournaments/${tournamentid}/mangud`}>
+                  <TabsTrigger
+                    value="matches"
+                    className="w-[6rem] py-[6px] flex-shrink-0"
+                  >
+                    {t("admin.tournaments.groups.layout.games", "Mängud")}
+                  </TabsTrigger>
+                </Link>
+
+                <Link to={`/admin/tournaments/${tournamentid}/tabelid`}>
+                  <TabsTrigger
+                    value="brackets"
+                    className="w-[6rem] py-[6px] flex-shrink-0"
+                  >
+                    {t("admin.tournaments.groups.layout.tables", "Tabelid")}
+                  </TabsTrigger>
+                </Link>
                 <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
                   <TabsTrigger
                     value="schedule"
@@ -137,8 +172,7 @@ function RouteComponent() {
                     {t("admin.layout.schedule")}
                   </TabsTrigger>
                 </Link>
-
-                              </TabsList>
+              </TabsList>
             </Tabs>
 
             {showGroupsDropdown &&
