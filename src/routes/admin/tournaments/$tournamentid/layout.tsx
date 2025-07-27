@@ -13,6 +13,8 @@ import { useState, useRef, useEffect } from "react";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdmin } from "@/queries/tournaments";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
   component: RouteComponent,
@@ -106,9 +108,20 @@ function RouteComponent() {
     <div className="mx-auto min-h-[95vh] h-full">
       <div className="w-full relative">
         <div className="py-4 sm:py-auto md:px-8 flex flex-col lg:flex-row gap-4 justify-between items-center w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20">
-          <h5 className="font-semibold text-[#03326B]">
-            {tournament_data.data?.name}
-          </h5>
+          <div className="flex items-center gap-1">
+            <Link to="/admin/tournaments">
+              <Button
+                variant="ghost"
+                size="lg"
+                className="p-0 h-8 w-8 hover:bg-gray-300"
+              >
+                <ArrowLeft className="h-4 w-4 text-[#03326B]" />
+              </Button>
+            </Link>
+            <h5 className="font-semibold text-[#03326B]">
+              {tournament_data.data?.name}
+            </h5>
+          </div>
           <div className="relative w-full lg:w-auto">
             <Tabs value={currentTab} className="w-full lg:w-auto">
               <TabsList className="p-2 md:p-0 flex flex-row justify-start items-center w-full gap-1 px-1">

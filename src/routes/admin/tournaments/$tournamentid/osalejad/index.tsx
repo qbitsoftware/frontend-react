@@ -24,6 +24,7 @@ function RouteComponent() {
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
 
   useEffect(() => {
+    // Auto-redirect to first group when component loads
     if (tablesQuery.data?.data && tablesQuery.data.data.length > 0) {
       const firstGroupId = tablesQuery.data.data[0].id
       navigate({
