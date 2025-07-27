@@ -133,17 +133,24 @@ function RouteComponent() {
         dayMatches.forEach(match => {
             if (match.match.start_date && new Date(match.match.start_date).getTime() > 0) {
                 const date = new Date(match.match.start_date)
-                const timeString = date.toLocaleTimeString('en-US', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
+                const hours = String(date.getUTCHours()).padStart(2, '0')
+                const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+                const timeString = `${hours}:${minutes}`
+
+
+                if (match.match.id == '907290f7-bb98-46e9-87be-8b4473e855c9') {
+                    console.log("time stirng", timeString)
+                    console.log('match start date', match.match.start_date)
+                }
+
                 times.add(timeString)
             }
         })
 
         return Array.from(times).sort()
     }, [dayMatches])
+
+    console.log('timeSlots', timeSlots)
 
     const rounds = useMemo(() => {
         if (timeSlots.length === 0) return []
@@ -243,13 +250,12 @@ function RouteComponent() {
         const map = new Map<string, MatchWrapper>()
         dayMatches.forEach(match => {
             if (match.match.start_date) {
-                const matchDate = new Date(match.match.start_date)
-                const matchTime = matchDate.toLocaleTimeString('en-US', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
-                const key = `${match.match.extra_data.table}-${matchTime}`
+                const date = new Date(match.match.start_date)
+                const hours = String(date.getUTCHours()).padStart(2, '0')
+                const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+                const timeString = `${hours}:${minutes}`
+
+                const key = `${match.match.extra_data.table}-${timeString}`
                 map.set(key, match)
             }
         })
