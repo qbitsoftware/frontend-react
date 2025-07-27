@@ -711,6 +711,41 @@
       "active": "Aktiivne",
       "missing": "Puudub"
     },
+    "calculator": {
+      "button": "Kalkulaator",
+      "button_short": "Kalk",
+      "title": "Reitingu kalkulaator",
+      "winner": "Matši Võitja",
+      "loser": "Matši Kaotaja",
+      "date": "Kuupäev",
+      "select_player": "Vali mängija",
+      "search_player": "Otsi mängijat...",
+      "no_player_found": "Mängijat ei leitud.",
+      "cancel": "Tühista",
+      "calculate": "Arvuta",
+      "result_title": "Reitingu muutus",
+      "points": "punkti",
+      "fill_all_fields": "Palun täitke kõik väljad",
+      "players_not_found": "Valitud mängijaid ei leitud",
+      "info_button": "Arvutamise metoodika",
+      "info_button_short": "Info",
+      "info_title": "Reitingu arvutamise metoodika",
+      "info_description": "Seda reitingu süsteemi kasutatakse reitingu punktide muutuste arvutamiseks matši tulemuste põhjal. Arvutus sõltub mängijate reitingu vahest ja turniiri koefitsientidest.",
+      "basic_rules": "Põhireeglid",
+      "when_higher_wins": "Kui võidab kõrgema reitinguga mängija:",
+      "when_lower_wins": "Kui võidab madalama reitinguga mängija:",
+      "lower_wins_formula": "Võitja saab punkte, kaotaja kaotab sama palju.",
+      "simple_rating_formula": "(reitingupunktide vahe + 5) ÷ 3",
+      "rating_diff": "Reitingu Vahe",
+      "winner_points": "Võitja (+X)",
+      "loser_points": "Kaotaja (-X)",
+      "tournament_coeffs": "Turniiri Koefitsiendid",
+      "tournament": "Võistlus",
+      "win_coeff": "Võidu Koef",
+      "loss_coeff": "Kaotuse Koef",
+      "extra_points": "Extra Punktid - I Koht",
+      "over_30": "üle 30"
+    },
     "player_modal": {
       "basic_information": {
         "birthyear": "Sünniaasta",
@@ -749,7 +784,24 @@
       "errors": {
         "loading_profile": "Viga profiili andmete laadimisel",
         "no_profile_data": "Profiili andmed pole saadaval"
-      }
+      },
+      "detailed_rules": "Detailsed Reeglid",
+      "detailed_rules_intro": "Täielik ülevaade Eesti lauatennise reitingu arvutamise reeglitest:",
+      "rating_change_calc": "Reitingu ja Kaalu Muutuste Arvutamine",
+      "rating_change_formula": "Võitja kaalu muutus:",
+      "rating_change_steps": [
+        "Kui reitingu vahe on rohkem kui 30 punkti kõrgema reitinguga mängija kasuks, siis reitingu muutust ei toimu",
+        "Kui reitingu vahe on väiksem kui 30 punkti, siis:",
+        "Reitingu punktide muutus = |(madalama mängija reiting - kõrgema mängija reiting) + 5| ÷ 3",
+        "Kaalu punktide muutus = 1 punkt"
+      ],
+      "when_lower_rated_wins": "Kui madalama reitinguga mängija võidab:",
+      "winner_rating_change": "Võitja reitingu muutus = |(kaotaja reiting - võitja reiting) + 5| ÷ 3",
+      "loser_rating_change": "Kaotaja reitingu muutus = -(sama summa kui võitjal)",
+      "weight_changes": "Kaalu muutused: mõlemad mängijad saavad +1 kaalu punkt",
+      "when_higher_rated_wins": "Kui kõrgema reitinguga mängija võidab:",
+      "if_diff_over_30": "Kui reitingu vahe on üle 30 punkti - muutusi ei toimu",
+      "if_diff_under_30": "Kui reitingu vahe on alla 30 punkti - sama arvutus kui ülal"
     }
   },
   "clubs": {
@@ -1344,14 +1396,6 @@
       "refresh": "Uuenda lehte"
     },
     "clubs": {
-      "toast": {
-        "club_created": "Klubi loodud edukalt",
-        "club_updated": "Klubi uuendatud edukalt",
-        "club_deleted": "Klubi kustutatud edukalt",
-        "club_created_error": "Klubi loomine ebaõnnestus. Palun proovige uuesti",
-        "club_updated_error": "Klubi uuendamine ebaõnnestus. Palun proovige uuesti",
-        "club_deleted_error": "Klubi kustutamine ebaõnnestus. Palun proovige uuesti"
-      },
       "loading": "Laadimine...",
       "error": "Viga",
       "title": "Klubid",
@@ -1472,6 +1516,12 @@
         "verification_unavailable": "ID kontrollimise teenus ei ole kättesaadav"
       },
       "toast": {
+        "club_created": "Klubi loodud edukalt",
+        "club_updated": "Klubi uuendatud edukalt",
+        "club_deleted": "Klubi kustutatud edukalt",
+        "club_created_error": "Klubi loomine ebaõnnestus. Palun proovige uuesti",
+        "club_updated_error": "Klubi uuendamine ebaõnnestus. Palun proovige uuesti",
+        "club_deleted_error": "Klubi kustutamine ebaõnnestus. Palun proovige uuesti",
         "error": "Viga",
         "success": "Edukas",
         "failed_to_load_players": "Klubi mängijate laadimine ebaõnnestus",

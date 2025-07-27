@@ -35,7 +35,6 @@ const TableRow = memo(({
             const cellKey = `${table.id}-${timeSlot}`
             const isHovered = hoveredCell === cellKey
             const round = getRoundForTimeSlot(timeSlot)
-            const isBreak = false
 
             return (
                 <div
