@@ -712,7 +712,60 @@
       "win_coeff": "Win Coefficient",
       "loss_coeff": "Loss Coefficient",
       "extra_points": "Extra Points - 1st Place",
-      "over_30": "over 30",
+      "over_40": "over 40",
+      "exceptions": "Exceptions",
+      "exceptions_list": [
+        "For matches between players without rating (Ri=0), the win and loss values HV and Hk are 0.",
+        "For matches between male and female players, the win and loss values HV and Hk are 0.",
+        "For matches between foreign and Estonian players, the Estonian player's HV and Hk are 0, while the foreign player's HV and Hk are calculated. The goal is to calculate Estonian rating as accurately as possible while providing approximate placement information for foreign players."
+      ],
+      "detailed_calculation": "Rating (Ra) and Weight (Ka) Change Calculation",
+      "calculation_steps": {
+        "step_1": "1.1. Find the absolute values of the sum of win and loss values from the tournament:",
+        "win_sum": "Sum of win values: Hvs=ΣHv",
+        "loss_sum": "Sum of loss values: Hks= (ΣHk) * -1",
+        "step_2": "1.2. Rating change (^R) calculation:",
+        "rating_formula": "^R= ((Hvs- Hks)*10)+ Hvs*Coef / Ka+ Hvs+ Hks",
+        "coef_explanation": "Coef is the tournament importance coefficient. Each player from the rating top 10 participating in the tournament class contributes one point, which are summed together. Maximum Coef value is therefore 10.",
+        "coef_usage": "Tournament importance coefficient is used in Estonian individual and team championships.",
+        "weight_limit": "If the player's initial weight (Ka) >30, then the weight value 30 is used in the formula.",
+        "step_3": "1.3. To find the rating at the end of the tournament (Rl), the rating change (^R) is added to the initial rating (Ra)",
+        "final_rating": "Rating at the end of tournament (Rl) = Ra +^R",
+        "rating_note": "Positive ^R values increase and negative ^R values decrease the final rating.",
+        "step_4": "1.4. Weight change (^K) calculation:",
+        "weight_change": "Weight change( ^K) = Hvs+ Hks",
+        "step_5": "1.5. To calculate weight (Kl) at the end of tournament, the weight change (^K) is added to the initial weight (Ka):",
+        "final_weight": "Kl=Ka+^K"
+      },
+      "new_player_section": "2. New Player Rating and Weight Calculation",
+      "new_player_rules": {
+        "intro": "If a player without initial rating participates in a tournament, they are assigned an initial rating (Ra).",
+        "rating_method": "Initial rating is determined by finding the lowest rating of players who beat them and the highest rating of players they beat, then assigning the lower value.",
+        "max_rating": "Maximum initial rating is limited to 55. This limit does not apply to foreign players, and if a foreign player wins all games, +5 is added to their initial rating.",
+        "initial_weight": "Initial weight (Ka) value is set to zero.",
+        "formula_intro": "The following formula is used for rating calculation:",
+        "new_player_formula": "^R= (Hvs-2*Hks-2)*10)+ Hvs*Coef / Hvs+ Hks",
+        "final_calculations": "New player rating and weight at the end of tournament:",
+        "final_rating": "New player rating (Rl) = Ra + ^R",
+        "final_weight": "New player weight (Kl) = Ka + ^K",
+        "negative_rating": "If Rl <0 then R1=0."
+      },
+      "weight_correction_section": "Weight Correction",
+      "weight_correction": {
+        "high_weight": "If Ka > 10:",
+        "high_weight_desc": "Weights are corrected monthly on the 1st day before calculating new month results using the following formula, where Ka is weight before correction and Ku is weight after correction.",
+        "high_weight_formula": "Ku = Ka - (Ka * Ka) / 225",
+        "low_weight": "If Ka<11:",
+        "low_weight_desc": "Weights are corrected every three months on the 1st day",
+        "low_weight_formula": "Ku = Ka – 1"
+      },
+      "ranking_section": "Ranking Compilation",
+      "ranking_compilation": {
+        "intro": "Ranking is compiled based on placement points (P), where Rl is rating points and Ku is corrected weights.",
+        "placement_formula": "Placement point change (^P) = (Rl – (3 * Ku) ) /6",
+        "positive_change": "If ^P>0 then P = Rl - ^P",
+        "negative_change": "If ^P<=0 then P = Rl"
+      },
       "detailed_rules": "Detailed Rating Calculation Rules",
       "rating_change_calc": "Rating (Ra) and Weight (Ka) Change Calculation",
       "sum_calculation": "Sum of win and loss values (absolute values)",
@@ -1001,6 +1054,7 @@
           "timetable": "Timetable",
           "matches": "Schedule",
           "games": "Matches",
+          "games_title": "in class",
           "tables": "Brackets",
           "view_all": "View all groups",
           "view_all_description": "Manage all tournament groups"
@@ -1564,7 +1618,10 @@
       "solo_game": "Solo game",
       "double_game": "Double game",
       "forfeit": "Forfeit",
-      "use_sets": "Insert result in sets"
+      "use_sets": "Insert result in sets",
+      "use_points": "Enter result in points",
+      "sets_mode": "in Sets",
+      "points_mode": "in Points"
     },
     "captain": "Captain",
     "notes": "Notes",

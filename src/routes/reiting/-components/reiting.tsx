@@ -212,7 +212,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
       // Higher or equal rated player wins
       if (Rv <= 10) {
         return { winnerGain: 2, loserLoss: -2 };
-      } else if (Rv >= 11 && Rv <= 30) {
+      } else if (Rv >= 11 && Rv <= 40) {
         return { winnerGain: 1, loserLoss: -1 };
       } else {
         return { winnerGain: 0, loserLoss: 0 };
@@ -735,12 +735,12 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                           <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">-2</td>
                         </tr>
                         <tr className="bg-gray-50">
-                          <td className="border border-gray-300 px-3 py-2">11 - 30</td>
+                          <td className="border border-gray-300 px-3 py-2">11 - 40</td>
                           <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+1</td>
                           <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">-1</td>
                         </tr>
                         <tr>
-                          <td className="border border-gray-300 px-3 py-2">{t("rating.calculator.over_30", "over 30")}</td>
+                          <td className="border border-gray-300 px-3 py-2">{t("rating.calculator.over_40", "over 40")}</td>
                           <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">0</td>
                           <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">0</td>
                         </tr>
@@ -766,7 +766,6 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 </div>
               </div>
 
-              {/* Detailed Rating Change Calculation */}
               <div>
                 <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.player_modal.rating_change_calc")}</h3>
                 <div className="space-y-2 text-sm text-gray-700">
@@ -785,7 +784,6 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
               </div>
 
 
-              {/* Tournament Coefficients */}
               <div>
                 <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.tournament_coeffs")}</h3>
                 
@@ -823,6 +821,153 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 </div>
               </div>
 
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.exceptions")}</h3>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  {(t("rating.calculator.exceptions_list", { returnObjects: true }) as string[]).map((exception: string, index: number) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-[#4C97F1] mr-2 mt-1">•</span>
+                      <span>{exception}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.detailed_calculation")}</h3>
+                <div className="space-y-4 text-sm text-gray-700">
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_1")}</p>
+                    <ul className="ml-4 space-y-1">
+                      <li>• {t("rating.calculator.calculation_steps.win_sum")}</li>
+                      <li>• {t("rating.calculator.calculation_steps.loss_sum")}</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_2")}</p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
+                      <div className="font-mono text-center text-blue-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.rating_formula")}
+                      </div>
+                    </div>
+                    <ul className="ml-4 space-y-1">
+                      <li>• {t("rating.calculator.calculation_steps.coef_explanation")}</li>
+                      <li>• {t("rating.calculator.calculation_steps.coef_usage")}</li>
+                      <li>• {t("rating.calculator.calculation_steps.weight_limit")}</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_3")}</p>
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                      <div className="font-mono text-center text-green-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.final_rating")}
+                      </div>
+                    </div>
+                    <p className="ml-4 text-xs text-gray-600">{t("rating.calculator.calculation_steps.rating_note")}</p>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_4")}</p>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-yellow-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.weight_change")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_5")}</p>
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-purple-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.final_weight")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* New Player Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.new_player_section")}</h3>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>{t("rating.calculator.new_player_rules.intro")}</p>
+                  <p>{t("rating.calculator.new_player_rules.rating_method")}</p>
+                  <p>{t("rating.calculator.new_player_rules.max_rating")}</p>
+                  <p>{t("rating.calculator.new_player_rules.initial_weight")}</p>
+                  
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.new_player_rules.formula_intro")}</p>
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                      <div className="font-mono text-center text-orange-800 font-semibold">
+                        {t("rating.calculator.new_player_rules.new_player_formula")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.new_player_rules.final_calculations")}</p>
+                    <ul className="ml-4 space-y-1">
+                      <li>• {t("rating.calculator.new_player_rules.final_rating")}</li>
+                      <li>• {t("rating.calculator.new_player_rules.final_weight")}</li>
+                    </ul>
+                    <p className="ml-4 mt-2 text-xs text-gray-600 font-medium">{t("rating.calculator.new_player_rules.negative_rating")}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.weight_correction_section")}</h3>
+                <div className="space-y-4 text-sm text-gray-700">
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.weight_correction.high_weight")}</p>
+                    <p className="mb-2">{t("rating.calculator.weight_correction.high_weight_desc")}</p>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-red-800 font-semibold">
+                        {t("rating.calculator.weight_correction.high_weight_formula")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.weight_correction.low_weight")}</p>
+                    <p className="mb-2">{t("rating.calculator.weight_correction.low_weight_desc")}</p>
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-indigo-800 font-semibold">
+                        {t("rating.calculator.weight_correction.low_weight_formula")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ranking Compilation Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.ranking_section")}</h3>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>{t("rating.calculator.ranking_compilation.intro")}</p>
+                  
+                  <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-3">
+                    <div className="font-mono text-center text-teal-800 font-semibold">
+                      {t("rating.calculator.ranking_compilation.placement_formula")}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-green-800 font-semibold text-sm">
+                        {t("rating.calculator.ranking_compilation.positive_change")}
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-gray-800 font-semibold text-sm">
+                        {t("rating.calculator.ranking_compilation.negative_change")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div className="flex justify-end pt-4 border-t">
                 <Button 

@@ -64,7 +64,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   const { t } = useTranslation();
   const { reset } = form;
 
-  const [useSets, setUseSets] = useState(match.match.use_sets || false);
+  const [usePoints, setUsePoints] = useState(false);
   const [isForfeit, setIsForfeit] = useState(match.match.forfeit || false);
   const [forfeitWinner, setForfeitWinner] = useState<string>("");
 
@@ -156,7 +156,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         bracket: match.match.bracket,
         forfeit: isForfeit,
         state: match.match.state,
-        use_sets: useSets,
+        use_sets: !usePoints,
         extra_data: {
           head_referee: data.mainReferee,
           table_referee: data.tableReferee,
@@ -303,14 +303,14 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                     <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                       <CardTitle className="text-lg text-gray-900 dark:text-white">
                         <div className="flex items-center justify-between gap-2">
-                          {t("protocol.table.sets")}
+                          {t("protocol.table.sets")} {usePoints ? t("protocol.table.points_mode") : t("protocol.table.sets_mode")}
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                              {t("protocol.table.use_sets")}
+                              {t("protocol.table.use_points")}
                             </span>
                             <Switch
-                              checked={useSets}
-                              onCheckedChange={setUseSets}
+                              checked={usePoints}
+                              onCheckedChange={setUsePoints}
                             />
                           </div>
                         </div>
@@ -325,7 +325,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                           {match.p2.name}
                         </div>
                       </div>
-                      {!useSets ? (
+                      {usePoints ? (
                         form.watch("scores").map((_, index) => (
                           <div key={index} className="flex items-start space-x-2">
                             <FormField
@@ -446,7 +446,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                             {form.formState.errors.scores.root.message}
                           </p>
                         )}
-                      {!useSets && form.watch("scores").length < 7 && (
+                      {usePoints && form.watch("scores").length < 7 && (
                         <Button
                           type="button"
                           variant="outline"

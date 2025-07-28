@@ -715,13 +715,13 @@
       "button": "Kalkulaator",
       "button_short": "Kalk",
       "title": "Reitingu kalkulaator",
-      "winner": "Matši Võitja",
-      "loser": "Matši Kaotaja",
+      "winner": "Matši võitja",
+      "loser": "Matši kaotaja",
       "date": "Kuupäev",
       "select_player": "Vali mängija",
       "search_player": "Otsi mängijat...",
       "no_player_found": "Mängijat ei leitud.",
-      "cancel": "Tühista",
+      "cancel": "Sulge",
       "calculate": "Arvuta",
       "result_title": "Reitingu muutus",
       "points": "punkti",
@@ -736,15 +736,68 @@
       "when_lower_wins": "Kui võidab madalama reitinguga mängija:",
       "lower_wins_formula": "Võitja saab punkte, kaotaja kaotab sama palju.",
       "simple_rating_formula": "(reitingupunktide vahe + 5) ÷ 3",
-      "rating_diff": "Reitingu Vahe",
+      "rating_diff": "Reitingu vahe",
       "winner_points": "Võitja (+X)",
       "loser_points": "Kaotaja (-X)",
-      "tournament_coeffs": "Turniiri Koefitsiendid",
+      "tournament_coeffs": "Turniiri koefitsiendid",
       "tournament": "Võistlus",
-      "win_coeff": "Võidu Koef",
-      "loss_coeff": "Kaotuse Koef",
-      "extra_points": "Extra Punktid - I Koht",
-      "over_30": "üle 30"
+      "win_coeff": "Võidu koef",
+      "loss_coeff": "Kaotuse koef",
+      "extra_points": "Extra punktid - I koht",
+      "over_40": "üle 40",
+      "exceptions": "Erandid",
+      "exceptions_list": [
+        "Reitinguta mängijate (Ri=0) omavahelise mängu võidu hind HV ja Hk on 0.",
+        "Naise ja mehe omavahelise mängu võidu hind HV ja Hk on 0.",
+        "Välismaalase ja Eesti mängija puhul on Eesti mängija HV ja Hk 0 ning välismaalase HV ja Hk arvutatakse välja. Eesmärk on võimalikult täpselt arvutada Eesti reiting, kuid võimaldada kohtunikule välismaalase orienteeruv paigutusinfo."
+      ],
+      "detailed_calculation": "Reitingu (Ra) ja kaalu (Ka) muutuste arvutamine",
+      "calculation_steps": {
+        "step_1": "1.1. Leitakse võistluse võidu ja kaotuste hindade summade absoluutväärtused:",
+        "win_sum": "Võitude hindade summa: Hvs=ΣHv",
+        "loss_sum": "Kaotuste hindade summa: Hks= (ΣHk) * -1",
+        "step_2": "1.2. Reitingu muutuse (^R) arvutamine:",
+        "rating_formula": "^R= ((Hvs- Hks)*10)+ Hvs*Coef / Ka+ Hvs+ Hks",
+        "coef_explanation": "Coef on võistluse tähtsuse koefitsent. Iga reitingu esikümnesse kuuluv ja võistlusklassist osavõtnud sportlane annab ühe annab väärtuseks ühe, mis omavahel liidetakse. Maksimaalne Coef väärtus on seega 10.",
+        "coef_usage": "Võistluste tähtsuse koefitsienti kasutatakse Eesti individuaalsetel ja võistkondlikel meistrivõistlustel.",
+        "weight_limit": "Kui võistleja algkaal (Ka) >30, siis võetakse kaalude väärtuseks valemis 30.",
+        "step_3": "1.3. Reiting võistluse lõpuks (Rl) leidmiseks liidetakse reitingu muutus (^R) algreitingule (Ra)",
+        "final_rating": "Reiting võistluse lõpuks (Rl) = Ra +^R",
+        "rating_note": "Positiivsed ^R väärtused suurendavad ja negatiivsed ^R väärtused vähendavad lõppreitingut.",
+        "step_4": "1.4. Kaalu muutuse (^K) arvutamine:",
+        "weight_change": "Kaalu muutus( ^K) = Hvs+ Hks",
+        "step_5": "1.5. Kaalu (Kl) arvutamiseks võistluse lõpuks, liidetakse algkaalule (Ka) kaalude muutus (^K):",
+        "final_weight": "Kl=Ka+^K"
+      },
+      "new_player_section": "2. Uue mängija reitingu ja kaalude arvutus",
+      "new_player_rules": {
+        "intro": "Kui turniiril osales mängija, kes ei oma algreitingut, määratakse talle algreiting (Ra).",
+        "rating_method": "Algreitingu määramiseks leitakse teda võitnud väiksema algreitinguga mängija reitingupunktid ja talle kaotanud suurima algreitinguga võistleja reitingupunktid, võrreldakse neid ja omistatakse need, mis olid väiksemad.",
+        "max_rating": "Maksimaalne algreiting on piiratud väärtusega 55. Välismaalaste puhul algreitingu piirangut ei rakendata ja kui välismaalane võitis kõik mängud lisatakse algreitingule +5.",
+        "initial_weight": "Algkaalude (Ka) väärtuseks määratakse null.",
+        "formula_intro": "Reitingu arvutuseks kasutatakse valemit:",
+        "new_player_formula": "^R= (Hvs-2*Hks-2)*10)+ Hvs*Coef / Hvs+ Hks",
+        "final_calculations": "Uue mängija reiting ja kaal võistluse lõpuks:",
+        "final_rating": "Uue mängija reiting (Rl) = Ra + ^R",
+        "final_weight": "Uue mängija kaal (Kl) = Ka + ^K",
+        "negative_rating": "Kui Rl <0 siis R1=0."
+      },
+      "weight_correction_section": "Kaalu korrigeerimine",
+      "weight_correction": {
+        "high_weight": "Kui Ka > 10:",
+        "high_weight_desc": "Kaalusid korrigeeritakse iga kuu esimese kuupäeva seisuga enne uue kuu tulemuste arvutamist järgmise valemi alusel, kus Ka on kaal enne korrigeerimist ja Ku kaal peale korrigeerimist.",
+        "high_weight_formula": "Ku = Ka - (Ka * Ka) / 225",
+        "low_weight": "Kui Ka<11:",
+        "low_weight_desc": "Kaalusid korrigeeritakse iga kolme kuu tagant, kuu esimese kuupäeva seisuga",
+        "low_weight_formula": "Ku = Ka – 1"
+      },
+      "ranking_section": "Reitingu koostamine",
+      "ranking_compilation": {
+        "intro": "Reiting koostatakse paigutuspunktide (P) alusel, kus Rl on reitingupunktid ja Ku on korrigeeritud kaalud.",
+        "placement_formula": "Paigutuspunktide muutus (^P) = (Rl – (3 * Ku) ) /6",
+        "positive_change": "Kui ^P>0 siis P = Rl - ^P",
+        "negative_change": "Kui ^P<=0 siis P = Rl"
+      }
     },
     "player_modal": {
       "basic_information": {
@@ -790,18 +843,18 @@
       "rating_change_calc": "Reitingu ja Kaalu Muutuste Arvutamine",
       "rating_change_formula": "Võitja kaalu muutus:",
       "rating_change_steps": [
-        "Kui reitingu vahe on rohkem kui 30 punkti kõrgema reitinguga mängija kasuks, siis reitingu muutust ei toimu",
-        "Kui reitingu vahe on väiksem kui 30 punkti, siis:",
+        "Kui reitingu vahe on rohkem kui 40 punkti kõrgema reitinguga mängija kasuks, siis reitingu muutust ei toimu",
+        "Kui reitingu vahe on väiksem kui 40 punkti, siis:",
         "Reitingu punktide muutus = |(madalama mängija reiting - kõrgema mängija reiting) + 5| ÷ 3",
         "Kaalu punktide muutus = 1 punkt"
       ],
       "when_lower_rated_wins": "Kui madalama reitinguga mängija võidab:",
-      "winner_rating_change": "Võitja reitingu muutus = |(kaotaja reiting - võitja reiting) + 5| ÷ 3",
+      "winner_rating_change": "Võitja reitingu muutus = (|kaotaja reiting - võitja reiting| + 5) ÷ 3",
       "loser_rating_change": "Kaotaja reitingu muutus = -(sama summa kui võitjal)",
-      "weight_changes": "Kaalu muutused: mõlemad mängijad saavad +1 kaalu punkt",
-      "when_higher_rated_wins": "Kui kõrgema reitinguga mängija võidab:",
-      "if_diff_over_30": "Kui reitingu vahe on üle 30 punkti - muutusi ei toimu",
-      "if_diff_under_30": "Kui reitingu vahe on alla 30 punkti - sama arvutus kui ülal"
+      "weight_changes": "Kaalu muutused: mõlemad mängijad saavad +1 kaalupunkti",
+      "when_higher_rated_wins": "Reitingumuutust ei toimu kui:",
+      "if_diff_over_30": "Võidab tugevam mängija ja reitingu vahe on üle 40 punkti.",
+      "if_diff_under_30": "Võidab nõrgem mängija ja reitingupunktide vahe on üle 40 punkti - juhuslik võit."
     }
   },
   "clubs": {
@@ -1019,7 +1072,8 @@
           "games": "Mängud",
           "tables": "Tabelid",
           "view_all": "Vaata kõiki",
-          "view_all_description": "Halda kõiki turniiri klasse"
+          "view_all_description": "Halda kõiki turniiri klasse",
+          "games_title": "klassis"
         },
         "images": {
           "title": "Pildigrupid",
@@ -1333,7 +1387,7 @@
       "matches": {
         "table": {
           "bracket": "Tabel",
-          "modify": "Muuda",
+          "modify": "Uuenda tulemus",
           "serial_number": "JKNR.",
           "round": "Ring",
           "class": "Grupp",
@@ -1577,6 +1631,9 @@
       "doubles": "Paar",
       "solo_game": "Üksik mäng",
       "use_sets": "Sisesta tulemus settides",
+      "use_points": "Sisesta tulemus punktides",
+      "sets_mode": "settidena",
+      "points_mode": "punktidena",
       "double_game": "Paarismäng",
       "forfeit": "Loobumine"
     },
