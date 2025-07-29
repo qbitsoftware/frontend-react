@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
 import ErrorPage from "@/components/error";
 import { ErrorResponse } from "@/types/errors";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdmin } from "@/queries/tournaments";
@@ -17,6 +17,11 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      selectedGroup: search.selectedGroup as string | undefined,
+    }
+  },
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
   loader: async ({ context: { queryClient }, params }) => {
@@ -43,8 +48,15 @@ function RouteComponent() {
   const location = useLocation();
   const { tournament_data } = Route.useLoaderData();
   const { tournamentid } = Route.useParams();
+  const { selectedGroup } = Route.useSearch();
   const { t } = useTranslation();
   const tournament_tables = UseGetTournamentTablesQuery(Number(tournamentid));
+
+  // Extract current group ID from URL path if we're on a group-specific route
+  const currentGroupId = React.useMemo(() => {
+    const pathMatch = location.pathname.match(/\/grupid\/(\d+)/);
+    return pathMatch ? pathMatch[1] : selectedGroup;
+  }, [location.pathname, selectedGroup]);
 
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -148,7 +160,7 @@ function RouteComponent() {
                   </Link>
                 </div>
 
-                <Link to={`/admin/tournaments/${tournamentid}/osalejad`}>
+                <Link to={`/admin/tournaments/${tournamentid}/osalejad`} search={{ selectedGroup: currentGroupId }}>
                   <TabsTrigger
                     value="participants"
                     className="w-[7rem] py-[6px] flex-shrink-0"
@@ -160,7 +172,7 @@ function RouteComponent() {
                   </TabsTrigger>
                 </Link>
 
-                <Link to={`/admin/tournaments/${tournamentid}/mangud`}>
+                <Link to={`/admin/tournaments/${tournamentid}/mangud`} search={{ selectedGroup: currentGroupId }}>
                   <TabsTrigger
                     value="matches"
                     className="w-[6rem] py-[6px] flex-shrink-0"
@@ -169,7 +181,7 @@ function RouteComponent() {
                   </TabsTrigger>
                 </Link>
 
-                <Link to={`/admin/tournaments/${tournamentid}/tabelid`}>
+                <Link to={`/admin/tournaments/${tournamentid}/tabelid`} search={{ selectedGroup: currentGroupId }}>
                   <TabsTrigger
                     value="brackets"
                     className="w-[6rem] py-[6px] flex-shrink-0"

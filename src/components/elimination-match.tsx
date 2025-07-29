@@ -129,9 +129,11 @@ const EliminationMatch = ({
         onMouseMove={handleMatchMouseMove}
         className="relative w-[220px] h-[60px] bg-white flex flex-col border border-gray-200 rounded-md hover:shadow-md transition-shadow cursor-pointer"
       >
-        <div className="absolute -top-[20px] left-[80px] w-[40px] text-[9px]">
-          {bracket}
-        </div>
+        {bracket && (
+          <div className="absolute -right-[35px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded">
+            {bracket}
+          </div>
+        )}
         <div className="absolute text-[8px] -top-[15px]">
           {match.match.state !== MatchState.FINISHED &&
             match.participant_1.id != "" &&

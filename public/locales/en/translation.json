@@ -960,6 +960,7 @@
         "dialog_type": "Team Type",
         "dialog_type_placeholder": "Select team type",
         "team_leagues": "Team Leagues",
+        "dynamic": "Dynamic (Round Robin > Main Bracket)",
         "doubles": "Doubles",
         "fixed_doubles": "Fixed Doubles",
         "errors": {
@@ -979,7 +980,8 @@
           "double_elimination_full_placement": "Full Placement (Consolation for bronze)",
           "double_elimination_full_placement_top_heavy": "Full Placement (Semi-final losers for bronze)",
           "double_elimination_tabletennis": "Full Placement (Consolation for bronze)",
-            "double_elimination_tabletennis_top_heavy": "Full Placement (Semi-final losers for bronze)",
+          "dynamic": "Dynamic (Groups > Main Bracket)",
+          "double_elimination_tabletennis_top_heavy": "Full Placement (Semi-final losers for bronze)",
           "champions_league": "Team Champions League",
           "free_for_all": "Solo Free-for-all",
           "round_robin_full_placement": "Round Robin (Placement matches included)",

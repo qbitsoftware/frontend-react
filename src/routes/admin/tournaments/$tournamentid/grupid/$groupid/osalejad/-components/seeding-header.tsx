@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Upload, Download } from "lucide-react";
+import { Upload, Download, TrendingUp, FileSpreadsheet } from "lucide-react";
 import * as XLSX from 'xlsx';
 
 interface SeedingHeaderProps {
@@ -265,94 +265,44 @@ const SeedingHeader = ({
       </div>
 
       <div className="flex flex-col gap-3 w-full">
-        {/* Excel Import/Export Group */}
-        <div className="flex flex-col gap-2">
-          <div className="text-xs font-medium text-gray-600 sm:hidden">Excel Actions</div>
-          <div className="flex gap-2">
-            <Button
-              onClick={handleDownloadTemplate}
-              variant="outline"
-              size="sm"
-              className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5"
-            >
-              <Download className="h-4 w-4" />
-              {t('admin.tournaments.groups.import.download_template', 'Download Template')}
-            </Button>
+        {/* Main Action Row */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full">
+          {/* Left Column - Tournament Management */}
+          <div className="flex flex-col gap-2 flex-1">
+            <div className="text-xs font-medium text-gray-600 sm:hidden">Tournament Management</div>
             
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <Button
-              onClick={handleImportClick}
-              disabled={disabled}
-              variant="outline"
-              size="sm"
-              className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5"
-            >
-              <Upload className="h-4 w-4" />
-              <span>{t("admin.tournaments.groups.import.title", "Import Excel")}</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Tournament Management Group */}
-        <div className="flex flex-col gap-2">
-          <div className="text-xs font-medium text-gray-600 sm:hidden">Tournament Management</div>
-          <div className="flex gap-2 flex-wrap">
+            {/* Order by Rating Button */}
             <Button
               onClick={handleOrder}
               disabled={disabled}
               variant="outline"
               size="sm"
-              className="flex-1 h-9 text-sm font-medium"
+              className="w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5"
             >
+              <TrendingUp className="h-4 w-4" />
               {t("admin.tournaments.groups.order.order_by_rating")}
             </Button>
 
-            <Button
-              disabled={false}
-              onClick={() => handleSeeding("rating")}
-              size="sm"
-              className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
-            >
-              <span>{t("admin.tournaments.groups.order.title")}</span>
-              <img src={seeds3} className="h-4 w-4 object-contain" />
-            </Button>
-
-            {/* Pairing buttons (conditionally shown) */}
-            {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
+            {/* Generate Matches Button - only show when games are NOT generated */}
+            {!disabled && (
               <Button
-                disabled={disabled}
-                onClick={handleDoublePairing}
+                onClick={() => handleSeeding("rating")}
                 size="sm"
-                className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+                className="w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
               >
-                <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
-              </Button>
-            )}
-            {table_data.type === GroupType.DYNAMIC && (
-              <Button
-                disabled={disabled}
-                onClick={handleRoundRobinPairing}
-                size="sm"
-                className="flex-1 h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
-              >
-                <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+                <span>{t("admin.tournaments.groups.order.title")}</span>
+                <img src={seeds3} className="h-4 w-4 object-contain" />
               </Button>
             )}
 
-            {/* Reset button (only show if games are generated - when disabled is true) */}
+            {/* Reset Games Button - only show when games ARE generated */}
             {disabled && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex-1 h-9 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300"
+                    className="w-full h-9 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300"
                   >
                     {t('admin.tournaments.groups.reset_seeding.title')}
                   </Button>
@@ -377,6 +327,66 @@ const SeedingHeader = ({
                 </AlertDialogContent>
                 </AlertDialog>
             )}
+
+            {/* Pairing buttons (conditionally shown) */}
+            {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
+              <Button
+                disabled={disabled}
+                onClick={handleDoublePairing}
+                size="sm"
+                className="w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+              >
+                <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+              </Button>
+            )}
+            {table_data.type === GroupType.DYNAMIC && (
+              <Button
+                disabled={disabled}
+                onClick={handleRoundRobinPairing}
+                size="sm"
+                className="w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+              >
+                <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+              </Button>
+            )}
+
+          </div>
+
+          {/* Right Column - Excel Actions */}
+          <div className="flex flex-col gap-2 flex-1">
+            <div className="text-xs font-medium text-gray-600 sm:hidden">Excel Actions</div>
+            
+            {/* Download Template Button */}
+            <Button
+              onClick={handleDownloadTemplate}
+              variant="outline"
+              size="sm"
+              className="bg-green-50 w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5"
+            >
+              <Download className="h-4 w-4" />
+              {t('admin.tournaments.groups.import.download_template', 'Download Template')}
+              <FileSpreadsheet className="h-3 w-3 text-green-600" />
+            </Button>
+            
+            {/* Import Excel Button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <Button
+              onClick={handleImportClick}
+              disabled={disabled}
+              variant="outline"
+              size="sm"
+              className="bg-green-50 w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5"
+            >
+              <Upload className="h-4 w-4" />
+              <span>{t("admin.tournaments.groups.import.title", "Import Excel")}</span>
+              <FileSpreadsheet className="h-3 w-3 text-green-600" />
+            </Button>
           </div>
         </div>
       </div>

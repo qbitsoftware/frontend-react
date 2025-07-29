@@ -976,6 +976,7 @@
         "dialog_type": "Tiimi tüüp",
         "dialog_type_placeholder": "Vali tiimi tüüp",
         "team_leagues": "Võistkondlikud",
+        "dynamic": "Dünaamiline (Alagrupid > Põhitabel)",
         "doubles": "Paarismäng",
         "fixed_doubles": "Igamehe paarismäng",
         "errors": {
@@ -997,6 +998,7 @@
           "double_elimination_tabletennis": "Klassikaline Täiseliminatsioon",
           "double_elimination_tabletennis_top_heavy": "Täiseliminatsioon (poolfinaali kaotajad kolmanda koha peale)",
           "champions_league": "Võistkondlikud liigad",
+          "dynamic": "Dünaamiline (Alagrupid > Põhitabel)",
           "free_for_all": "Tänavapinks",
           "round_robin_full_placement": "Round Robin (2 raundiga)",
           "round_robin": "Round Robin"
@@ -1136,9 +1138,9 @@
         "no_results": "Tulemusi pole",
         "change_time": "Aegade muutmine",
         "order": {
-          "title": "Genereeri mängud",
+          "title": "Genereeri võistlustabel",
           "title_order": "Mängijate järjekord",
-          "order_by_rating": "Järjesta reitingu järgi",
+          "order_by_rating": "Järjesta mängijad reitingu järgi",
           "placeholder": "Asetus",
           "random": "Suvaliselt",
           "by_rating": "Lauatennis",

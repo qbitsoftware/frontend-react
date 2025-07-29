@@ -24,6 +24,7 @@ interface MatchesProps {
   tournament_id: number;
   tournament_table: TournamentTable;
   player_count: number;
+  openMatchId?: string;
 }
 
 type FilterOptions = MatchState | "all";
@@ -34,6 +35,7 @@ export const Matches: React.FC<MatchesProps> = ({
   tournament_table,
   player_count,
   all_matches,
+  openMatchId,
 }: MatchesProps) => {
   const [isRegroupingModalOpen, setIsRegroupingModalOpen] = useState(false);
   const [isTimeEditingModalOpen, setIsTimeEditingModalOpen] = useState(false);
@@ -55,6 +57,17 @@ export const Matches: React.FC<MatchesProps> = ({
       }
     }
   }, [data]);
+
+  // Auto-open modal if openMatchId is provided
+  useEffect(() => {
+    if (openMatchId && data.length > 0) {
+      const matchToOpen = data.find(match => match.match.id.toString() === openMatchId);
+      if (matchToOpen) {
+        setSelectedMatch(matchToOpen);
+        setIsOpen(true);
+      }
+    }
+  }, [openMatchId, data]);
 
   const filteredData = useMemo(() => {
     let filtered;
@@ -98,6 +111,15 @@ export const Matches: React.FC<MatchesProps> = ({
   const handleCardClick = (match: MatchWrapper) => {
     setSelectedMatch(match);
     setIsOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsOpen(false);
+    // Clear the openMatch search parameter if it exists
+    if (openMatchId) {
+      // We need to navigate to clear the search parameter
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   };
 
   if (data.length > 0) {
@@ -178,7 +200,7 @@ export const Matches: React.FC<MatchesProps> = ({
               tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
             <MatchDialog
               open={isOpen}
-              onClose={() => setIsOpen(false)}
+              onClose={handleModalClose}
               match={selectedMatch}
               tournamentId={tournament_id}
             />
@@ -187,7 +209,7 @@ export const Matches: React.FC<MatchesProps> = ({
             tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES && (
               <ProtocolModalProvider
                 isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
+                onClose={handleModalClose}
                 tournamentId={tournament_id}
                 match={selectedMatch}
                 playerCount={player_count}

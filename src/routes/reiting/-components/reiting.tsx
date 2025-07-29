@@ -768,7 +768,6 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
 
               <div>
                 <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.player_modal.rating_change_calc")}</h3>
-                <div className="space-y-2 text-sm text-gray-700">
                   <p><strong>{t("rating.player_modal.when_lower_rated_wins")}</strong></p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>{t("rating.player_modal.winner_rating_change")}</li>
@@ -781,7 +780,6 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     <li>{t("rating.player_modal.if_diff_under_30")}</li>
                   </ul>
                 </div>
-              </div>
 
 
               <div>
