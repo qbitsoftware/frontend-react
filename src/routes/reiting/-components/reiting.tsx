@@ -23,8 +23,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Calculator, Check, ChevronsUpDown, Info } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { User } from "@/types/users";
 import { UseGetClubsQuery } from "@/queries/clubs";
 import placeholderImg from "@/assets/blue-profile.png";
@@ -42,6 +47,19 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [SelectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRatingCalculatorOpen, setIsRatingCalculatorOpen] = useState(false);
+  const [isRatingInfoOpen, setIsRatingInfoOpen] = useState(false);
+  const [calculatorForm, setCalculatorForm] = useState({
+    winner: "",
+    loser: "",
+    date: ""
+  });
+  const [openWinner, setOpenWinner] = useState(false);
+  const [openLoser, setOpenLoser] = useState(false);
+  const [calculatorResult, setCalculatorResult] = useState<{
+    winner: { name: string; change: number; rating: number };
+    loser: { name: string; change: number; rating: number };
+  } | null>(null);
 
   const windowScrollRef = useRef(0);
 
@@ -187,6 +205,66 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
     return `${dd}.${mm}.${yyyy}, ${hours}:00`;
   };
 
+  const calculateRatingGain = (winnerRating: number, loserRating: number) => {
+    const Rv = Math.abs(winnerRating - loserRating);
+    
+    if (winnerRating >= loserRating) {
+      // Higher or equal rated player wins
+      if (Rv <= 10) {
+        return { winnerGain: 2, loserLoss: -2 };
+      } else if (Rv >= 11 && Rv <= 40) {
+        return { winnerGain: 1, loserLoss: -1 };
+      } else {
+        return { winnerGain: 0, loserLoss: 0 };
+      }
+    } else {
+      // Lower rated player beats higher rated player
+      const Hv = Math.round((Rv + 5) / 3);
+      return { winnerGain: Hv, loserLoss: -Hv };
+    }
+  };
+
+  const handleCalculatorSubmit = () => {
+    if (!calculatorForm.winner || !calculatorForm.loser || !calculatorForm.date) {
+      alert(t("rating.calculator.fill_all_fields"));
+      return;
+    }
+
+    const winnerPlayer = users.find(u => `${u.first_name} ${u.last_name}` === calculatorForm.winner);
+    const loserPlayer = users.find(u => `${u.first_name} ${u.last_name}` === calculatorForm.loser);
+    
+    if (!winnerPlayer || !loserPlayer) {
+      alert(t("rating.calculator.players_not_found"));
+      return;
+    }
+
+    const ratingChange = calculateRatingGain(winnerPlayer.rate_points, loserPlayer.rate_points);
+    
+    setCalculatorResult({
+      winner: {
+        name: `${winnerPlayer.first_name} ${winnerPlayer.last_name}`,
+        change: ratingChange.winnerGain,
+        rating: winnerPlayer.rate_points
+      },
+      loser: {
+        name: `${loserPlayer.first_name} ${loserPlayer.last_name}`,
+        change: ratingChange.loserLoss,
+        rating: loserPlayer.rate_points
+      }
+    });
+  };
+
+  const resetCalculatorForm = () => {
+    setCalculatorForm({
+      winner: "",
+      loser: "",
+      date: ""
+    });
+    setOpenWinner(false);
+    setOpenLoser(false);
+    setCalculatorResult(null);
+  };
+
   return (
     <div className="py-2 sm:py-4">
       <div className="lg:rounded-lg px-2 sm:px-4 lg:px-12 py-4 sm:py-6">
@@ -230,6 +308,25 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
 
         <div className="mt-5 border rounded-t-[12px]">
           <div className="border-b border-stone-200 bg-[#EBEFF5] rounded-t-[12px] flex flex-col gap-3 sm:gap-4 lg:grid lg:grid-cols-12 lg:gap-4 items-stretch lg:items-center w-full p-3 sm:p-4 lg:p-1 mb-1">
+            <div className="w-full lg:col-span-3 flex flex-col sm:flex-row gap-2">
+              <Button
+                onClick={() => setIsRatingCalculatorOpen(true)}
+                className="bg-[#4C97F1] hover:bg-[#4C97F1]/90 text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
+              >
+                <Calculator className="h-3 w-3 shrink-0" />
+                <span className="hidden sm:inline">{t("rating.calculator.button")}</span>
+                <span className="sm:hidden">{t("rating.calculator.button_short", "Calculator")}</span>
+              </Button>
+              <Button
+                onClick={() => setIsRatingInfoOpen(true)}
+                variant="outline"
+                className="border-[#4C97F1] text-[#4C97F1] hover:bg-[#4C97F1] hover:text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
+              >
+                <Info className="h-3 w-3 shrink-0" />
+                <span className="hidden sm:inline">{t("rating.calculator.info_button")}</span>
+                <span className="sm:hidden">{t("rating.calculator.info_button_short", "Info")}</span>
+              </Button>
+            </div>
             <div className="relative w-full lg:col-span-3">
               <Input
                 type="text"
@@ -428,6 +525,461 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
             user={selectedPlayer || null}
           />
         </div>
+
+        <Dialog open={isRatingCalculatorOpen} onOpenChange={setIsRatingCalculatorOpen}>
+          <DialogContent className="sm:max-w-md animate-in fade-in-0 zoom-in-95 duration-200">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-[#4C97F1]">
+                <Calculator className="h-5 w-5" />
+                {t("rating.calculator.title")}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="winner">{t("rating.calculator.winner")}</Label>
+                <Popover open={openWinner} onOpenChange={setOpenWinner}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openWinner}
+                      className="w-full justify-between"
+                    >
+                      {calculatorForm.winner || t("rating.calculator.select_player")}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder={t("rating.calculator.search_player")} />
+                      <CommandList>
+                        <CommandEmpty>{t("rating.calculator.no_player_found")}</CommandEmpty>
+                        <CommandGroup>
+                          {filteredUsers.map((user) => (
+                            <CommandItem
+                              key={user.id}
+                              value={`${user.first_name} ${user.last_name}`}
+                              onSelect={(currentValue) => {
+                                setCalculatorForm(prev => ({...prev, winner: currentValue}));
+                                setOpenWinner(false);
+                              }}
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${
+                                  calculatorForm.winner === `${user.first_name} ${user.last_name}` ? "opacity-100" : "opacity-0"
+                                }`}
+                              />
+                              {user.first_name} {user.last_name} ({user.rate_points} RP)
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="loser">{t("rating.calculator.loser")}</Label>
+                <Popover open={openLoser} onOpenChange={setOpenLoser}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openLoser}
+                      className="w-full justify-between"
+                    >
+                      {calculatorForm.loser || t("rating.calculator.select_player")}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder={t("rating.calculator.search_player")} />
+                      <CommandList>
+                        <CommandEmpty>{t("rating.calculator.no_player_found")}</CommandEmpty>
+                        <CommandGroup>
+                          {filteredUsers.map((user) => (
+                            <CommandItem
+                              key={user.id}
+                              value={`${user.first_name} ${user.last_name}`}
+                              onSelect={(currentValue) => {
+                                setCalculatorForm(prev => ({...prev, loser: currentValue}));
+                                setOpenLoser(false);
+                              }}
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${
+                                  calculatorForm.loser === `${user.first_name} ${user.last_name}` ? "opacity-100" : "opacity-0"
+                                }`}
+                              />
+                              {user.first_name} {user.last_name} ({user.rate_points} RP)
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="date">{t("rating.calculator.date")}</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={calculatorForm.date}
+                  onChange={(e) => setCalculatorForm(prev => ({...prev, date: e.target.value}))}
+                  className="w-full"
+                />
+              </div>
+
+              {calculatorResult && (
+                <div className="mt-6 p-4 bg-[#4C97F1]/5 border border-[#4C97F1]/20 rounded-lg animate-in slide-in-from-top-2 fade-in-0 duration-300">
+                  <h3 className="text-lg font-semibold text-[#4C97F1] mb-4 flex items-center gap-2">
+                    <Calculator className="h-5 w-5" />
+                    {t("rating.calculator.result_title")}
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-white rounded-md border">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-900">{calculatorResult.winner.name}</span>
+                        <span className="text-sm text-gray-600">{calculatorResult.winner.rating} RP</span>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        calculatorResult.winner.change >= 0 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {calculatorResult.winner.change >= 0 ? '+' : ''}{calculatorResult.winner.change} {t("rating.calculator.points")}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-white rounded-md border">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-900">{calculatorResult.loser.name}</span>
+                        <span className="text-sm text-gray-600">{calculatorResult.loser.rating} RP</span>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        calculatorResult.loser.change >= 0 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {calculatorResult.loser.change >= 0 ? '+' : ''}{calculatorResult.loser.change} {t("rating.calculator.points")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-between gap-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    resetCalculatorForm();
+                    setIsRatingCalculatorOpen(false);
+                  }}
+                >
+                  {t("rating.calculator.cancel")}
+                </Button>
+                <Button 
+                  type="button" 
+                  onClick={handleCalculatorSubmit}
+                  className="bg-[#4C97F1] hover:bg-[#4C97F1]/90"
+                >
+                  {t("rating.calculator.calculate")}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isRatingInfoOpen} onOpenChange={setIsRatingInfoOpen}>
+          <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-[#4C97F1]">
+                <Info className="h-5 w-5" />
+                {t("rating.calculator.info_title")}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto">
+              <div>
+                <p className="text-sm text-gray-600 mb-4">
+                  {t("rating.calculator.info_description")}
+                </p>
+                <p className="text-sm text-gray-600 mb-4">
+                  {t("rating.player_modal.detailed_rules_intro")}
+                </p>
+              </div>
+
+              {/* Basic Rules Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.basic_rules")}</h3>
+                
+                <div className="space-y-3 mb-4">
+                  <p className="text-sm text-gray-700"><strong>{t("rating.calculator.when_higher_wins")}</strong></p>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-gray-300 text-sm">
+                      <thead>
+                        <tr className="bg-[#4C97F1]/10">
+                          <th className="border border-gray-300 px-3 py-2 text-left">{t("rating.calculator.rating_diff")}</th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.winner_points")}</th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.loser_points")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="border border-gray-300 px-3 py-2">0 - 10</td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">-2</td>
+                        </tr>
+                        <tr className="bg-gray-50">
+                          <td className="border border-gray-300 px-3 py-2">11 - 40</td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+1</td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">-1</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 px-3 py-2">{t("rating.calculator.over_40", "over 40")}</td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">0</td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">0</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <p className="text-sm text-gray-700 mb-3">
+                    <strong>{t("rating.calculator.when_lower_wins")}</strong>
+                  </p>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-3">
+                    <div className="text-center">
+                      <div className="text-lg font-mono font-semibold text-blue-800 mb-2">
+                        {t("rating.calculator.simple_rating_formula")}
+                      </div>
+                      <p className="text-sm text-blue-700">
+                        {t("rating.calculator.lower_wins_formula")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.player_modal.rating_change_calc")}</h3>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <p><strong>{t("rating.player_modal.when_lower_rated_wins")}</strong></p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>{t("rating.player_modal.winner_rating_change")}</li>
+                    <li>{t("rating.player_modal.loser_rating_change")}</li>
+                    <li>{t("rating.player_modal.weight_changes")}</li>
+                  </ul>
+                  <p><strong>{t("rating.player_modal.when_higher_rated_wins")}</strong></p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>{t("rating.player_modal.if_diff_over_30")}</li>
+                    <li>{t("rating.player_modal.if_diff_under_30")}</li>
+                  </ul>
+                </div>
+              </div>
+
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.tournament_coeffs")}</h3>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full border border-gray-300 text-sm">
+                    <thead>
+                      <tr className="bg-[#4C97F1]/10">
+                        <th className="border border-gray-300 px-3 py-2 text-left">{t("rating.calculator.tournament")}</th>
+                        <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.win_coeff")}</th>
+                        <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.loss_coeff")}</th>
+                        <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.extra_points")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border border-gray-300 px-3 py-2 font-medium">Est MV</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">x 1,4</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">x 1</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
+                      </tr>
+                      <tr className="bg-gray-50">
+                        <td className="border border-gray-300 px-3 py-2 font-medium">ELTL GP</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">x 1,1</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">x 1</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-300 px-3 py-2 font-medium">Top 10 (16)</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">x 1,2</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">x 1</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.exceptions")}</h3>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  {(t("rating.calculator.exceptions_list", { returnObjects: true }) as string[]).map((exception: string, index: number) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-[#4C97F1] mr-2 mt-1">•</span>
+                      <span>{exception}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.detailed_calculation")}</h3>
+                <div className="space-y-4 text-sm text-gray-700">
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_1")}</p>
+                    <ul className="ml-4 space-y-1">
+                      <li>• {t("rating.calculator.calculation_steps.win_sum")}</li>
+                      <li>• {t("rating.calculator.calculation_steps.loss_sum")}</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_2")}</p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
+                      <div className="font-mono text-center text-blue-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.rating_formula")}
+                      </div>
+                    </div>
+                    <ul className="ml-4 space-y-1">
+                      <li>• {t("rating.calculator.calculation_steps.coef_explanation")}</li>
+                      <li>• {t("rating.calculator.calculation_steps.coef_usage")}</li>
+                      <li>• {t("rating.calculator.calculation_steps.weight_limit")}</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_3")}</p>
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                      <div className="font-mono text-center text-green-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.final_rating")}
+                      </div>
+                    </div>
+                    <p className="ml-4 text-xs text-gray-600">{t("rating.calculator.calculation_steps.rating_note")}</p>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_4")}</p>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-yellow-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.weight_change")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_5")}</p>
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-purple-800 font-semibold">
+                        {t("rating.calculator.calculation_steps.final_weight")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* New Player Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.new_player_section")}</h3>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>{t("rating.calculator.new_player_rules.intro")}</p>
+                  <p>{t("rating.calculator.new_player_rules.rating_method")}</p>
+                  <p>{t("rating.calculator.new_player_rules.max_rating")}</p>
+                  <p>{t("rating.calculator.new_player_rules.initial_weight")}</p>
+                  
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.new_player_rules.formula_intro")}</p>
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                      <div className="font-mono text-center text-orange-800 font-semibold">
+                        {t("rating.calculator.new_player_rules.new_player_formula")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.new_player_rules.final_calculations")}</p>
+                    <ul className="ml-4 space-y-1">
+                      <li>• {t("rating.calculator.new_player_rules.final_rating")}</li>
+                      <li>• {t("rating.calculator.new_player_rules.final_weight")}</li>
+                    </ul>
+                    <p className="ml-4 mt-2 text-xs text-gray-600 font-medium">{t("rating.calculator.new_player_rules.negative_rating")}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.weight_correction_section")}</h3>
+                <div className="space-y-4 text-sm text-gray-700">
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.weight_correction.high_weight")}</p>
+                    <p className="mb-2">{t("rating.calculator.weight_correction.high_weight_desc")}</p>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-red-800 font-semibold">
+                        {t("rating.calculator.weight_correction.high_weight_formula")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-2">{t("rating.calculator.weight_correction.low_weight")}</p>
+                    <p className="mb-2">{t("rating.calculator.weight_correction.low_weight_desc")}</p>
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-indigo-800 font-semibold">
+                        {t("rating.calculator.weight_correction.low_weight_formula")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ranking Compilation Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.ranking_section")}</h3>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>{t("rating.calculator.ranking_compilation.intro")}</p>
+                  
+                  <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-3">
+                    <div className="font-mono text-center text-teal-800 font-semibold">
+                      {t("rating.calculator.ranking_compilation.placement_formula")}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-green-800 font-semibold text-sm">
+                        {t("rating.calculator.ranking_compilation.positive_change")}
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                      <div className="font-mono text-center text-gray-800 font-semibold text-sm">
+                        {t("rating.calculator.ranking_compilation.negative_change")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4 border-t">
+                <Button 
+                  onClick={() => setIsRatingInfoOpen(false)}
+                  className="bg-[#4C97F1] hover:bg-[#4C97F1]/90"
+                >
+                  {t("rating.calculator.cancel")}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

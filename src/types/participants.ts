@@ -21,6 +21,7 @@ export type Participant = {
   group_name: string;
   group_id: string;
   type: string;
+  rr_order: string;
   players: Player[];
   tournament_table_id: number;
   extra_data: PartipantExtraData;

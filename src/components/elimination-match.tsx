@@ -139,15 +139,28 @@ const EliminationMatch = ({
             match.participant_1.id != "empty" &&
             match.participant_2.id != "empty" &&
             admin ? (
-            <TableNumberForm
-              brackets={true}
-              match={match.match}
-              initialTableNumber={
-                match.match.extra_data && match.match.extra_data.table
-              }
-              showLabel={true}
-            />
-          ) : match.match.extra_data && match.match.extra_data.table ? (
+            <div className="flex items-center w-full">
+              <TableNumberForm
+                brackets={true}
+                match={match.match}
+                initialTableNumber={
+                  match.match.extra_data && match.match.extra_data.table
+                }
+                showLabel={true}
+              />
+              {matchDate && (
+                <div className="flex items-center gap-1 ml-10">
+                  <Clock className="h-3 w-3" />
+                  <span>{formatDateGetDayMonth(matchDate)}</span>
+                  <span className="font-semibold">
+                    {formatDateGetHours(matchDate)}
+                  </span>
+                </div>
+              )}
+
+            </div>
+
+          ) : match.match.extra_data && match.match.extra_data.table && match.match.p1_id != 'empty' && match.match.p2_id != 'empty' ? (
             <div className="flex items-center w-full">
               <span>
                 {t("admin.tournaments.matches.table.table")}{" "}
@@ -190,8 +203,13 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-2 font-medium w-[30px]">
-                {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_1.order : ""}`}
+              <span className="px-2 font-medium w-[30px] text-sm">
+                {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_1.order : ""}`} */}
+                {`${match.match.type == "winner" && match.match.round == 0
+                  ? (match.participant_1.rr_order && match.participant_1.rr_order !== ''
+                    ? match.participant_1.rr_order
+                    : match.participant_1.order)
+                  : ""}`}
               </span>
               <p
                 className={cn(
@@ -249,8 +267,13 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-2 font-medium w-[30px]">
-                {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_2.order : ""}`}
+              <span className="px-2 font-medium w-[30px] text-sm">
+                {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_2.order : ""}`} */}
+                {`${match.match.type == "winner" && match.match.round == 0
+                  ? (match.participant_2.rr_order && match.participant_2.rr_order !== ''
+                    ? match.participant_2.rr_order
+                    : match.participant_2.order)
+                  : ""}`}
               </span>
               <p
                 className={cn(

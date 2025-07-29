@@ -176,7 +176,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
 
           <h5 className="font-medium">
             {initial_data
-              ? t("admin.tournaments.create_tournament.title_edit")
+              ? ""
               : t("admin.tournaments.create_tournament.title_create")}
           </h5>
         </CardHeader>

@@ -11,7 +11,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-white border-t border-[#E0E8F1] mt-16">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-4 lg:px-6 py-16">
+      <div className="max-w-[1440px] mx-auto px-2 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="text-center md:text-left">
             <div className="flex justify-center md:justify-start mb-6">

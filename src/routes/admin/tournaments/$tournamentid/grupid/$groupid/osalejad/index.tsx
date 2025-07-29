@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { UseGetTournamentTableQuery } from '@/queries/tables'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { UseGetTournamentTableQuery, UseGetTournamentTablesQuery } from '@/queries/tables'
 import Loader from '@/components/loader'
 import ErrorPage from '@/components/error'
 import { ErrorResponse } from '@/types/errors'
@@ -12,6 +12,7 @@ import { DialogType } from '@/types/groups'
 import NewDouble from './-components/new-double'
 import { GroupType } from '@/types/matches'
 import { useState } from 'react'
+import { CompactClassFilters } from '@/routes/admin/tournaments/-components/compact-class-filters'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -38,25 +39,53 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid, groupid } = Route.useParams()
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<number>(1)
+
+  const tournamentId = Number(tournamentid)
+  const groupId = Number(groupid)
+
   const { data: participant_data } = UseGetParticipantsQuery(
-    Number(tournamentid),
-    Number(groupid),
+    tournamentId,
+    groupId,
     false,
   )
   const { data: table_data } = UseGetTournamentTableQuery(
-    Number(tournamentid),
-    Number(groupid),
+    tournamentId,
+    groupId,
   )
+
+  const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
+
+  const handleGroupChange = (newGroupId: number) => {
+    navigate({
+      to: "/admin/tournaments/$tournamentid/grupid/$groupid/osalejad",
+      params: {
+        tournamentid: tournamentid,
+        groupid: newGroupId.toString(),
+      },
+    });
+  }
 
   if (
     tournament_data &&
     tournament_data.data &&
     table_data &&
-    table_data.data
+    table_data.data &&
+    tablesQuery.data?.data
   ) {
+    const availableTables = tablesQuery.data.data || [];
+
     return (
       <div className="min-h-screen bg-gray-50">
+        <div className="px-2">
+          <CompactClassFilters
+            availableTables={availableTables}
+            activeGroupId={groupId}
+            onGroupChange={handleGroupChange}
+          />
+        </div>
+        
         {tournament_data &&
           table_data &&
           participant_data &&

@@ -37,7 +37,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-4 sm:p-6 md:p-8">
+    <div className="p-4">
       <TournamentTables
         tables={tournament_tables?.data}
         tournament={tournament.data}

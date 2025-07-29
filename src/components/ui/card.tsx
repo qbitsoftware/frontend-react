@@ -65,7 +65,7 @@ const CardContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("p-6 pt-0 pdf-no-padding", className)}
+    className={cn("p-3 pt-0 pdf-no-padding", className)}
     {...props}
   />
 ));

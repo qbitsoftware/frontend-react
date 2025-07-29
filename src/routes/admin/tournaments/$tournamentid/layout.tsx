@@ -13,6 +13,8 @@ import { useState, useRef, useEffect } from "react";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdmin } from "@/queries/tournaments";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
   component: RouteComponent,
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
     let tournament_data = undefined;
     try {
       tournament_data = await queryClient.ensureQueryData(
-        UseGetTournamentAdmin(Number(params.tournamentid)),
+        UseGetTournamentAdmin(Number(params.tournamentid))
       );
     } catch (error) {
       const err = error as ErrorResponse;
@@ -86,33 +88,51 @@ function RouteComponent() {
     }
   }, [showGroupsDropdown]);
 
-  const currentTab = location.pathname.includes("/grupid")
-    ? "groups"
-    : location.pathname.includes("/meedia")
-      ? "media"
-      : location.pathname.includes("/pildid")
-        ? "images"
-        : "info";
+  const currentTab = location.pathname.includes("/osalejad")
+    ? "participants"
+    : location.pathname.includes("/mangud")
+      ? "matches"
+      : location.pathname.includes("/tabelid")
+        ? "brackets"
+        : location.pathname.includes("/ajakava")
+          ? "schedule"
+          : location.pathname.includes("/grupid")
+            ? "groups"
+            : location.pathname.includes("/meedia")
+              ? "media"
+              : location.pathname.includes("/pildid")
+                ? "images"
+                : "info";
 
   return (
     <div className="mx-auto min-h-[95vh] h-full">
       <div className="w-full relative">
         <div className="py-4 sm:py-auto md:px-8 flex flex-col lg:flex-row gap-4 justify-between items-center w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20">
-          <h5 className="font-semibold text-[#03326B]">
-            {tournament_data.data?.name}
-          </h5>
+          <div className="flex items-center gap-1">
+            <Link to="/admin/tournaments">
+              <Button
+                variant="ghost"
+                size="lg"
+                className="p-0 h-8 w-8 hover:bg-gray-300"
+              >
+                <ArrowLeft className="h-4 w-4 text-[#03326B]" />
+              </Button>
+            </Link>
+            <h5 className="font-semibold text-[#03326B]">
+              {tournament_data.data?.name}
+            </h5>
+          </div>
           <div className="relative w-full lg:w-auto">
             <Tabs value={currentTab} className="w-full lg:w-auto">
               <TabsList className="p-2 md:p-0 flex flex-row justify-start items-center w-full gap-1 px-1">
                 <Link to={`/admin/tournaments/${tournamentid}`}>
                   <TabsTrigger
                     value="info"
-                    className="w-[8rem] py-[6px] flex-shrink-0"
+                    className="w-[7rem] py-[6px] flex-shrink-0"
                   >
                     {t("admin.layout.info")}
                   </TabsTrigger>
                 </Link>
-
                 <div
                   className="relative flex-shrink-0"
                   onMouseEnter={handleGroupsMouseEnter}
@@ -127,6 +147,44 @@ function RouteComponent() {
                     </TabsTrigger>
                   </Link>
                 </div>
+
+                <Link to={`/admin/tournaments/${tournamentid}/osalejad`}>
+                  <TabsTrigger
+                    value="participants"
+                    className="w-[7rem] py-[6px] flex-shrink-0"
+                  >
+                    {t(
+                      "admin.tournaments.groups.layout.participants",
+                      "Osalejad"
+                    )}
+                  </TabsTrigger>
+                </Link>
+
+                <Link to={`/admin/tournaments/${tournamentid}/mangud`}>
+                  <TabsTrigger
+                    value="matches"
+                    className="w-[6rem] py-[6px] flex-shrink-0"
+                  >
+                    {t("admin.tournaments.groups.layout.games", "Mängud")}
+                  </TabsTrigger>
+                </Link>
+
+                <Link to={`/admin/tournaments/${tournamentid}/tabelid`}>
+                  <TabsTrigger
+                    value="brackets"
+                    className="w-[6rem] py-[6px] flex-shrink-0"
+                  >
+                    {t("admin.tournaments.groups.layout.tables", "Tabelid")}
+                  </TabsTrigger>
+                </Link>
+                <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
+                  <TabsTrigger
+                    value="schedule"
+                    className="w-[6rem] py-[6px] flex-shrink-0"
+                  >
+                    {t("admin.layout.schedule")}
+                  </TabsTrigger>
+                </Link>
               </TabsList>
             </Tabs>
 
@@ -153,7 +211,7 @@ function RouteComponent() {
               )}
           </div>
         </div>
-        <div className="px-4 md:px-9 pb-8">
+        <div className="px-0 md:px-0 pb-8">
           <Outlet />
         </div>
       </div>
