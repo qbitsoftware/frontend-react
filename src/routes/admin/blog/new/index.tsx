@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/admin/blog/new/')({
   component: RouteComponent,
@@ -24,6 +25,7 @@ function RouteComponent() {
   const blogMutation = UseCreateBlog()
   const router = useRouter()
   const { toast } = useToast()
+  const { t } = useTranslation();
 
 
   const handleClick = async () => {
@@ -96,7 +98,7 @@ function RouteComponent() {
                 className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Tagasi
+                {t('admin.blogs.back')}
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -107,7 +109,7 @@ function RouteComponent() {
                   onValueChange={value => setCategory(value)}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder={t('admin.blogs.choose_category')} />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map(cat => (
@@ -126,7 +128,7 @@ function RouteComponent() {
                   onCheckedChange={setIsPublished}
                 />
                 <Label htmlFor="publish-mode">
-                  {isPublished ? 'Publish' : 'Save as Draft'}
+                  {isPublished ? t('admin.blogs.save_public') : t('admin.blogs.save_draft')}
                 </Label>
               </div>
 
@@ -135,7 +137,7 @@ function RouteComponent() {
                 onClick={handleClick}
               >
                 <Save className="w-4 h-4 mr-2" />
-                {isPublished ? 'Publish' : 'Save Draft'}
+                  {isPublished ? t('admin.blogs.save_public') : t('admin.blogs.save_draft')}
               </Button>
             </div>
           </div>

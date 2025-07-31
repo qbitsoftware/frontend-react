@@ -31,7 +31,6 @@ function RouteComponent() {
 
   useEffect(() => {
     if (tablesQuery.data?.data && tablesQuery.data.data.length > 0) {
-      // Try to use the selected group from search params, otherwise use first group
       const targetGroupId = selectedGroup
         ? tablesQuery.data.data.find(table => table.id.toString() === selectedGroup)?.id
         : tablesQuery.data.data[0].id
@@ -58,6 +57,5 @@ function RouteComponent() {
     return <div>{t('errors.general.description')}</div>
   }
 
-  // This component will quickly redirect, so we just show a loader
   return <Loader />
 }

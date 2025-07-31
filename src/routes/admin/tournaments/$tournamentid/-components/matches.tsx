@@ -58,7 +58,6 @@ export const Matches: React.FC<MatchesProps> = ({
     }
   }, [data]);
 
-  // Auto-open modal if openMatchId is provided
   useEffect(() => {
     if (openMatchId && data.length > 0) {
       const matchToOpen = data.find(match => match.match.id.toString() === openMatchId);
@@ -115,9 +114,7 @@ export const Matches: React.FC<MatchesProps> = ({
 
   const handleModalClose = () => {
     setIsOpen(false);
-    // Clear the openMatch search parameter if it exists
     if (openMatchId) {
-      // We need to navigate to clear the search parameter
       window.history.replaceState({}, '', window.location.pathname);
     }
   };
@@ -155,6 +152,20 @@ export const Matches: React.FC<MatchesProps> = ({
               </span>{" "}
               {tournament_table.class}
             </h3>
+            <div className="flex items-center gap-4 ml-6 text-xs text-gray-600">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-white border border-gray-300"></div>
+                <span>{t("admin.tournaments.matches.legend.upcoming")}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-100 border border-green-200"></div>
+                <span>{t("admin.tournaments.matches.legend.ongoing")}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-gray-100 border border-gray-300"></div>
+                <span>{t("admin.tournaments.matches.legend.finished")}</span>
+              </div>
+            </div>
           </div>
 
           {tournament_table.type === "champions_league" && (
@@ -193,6 +204,8 @@ export const Matches: React.FC<MatchesProps> = ({
           <MatchesTable
             matches={filteredData}
             handleRowClick={handleCardClick}
+            tournament_id={tournament_id}
+            group_id={tournament_table.id}
           />
           {selectedMatch &&
           (tournament_table.solo ||

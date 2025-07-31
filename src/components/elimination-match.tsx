@@ -46,7 +46,6 @@ const EliminationMatch = ({
   };
 
   const handleMatchMouseEnter = (event: React.MouseEvent) => {
-    // Only show tooltip if both participants are defined and not empty
     const hasValidParticipants =
       match.participant_1.id &&
       match.participant_2.id &&
@@ -56,9 +55,7 @@ const EliminationMatch = ({
       match.participant_2.id !== "empty";
 
     if (hasValidParticipants) {
-      // Get the element's bounding rect to calculate position relative to the viewport
       const rect = event.currentTarget.getBoundingClientRect();
-      // Check if this match is in an absolutely positioned container (placement matches)
       const parentElement = event.currentTarget.parentElement;
       const hasTransform = parentElement?.classList.contains('-translate-y-1/2');
 
@@ -127,7 +124,7 @@ const EliminationMatch = ({
         onMouseEnter={handleMatchMouseEnter}
         onMouseLeave={handleMatchMouseLeave}
         onMouseMove={handleMatchMouseMove}
-        className="relative w-[220px] h-[60px] bg-white flex flex-col border border-gray-200 rounded-md hover:shadow-md transition-shadow cursor-pointer"
+        className="relative w-[198px] h-[60px] bg-white flex flex-col border border-gray-200 rounded-md hover:shadow-md transition-shadow cursor-pointer"
       >
         {bracket && (
           <div className="absolute -right-[35px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded">
@@ -205,7 +202,7 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-2 font-medium w-[30px] text-sm">
+              <span className="px-1 font-medium w-[20px] text-xs flex items-center h-full">
                 {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_1.order : ""}`} */}
                 {`${match.match.type == "winner" && match.match.round == 0
                   ? (match.participant_1.rr_order && match.participant_1.rr_order !== ''
@@ -215,7 +212,7 @@ const EliminationMatch = ({
               </span>
               <p
                 className={cn(
-                  "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors",
+                  "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors flex items-center",
                   // p1_sets > p2_sets && "font-semibold",
                   (match.match.forfeit
                     ? match.match.winner_id === match.participant_1.id
@@ -269,7 +266,7 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-2 font-medium w-[30px] text-sm">
+              <span className="px-1 font-medium w-[20px] text-xs flex items-center h-full">
                 {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_2.order : ""}`} */}
                 {`${match.match.type == "winner" && match.match.round == 0
                   ? (match.participant_2.rr_order && match.participant_2.rr_order !== ''
@@ -279,7 +276,7 @@ const EliminationMatch = ({
               </span>
               <p
                 className={cn(
-                  "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors",
+                  "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors flex items-center",
                   (match.match.forfeit
                     ? match.match.winner_id === match.participant_2.id
                     : p2_sets > p1_sets

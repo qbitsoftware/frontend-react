@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
-import { Button } from './ui/button';
-import { Checkbox } from './ui/checkbox';
-import { Label } from './ui/label';
-import { SimpleMultiPagePDF } from './simple-multipage-pdf';
-import { useTranslation } from 'react-i18next';
-import html2canvas from "html2canvas";
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
@@ -14,241 +17,332 @@ interface PDFPreviewModalProps {
   title: string;
 }
 
+const PDF_STYLES = {
+  PRINT_CSS: `
+    @media print {
+      body { margin: 0; padding: 0; background: white !important; }
+      .debug-header, .debug-info { display: none !important; }
+      .debug-content { margin: 0 !important; padding: 0 !important; }
+      .debug-highlight { background: transparent !important; border: none !important; }
+      .bracket-connector, .bg-blue-200, .bg-blue-400 { 
+        background: transparent !important; 
+        border: 1px solid #000 !important; 
+      }
+      .page-break-before { page-break-before: always !important; }
+      @page { margin: 0.5in; size: A4; }
+    }
+  `,
+  
+  SCREEN_CSS: `
+    body { margin: 0; padding: 20px; font-family: system-ui; background: #f3f4f6; }
+    .debug-header { 
+      position: fixed; top: 0; left: 0; right: 0; background: #1f2937; 
+      color: white; padding: 10px 20px; z-index: 9999; 
+    }
+    .debug-content { 
+      margin-top: 60px; background: white; padding: 20px; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    }
+    .debug-info { 
+      background: #fef3c7; border: 1px solid #f59e0b; 
+      padding: 10px; margin-bottom: 20px; border-radius: 4px; 
+    }
+  `
+};
+
+const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: boolean; title: string }) => {
+  container.querySelectorAll("*").forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    const computed = window.getComputedStyle(htmlEl);
+    if (computed.paddingLeft !== "0px" || computed.paddingRight !== "0px") {
+      htmlEl.style.paddingLeft = "0";
+      htmlEl.style.paddingRight = "0";
+    }
+  });
+
+  if (settings.whiteBackground) {
+    container.querySelectorAll("*").forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      const computed = window.getComputedStyle(htmlEl);
+      if (computed.backgroundColor === "rgb(248, 249, 250)" || 
+          htmlEl.classList.contains("bg-[#F8F9FA]")) {
+        htmlEl.style.backgroundColor = "#FFFFFF";
+      }
+    });
+  }
+
+  container.querySelectorAll(".text-xs").forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    const isParticipant = htmlEl.classList.contains("cursor-pointer") ||
+      (htmlEl.textContent?.trim() && htmlEl.textContent.trim().length > 2 && 
+       !htmlEl.textContent?.includes("Table") && 
+       !htmlEl.textContent?.includes("(Bye)"));
+    
+    if (isParticipant) {
+      const nameLength = htmlEl.textContent?.trim()?.length || 0;
+      if (nameLength > 25) htmlEl.className = htmlEl.className.replace("text-xs", "text-[10px]");
+      else if (nameLength <= 12) htmlEl.className = htmlEl.className.replace("text-xs", "text-sm");
+    }
+  });
+
+  container.querySelectorAll("*").forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    const text = htmlEl.textContent?.trim() || "";
+    const shouldBreak = text.includes("MIINUSRING") || 
+                       text.includes("Miinusring") ||
+                       text.includes("3rd place") ||
+                       ["7-8", "25-32", "33-48", "49-64", "65-96"].some(t => text.includes(t));
+    
+    if (shouldBreak) {
+      let parent = htmlEl.closest("div");
+      while (parent && !parent.classList.contains("font-bold")) {
+        parent = parent.parentElement as HTMLDivElement | null;
+      }
+      if (parent?.parentElement) {
+        (parent.parentElement as HTMLElement).style.pageBreakBefore = "always";
+      }
+    }
+  });
+
+  container.querySelectorAll('.bg-blue-200, .bg-blue-400, [class*="bg-blue-"]').forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.backgroundColor = "transparent";
+    htmlEl.style.border = "1px solid #000";
+  });
+
+  const containerWidth = 1090;
+  let furthestRightElement = null;
+  let furthestRightPosition = 0;
+  const elementsToMove: Array<{ element: HTMLElement; position: number }> = [];
+  const allElements: Array<{ element: HTMLElement; position: number }> = [];
+  
+  container.querySelectorAll(".w-\\[198px\\], .w-\\[240px\\]").forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    const elementRight = htmlEl.offsetLeft + htmlEl.offsetWidth;
+    const rect = htmlEl.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const visualRight = rect.right - containerRect.left;
+    const isPlacementMatch = htmlEl.textContent?.trim().match(/^\d+-\d+$/);
+    
+    console.log("element:", htmlEl.textContent?.slice(0, 20), 
+                "DOM right:", elementRight, 
+                "visual right:", Math.round(visualRight),
+                "placement match:", !!isPlacementMatch,
+                "transform:", htmlEl.style.transform || "none",
+                "offsetLeft:", htmlEl.offsetLeft,
+                "offsetWidth:", htmlEl.offsetWidth,
+                "rect.left:", Math.round(rect.left),
+                "rect.right:", Math.round(rect.right));
+    
+    const actualPosition = visualRight > elementRight ? visualRight : elementRight;
+    allElements.push({ element: htmlEl, position: actualPosition });
+    
+    if (actualPosition > furthestRightPosition) {
+      furthestRightPosition = actualPosition;
+      furthestRightElement = htmlEl;
+    }
+    
+    if (actualPosition > containerWidth || isPlacementMatch) {
+      elementsToMove.push({ element: htmlEl, position: actualPosition });
+    }
+  });
+  
+  console.log("Total elements found:", allElements.length);
+  const sortedElements = allElements.sort((a, b) => b.position - a.position);
+  console.log("All elements sorted by position:", sortedElements.map((el, index) => ({ 
+    index: index + 1,
+    position: el.position, 
+    text: el.element.textContent?.slice(0, 30),
+    isPlacementMatch: !!el.element.textContent?.trim().match(/^\d+-\d+$/)
+  })));
+  
+  const placementMatches = allElements.filter(({ element }) => {
+    const text = element.textContent?.trim();
+    return text === "1-2" || text === "3-4" || text === "5-6";
+  });
+  
+  const consolationMatches = sortedElements
+    .filter(({ element }) => {
+      const text = element.textContent?.trim();
+      return !text?.match(/^\d+-\d+$/);
+    })
+    .slice(0, 5); 
+  
+  console.log("Placement matches (main bracket):", placementMatches.map(el => ({ 
+    position: el.position, 
+    text: el.element.textContent?.slice(0, 20) 
+  })));
+  
+  console.log("Consolation bracket matches:", consolationMatches.map(el => ({ 
+    position: el.position, 
+    text: el.element.textContent?.slice(0, 20) 
+  })));
+  
+  placementMatches.forEach(({ element }) => {
+    element.style.backgroundColor = "pink";
+    
+    const currentTransform = element.style.transform || "";
+    const newTransform = currentTransform 
+      ? `${currentTransform} translateX(-235px) translateY(-45px)`
+      : "translateX(-235px) translateY(-45px)";
+    element.style.transform = newTransform;
+    element.classList.add("repositioned-match");
+    
+    console.log("Moved placement match:", element.textContent?.slice(0, 20), "with transform:", newTransform);
+  });
+  
+  consolationMatches.forEach(({ element }) => {
+    element.style.backgroundColor = "lightblue";
+    console.log("Colored consolation match:", element.textContent?.slice(0, 20));
+  });
+  
+  if (furthestRightElement) {
+    console.log("Furthest right element:", furthestRightElement, "at position:", furthestRightPosition);
+  }
+
+  const className = settings.title?.replace(/ Tournament$/, "").trim();
+  if (className && className !== "Tournament Bracket") {
+    const header = document.createElement("div");
+    Object.assign(header.style, {
+      textAlign: "center", fontWeight: "bold", fontSize: "24px",
+      marginBottom: "80px", padding: "15px", border: "2px solid #000",
+      backgroundColor: "#fff", width: "100%"
+    });
+    header.textContent = className;
+    container.insertBefore(header, container.firstChild);
+  }
+};
+
+const restorePrintStyles = (container: HTMLElement, originalStyles: Record<string, string>) => {
+  container.querySelectorAll(".class-name-header").forEach(el => el.remove());
+  
+  container.querySelectorAll(".repositioned-match").forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.transform = "";
+    htmlEl.classList.remove("repositioned-match");
+  });
+  
+  Object.assign(container.style, originalStyles);
+};
+
 export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
   isOpen,
-  onClose,
+  onClose,  
   containerId,
   title,
 }) => {
-  const { t } = useTranslation();
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [pageCount, setPageCount] = useState<number>(0);
-  const [settings, setSettings] = useState({
-    whiteBackground: true,
-    highQuality: true,
-  });
+  const [settings, setSettings] = useState({ whiteBackground: true });
 
-  useEffect(() => {
-    if (isOpen) {
-      generatePreview();
+  const generateDebugHTML = () => {
+    const container = document.getElementById(containerId);
+    if (!container) {
+      console.log("Container not found with ID:", containerId);
+      return;
     }
-  }, [isOpen, settings]);
-
-  const calculatePageCount = (container: HTMLElement): number => {
-    const pageWidth = 210;
-    const pageHeight = 297;
-    const margin = 5;
-    const contentWidth = pageWidth - (2 * margin);
-    const contentHeight = pageHeight - (2 * margin);
-
-    const pixelsPerMM = container.scrollWidth / contentWidth;
-    const canvasPixelsPerPage = Math.floor(pixelsPerMM * contentHeight);
     
-    return Math.ceil(container.scrollHeight / canvasPixelsPerPage);
-  };
-
-  const generatePreview = async () => {
-    setIsGenerating(true);
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    try {
-      const pages = calculatePageCount(container);
-      setPageCount(pages);
-      
-      const originalStyles = {
-        backgroundColor: container.style.backgroundColor,
-        filter: container.style.filter,
-      };
-
-      if (settings.whiteBackground) {
-        container.style.backgroundColor = '#FFFFFF';
-        const greyElements = container.querySelectorAll('[style*="background"]');
-        greyElements.forEach((el: any) => {
-          if (el.style.backgroundColor === 'rgb(248, 249, 250)' || 
-              el.style.backgroundColor === '#F8F9FA' ||
-              el.classList.contains('bg-[#F8F9FA]')) {
-            el.style.backgroundColor = '#FFFFFF';
-          }
-        });
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 200));
-
-      const canvas = await html2canvas(container, {
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: settings.whiteBackground ? "#FFFFFF" : "#F8F9FA",
-        scale: 0.3,
-        width: container.scrollWidth,
-        height: Math.min(container.scrollHeight, 1200),
-      });
-
-      container.style.backgroundColor = originalStyles.backgroundColor;
-      
-      
-      const greyElements = container.querySelectorAll('[style*="background"]');
-      greyElements.forEach((el: any) => {
-        if (el.style.backgroundColor === '#FFFFFF' || el.style.backgroundColor === 'rgb(255, 255, 255)') {
-          el.style.backgroundColor = '';
-        }
-      });
-
-      setPreviewImage(canvas.toDataURL('image/png', 0.8));
-    } catch (error) {
-      console.error('Error generating preview:', error);
-    }
-    setIsGenerating(false);
-  };
-
-  const handleDownload = async () => {
-    try {
-      setIsGenerating(true);
-      
-      
-      await generatePDFWithSettings();
-      
-      setIsGenerating(false);
-      onClose();
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      setIsGenerating(false);
-    }
-  };
-
-  const generatePDFWithSettings = async () => {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+    console.log("Original container content length:", container.innerHTML.length);
+    console.log("Original container children count:", container.children.length);
 
     const originalStyles = {
       backgroundColor: container.style.backgroundColor,
-      filter: container.style.filter,
+      padding: container.style.padding,
+      margin: container.style.margin,
     };
 
     try {
-      if (settings.whiteBackground) {
-        container.style.backgroundColor = '#FFFFFF';
-        
-        
-        const greyElements = container.querySelectorAll('*');
-        const elementsToRestore: Array<{element: HTMLElement, originalBg: string}> = [];
-        
-        greyElements.forEach((el: any) => {
-          const computedStyle = window.getComputedStyle(el);
-          if (computedStyle.backgroundColor === 'rgb(248, 249, 250)' || 
-              el.classList.contains('bg-[#F8F9FA]')) {
-            elementsToRestore.push({element: el, originalBg: el.style.backgroundColor});
-            el.style.backgroundColor = '#FFFFFF';
-          }
-        });
+      const clone = container.cloneNode(true) as HTMLElement;
+      Object.assign(clone.style, {
+        height: "auto", maxHeight: "none", overflow: "visible",
+        backgroundColor: "#FFFFFF", padding: "0", margin: "0", width: "100%",
+        position: "absolute", top: "-0px", left: "-0px"
+      });
 
+      document.body.appendChild(clone);
 
-        
-        await SimpleMultiPagePDF(containerId, title);
+      applyPrintStyles(clone, { whiteBackground: settings.whiteBackground, title });
 
-        elementsToRestore.forEach(({element, originalBg}) => {
-          element.style.backgroundColor = originalBg;
-        });
-      } else {
-        await SimpleMultiPagePDF(containerId, title);
-      }
+      console.log("Clone content length:", clone.innerHTML.length);
+      console.log("Clone children count:", clone.children.length);
 
-      container.style.backgroundColor = originalStyles.backgroundColor;
-      container.style.filter = originalStyles.filter;
+      const styledHTML = clone.outerHTML;
+      console.log("Styled HTML length:", styledHTML.length);
 
-    } catch (error) {
-      container.style.backgroundColor = originalStyles.backgroundColor;
-      container.style.filter = originalStyles.filter;
-      throw error;
+      document.body.removeChild(clone);
+
+      const debugWindow = window.open("", "_blank", "width=" + screen.width + ",height=" + screen.height + ",fullscreen=yes");
+      if (!debugWindow) return;
+
+      const debugHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>PDF Debug - ${title}</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>${PDF_STYLES.SCREEN_CSS}${PDF_STYLES.PRINT_CSS}</style>
+        </head>
+        <body>
+          <div class="debug-header">
+            <strong>PDF Debug:</strong> ${title} | 
+            <button onclick="window.print()" style="background:#059669;color:white;border:none;padding:4px 8px;border-radius:4px;margin-left:10px;cursor:pointer">Save PDF</button>
+            <button onclick="window.close()" style="background:#dc2626;color:white;border:none;padding:4px 8px;border-radius:4px;margin-left:10px;cursor:pointer">Close</button>
+          </div>
+          <div class="debug-content">
+            <div class="debug-info">
+              <strong>Ready for PDF:</strong> Click "Save PDF" to print/save as PDF using your browser's print dialog.
+            </div>
+            ${styledHTML}
+          </div>
+        </body>
+        </html>
+      `;
+
+      debugWindow.document.open();
+      debugWindow.document.write(debugHTML);
+      debugWindow.document.close();
+      debugWindow.focus();
+
+    } finally {
+      // Always restore original styles
+      restorePrintStyles(container, originalStyles);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{t("admin.tournaments.groups.tables.pdf_preview")} - {title}</DialogTitle>
+          <DialogTitle>PDF Print Setup - {title}</DialogTitle>
         </DialogHeader>
-        
-        <div className="flex gap-4 h-[70vh]">
-          {/* Settings Panel */}
-          <div className="w-64 space-y-4 p-4 border-r">
-            <h3 className="font-semibold">{t("admin.tournaments.groups.tables.print_settings")}</h3>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="white-bg"
-                checked={settings.whiteBackground}
-                onCheckedChange={(checked) => 
-                  setSettings(prev => ({...prev, whiteBackground: !!checked}))
-                }
-              />
-              <Label htmlFor="white-bg">{t("admin.tournaments.groups.tables.white_background")}</Label>
-            </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="high-quality"
-                checked={settings.highQuality}
-                onCheckedChange={(checked) => 
-                  setSettings(prev => ({...prev, highQuality: !!checked}))
-                }
-              />
-              <Label htmlFor="high-quality">{t("admin.tournaments.groups.tables.high_quality")}</Label>
-            </div>
-
-            <Button 
-              onClick={generatePreview} 
-              disabled={isGenerating}
-              size="sm"
-              variant="outline"
-            >
-              {isGenerating ? t("admin.tournaments.groups.tables.updating") : t("admin.tournaments.groups.tables.update_preview")}
-            </Button>
+        <div className="space-y-4 p-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="white-bg"
+              checked={settings.whiteBackground}
+              onCheckedChange={(checked) =>
+                setSettings(prev => ({ ...prev, whiteBackground: !!checked }))
+              }
+            />
+            <Label htmlFor="white-bg">Convert gray backgrounds to white</Label>
           </div>
 
-          {/* Preview Panel */}
-          <div className="flex-1 overflow-auto">
-            {isGenerating ? (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                  <p>{t("admin.tournaments.groups.tables.generating_preview")}</p>
-                </div>
-              </div>
-            ) : previewImage ? (
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm text-gray-600">{t("admin.tournaments.groups.tables.preview_first_section")}:</p>
-                  {pageCount > 0 && (
-                    <p className="text-sm text-blue-600 font-medium">
-                      {t("admin.tournaments.groups.tables.pages_count", { count: pageCount })}
-                    </p>
-                  )}
-                </div>
-                <img 
-                  src={previewImage} 
-                  alt="PDF Preview" 
-                  className="max-w-full border border-gray-300 rounded"
-                />
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                {t("admin.tournaments.groups.tables.no_preview_available")}
-              </div>
-            )}
+          <div className="bg-blue-50 border border-blue-200 rounded p-4">
+            <h3 className="font-semibold mb-2">How to create PDF:</h3>
+            <ol className="text-sm space-y-1">
+              <li>1. Click "Open Print Preview" below</li>
+              <li>2. In the new window, click "Save PDF"</li>
+              <li>3. Use your browser's print dialog to save as PDF</li>
+            </ol>
           </div>
+
+          <Button onClick={generateDebugHTML} className="w-full">
+            Open Print Preview
+          </Button>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {t("admin.tournaments.groups.tables.cancel")}
-          </Button>
-          <Button onClick={handleDownload} disabled={isGenerating}>
-            {isGenerating ? t("admin.tournaments.groups.tables.generating_pdf") : t("admin.tournaments.groups.tables.download_pdf")}
-          </Button>
+          <Button variant="outline" onClick={onClose}>Close</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

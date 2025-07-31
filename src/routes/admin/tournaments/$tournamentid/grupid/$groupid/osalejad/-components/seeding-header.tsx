@@ -352,11 +352,9 @@ const SeedingHeader = ({
 
           </div>
 
-          {/* Right Column - Excel Actions */}
           <div className="flex flex-col gap-2 flex-1">
             <div className="text-xs font-medium text-gray-600 sm:hidden">Excel Actions</div>
             
-            {/* Download Template Button */}
             <Button
               onClick={handleDownloadTemplate}
               variant="outline"

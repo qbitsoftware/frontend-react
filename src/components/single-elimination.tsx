@@ -85,30 +85,26 @@ export const SingleElimination = ({
     const totalRounds = Object.entries(matches).length;
 
     const isMainChampionshipBracket = (roundMatches: typeof data.matches, roundIndex: number) => {
-        // Check if this round has any match that could lead to 1st place
         const hasChampionshipPath = roundMatches.some(match => {
             const bracket = match.match.bracket;
             
-            if (!bracket) return true; // No bracket usually means main tournament
-            if (bracket === "1-1" || bracket === "1-2") return true; // Championship final
-            if (bracket.endsWith("-1")) return true; // Bracket leading to 1st place
+            if (!bracket) return true; 
+            if (bracket === "1-1" || bracket === "1-2") return true; 
+            if (bracket.endsWith("-1")) return true; 
             
             return false;
         });
         
-        // For final round, if there's a championship match, show the header regardless of placement matches
         const isLastRound = roundIndex === Object.entries(matches).length - 1;
         if (isLastRound && hasChampionshipPath) {
             return true;
         }
         
-        // For other rounds, check that none of the matches are clearly placement matches
         const hasNoPlacementMatches = roundMatches.every(match => {
             if (match.is_bronze_match) return false; // Bronze matches are not championship
             
             const bracket = match.match.bracket;
             if (bracket) {
-                // Block any bracket that doesn't involve 1st or 2nd place
                 if (bracket.match(/^[3-9]+-[3-9]+$/)) return false; // 3-4, 5-6, 7-8, etc.
                 if (bracket.includes("-") && !bracket.includes("1") && !bracket.includes("2")) return false;
             }
@@ -119,7 +115,6 @@ export const SingleElimination = ({
         return hasChampionshipPath && hasNoPlacementMatches;
     };
 
-    // Check if any rounds have main bracket matches to determine if we should show headers
     const hasMainBracketRounds = Object.entries(matches).some(([, roundMatches], roundIndex) => 
         isMainChampionshipBracket(roundMatches, roundIndex)
     );
@@ -132,12 +127,10 @@ export const SingleElimination = ({
                     const isLastRound = roundIndex === Object.entries(matches).length - 1;
                         const isMainBracket = isMainChampionshipBracket(roundMatches, roundIndex);
                         
-                    // Calculate header width to match the round column
                     const headerWidth = !isLastRound || (isLastRound && roundMatches.length === 1) 
-                        ? "w-[260px]" 
-                        : "w-[260px]";
+                        ? "w-[240px]" 
+                        : "w-[240px]";
                     
-                        // Only render header div for main bracket rounds
                         if (!isMainBracket) {
                             return <div key={`spacer-${roundIndex}`} className={`${headerWidth} flex-shrink-0`}></div>;
                         }
@@ -153,7 +146,6 @@ export const SingleElimination = ({
             </div>
             )}
 
-            {/* Bracket Matches Row */}
             <div className="flex h-full items-center">
                 {Object.entries(matches).map(([round, roundMatches], roundIndex) => {
                     const gap = calculateRoundGap(Number(round), matches, BracketType.PLUSSRRING)

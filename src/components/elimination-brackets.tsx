@@ -42,7 +42,7 @@ export const EliminationBrackets = ({
               defaultValue={data?.eliminations[0]?.elimination[0].name}
               className="z-10 flex-1 order-2 sm:order-1"
             >
-              <TabsList className="flex justify-start gap-1 sm:gap-2 lg:gap-4 px-2 text-black bg-transparent overflow-x-auto scrollbar-hide">
+              <TabsList className="flex justify-start gap-1 sm:gap-2 lg:gap-4 px-2 text-black bg-transparent overflow-hidden scrollbar-hide">
                 {data.eliminations.map((item, index) => (
                   <TabsTrigger
                     key={index}

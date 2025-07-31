@@ -1,70 +1,20 @@
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
-interface BracketHeader {
-  title: string;
-  y: number; // Y position in pixels from top of container
-  height: number;
-}
 
 /**
- * Find bracket headers in the DOM to determine section boundaries
+ * Simple page break calculation that doesn't isolate headers
  */
-function findBracketHeaders(container: HTMLElement): BracketHeader[] {
-  const headers: BracketHeader[] = [];
+function calculateSimplePageBreaks(totalHeight: number, pageHeight: number): number[] {
+  const breaks: number[] = [0];
   
-  // Look for bracket section headers - these are typically divs with "font-bold text-xl py-4"
-  const headerElements = container.querySelectorAll('.font-bold.text-xl, h1, h2, h3');
-  
-  headerElements.forEach((element) => {
-    const rect = element.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-    
-    // Calculate position relative to container
-    const relativeY = rect.top - containerRect.top + container.scrollTop;
-    
-    headers.push({
-      title: element.textContent?.trim() || 'Unknown Section',
-      y: relativeY,
-      height: rect.height
-    });
-  });
-  
-  // Sort by Y position
-  return headers.sort((a, b) => a.y - b.y);
-}
-
-/**
- * Calculate smart page breaks that don't split bracket sections
- */
-function calculateSmartPageBreaks(
-  headers: BracketHeader[], 
-  idealPageHeight: number, 
-  totalHeight: number
-): number[] {
-  const breaks: number[] = [0]; // Always start at 0
-  let currentPageStart = 0;
-  
-  for (let i = 0; i < headers.length; i++) {
-    const header = headers[i];
-    const nextHeader = headers[i + 1];
-    
-    // Calculate section end (next header start or total height)
-    const sectionEnd = nextHeader ? nextHeader.y : totalHeight;
-    const sectionHeight = sectionEnd - header.y;
-    
-    // Check if this section fits in the remaining space of current page
-    const remainingPageSpace = idealPageHeight - (header.y - currentPageStart);
-    
-    if (remainingPageSpace < sectionHeight && header.y > currentPageStart) {
-      // Section doesn't fit, start new page at this header
-      breaks.push(header.y);
-      currentPageStart = header.y;
-    }
+  for (let y = pageHeight; y < totalHeight; y += pageHeight) {
+    breaks.push(Math.min(y, totalHeight));
   }
   
-  return breaks;
+  return breaks.filter((breakPoint, index) => index === 0 || breakPoint < totalHeight);
 }
+
 
 /**
  * Find the last row that actually contains content (not just white space)
@@ -171,11 +121,8 @@ export const SimpleMultiPagePDF = async (
     console.log(`Page content area: ${contentWidth}x${contentHeight}mm`);
     console.log(`Canvas pixels per page: ${canvasPixelsPerPage}px`);
 
-    const bracketHeaders = findBracketHeaders(container);
-    console.log(`Found ${bracketHeaders.length} bracket sections:`, bracketHeaders.map(h => `${h.title} at ${h.y}px`));
-
-    const pageBreaks = calculateSmartPageBreaks(bracketHeaders, canvasPixelsPerPage, canvas.height);
-    console.log(`Smart page breaks:`, pageBreaks);
+    const pageBreaks = calculateSimplePageBreaks(canvas.height, canvasPixelsPerPage);
+    console.log(`Simple page breaks:`, pageBreaks);
 
     for (let pageIndex = 0; pageIndex < pageBreaks.length; pageIndex++) {
       if (pageIndex > 0) {

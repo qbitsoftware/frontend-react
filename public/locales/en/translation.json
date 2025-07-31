@@ -545,6 +545,7 @@
       "standings": "Standings",
       "results": "Brackets",
       "participants": "Participants",
+      "tables": "Tables",
       "gallery": "Gallery",
       "guide": "Guide",
       "sponsors": "Sponsors",
@@ -1005,7 +1006,7 @@
         "start_date": "Start Date",
         "location": "Location",
         "location_placeholder": "Enter Location",
-        "category": "Category",
+        "category": "Category (optional)",
         "category_placeholder": "Type a Category",
         "number_of_tables": "Number of tables",
         "number_of_tables_placeholder": "Enter number of tables",
@@ -1378,17 +1379,25 @@
           "round": "Round",
           "class": "Class",
           "table": "Table",
-          "participant_1": "Participant 1",
-          "participant_2": "Participant 2",
-          "participant_1_score": "Participant 1 score",
-          "participant_2_score": "Participant 2 score",
+          "confirm": "Confirm",
+          "participant_1": "P1",
+          "participant_2": "P2",
+          "participant_1_score": "P1 Sets",
+          "participant_2_score": "P2 Sets",
           "winner_placement": "Winner placement",
           "loser_placement": "Loser placement",
           "winner": "Winner",
           "winner_bracket": "Winner",
           "loser_bracket": "Loser"
         },
-        "not_played": "Not played yet"
+        "not_played": "Not played yet",
+        "score_updated_success": "Match score updated successfully",
+        "score_update_error": "Failed to update match score",
+        "legend": {
+          "upcoming": "Upcoming",
+          "ongoing": "Ongoing", 
+          "finished": "Finished"
+        }
       },
       "brackets": {
         "not_found": "No brackets found",
