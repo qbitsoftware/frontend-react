@@ -34,6 +34,10 @@ export default function ParticipantHeader({ team }: Props) {
                     )}
                 </TableHead>
                 <TableHead className="">
+                RP
+                </TableHead>
+
+                <TableHead className="">
                     {t(
                         "admin.tournaments.groups.participants.table.yob"
                     )}

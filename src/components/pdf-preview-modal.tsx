@@ -51,6 +51,41 @@ const PDF_STYLES = {
 };
 
 const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: boolean; title: string }) => {
+  const matchElements = container.querySelectorAll(".w-\\[198px\\], .w-\\[240px\\]");
+  
+  const hasLosersBracket = container.textContent?.includes("Miinusring") ||
+                          container.querySelector('[class*="loser"]') !== null;
+  
+  console.log("hasloserbracket", hasLosersBracket)
+
+  let bracketSize: number;
+  if (hasLosersBracket) {
+    const doubleElimData = [
+      { players: 16, games: 40 },
+      { players: 32, games: 97 },
+      { players: 64, games: 226 }
+    ];
+    
+    bracketSize = doubleElimData.reduce((closest, current) => 
+      Math.abs(current.games - matchElements.length) < Math.abs(closest.games - matchElements.length) 
+        ? current : closest
+    ).players;
+  } else {
+    const estimatedSize = matchElements.length * 0.9;
+    const standardSizes = [16, 32, 64, 128];
+    bracketSize = standardSizes.reduce((closest, size) => 
+      Math.abs(size - estimatedSize) < Math.abs(closest - estimatedSize) ? size : closest
+    );
+  }
+  console.log("Bracket size should be", bracketSize)
+  
+  const shouldDisableColoringAndMoving = bracketSize <= 16;
+  
+  console.log("Bracket analysis:", {
+    matchElements: matchElements.length,
+    estimatedBracketSize: bracketSize,
+    shouldDisableColoringAndMoving
+  });
   container.querySelectorAll("*").forEach((el) => {
     const htmlEl = el as HTMLElement;
     const computed = window.getComputedStyle(htmlEl);
@@ -91,7 +126,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     const shouldBreak = text.includes("MIINUSRING") || 
                        text.includes("Miinusring") ||
                        text.includes("3rd place") ||
-                       ["7-8", "25-32", "33-48", "49-64", "65-96"].some(t => text.includes(t));
+                       ["5-6", "7-8", "25-32", "33-48", "49-64", "65-96"].some(t => text.includes(t));
     
     if (shouldBreak) {
       let parent = htmlEl.closest("div");
@@ -110,12 +145,36 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     htmlEl.style.border = "1px solid #000";
   });
 
-  const containerWidth = 1090;
-  let furthestRightElement = null;
-  let furthestRightPosition = 0;
-  const elementsToMove: Array<{ element: HTMLElement; position: number }> = [];
-  const allElements: Array<{ element: HTMLElement; position: number }> = [];
+  container.querySelectorAll('.hide-in-pdf').forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.display = "none";
+    console.log("Hidden PDF element:", htmlEl.className);
+  });
+
+  if (shouldDisableColoringAndMoving) {
+    console.log("Skipping coloring and moving logic for small bracket (≤16 participants)");
+  } else {
+    const containerWidth = 1090;
+    let furthestRightElement: HTMLElement | null = null;
+    let furthestRightPosition = 0;
+    const elementsToMove: Array<{ element: HTMLElement; position: number }> = [];
+    const allElements: Array<{ element: HTMLElement; position: number }> = [];
+    const mainBracketElements: Array<{ element: HTMLElement; position: number }> = [];
+    const miinusringElements: Array<{ element: HTMLElement; position: number }> = [];
   
+  // Helper function to check if element is in loser bracket
+  const isInLoserBracket = (element: HTMLElement): boolean => {
+    // Check if element or any parent has the loser-bracket-match class
+    let current = element;
+    while (current && current !== container) {
+      if (current.classList.contains('loser-bracket-match')) {
+        return true;
+      }
+      current = current.parentElement as HTMLElement;
+    }
+    return false;
+  };
+
   container.querySelectorAll(".w-\\[198px\\], .w-\\[240px\\]").forEach((el) => {
     const htmlEl = el as HTMLElement;
     const elementRight = htmlEl.offsetLeft + htmlEl.offsetWidth;
@@ -124,18 +183,17 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     const visualRight = rect.right - containerRect.left;
     const isPlacementMatch = htmlEl.textContent?.trim().match(/^\d+-\d+$/);
     
-    console.log("element:", htmlEl.textContent?.slice(0, 20), 
-                "DOM right:", elementRight, 
-                "visual right:", Math.round(visualRight),
-                "placement match:", !!isPlacementMatch,
-                "transform:", htmlEl.style.transform || "none",
-                "offsetLeft:", htmlEl.offsetLeft,
-                "offsetWidth:", htmlEl.offsetWidth,
-                "rect.left:", Math.round(rect.left),
-                "rect.right:", Math.round(rect.right));
-    
     const actualPosition = visualRight > elementRight ? visualRight : elementRight;
-    allElements.push({ element: htmlEl, position: actualPosition });
+    const elementData = { element: htmlEl, position: actualPosition };
+    
+    allElements.push(elementData);
+    
+    // Separate elements by bracket type
+    if (isInLoserBracket(htmlEl)) {
+      miinusringElements.push(elementData);
+    } else {
+      mainBracketElements.push(elementData);
+    }
     
     if (actualPosition > furthestRightPosition) {
       furthestRightPosition = actualPosition;
@@ -143,62 +201,289 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     }
     
     if (actualPosition > containerWidth || isPlacementMatch) {
-      elementsToMove.push({ element: htmlEl, position: actualPosition });
+      elementsToMove.push(elementData);
     }
   });
   
-  console.log("Total elements found:", allElements.length);
   const sortedElements = allElements.sort((a, b) => b.position - a.position);
-  console.log("All elements sorted by position:", sortedElements.map((el, index) => ({ 
-    index: index + 1,
-    position: el.position, 
-    text: el.element.textContent?.slice(0, 30),
-    isPlacementMatch: !!el.element.textContent?.trim().match(/^\d+-\d+$/)
-  })));
+  console.log("Main bracket elements:", mainBracketElements.length);
+  console.log("Miinusring elements:", miinusringElements.length);
   
-  const placementMatches = allElements.filter(({ element }) => {
+  // Separate placement matches by bracket type
+  const mainPlacementMatches = mainBracketElements.filter(({ element }) => {
     const text = element.textContent?.trim();
     return text === "1-2" || text === "3-4" || text === "5-6";
   });
   
-  const consolationMatches = sortedElements
-    .filter(({ element }) => {
+  const miinusringPlacementMatches = miinusringElements.filter(({ element }) => {
+    const text = element.textContent?.trim();
+    return text === "1-2" || text === "3-4" || text === "5-6";
+  });
+  
+  // Handle special bracket size cases
+  if (bracketSize === 32) {
+    if (hasLosersBracket) {
+      // For 32-player double elimination: only move furthest element
+      if (furthestRightElement) {
+        (furthestRightElement as HTMLElement).style.backgroundColor = "orange";
+        const currentTransform = (furthestRightElement as HTMLElement).style.transform || "";
+        const newTransform = currentTransform 
+          ? `${currentTransform} translateX(-235px) translateY(-45px)`
+          : "translateX(-235px) translateY(-45px)";
+        (furthestRightElement as HTMLElement).style.transform = newTransform;
+        (furthestRightElement as HTMLElement).classList.add("repositioned-match");
+        console.log("Moved furthest element in 32-player double elimination:", (furthestRightElement as HTMLElement).textContent?.slice(0, 20));
+      }
+    } else {
+      console.log("32-player single elimination: no movement applied");
+    }
+  } else if (bracketSize === 64 && !hasLosersBracket) {
+    // For 64-player single elimination: move the "1-2" match left and up by 80px
+    const finalMatch = mainBracketElements.find(({ element }) => {
       const text = element.textContent?.trim();
-      return !text?.match(/^\d+-\d+$/);
-    })
-    .slice(0, 5); 
-  
-  console.log("Placement matches (main bracket):", placementMatches.map(el => ({ 
-    position: el.position, 
-    text: el.element.textContent?.slice(0, 20) 
-  })));
-  
-  console.log("Consolation bracket matches:", consolationMatches.map(el => ({ 
-    position: el.position, 
-    text: el.element.textContent?.slice(0, 20) 
-  })));
-  
-  placementMatches.forEach(({ element }) => {
-    element.style.backgroundColor = "pink";
+      return text === "1-2";
+    });
     
-    const currentTransform = element.style.transform || "";
-    const newTransform = currentTransform 
-      ? `${currentTransform} translateX(-235px) translateY(-45px)`
-      : "translateX(-235px) translateY(-45px)";
-    element.style.transform = newTransform;
-    element.classList.add("repositioned-match");
+    if (finalMatch) {
+      finalMatch.element.style.backgroundColor = "purple";
+      const currentTransform = finalMatch.element.style.transform || "";
+      const newTransform = currentTransform 
+        ? `${currentTransform} translateX(-235px) translateY(-80px)`
+        : "translateX(-235px) translateY(-80px)";
+      finalMatch.element.style.transform = newTransform;
+      finalMatch.element.classList.add("repositioned-match");
+      console.log("Moved 1-2 match in 64-player single elimination:", finalMatch.element.textContent?.slice(0, 20));
+    }
+  } else if (bracketSize === 64 && hasLosersBracket) {
+    // For 64-player double elimination: 
+    // 1. First handle the rightmost match (likely the grand final)
+    // If no main bracket elements, find the rightmost overall match with "1-2" text
+    let grandFinalMatch = null;
     
-    console.log("Moved placement match:", element.textContent?.slice(0, 20), "with transform:", newTransform);
-  });
-  
-  consolationMatches.forEach(({ element }) => {
-    element.style.backgroundColor = "lightblue";
-    console.log("Colored consolation match:", element.textContent?.slice(0, 20));
-  });
+    if (mainBracketElements.length > 0) {
+      grandFinalMatch = mainBracketElements.reduce((rightmost, current) => 
+        current.position > rightmost.position ? current : rightmost
+      );
+    } else {
+      // If all matches are in miinusring, find the "1-2" match
+      const oneTwoMatch = allElements.find(({ element }) => {
+        const text = element.textContent?.trim();
+        return text === "1-2";
+      });
+      grandFinalMatch = oneTwoMatch || null;
+    }
+    
+    if (grandFinalMatch) {
+      grandFinalMatch.element.style.backgroundColor = "purple";
+      const currentTransform = grandFinalMatch.element.style.transform || "";
+      const newTransform = currentTransform 
+        ? `${currentTransform} translateX(-235px) translateY(-80px)`
+        : "translateX(-235px) translateY(-80px)";
+      grandFinalMatch.element.style.transform = newTransform;
+      grandFinalMatch.element.classList.add("repositioned-match");
+      console.log("Moved grand final match in 64-player double elimination:", grandFinalMatch.element.textContent?.slice(0, 20));
+    }
+    
+    // 2. Then color the rightmost loser bracket matches (excluding grand final and any already processed matches)
+    const sortedMiinusringElements = miinusringElements
+      .filter(({ element }) => {
+        const text = element.textContent?.trim();
+        // Exclude grand final matches and already processed matches
+        return text !== "1-2" && !element.classList.contains("repositioned-match");
+      })
+      .sort((a, b) => b.position - a.position);
+    
+    const columnsToColor = 9; // Hardcoded for 64-player double elimination
+    
+    console.log(`64-player double elimination: coloring ${columnsToColor} rightmost loser bracket matches out of ${sortedMiinusringElements.length} total`);
+    
+    // Calculate spacing needed for the moved matches
+    const matchSpacing = 1000; // Space needed for the moved matches section
+    
+    sortedMiinusringElements.slice(0, columnsToColor).forEach(({ element }) => {
+      element.style.backgroundColor = "yellow";
+      element.classList.add("loser-bracket-split");
+      
+      // Move down under current miinusring, keeping horizontal position
+      const currentTransform = element.style.transform || "";
+      const newTransform = currentTransform 
+        ? `${currentTransform} translateY(${matchSpacing}px)`
+        : `translateY(${matchSpacing}px)`;
+      element.style.transform = newTransform;
+      element.style.position = "relative";
+      element.style.zIndex = "999";
+      
+      console.log("Colored and moved rightmost loser bracket match down:", element.textContent?.slice(0, 20));
+    });
+    
+    // Also move the rightmost loser bracket connectors
+    const loserBracketConnectors = Array.from(container.querySelectorAll('.loser-bracket-connector')) as HTMLElement[];
+    const sortedConnectors = loserBracketConnectors
+      .map(connector => ({
+        element: connector,
+        position: connector.getBoundingClientRect().right
+      }))
+      .sort((a, b) => b.position - a.position);
+    
+    // Move the same number of rightmost connectors as matches (or a bit more to ensure coverage)
+    const connectorsToMove = Math.min(sortedConnectors.length, columnsToColor * 3); // 3x multiplier for connector coverage
+    
+    sortedConnectors.slice(0, connectorsToMove).forEach(({ element: connectorEl }) => {
+      if (!connectorEl.classList.contains('loser-bracket-split')) {
+        connectorEl.style.backgroundColor = "orange"; // Different color for connectors
+        connectorEl.classList.add("loser-bracket-split");
+        
+        const connectorTransform = connectorEl.style.transform || "";
+        const newConnectorTransform = connectorTransform 
+          ? `${connectorTransform} translateY(${matchSpacing}px)`
+          : `translateY(${matchSpacing}px)`;
+        connectorEl.style.transform = newConnectorTransform;
+        connectorEl.style.position = "relative";
+        connectorEl.style.zIndex = "998";
+        
+        console.log("Moved loser bracket connector");
+      }
+    });
+    
+    const fiveSixTitle = container.querySelector('.bracket-title-5-6') as HTMLElement;
+    if (fiveSixTitle) {
+      console.log("Found 5-6 title, repositioning matches before it");
+      
+      // Create a container div for the moved matches
+      const matchContainer = document.createElement('div');
+      matchContainer.style.padding = '0px';
+      matchContainer.style.minHeight = '1200px';
+      matchContainer.style.width = '100%';
+      matchContainer.style.marginBottom = '20px';
+      matchContainer.style.position = 'relative'; // Enable positioning for children
+      matchContainer.style.overflow = 'visible'; // Don't clip positioned elements
+      matchContainer.style.pageBreakBefore = 'always'; // Force page break before this container
+      matchContainer.classList.add('moved-matches-container');
+      
+      const containerTitle = document.createElement('h2');
+      containerTitle.textContent = 'Miinusringi jätk';
+      containerTitle.style.textAlign = 'start';
+      containerTitle.style.fontSize = '32px';
+      containerTitle.style.fontWeight = 'bold';
+      containerTitle.style.color = '#333';
+      matchContainer.appendChild(containerTitle);
+      
+      // Insert the container before the 5-6 title
+      fiveSixTitle.parentNode?.insertBefore(matchContainer, fiveSixTitle);
+      
+      // Store original positions before moving (matches + connectors)
+      const matchesWithPositions = sortedMiinusringElements.slice(0, columnsToColor).map(({ element }) => {
+        if (element.classList.contains('loser-bracket-split')) {
+          const rect = element.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          return {
+            element,
+            originalLeft: rect.left - containerRect.left,
+            originalTop: rect.top - containerRect.top,
+            type: 'match'
+          };
+        }
+        return null;
+      }).filter(Boolean);
+      
+      // Also get connector positions
+      const connectorsWithPositions = Array.from(container.querySelectorAll('.loser-bracket-connector')).map((connectorEl) => {
+        const htmlEl = connectorEl as HTMLElement;
+        if (htmlEl.classList.contains('loser-bracket-split')) {
+          const rect = htmlEl.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          return {
+            element: htmlEl,
+            originalLeft: rect.left - containerRect.left,
+            originalTop: rect.top - containerRect.top,
+            type: 'connector'
+          };
+        }
+        return null;
+      }).filter(Boolean);
+      
+      // Combine matches and connectors only
+      const elementsWithPositions = [...matchesWithPositions, ...connectorsWithPositions];
+      
+      // Calculate the bounding box of all selected elements
+      let minLeft = Infinity, minTop = Infinity;
+      elementsWithPositions.forEach(item => {
+        if (item) {
+          minLeft = Math.min(minLeft, item.originalLeft);
+          minTop = Math.min(minTop, item.originalTop);
+        }
+      });
+      
+      // Move elements and preserve relative positioning
+      elementsWithPositions.forEach(item => {
+        if (item) {
+          // Remove the translateY transform
+          item.element.style.transform = '';
+          
+          item.element.style.position = 'absolute';
+          item.element.style.left = `${item.originalLeft - minLeft - 230}px`;
+          item.element.style.top = `${item.originalTop - minTop + 80}px`; // 80px to account for title
+          
+          // Move the DOM element to the new container
+          matchContainer.appendChild(item.element);
+          console.log(`Moved ${item.type} with preserved position:`, item.element.textContent?.slice(0, 20) || 'connector');
+        }
+      });
+      
+      console.log("Created matches container between miinusring and 5-6 sections");
+    }
+  } else {
+    // Original logic for other bracket sizes
+    const consolationMatches = sortedElements
+      .filter(({ element }) => {
+        const text = element.textContent?.trim();
+        return !text?.match(/^\d+-\d+$/);
+      })
+      .slice(0, 5); 
+    
+    // Color main bracket placement matches pink (exclude already processed elements)
+    mainPlacementMatches.forEach(({ element }) => {
+      if (!element.classList.contains("repositioned-match")) {
+        element.style.backgroundColor = "pink";
+        
+        const currentTransform = element.style.transform || "";
+        const newTransform = currentTransform 
+          ? `${currentTransform} translateX(-235px) translateY(-45px)`
+          : "translateX(-235px) translateY(-45px)";
+        element.style.transform = newTransform;
+        element.classList.add("repositioned-match");
+        
+        console.log("Moved main bracket placement match:", element.textContent?.slice(0, 20));
+      }
+    });
+    
+    // Color miinusring placement matches red (exclude already processed elements)
+    miinusringPlacementMatches.forEach(({ element }) => {
+      if (!element.classList.contains("repositioned-match")) {
+        element.style.backgroundColor = "red";
+        
+        const currentTransform = element.style.transform || "";
+        const newTransform = currentTransform 
+          ? `${currentTransform} translateX(-235px) translateY(-45px)`
+          : "translateX(-235px) translateY(-45px)";
+        element.style.transform = newTransform;
+        element.classList.add("repositioned-match");
+        
+        console.log("Moved miinusring placement match:", element.textContent?.slice(0, 20));
+      }
+    });
+    
+    // Color consolation matches lightblue
+    consolationMatches.forEach(({ element }) => {
+      element.style.backgroundColor = "lightblue";
+      console.log("Colored consolation match:", element.textContent?.slice(0, 20));
+    });
+  }
   
   if (furthestRightElement) {
     console.log("Furthest right element:", furthestRightElement, "at position:", furthestRightPosition);
   }
+  } // End of coloring and moving logic
 
   const className = settings.title?.replace(/ Tournament$/, "").trim();
   if (className && className !== "Tournament Bracket") {
@@ -240,9 +525,6 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
       return;
     }
     
-    console.log("Original container content length:", container.innerHTML.length);
-    console.log("Original container children count:", container.children.length);
-
     const originalStyles = {
       backgroundColor: container.style.backgroundColor,
       padding: container.style.padding,
@@ -261,11 +543,7 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
 
       applyPrintStyles(clone, { whiteBackground: settings.whiteBackground, title });
 
-      console.log("Clone content length:", clone.innerHTML.length);
-      console.log("Clone children count:", clone.children.length);
-
       const styledHTML = clone.outerHTML;
-      console.log("Styled HTML length:", styledHTML.length);
 
       document.body.removeChild(clone);
 
@@ -303,7 +581,6 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
       debugWindow.focus();
 
     } finally {
-      // Always restore original styles
       restorePrintStyles(container, originalStyles);
     }
   };

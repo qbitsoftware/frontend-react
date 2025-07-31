@@ -35,7 +35,7 @@ export const EliminationBrackets = ({
 
   return (
     <div className='border-grey-200 border-x border-b'>
-      <div className="z-40 top-0 w-full">
+      <div className="z-40 top-0 w-full hide-in-pdf">
         <div className="px-0 w-full bg-[#F8F9FA] rounded-t pdf-background">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-2 py-3 gap-3 sm:gap-0">
             <Tabs
@@ -46,7 +46,7 @@ export const EliminationBrackets = ({
                 {data.eliminations.map((item, index) => (
                   <TabsTrigger
                     key={index}
-                    value={item.elimination[0].name} 
+                    value={item.elimination[0].name}
                     className="flex-shrink-0 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:bg-stone-600 data-[state=active]:text-white data-[state=active]:shadow-sm bg-[#4C97F1] text-white min-w-[60px] sm:min-w-[80px] text-center"
                     onClick={() => {
                       const container = scrollContainerRef.current;
@@ -105,7 +105,7 @@ export const EliminationBrackets = ({
 
               return (
                 <div key={uniqueKey}>
-                  <div className="font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0">
+                  <div className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, '-').toLowerCase()}`}>
                     {table.name}
                   </div>
                   {table.name !== BracketType.MIINUSRING ? (

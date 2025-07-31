@@ -635,7 +635,7 @@
       "combined": "Combined"
     },
     "last_updated": "Last updated",
-    "abbreviations": "Abbreviations: NR = rank in rating, PP = placement points, RP = rating points, ID = ELTLID, YOB = year of birth",
+    "abbreviations": "Abbreviations: NR = rank in rating, PP = placement points, RP = rating points, KA = weights, ID = ELTLID, YOB = year of birth",
     "license_info": {
       "title": "License Information",
       "message": "Licenses will be required starting from January 1, 2026, and can be bought",

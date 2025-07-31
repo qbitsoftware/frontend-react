@@ -667,7 +667,7 @@
       "combined": "Ühine"
     },
     "last_updated": "Viimati uuendatud",
-    "abbreviations": "Lühendid: NR = koht reitingus, PP = paigutuspunktid, RP = reitingupunktid, ID = ELTLID, SA = sünniaasta",
+    "abbreviations": "Lühendid: NR = koht reitingus, PP = paigutuspunktid, RP = reitingupunktid, KA = kaalud, ID = ELTLID, SA = sünniaasta",
     "license_info": {
       "title": "Litsentsi informatsioon",
       "message": "Litsentsid muutuvad kohustuslikuks alates 1. jaanuarist 2026 ja neid saab osta",

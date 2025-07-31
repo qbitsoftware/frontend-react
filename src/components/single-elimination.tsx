@@ -137,7 +137,7 @@ export const SingleElimination = ({
                         
                     return (
                         <div key={`header-${roundIndex}`} className={`text-left ${headerWidth} flex-shrink-0`}>
-                            <h3 className="text-lg font-black text-gray-700">
+                            <h3 className="text-lg font-black text-gray-700 hide-in-pdf">
                                 {getRoundName(roundIndex, totalRounds)}
                             </h3>
                         </div>

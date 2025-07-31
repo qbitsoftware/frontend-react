@@ -66,7 +66,7 @@ export const DoubleElimination = ({
                                     style={{ gap: `${gap}px` }}
                                 >
                                     {roundMatches.map((match, key) => (
-                                        <div key={key}>
+                                        <div key={key} className="loser-bracket-match">
                                             <EliminationMatch
                                                 admin={admin}
                                                 handleSelectMatch={handleSelectMatch}
@@ -87,7 +87,7 @@ export const DoubleElimination = ({
                             >
                                 {roundMatches.map((match, key) => {
                                     return (
-                                        <div key={key} className={cn("absolute", match.is_bronze_match ? 'top-[60px]' : '-translate-y-1/2')}>
+                                        <div key={key} className={cn("absolute loser-bracket-match", match.is_bronze_match ? 'top-[60px]' : '-translate-y-1/2')}>
                                             <EliminationMatch
                                                 admin={admin}
                                                 handleSelectMatch={handleSelectMatch}
@@ -122,20 +122,21 @@ export const DoubleElimination = ({
                                                 }}
                                             >
 
-                                                <div className={cn("absolute text-[8px]", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
+                                                <div className={cn("absolute text-[8px] loser-bracket-match-id", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
                                                 <div className={cn("py-[27px]", isEven ? 'self-start' : 'self-end')}>
-                                                    <div className={cn("w-4 self-start", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
+                                                    <div className={cn("w-4 self-start loser-bracket-connector", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                                 </div>
                                                 <div
                                                     className={cn(
                                                         !isEven ? "self-start" : "self-end",
+                                                        "loser-bracket-connector",
                                                         shouldHighlightConnector(match) ? 'w-[2px] bg-blue-400' : 'w-[2px] bg-blue-200'
                                                     )}
                                                     style={{
                                                         height: connectorHeight - BRACKET_CONSTANTS.CONNECTOR_LINE_HEIGHT,
                                                     }}
                                                 />
-                                                <div className={cn("w-4 self-start", isEven ? 'self-end' : 'self-start', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
+                                                <div className={cn("w-4 self-start loser-bracket-connector", isEven ? 'self-end' : 'self-start', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                             </div>
                                         )
                                     } else {
@@ -149,22 +150,23 @@ export const DoubleElimination = ({
                                                 }}
                                             >
 
-                                                <div className={cn("absolute text-[8px]", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
+                                                <div className={cn("absolute text-[8px] loser-bracket-match-id", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
                                                 <div className={cn("py-[27px]", isEven ? 'self-start' : 'self-end')}>
-                                                    <div className={cn("w-4 self-start", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
+                                                    <div className={cn("w-4 self-start loser-bracket-connector", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                                 </div>
                                                 {roundIndex === Object.entries(matches).length - 2 && (
                                                     <>
                                                         <div
                                                             className={cn(
                                                                 !isEven ? "self-start" : "self-end",
+                                                                "loser-bracket-connector",
                                                                 shouldHighlightConnector(match) ? 'w-[2px] bg-blue-400' : 'w-[2px] bg-blue-200'
                                                             )}
                                                             style={{
                                                                 height: connectorHeight - BRACKET_CONSTANTS.CONNECTOR_LINE_HEIGHT,
                                                             }}
                                                         />
-                                                        <div className={cn("w-4 self-start", isEven ? 'self-end' : 'self-start', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
+                                                        <div className={cn("w-4 self-start loser-bracket-connector", isEven ? 'self-end' : 'self-start', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                                     </>
                                                 )}
 
