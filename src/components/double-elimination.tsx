@@ -66,7 +66,7 @@ export const DoubleElimination = ({
                                     style={{ gap: `${gap}px` }}
                                 >
                                     {roundMatches.map((match, key) => (
-                                        <div key={key} className="loser-bracket-match">
+                                        <div key={key} className={`loser-bracket-match match-${match.match.readable_id}`}>
                                             <EliminationMatch
                                                 admin={admin}
                                                 handleSelectMatch={handleSelectMatch}
@@ -87,7 +87,7 @@ export const DoubleElimination = ({
                             >
                                 {roundMatches.map((match, key) => {
                                     return (
-                                        <div key={key} className={cn("absolute loser-bracket-match", match.is_bronze_match ? 'top-[60px]' : '-translate-y-1/2')}>
+                                        <div key={key} className={cn("absolute loser-bracket-match", `match-${match.match.readable_id}`, match.is_bronze_match ? 'top-[60px]' : '-translate-y-1/2')}>
                                             <EliminationMatch
                                                 admin={admin}
                                                 handleSelectMatch={handleSelectMatch}
