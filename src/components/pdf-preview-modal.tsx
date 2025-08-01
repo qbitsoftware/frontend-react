@@ -29,7 +29,7 @@ const PDF_STYLES = {
         border: 1px solid #000 !important; 
       }
       .page-break-before { page-break-before: always !important; }
-      @page { margin: 0.5in; size: A4; }
+      @page { margin: 0; size: A4; }
     }
   `,
   
@@ -120,11 +120,22 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     }
   });
 
+  // Apply half padding to ALL bracket titles
+  container.querySelectorAll('.bracket-title').forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.paddingTop = "4px";    // Half of py-2 (8px)
+    htmlEl.style.paddingBottom = "4px"; // Half of py-2 (8px)
+  });
+
+  // Apply page breaks to specific bracket titles
   container.querySelectorAll('.bracket-title-miinusring, .bracket-title-5-6, .bracket-title-7-8, .bracket-title-25-32, .bracket-title-33-48, .bracket-title-49-64, .bracket-title-65-96').forEach((el) => {
     const htmlEl = el as HTMLElement;
     // Apply page break to the title element itself or its parent container
     const targetElement = htmlEl.parentElement || htmlEl;
     (targetElement as HTMLElement).style.pageBreakBefore = "always";
+    
+    // Remove top margin for titles that start a new page
+    htmlEl.style.marginTop = "0";
   });
 
   container.querySelectorAll('.bg-blue-200, .bg-blue-400, [class*="bg-blue-"]').forEach((el) => {
@@ -304,6 +315,22 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
         matchContainer.appendChild(containerTitle);
         
         placementTitle.parentNode?.insertBefore(matchContainer, placementTitle);
+        
+        // Apply page break to the next placement section since Miinusringi jätk is inserted inside current one
+        let nextPlacementTitle: HTMLElement | null = null;
+        if (sectionName === '5-6') {
+          nextPlacementTitle = container.querySelector('.bracket-title-7-8') as HTMLElement;
+        } else if (sectionName === '7-8') {
+          nextPlacementTitle = container.querySelector('.bracket-title-9-12') as HTMLElement;
+        }
+        
+        if (nextPlacementTitle) {
+          const targetElement = nextPlacementTitle.parentElement || nextPlacementTitle;
+          (targetElement as HTMLElement).style.pageBreakBefore = "always";
+          // Remove top margin from title that starts a new page
+          nextPlacementTitle.style.marginTop = "0";
+          console.log(`Applied page break to ${nextPlacementTitle.textContent?.trim()} section`);
+        }
         
         // Move the selected matches and connectors to the new section
         const matchesWithPositions = sortedMiinusringElements.slice(0, columnsToColor).map(({ element }) => {
@@ -621,6 +648,22 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       
       placementTitle.parentNode?.insertBefore(matchContainer, placementTitle);
       
+      // Apply page break to the next placement section since Miinusringi jätk is inserted inside current one
+      let nextPlacementTitle: HTMLElement | null = null;
+      if (sectionName === '5-6') {
+        nextPlacementTitle = container.querySelector('.bracket-title-7-8') as HTMLElement;
+      } else if (sectionName === '7-8') {
+        nextPlacementTitle = container.querySelector('.bracket-title-9-12') as HTMLElement;
+      }
+      
+      if (nextPlacementTitle) {
+        const targetElement = nextPlacementTitle.parentElement || nextPlacementTitle;
+        (targetElement as HTMLElement).style.pageBreakBefore = "always";
+        // Remove top margin from title that starts a new page
+        nextPlacementTitle.style.marginTop = "0";
+        console.log(`Applied page break to ${nextPlacementTitle.textContent?.trim()} section`);
+      }
+      
       const matchesWithPositions = sortedMiinusringElements.slice(0, columnsToColor).map(({ element }) => {
         if (element.classList.contains('loser-bracket-split')) {
           const rect = element.getBoundingClientRect();
@@ -748,7 +791,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       console.log(`Created matches container between miinusring and ${sectionName} sections`);
     }
   } else {
-    // Original logic for other bracket sizes
     const consolationMatches = sortedElements
       .filter(({ element }) => {
         const text = element.textContent?.trim();
@@ -756,7 +798,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       })
       .slice(0, 5); 
     
-    // Color main bracket placement matches pink (exclude already processed elements)
     mainPlacementMatches.forEach(({ element }) => {
       if (!element.classList.contains("repositioned-match")) {
         element.style.backgroundColor = "pink";
@@ -772,7 +813,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       }
     });
     
-    // Color miinusring placement matches red (exclude already processed elements)
     miinusringPlacementMatches.forEach(({ element }) => {
       if (!element.classList.contains("repositioned-match")) {
         element.style.backgroundColor = "red";
@@ -788,7 +828,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       }
     });
     
-    // Color consolation matches lightblue
     consolationMatches.forEach(({ element }) => {
       element.style.backgroundColor = "lightblue";
       console.log("Colored consolation match:", element.textContent?.slice(0, 20));
@@ -798,14 +837,14 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
   if (furthestRightElement) {
     console.log("Furthest right element:", furthestRightElement, "at position:", furthestRightPosition);
   }
-  } // End of coloring and moving logic
+  } 
 
   const className = settings.title?.replace(/ Tournament$/, "").trim();
   if (className && className !== "Tournament Bracket") {
     const header = document.createElement("div");
     Object.assign(header.style, {
       textAlign: "center", fontWeight: "bold", fontSize: "24px",
-      marginBottom: "105px", padding: "15px", border: "2px solid #000",
+      marginBottom: "125px", padding: "15px", border: "2px solid #000",
       backgroundColor: "#fff", width: "100%"
     });
     header.textContent = className;
