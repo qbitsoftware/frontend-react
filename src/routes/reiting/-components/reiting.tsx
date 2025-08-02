@@ -73,8 +73,8 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
   const [openWinner, setOpenWinner] = useState(false);
   const [openLoser, setOpenLoser] = useState(false);
   const [calculatorResult, setCalculatorResult] = useState<{
-    winner: { name: string; change: number; rating: number };
-    loser: { name: string; change: number; rating: number };
+    winner: { name: string; change: number; rating: number; hv: number; rawChange: number };
+    loser: { name: string; change: number; rating: number; hk: number; rawChange: number };
   } | null>(null);
 
   const windowScrollRef = useRef(0);
@@ -257,14 +257,12 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
         Hk = 0;
       }
     } else {
-      if (Rv > 40) {
-        Hv = 0;
-        Hk = 0;
-      } else {
         const points = Math.round((Rv + 5) / 3);
         Hv = points;
+        if (Hv > 15){
+          Hv = 15
+        }
         Hk = points;
-      }
     }
 
     const coef = 1;
@@ -280,7 +278,11 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
 
     return { 
       winnerGain: Math.round(winnerRatingChange), 
-      loserLoss: Math.round(loserRatingChange)
+      loserLoss: Math.round(loserRatingChange),
+      winnerHv: Hv,
+      loserHk: Hk,
+      winnerRawChange: Hv,
+      loserRawChange: -Hk
     };
   };
 
@@ -318,11 +320,15 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
         name: `${winnerPlayer.first_name} ${winnerPlayer.last_name}`,
         change: ratingChange.winnerGain,
         rating: winnerPlayer.rate_points,
+        hv: ratingChange.winnerHv,
+        rawChange: ratingChange.winnerRawChange,
       },
       loser: {
         name: `${loserPlayer.first_name} ${loserPlayer.last_name}`,
         change: ratingChange.loserLoss,
         rating: loserPlayer.rate_points,
+        hk: ratingChange.loserHk,
+        rawChange: ratingChange.loserRawChange,
       },
     });
   };
@@ -381,7 +387,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     "Before then, they are not required for participating in tournaments."
                   )}
                 </p>
-              </div>
+                </div>
             </div>
           </div>
         </div>
@@ -769,47 +775,79 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     <Calculator className="h-5 w-5" />
                     {t("rating.calculator.result_title")} (Full Formula)
                   </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-white rounded-md border">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">
-                          {calculatorResult.winner.name}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {calculatorResult.winner.rating} RP
-                        </span>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-white rounded-md border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900">
+                            {calculatorResult.winner.name} (Võitja)
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {calculatorResult.winner.rating} RP
+                          </span>
+                        </div>
+                        <div
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            calculatorResult.winner.change >= 0
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {calculatorResult.winner.change >= 0 ? "+" : ""}
+                          {calculatorResult.winner.change}{" "}
+                          {t("rating.calculator.points")}
+                        </div>
                       </div>
-                      <div
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          calculatorResult.winner.change >= 0
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {calculatorResult.winner.change >= 0 ? "+" : ""}
-                        {calculatorResult.winner.change}{" "}
-                        {t("rating.calculator.points")}
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div className="flex justify-between">
+                          <span>Hv (võidupunktid):</span>
+                          <span className="font-mono">{calculatorResult.winner.hv}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Punktid enne kaalude arvestust:</span>
+                          <span className="font-mono">+{calculatorResult.winner.rawChange}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Punktid pärast kaalude arvestust:</span>
+                          <span className="font-mono">{calculatorResult.winner.change >= 0 ? "+" : ""}{calculatorResult.winner.change}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-white rounded-md border">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">
-                          {calculatorResult.loser.name}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {calculatorResult.loser.rating} RP
-                        </span>
+                    <div className="p-3 bg-white rounded-md border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900">
+                            {calculatorResult.loser.name} (Kaotaja)
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {calculatorResult.loser.rating} RP
+                          </span>
+                        </div>
+                        <div
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            calculatorResult.loser.change >= 0
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {calculatorResult.loser.change >= 0 ? "+" : ""}
+                          {calculatorResult.loser.change}{" "}
+                          {t("rating.calculator.points")}
+                        </div>
                       </div>
-                      <div
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          calculatorResult.loser.change >= 0
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {calculatorResult.loser.change >= 0 ? "+" : ""}
-                        {calculatorResult.loser.change}{" "}
-                        {t("rating.calculator.points")}
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div className="flex justify-between">
+                          <span>Hk (kaotuspunktid):</span>
+                          <span className="font-mono">{calculatorResult.loser.hk}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Punktid enne kaalude arvestust:</span>
+                          <span className="font-mono">{calculatorResult.loser.rawChange}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Punktid pärast kaalude arvestust:</span>
+                          <span className="font-mono">{calculatorResult.loser.change >= 0 ? "+" : ""}{calculatorResult.loser.change}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -855,9 +893,9 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 <div className="space-y-3 text-sm text-gray-700">
                   <p><strong>Reitingu eesmärgiks on:</strong></p>
                   <ul className="ml-4 space-y-1">
-                    <li>• Võistlejate paremusjärjestuse moodustamiseks ja võistlustabelisse paigutamiseks.</li>
-                    <li>• Anda treeneritele ja mängijatele tagasisidet võistlustulemuste analüüsiks.</li>
-                    <li>• Anda abivahend ELTL'ile klubide ja mängijate tulemuste hindamiseks.</li>
+                    <li>1. Võistlejate paremusjärjestuse moodustamiseks ja võistlustabelisse paigutamiseks.</li>
+                    <li>2. Anda treeneritele ja mängijatele tagasisidet võistlustulemuste analüüsiks.</li>
+                    <li>3. Anda abivahend ELTL'ile klubide ja mängijate tulemuste hindamiseks.</li>
                   </ul>
                   <p className="mt-3">
                     Reitingu edetabelisse kantakse kõik ELTL mängija litsentsi omavad mängijad, kes osalevad ELTL kalendrivõistlustel. ELTL reitingu edetabelisse kantakse ka kõik ELTL välismängija litsentsi omavad mängijad, kuid neid ei arvestata Eesti paremusjärjestuse edetabelis.
@@ -870,10 +908,12 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                   REITINGU ARVESTAMISE METOODIKA
                 </h3>
                 <div className="space-y-4 text-sm text-gray-700">
+                  <p className="font-medium">Peamised reeglid ja valemid</p>
+                  
                   <div>
-                    <p className="font-medium mb-2">REITINGU (RaA) JA KAALU (KaA) MUUTUSTE ARVUTAMINE</p>
-                    <p className="text-red-600 font-medium mb-3">
-                      NB! Kõik reitingu muudatused arvutatakse iga nädala teisipäeva hommikul vahemikus kell 6:00 – 12:00!
+                    <p className="font-medium mb-2">REITINGU (Ra) JA KAALU (Ka) MUUTUSTE ARVUTAMINE</p>
+                    <p className="text-blue-300 font-medium mb-3">
+                      Kõik reitingu muudatused arvutatakse iga nädala teisipäeva hommikul vahemikus kell 6:00 – 12:00.
                     </p>
                     
                     <p className="mb-3">Leitakse võistluse võidu ja kaotuste hindade summade absoluutväärtused:</p>
@@ -885,15 +925,15 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                       <p className="font-medium mb-2">Reitingu muutuse (^R) arvutamine:</p>
                       <div className="font-mono text-center text-blue-800 font-semibold">
-                        ^R = ((Hvs - Hks) * 10) + Hvs * Coef / Ka + Hvs + Hks
+                        ^R= ((Hvs- Hks)*10)+ Hvs*Coef / Ka+ Hvs+ Hks
                       </div>
-                      <p className="text-xs mt-2">• Kui võistleja algkaal (Ka) &gt; 30, siis võetakse kaalude väärtuseks valemis 30.</p>
+                      <p className="text-xs mt-2">• Kui võistleja algkaal (Ka) &gt;30, siis võetakse kaalude väärtuseks valemis 30.</p>
                     </div>
 
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
-                      <p className="font-medium mb-2">Reiting võistluse lõpuks (Rl):</p>
+                      <p className="font-medium mb-2">Reiting võistluse lõpuks (Rl) leidmiseks liidetakse reitingu muutus (^R) algreitingule (Ra)</p>
                       <div className="font-mono text-center text-green-800 font-semibold">
-                        Rl = Ra + ^R
+                        Reiting võistluse lõpuks (Rl) = Ra +^R
                       </div>
                       <p className="text-xs mt-2">Positiivsed ^R väärtused suurendavad ja negatiivsed ^R väärtused vähendavad lõppreitingut.</p>
                     </div>
@@ -901,14 +941,14 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
                       <p className="font-medium mb-2">Kaalu muutuse (^K) arvutamine:</p>
                       <div className="font-mono text-center text-yellow-800 font-semibold">
-                        ^K = Hvs + Hks
+                        Kaalu muutus( ^K) = Hvs+ Hks
                       </div>
                     </div>
 
                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                      <p className="font-medium mb-2">Kaalu (Kl) arvutamiseks võistluse lõpuks:</p>
+                      <p className="font-medium mb-2">Kaalu (Kl) arvutamiseks võistluse lõpuks, liidetakse algkaalule (Ka) kaalude muutus (^K):</p>
                       <div className="font-mono text-center text-purple-800 font-semibold">
-                        Kl = Ka + ^K
+                        Kl=Ka+^K
                       </div>
                     </div>
                   </div>
@@ -923,21 +963,21 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                   <div>
                     <p className="font-medium mb-2">Kui Ka &gt; 10:</p>
                     <p className="mb-2">
-                      Kaalusid korrigeeritakse iga nädala esmaspäeva teisipäeva seisuga enne uute tulemuste arvutamist järgmise valemi alusel:
+                      Kaalusid korrigeeritakse iga nädala teisipäeva seisuga enne uute tulemuste arvutamist järgmise valemi alusel, kus Ka on kaal enne korrigeerimist ja Ku kaal peale korrigeerimist.
                     </p>
                     <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                       <div className="font-mono text-center text-red-800 font-semibold">
-                        Ku = Ka - ((Ka * Ka) / 225)
+                        Ku = Ka - ( (Ka * Ka) / 225 )
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <p className="font-medium mb-2">Kui Ka &lt; 11:</p>
-                    <p className="mb-2">Kaalusid korrigeeritakse kord nädalas, esmaspäeviti-teisipäeviti:</p>
+                    <p className="font-medium mb-2">Kui Ka&lt;11:</p>
+                    <p className="mb-2">Kaalusid korrigeeritakse kord nädalas, teisipäeviti</p>
                     <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
                       <div className="font-mono text-center text-indigo-800 font-semibold">
-                        Ku = Ka - 0.25
+                        Ku = Ka – 0.25
                       </div>
                     </div>
                   </div>
@@ -953,19 +993,19 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                   
                   <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-3">
                     <div className="font-mono text-center text-teal-800 font-semibold">
-                      Paigutuspunktide muutus (^P) = (Rl - (3 * Ku)) / 6
+                      Paigutuspunktide muutus (^P) = (Rl – (3 * Ku) ) /6
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <div className="font-mono text-center text-green-800 font-semibold text-sm">
-                        Kui ^P &gt; 0 siis P = Rl - ^P
+                        Kui ^P&gt;0 siis P = Rl - ^P
                       </div>
                     </div>
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                       <div className="font-mono text-center text-gray-800 font-semibold text-sm">
-                        Kui ^P &le; 0 siis P = Rl
+                        Kui ^P&lt;=0 siis P = Rl
                       </div>
                     </div>
                   </div>
@@ -1000,7 +1040,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                       <tbody>
                         <tr>
                           <td className="border border-gray-300 px-3 py-2">
-                            0 - 10
+                            0 – 10
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
                             +2
@@ -1011,7 +1051,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                         </tr>
                         <tr className="bg-gray-50">
                           <td className="border border-gray-300 px-3 py-2">
-                            11 - 40
+                            11 – 40
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
                             +1
@@ -1035,7 +1075,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     </table>
                   </div>
                   <p className="text-xs text-gray-600 font-medium">
-                    NB! Kui vahe on suurem, siis ei saa kumbki mängija plusse ega miinuseid - ebavõrdsed vastased.
+                    NB! Kui vahe on suurem, siis ei saa suuremate punktidega mängija plusse - ebavõrdsed vastased.
                   </p>
                 </div>
 
@@ -1047,17 +1087,23 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     <div className="font-mono text-center text-blue-800 font-semibold mb-2">
                       (Reitingu punktide erinevuse absoluutväärtus + 5) ÷ 3
                     </div>
-                    <p className="text-sm text-blue-700 text-center">
+                    <p className="text-sm text-blue-700 text-center mb-2">
                       Võitja teenib ülaltoodud valemiga arvutatud arvu võidupunkte ja kaotaja kaotab sama arvu punkte.
                     </p>
+                    <div className="space-y-1 text-xs">
+                      <p>Võitja reitingu muutus = (|kaotaja reiting - võitja reiting| + 5) ÷ 3</p>
+                      <p>Kaotaja reitingu muutus = - (sama summa kui võitjal)</p>
+                    </div>
                   </div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    Juhul kui mängijate punktide vahe on suurem kui 40 punkti, saab madalamate reitingupunktidega mängija punkte vastavalt ülaltoodud arvestusele ja on piiratud absoluutväärtuses maksimaalselt 15 punktiga.
+                  </p>
                 </div>
 
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                   <p className="font-medium mb-2 text-orange-800">Reitingumuutust ei toimu kui:</p>
                   <ul className="space-y-1 text-sm text-orange-700">
-                    <li>• Võidab tugevam mängija ja reitingu vahe on üle 40 punkti - ebavõrdne kohtumine.</li>
-                    <li>• Võidab nõrgem mängija ja reitingupunktide vahe on üle 40 punkti - juhuslik võit.</li>
+                    <li>• Võidab suuremate reitingu puktidega mängija ja reitingu vahe on üle 40 punkti - ebavõrdne kohtumine.</li>
                   </ul>
                 </div>
               </div>
@@ -1208,7 +1254,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                           </tr>
                           <tr className="bg-blue-50">
                             <td className="border border-gray-300 px-2 py-1">X+2 Mängija (VÄLIS)</td>
-                            <td className="border border-gray-300 px-2 py-1">(70+60)/2 = 65</td>
+                            <td className="border border-gray-300 px-2 py-1">(70+60)/2 =65</td>
                           </tr>
                           <tr>
                             <td className="border border-gray-300 px-2 py-1">X+3 Mängija EST</td>
@@ -1243,9 +1289,82 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
                   WO (walkover) – loobumisvõidu arvestus
                 </h3>
-                <p className="text-sm text-gray-700">
-                  [Sisu täiendatakse vastavalt vajadusele]
-                </p>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>
+                    Loobumisvõidu puhul tegelikku statistilist sündmust (ehk mängu) ei toimunud ning lisaks võib olla sündmuse mitte toimumine seotud mänguga kaudselt toimuva sündmusega, mille tõttu selles osas ei õige täiemahulist punktide kaotust/võitu rakendata.
+                  </p>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-gray-300 text-sm">
+                      <thead>
+                        <tr className="bg-[#4C97F1]/10">
+                          <th className="border border-gray-300 px-3 py-2 text-center">
+                            Mängija 1
+                          </th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">
+                            Hind (Punkti)
+                          </th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">
+                            Mängija 2
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            Loobub
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">
+                            -1
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            0
+                          </td>
+                        </tr>
+                        <tr className="bg-gray-50">
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            Loobub
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">
+                            -1
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            -1 Loobub
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            0
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">
+                            -1
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            Loobub
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <p className="mt-3">
+                    Loobumisvõidu korral arvestatakse vaid esimest loobutud mängu.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Muud reeglid
+                </h3>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <ul className="space-y-1">
+                    <li>● WO e. loobumisvõidu korral saab loobuja -1 punkti. (kehtib vaid esimesel WO loobumisel)</li>
+                    <li>● Absoluutväärtuses ei saa punktid minna negatiivseks e. minimaalne kehtiva litsentsiga mängija punktide arv on 0.</li>
+                    <li>● Maksimaalne algreiting on piiratud väärtusega 15.</li>
+                    <li>● Välismängijate puhul algreitingu piirangut ei rakendata.</li>
+                  </ul>
+                </div>
               </div>
 
               <div className="flex justify-end pt-4 border-t">

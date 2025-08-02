@@ -71,9 +71,13 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
     if ((match.match.p1_id === "" || match.match.p1_id === "empty") && (match.match.p2_id === "" || match.match.p2_id === "empty")) {
       return
     }
-    if (match.match.p1_id === "empty" || match.match.p2_id === "empty") {
+    
+    if (match.match.p1_id === "empty" || match.match.p2_id === "empty" || 
+        match.match.p1_id === "" || match.match.p2_id === "" ||
+        match.p1?.name?.includes("(Bye)") || match.p2?.name?.includes("(Bye)")) {
       return
     }
+    
     setSelectedMatch(match);
     setIsOpen(true);
   };
