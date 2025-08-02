@@ -43,7 +43,7 @@ const createFormSchema = (t: TFunction) => z.object({
   end_date: z.date({ message: t("admin.tournaments.create_tournament.errors.end_date") }),
   sport: z.string({ message: t("admin.tournaments.create_tournament.errors.sport") }),
   total_tables: z.number().min(1, { message: t("admin.tournaments.create_tournament.errors.total_tables") }).max(200, { message: t("admin.tournaments.create_tournament.errors.total_tables_max") }),
-  category: z.string({ message: t("admin.tournaments.create_tournament.errors.category") }),
+  category: z.string().optional(),
   location: z.string().min(1, { message: t("admin.tournaments.create_tournament.errors.location") }),
   information: z.any(),
   private: z.boolean(),
@@ -290,14 +290,6 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
 
                 <FormField
                   control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <CategoryInput field={field} categories={tournament_categories?.data || []} />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="total_tables"
                   render={({ field }) => (
                     <FormItem className="flex flex-col" id="tutorial-tournament-tables">
@@ -361,6 +353,14 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <CategoryInput field={field} categories={tournament_categories?.data || []} />
+                )}
+              />
+
               {/* Pane siiia */}
               <div className="w-full flex flex-col gap-4" id="tutorial-tournament-information">
                 <p className="text-sm">{t("admin.tournaments.create_tournament.additional_information")} </p>
@@ -392,7 +392,7 @@ function CategoryInput({
   field,
   categories,
 }: {
-  field: { value: string; onChange: (v: string) => void }
+  field: { value: string | undefined; onChange: (v: string) => void }
   categories: { category: string }[]
 }) {
   const [inputValue, setInputValue] = useState(field.value || "")

@@ -13,6 +13,7 @@ import NewDouble from './-components/new-double'
 import { GroupType } from '@/types/matches'
 import { useState } from 'react'
 import { CompactClassFilters } from '@/routes/admin/tournaments/-components/compact-class-filters'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -37,6 +38,7 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const { t } = useTranslation()
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid, groupid } = Route.useParams()
   const navigate = useNavigate()
@@ -58,11 +60,14 @@ function RouteComponent() {
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
 
   const handleGroupChange = (newGroupId: number) => {
+    // Navigate to parent route with selectedGroup parameter
     navigate({
-      to: "/admin/tournaments/$tournamentid/grupid/$groupid/osalejad",
+      to: "/admin/tournaments/$tournamentid/osalejad",
       params: {
         tournamentid: tournamentid,
-        groupid: newGroupId.toString(),
+      },
+      search: {
+        selectedGroup: newGroupId.toString(),
       },
     });
   }
@@ -113,7 +118,7 @@ function RouteComponent() {
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                          First (Round Robin)
+                          {t("admin.tournaments.groups.participants.dynamic.first_tab")}
                         </button>
                         <button
                           onClick={() => setActiveTab(2)}
@@ -122,7 +127,7 @@ function RouteComponent() {
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                          {table_data.data.second_class}
+                          {t("admin.tournaments.groups.participants.dynamic.second_tab")}
                         </button>
                       </nav>
                     </div>

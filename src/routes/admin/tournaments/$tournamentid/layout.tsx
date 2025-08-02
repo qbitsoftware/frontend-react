@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
 import ErrorPage from "@/components/error";
 import { ErrorResponse } from "@/types/errors";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdmin } from "@/queries/tournaments";
@@ -17,6 +17,11 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      selectedGroup: search.selectedGroup as string | undefined,
+    }
+  },
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
   loader: async ({ context: { queryClient }, params }) => {
@@ -43,8 +48,15 @@ function RouteComponent() {
   const location = useLocation();
   const { tournament_data } = Route.useLoaderData();
   const { tournamentid } = Route.useParams();
+  const { selectedGroup } = Route.useSearch();
   const { t } = useTranslation();
   const tournament_tables = UseGetTournamentTablesQuery(Number(tournamentid));
+
+  // Extract current group ID from URL path if we're on a group-specific route
+  const currentGroupId = React.useMemo(() => {
+    const pathMatch = location.pathname.match(/\/grupid\/(\d+)/);
+    return pathMatch ? pathMatch[1] : selectedGroup;
+  }, [location.pathname, selectedGroup]);
 
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -107,8 +119,8 @@ function RouteComponent() {
   return (
     <div className="mx-auto min-h-[95vh] h-full">
       <div className="w-full relative">
-        <div className="py-4 sm:py-auto md:px-8 flex flex-col lg:flex-row gap-4 justify-between items-center w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20">
-          <div className="flex items-center gap-1">
+        <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-between items-start lg:items-center w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Link to="/admin/tournaments">
               <Button
                 variant="ghost"
@@ -118,74 +130,76 @@ function RouteComponent() {
                 <ArrowLeft className="h-4 w-4 text-[#03326B]" />
               </Button>
             </Link>
-            <h5 className="font-semibold text-[#03326B]">
+            <h5 className="font-semibold text-[#03326B] text-sm sm:text-base truncate">
               {tournament_data.data?.name}
             </h5>
           </div>
-          <div className="relative w-full lg:w-auto">
+          <div className="relative w-full lg:w-auto overflow-hidden">
             <Tabs value={currentTab} className="w-full lg:w-auto">
-              <TabsList className="p-2 md:p-0 flex flex-row justify-start items-center w-full gap-1 px-1">
-                <Link to={`/admin/tournaments/${tournamentid}`}>
-                  <TabsTrigger
-                    value="info"
-                    className="w-[7rem] py-[6px] flex-shrink-0"
-                  >
-                    {t("admin.layout.info")}
-                  </TabsTrigger>
-                </Link>
-                <div
-                  className="relative flex-shrink-0"
-                  onMouseEnter={handleGroupsMouseEnter}
-                  onMouseLeave={handleGroupsMouseLeave}
-                >
-                  <Link to={`/admin/tournaments/${tournamentid}/grupid`}>
+              <div className="w-full overflow-x-auto">
+                <TabsList className="p-1 md:p-0 flex flex-row justify-start items-center gap-1 px-1 min-w-max">
+                  <Link to={`/admin/tournaments/${tournamentid}`}>
                     <TabsTrigger
-                      value="groups"
-                      className="w-[7rem] py-[6px] flex-shrink-0"
+                      value="info"
+                      className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
                     >
-                      {t("admin.layout.groups")}
+                      {t("admin.layout.info")}
                     </TabsTrigger>
                   </Link>
-                </div>
+                  <div
+                    className="relative flex-shrink-0"
+                    onMouseEnter={handleGroupsMouseEnter}
+                    onMouseLeave={handleGroupsMouseLeave}
+                  >
+                    <Link to={`/admin/tournaments/${tournamentid}/grupid`}>
+                      <TabsTrigger
+                        value="groups"
+                        className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                      >
+                        {t("admin.layout.groups")}
+                      </TabsTrigger>
+                    </Link>
+                  </div>
 
-                <Link to={`/admin/tournaments/${tournamentid}/osalejad`}>
-                  <TabsTrigger
-                    value="participants"
-                    className="w-[7rem] py-[6px] flex-shrink-0"
-                  >
-                    {t(
-                      "admin.tournaments.groups.layout.participants",
-                      "Osalejad"
-                    )}
-                  </TabsTrigger>
-                </Link>
+                  <Link to={`/admin/tournaments/${tournamentid}/osalejad`} search={{ selectedGroup: currentGroupId }}>
+                    <TabsTrigger
+                      value="participants"
+                      className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                    >
+                      {t(
+                        "admin.tournaments.groups.layout.participants",
+                        "Osalejad"
+                      )}
+                    </TabsTrigger>
+                  </Link>
 
-                <Link to={`/admin/tournaments/${tournamentid}/mangud`}>
-                  <TabsTrigger
-                    value="matches"
-                    className="w-[6rem] py-[6px] flex-shrink-0"
-                  >
-                    {t("admin.tournaments.groups.layout.games", "Mängud")}
-                  </TabsTrigger>
-                </Link>
+                  <Link to={`/admin/tournaments/${tournamentid}/mangud`} search={{ selectedGroup: currentGroupId }}>
+                    <TabsTrigger
+                      value="matches"
+                      className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                    >
+                      {t("admin.tournaments.groups.layout.games", "Mängud")}
+                    </TabsTrigger>
+                  </Link>
 
-                <Link to={`/admin/tournaments/${tournamentid}/tabelid`}>
-                  <TabsTrigger
-                    value="brackets"
-                    className="w-[6rem] py-[6px] flex-shrink-0"
-                  >
-                    {t("admin.tournaments.groups.layout.tables", "Tabelid")}
-                  </TabsTrigger>
-                </Link>
-                <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
-                  <TabsTrigger
-                    value="schedule"
-                    className="w-[6rem] py-[6px] flex-shrink-0"
-                  >
-                    {t("admin.layout.schedule")}
-                  </TabsTrigger>
-                </Link>
-              </TabsList>
+                  <Link to={`/admin/tournaments/${tournamentid}/tabelid`} search={{ selectedGroup: currentGroupId }}>
+                    <TabsTrigger
+                      value="brackets"
+                      className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                    >
+                      {t("admin.tournaments.groups.layout.tables", "Tabelid")}
+                    </TabsTrigger>
+                  </Link>
+                  <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
+                    <TabsTrigger
+                      value="schedule"
+                      className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                    >
+                      {t("admin.layout.schedule")}
+                    </TabsTrigger>
+                  </Link>
+                </TabsList>
+              </div>
             </Tabs>
 
             {showGroupsDropdown &&

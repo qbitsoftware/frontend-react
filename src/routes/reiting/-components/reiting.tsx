@@ -26,10 +26,26 @@ import { Input } from "@/components/ui/input";
 import { Search, Calculator, Check, ChevronsUpDown, Info } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { User } from "@/types/users";
 import { UseGetClubsQuery } from "@/queries/clubs";
 import placeholderImg from "@/assets/blue-profile.png";
@@ -52,7 +68,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
   const [calculatorForm, setCalculatorForm] = useState({
     winner: "",
     loser: "",
-    date: ""
+    date: "",
   });
   const [openWinner, setOpenWinner] = useState(false);
   const [openLoser, setOpenLoser] = useState(false);
@@ -74,13 +90,16 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
     if (user.club?.image_url) {
       return user.club.image_url;
     }
-    
+
     const clubName = getClubName(user);
     const club = clubs.find((club) => club.name === clubName);
     return club?.image_url || "";
   };
 
-  const getLicenseInfo = (license: string | null, expirationDate: string | null) => {
+  const getLicenseInfo = (
+    license: string | null,
+    expirationDate: string | null
+  ) => {
     if (license && license !== null && license !== "") {
       if (expirationDate) {
         const expDate = new Date(expirationDate);
@@ -88,27 +107,27 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
         if (expDate < now) {
           return {
             text: t("rating.license_status.missing"),
-            isActive: false
+            isActive: false,
           };
         }
-        const formattedDate = expDate.toLocaleDateString('et-EE', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
+        const formattedDate = expDate.toLocaleDateString("et-EE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
         });
         return {
           text: formattedDate,
-          isActive: true
+          isActive: true,
         };
       }
       return {
         text: t("rating.license_status.active"),
-        isActive: true
+        isActive: true,
       };
     }
     return {
       text: t("rating.license_status.missing"),
-      isActive: false
+      isActive: false,
     };
   };
 
@@ -184,7 +203,23 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
         getClubName(user).toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSex && matchesAgeClass && matchesSearchQuery && hasELTLId;
     })
-    .sort((a, b) => a.rate_order - b.rate_order);
+    .sort((a, b) => {
+      // Players with rate_order > 0 come first, sorted by rate_order
+      if (a.rate_order > 0 && b.rate_order === 0) return -1;
+      if (a.rate_order === 0 && b.rate_order > 0) return 1;
+      
+      // Both have rate_order > 0, sort by rate_order
+      if (a.rate_order > 0 && b.rate_order > 0) {
+        return a.rate_order - b.rate_order;
+      }
+      
+      // Both have rate_order = 0, sort by rating_points descending
+      if (a.rate_order === 0 && b.rate_order === 0) {
+        return b.rate_points - a.rate_points;
+      }
+      
+      return 0;
+    });
 
   const selectedPlayer = users.find((user) => user.id === SelectedPlayerId);
 
@@ -205,52 +240,90 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
     return `${dd}.${mm}.${yyyy}, ${hours}:00`;
   };
 
-  const calculateRatingGain = (winnerRating: number, loserRating: number) => {
+  const calculateRatingGain = (winnerRating: number, loserRating: number, winnerWeight: number, loserWeight: number) => {
     const Rv = Math.abs(winnerRating - loserRating);
-    
+    let Hv = 0; // win value for winner
+    let Hk = 0; // loss value for loser (positive, will be made negative)
+
     if (winnerRating >= loserRating) {
-      // Higher or equal rated player wins
       if (Rv <= 10) {
-        return { winnerGain: 2, loserLoss: -2 };
+        Hv = 2;
+        Hk = 2;
       } else if (Rv >= 11 && Rv <= 40) {
-        return { winnerGain: 1, loserLoss: -1 };
+        Hv = 1;
+        Hk = 1;
       } else {
-        return { winnerGain: 0, loserLoss: 0 };
+        Hv = 0;
+        Hk = 0;
       }
     } else {
-      // Lower rated player beats higher rated player
-      const Hv = Math.round((Rv + 5) / 3);
-      return { winnerGain: Hv, loserLoss: -Hv };
+      if (Rv > 40) {
+        Hv = 0;
+        Hk = 0;
+      } else {
+        const points = Math.round((Rv + 5) / 3);
+        Hv = points;
+        Hk = points;
+      }
     }
+
+    const coef = 1;
+    let winnerKa = Math.min(winnerWeight, 30);
+    const loserKa = Math.min(loserWeight, 30);
+    winnerKa = 20 
+    console.log("winnerweight", winnerKa)
+    
+    const winnerRatingChange = (((Hv - 0) * 10) + (Hv * coef)) / (winnerKa + (Hv + 0));
+    console.log("winnerrating change", winnerRatingChange)
+    
+    const loserRatingChange = (((0 - Hk) * 10) + (0 * coef)) / (loserKa + (0 + Hk));
+
+    return { 
+      winnerGain: Math.round(winnerRatingChange), 
+      loserLoss: Math.round(loserRatingChange)
+    };
   };
 
   const handleCalculatorSubmit = () => {
-    if (!calculatorForm.winner || !calculatorForm.loser || !calculatorForm.date) {
+    if (
+      !calculatorForm.winner ||
+      !calculatorForm.loser ||
+      !calculatorForm.date
+    ) {
       alert(t("rating.calculator.fill_all_fields"));
       return;
     }
 
-    const winnerPlayer = users.find(u => `${u.first_name} ${u.last_name}` === calculatorForm.winner);
-    const loserPlayer = users.find(u => `${u.first_name} ${u.last_name}` === calculatorForm.loser);
-    
+    const winnerPlayer = users.find(
+      (u) => `${u.first_name} ${u.last_name}` === calculatorForm.winner
+    );
+    const loserPlayer = users.find(
+      (u) => `${u.first_name} ${u.last_name}` === calculatorForm.loser
+    );
+
     if (!winnerPlayer || !loserPlayer) {
       alert(t("rating.calculator.players_not_found"));
       return;
     }
 
-    const ratingChange = calculateRatingGain(winnerPlayer.rate_points, loserPlayer.rate_points);
-    
+    const ratingChange = calculateRatingGain(
+      winnerPlayer.rate_points,
+      loserPlayer.rate_points,
+      winnerPlayer.rate_weigth,
+      loserPlayer.rate_weigth
+    );
+
     setCalculatorResult({
       winner: {
         name: `${winnerPlayer.first_name} ${winnerPlayer.last_name}`,
         change: ratingChange.winnerGain,
-        rating: winnerPlayer.rate_points
+        rating: winnerPlayer.rate_points,
       },
       loser: {
         name: `${loserPlayer.first_name} ${loserPlayer.last_name}`,
         change: ratingChange.loserLoss,
-        rating: loserPlayer.rate_points
-      }
+        rating: loserPlayer.rate_points,
+      },
     });
   };
 
@@ -258,7 +331,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
     setCalculatorForm({
       winner: "",
       loser: "",
-      date: ""
+      date: "",
     });
     setOpenWinner(false);
     setOpenLoser(false);
@@ -281,7 +354,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
           <p className="pb-4 text-xs sm:text-sm text-gray-600">
             {t("rating.abbreviations")}
           </p>
-          
+
           <div className="mb-6 sm:mb-12 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -292,14 +365,21 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                   {t("rating.license_info.title", "License Information")}
                 </p>
                 <p className="text-sm text-blue-700">
-                  {t("rating.license_info.message", "Licenses will be required starting from January 1, 2026, and can be bought")} {" "}
-                  <Link 
-                    to="/litsents" 
+                  {t(
+                    "rating.license_info.message",
+                    "Licenses will be required starting from January 1, 2026, and can be bought"
+                  )}{" "}
+                  <Link
+                    to="/litsents"
                     className="text-blue-600 hover:text-blue-800 underline font-medium"
                   >
                     {t("rating.license_info.link_text", "here")}
                   </Link>
-                  . {t("rating.license_info.additional_info", "Before then, they are not required for participating in tournaments.")}
+                  .{" "}
+                  {t(
+                    "rating.license_info.additional_info",
+                    "Before then, they are not required for participating in tournaments."
+                  )}
                 </p>
               </div>
             </div>
@@ -314,8 +394,12 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 className="bg-[#4C97F1] hover:bg-[#4C97F1]/90 text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
               >
                 <Calculator className="h-3 w-3 shrink-0" />
-                <span className="hidden sm:inline">{t("rating.calculator.button")}</span>
-                <span className="sm:hidden">{t("rating.calculator.button_short", "Calculator")}</span>
+                <span className="hidden sm:inline">
+                  {t("rating.calculator.button")}
+                </span>
+                <span className="sm:hidden">
+                  {t("rating.calculator.button_short", "Calculator")}
+                </span>
               </Button>
               <Button
                 onClick={() => setIsRatingInfoOpen(true)}
@@ -323,8 +407,12 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 className="border-[#4C97F1] text-[#4C97F1] hover:bg-[#4C97F1] hover:text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
               >
                 <Info className="h-3 w-3 shrink-0" />
-                <span className="hidden sm:inline">{t("rating.calculator.info_button")}</span>
-                <span className="sm:hidden">{t("rating.calculator.info_button_short", "Info")}</span>
+                <span className="hidden sm:inline">
+                  {t("rating.calculator.info_button")}
+                </span>
+                <span className="sm:hidden">
+                  {t("rating.calculator.info_button_short", "Info")}
+                </span>
               </Button>
             </div>
             <div className="relative w-full lg:col-span-3">
@@ -418,6 +506,9 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     RP
                   </TableHead>
                   <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                   KA 
+                  </TableHead>
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
                     ID
                   </TableHead>
                   <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm hidden sm:table-cell">
@@ -476,6 +567,9 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                       {user.rate_points}
                     </TableCell>
                     <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
+                      {user.rate_weigth}
+                    </TableCell>
+                    <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
                       {user.eltl_id}
                     </TableCell>
                     <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden sm:table-cell">
@@ -497,7 +591,10 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                     </TableCell>
                     <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden lg:table-cell">
                       {(() => {
-                        const licenseInfo = getLicenseInfo(user.license, user.expiration_date);
+                        const licenseInfo = getLicenseInfo(
+                          user.license,
+                          user.expiration_date
+                        );
                         return (
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -526,7 +623,10 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
           />
         </div>
 
-        <Dialog open={isRatingCalculatorOpen} onOpenChange={setIsRatingCalculatorOpen}>
+        <Dialog
+          open={isRatingCalculatorOpen}
+          onOpenChange={setIsRatingCalculatorOpen}
+        >
           <DialogContent className="sm:max-w-md animate-in fade-in-0 zoom-in-95 duration-200">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-[#4C97F1]">
@@ -545,31 +645,43 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                       aria-expanded={openWinner}
                       className="w-full justify-between"
                     >
-                      {calculatorForm.winner || t("rating.calculator.select_player")}
+                      {calculatorForm.winner ||
+                        t("rating.calculator.select_player")}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0">
                     <Command>
-                      <CommandInput placeholder={t("rating.calculator.search_player")} />
+                      <CommandInput
+                        placeholder={t("rating.calculator.search_player")}
+                      />
                       <CommandList>
-                        <CommandEmpty>{t("rating.calculator.no_player_found")}</CommandEmpty>
+                        <CommandEmpty>
+                          {t("rating.calculator.no_player_found")}
+                        </CommandEmpty>
                         <CommandGroup>
                           {filteredUsers.map((user) => (
                             <CommandItem
                               key={user.id}
                               value={`${user.first_name} ${user.last_name}`}
                               onSelect={(currentValue) => {
-                                setCalculatorForm(prev => ({...prev, winner: currentValue}));
+                                setCalculatorForm((prev) => ({
+                                  ...prev,
+                                  winner: currentValue,
+                                }));
                                 setOpenWinner(false);
                               }}
                             >
                               <Check
                                 className={`mr-2 h-4 w-4 ${
-                                  calculatorForm.winner === `${user.first_name} ${user.last_name}` ? "opacity-100" : "opacity-0"
+                                  calculatorForm.winner ===
+                                  `${user.first_name} ${user.last_name}`
+                                    ? "opacity-100"
+                                    : "opacity-0"
                                 }`}
                               />
-                              {user.first_name} {user.last_name} ({user.rate_points} RP)
+                              {user.first_name} {user.last_name} (
+                              {user.rate_points} RP)
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -589,31 +701,43 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                       aria-expanded={openLoser}
                       className="w-full justify-between"
                     >
-                      {calculatorForm.loser || t("rating.calculator.select_player")}
+                      {calculatorForm.loser ||
+                        t("rating.calculator.select_player")}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0">
                     <Command>
-                      <CommandInput placeholder={t("rating.calculator.search_player")} />
+                      <CommandInput
+                        placeholder={t("rating.calculator.search_player")}
+                      />
                       <CommandList>
-                        <CommandEmpty>{t("rating.calculator.no_player_found")}</CommandEmpty>
+                        <CommandEmpty>
+                          {t("rating.calculator.no_player_found")}
+                        </CommandEmpty>
                         <CommandGroup>
                           {filteredUsers.map((user) => (
                             <CommandItem
                               key={user.id}
                               value={`${user.first_name} ${user.last_name}`}
                               onSelect={(currentValue) => {
-                                setCalculatorForm(prev => ({...prev, loser: currentValue}));
+                                setCalculatorForm((prev) => ({
+                                  ...prev,
+                                  loser: currentValue,
+                                }));
                                 setOpenLoser(false);
                               }}
                             >
                               <Check
                                 className={`mr-2 h-4 w-4 ${
-                                  calculatorForm.loser === `${user.first_name} ${user.last_name}` ? "opacity-100" : "opacity-0"
+                                  calculatorForm.loser ===
+                                  `${user.first_name} ${user.last_name}`
+                                    ? "opacity-100"
+                                    : "opacity-0"
                                 }`}
                               />
-                              {user.first_name} {user.last_name} ({user.rate_points} RP)
+                              {user.first_name} {user.last_name} (
+                              {user.rate_points} RP)
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -629,7 +753,12 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                   id="date"
                   type="date"
                   value={calculatorForm.date}
-                  onChange={(e) => setCalculatorForm(prev => ({...prev, date: e.target.value}))}
+                  onChange={(e) =>
+                    setCalculatorForm((prev) => ({
+                      ...prev,
+                      date: e.target.value,
+                    }))
+                  }
                   className="w-full"
                 />
               </div>
@@ -638,33 +767,49 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 <div className="mt-6 p-4 bg-[#4C97F1]/5 border border-[#4C97F1]/20 rounded-lg animate-in slide-in-from-top-2 fade-in-0 duration-300">
                   <h3 className="text-lg font-semibold text-[#4C97F1] mb-4 flex items-center gap-2">
                     <Calculator className="h-5 w-5" />
-                    {t("rating.calculator.result_title")}
+                    {t("rating.calculator.result_title")} (Full Formula)
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between p-3 bg-white rounded-md border">
                       <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">{calculatorResult.winner.name}</span>
-                        <span className="text-sm text-gray-600">{calculatorResult.winner.rating} RP</span>
+                        <span className="font-medium text-gray-900">
+                          {calculatorResult.winner.name}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          {calculatorResult.winner.rating} RP
+                        </span>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        calculatorResult.winner.change >= 0 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {calculatorResult.winner.change >= 0 ? '+' : ''}{calculatorResult.winner.change} {t("rating.calculator.points")}
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          calculatorResult.winner.change >= 0
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {calculatorResult.winner.change >= 0 ? "+" : ""}
+                        {calculatorResult.winner.change}{" "}
+                        {t("rating.calculator.points")}
                       </div>
                     </div>
                     <div className="flex items-center justify-between p-3 bg-white rounded-md border">
                       <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">{calculatorResult.loser.name}</span>
-                        <span className="text-sm text-gray-600">{calculatorResult.loser.rating} RP</span>
+                        <span className="font-medium text-gray-900">
+                          {calculatorResult.loser.name}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          {calculatorResult.loser.rating} RP
+                        </span>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        calculatorResult.loser.change >= 0 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {calculatorResult.loser.change >= 0 ? '+' : ''}{calculatorResult.loser.change} {t("rating.calculator.points")}
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          calculatorResult.loser.change >= 0
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {calculatorResult.loser.change >= 0 ? "+" : ""}
+                        {calculatorResult.loser.change}{" "}
+                        {t("rating.calculator.points")}
                       </div>
                     </div>
                   </div>
@@ -672,9 +817,9 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
               )}
 
               <div className="flex justify-between gap-2 pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => {
                     resetCalculatorForm();
                     setIsRatingCalculatorOpen(false);
@@ -682,8 +827,8 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 >
                   {t("rating.calculator.cancel")}
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   onClick={handleCalculatorSubmit}
                   className="bg-[#4C97F1] hover:bg-[#4C97F1]/90"
                 >
@@ -704,277 +849,411 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
             </DialogHeader>
             <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto">
               <div>
-                <p className="text-sm text-gray-600 mb-4">
-                  {t("rating.calculator.info_description")}
-                </p>
-                <p className="text-sm text-gray-600 mb-4">
-                  {t("rating.player_modal.detailed_rules_intro")}
-                </p>
-              </div>
-
-              {/* Basic Rules Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.basic_rules")}</h3>
-                
-                <div className="space-y-3 mb-4">
-                  <p className="text-sm text-gray-700"><strong>{t("rating.calculator.when_higher_wins")}</strong></p>
-                  
-                  <div className="overflow-x-auto">
-                    <table className="w-full border border-gray-300 text-sm">
-                      <thead>
-                        <tr className="bg-[#4C97F1]/10">
-                          <th className="border border-gray-300 px-3 py-2 text-left">{t("rating.calculator.rating_diff")}</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.winner_points")}</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.loser_points")}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="border border-gray-300 px-3 py-2">0 - 10</td>
-                          <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
-                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">-2</td>
-                        </tr>
-                        <tr className="bg-gray-50">
-                          <td className="border border-gray-300 px-3 py-2">11 - 40</td>
-                          <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+1</td>
-                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">-1</td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 px-3 py-2">{t("rating.calculator.over_40", "over 40")}</td>
-                          <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">0</td>
-                          <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">0</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <p className="text-sm text-gray-700 mb-3">
-                    <strong>{t("rating.calculator.when_lower_wins")}</strong>
-                  </p>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-3">
-                    <div className="text-center">
-                      <div className="text-lg font-mono font-semibold text-blue-800 mb-2">
-                        {t("rating.calculator.simple_rating_formula")}
-                      </div>
-                      <p className="text-sm text-blue-700">
-                        {t("rating.calculator.lower_wins_formula")}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.player_modal.rating_change_calc")}</h3>
-                <div className="space-y-2 text-sm text-gray-700">
-                  <p><strong>{t("rating.player_modal.when_lower_rated_wins")}</strong></p>
-                  <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>{t("rating.player_modal.winner_rating_change")}</li>
-                    <li>{t("rating.player_modal.loser_rating_change")}</li>
-                    <li>{t("rating.player_modal.weight_changes")}</li>
-                  </ul>
-                  <p><strong>{t("rating.player_modal.when_higher_rated_wins")}</strong></p>
-                  <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>{t("rating.player_modal.if_diff_over_30")}</li>
-                    <li>{t("rating.player_modal.if_diff_under_30")}</li>
-                  </ul>
-                </div>
-              </div>
-
-
-              <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.tournament_coeffs")}</h3>
-                
-                <div className="overflow-x-auto">
-                  <table className="w-full border border-gray-300 text-sm">
-                    <thead>
-                      <tr className="bg-[#4C97F1]/10">
-                        <th className="border border-gray-300 px-3 py-2 text-left">{t("rating.calculator.tournament")}</th>
-                        <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.win_coeff")}</th>
-                        <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.loss_coeff")}</th>
-                        <th className="border border-gray-300 px-3 py-2 text-center">{t("rating.calculator.extra_points")}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="border border-gray-300 px-3 py-2 font-medium">Est MV</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center">x 1,4</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center">x 1</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
-                      </tr>
-                      <tr className="bg-gray-50">
-                        <td className="border border-gray-300 px-3 py-2 font-medium">ELTL GP</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center">x 1,1</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center">x 1</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-300 px-3 py-2 font-medium">Top 10 (16)</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center">x 1,2</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center">x 1</td>
-                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">+2</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.exceptions")}</h3>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  {(t("rating.calculator.exceptions_list", { returnObjects: true }) as string[]).map((exception: string, index: number) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-[#4C97F1] mr-2 mt-1">•</span>
-                      <span>{exception}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.detailed_calculation")}</h3>
-                <div className="space-y-4 text-sm text-gray-700">
-                  <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_1")}</p>
-                    <ul className="ml-4 space-y-1">
-                      <li>• {t("rating.calculator.calculation_steps.win_sum")}</li>
-                      <li>• {t("rating.calculator.calculation_steps.loss_sum")}</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_2")}</p>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
-                      <div className="font-mono text-center text-blue-800 font-semibold">
-                        {t("rating.calculator.calculation_steps.rating_formula")}
-                      </div>
-                    </div>
-                    <ul className="ml-4 space-y-1">
-                      <li>• {t("rating.calculator.calculation_steps.coef_explanation")}</li>
-                      <li>• {t("rating.calculator.calculation_steps.coef_usage")}</li>
-                      <li>• {t("rating.calculator.calculation_steps.weight_limit")}</li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_3")}</p>
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
-                      <div className="font-mono text-center text-green-800 font-semibold">
-                        {t("rating.calculator.calculation_steps.final_rating")}
-                      </div>
-                    </div>
-                    <p className="ml-4 text-xs text-gray-600">{t("rating.calculator.calculation_steps.rating_note")}</p>
-                  </div>
-
-                  <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_4")}</p>
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                      <div className="font-mono text-center text-yellow-800 font-semibold">
-                        {t("rating.calculator.calculation_steps.weight_change")}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.calculation_steps.step_5")}</p>
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                      <div className="font-mono text-center text-purple-800 font-semibold">
-                        {t("rating.calculator.calculation_steps.final_weight")}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* New Player Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.new_player_section")}</h3>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  ELTL REITINGU ARVESTAMISE KORD
+                </h3>
                 <div className="space-y-3 text-sm text-gray-700">
-                  <p>{t("rating.calculator.new_player_rules.intro")}</p>
-                  <p>{t("rating.calculator.new_player_rules.rating_method")}</p>
-                  <p>{t("rating.calculator.new_player_rules.max_rating")}</p>
-                  <p>{t("rating.calculator.new_player_rules.initial_weight")}</p>
-                  
+                  <p><strong>Reitingu eesmärgiks on:</strong></p>
+                  <ul className="ml-4 space-y-1">
+                    <li>• Võistlejate paremusjärjestuse moodustamiseks ja võistlustabelisse paigutamiseks.</li>
+                    <li>• Anda treeneritele ja mängijatele tagasisidet võistlustulemuste analüüsiks.</li>
+                    <li>• Anda abivahend ELTL'ile klubide ja mängijate tulemuste hindamiseks.</li>
+                  </ul>
+                  <p className="mt-3">
+                    Reitingu edetabelisse kantakse kõik ELTL mängija litsentsi omavad mängijad, kes osalevad ELTL kalendrivõistlustel. ELTL reitingu edetabelisse kantakse ka kõik ELTL välismängija litsentsi omavad mängijad, kuid neid ei arvestata Eesti paremusjärjestuse edetabelis.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  REITINGU ARVESTAMISE METOODIKA
+                </h3>
+                <div className="space-y-4 text-sm text-gray-700">
                   <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.new_player_rules.formula_intro")}</p>
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
-                      <div className="font-mono text-center text-orange-800 font-semibold">
-                        {t("rating.calculator.new_player_rules.new_player_formula")}
+                    <p className="font-medium mb-2">REITINGU (RaA) JA KAALU (KaA) MUUTUSTE ARVUTAMINE</p>
+                    <p className="text-red-600 font-medium mb-3">
+                      NB! Kõik reitingu muudatused arvutatakse iga nädala teisipäeva hommikul vahemikus kell 6:00 – 12:00!
+                    </p>
+                    
+                    <p className="mb-3">Leitakse võistluse võidu ja kaotuste hindade summade absoluutväärtused:</p>
+                    <ul className="ml-4 space-y-1 mb-3">
+                      <li>• Võitude hindade summa: Hvs=ΣHv</li>
+                      <li>• Kaotuste hindade summa: Hks= (ΣHk) * -1</li>
+                    </ul>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                      <p className="font-medium mb-2">Reitingu muutuse (^R) arvutamine:</p>
+                      <div className="font-mono text-center text-blue-800 font-semibold">
+                        ^R = ((Hvs - Hks) * 10) + Hvs * Coef / Ka + Hvs + Hks
+                      </div>
+                      <p className="text-xs mt-2">• Kui võistleja algkaal (Ka) &gt; 30, siis võetakse kaalude väärtuseks valemis 30.</p>
+                    </div>
+
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                      <p className="font-medium mb-2">Reiting võistluse lõpuks (Rl):</p>
+                      <div className="font-mono text-center text-green-800 font-semibold">
+                        Rl = Ra + ^R
+                      </div>
+                      <p className="text-xs mt-2">Positiivsed ^R väärtused suurendavad ja negatiivsed ^R väärtused vähendavad lõppreitingut.</p>
+                    </div>
+
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                      <p className="font-medium mb-2">Kaalu muutuse (^K) arvutamine:</p>
+                      <div className="font-mono text-center text-yellow-800 font-semibold">
+                        ^K = Hvs + Hks
                       </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.new_player_rules.final_calculations")}</p>
-                    <ul className="ml-4 space-y-1">
-                      <li>• {t("rating.calculator.new_player_rules.final_rating")}</li>
-                      <li>• {t("rating.calculator.new_player_rules.final_weight")}</li>
-                    </ul>
-                    <p className="ml-4 mt-2 text-xs text-gray-600 font-medium">{t("rating.calculator.new_player_rules.negative_rating")}</p>
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                      <p className="font-medium mb-2">Kaalu (Kl) arvutamiseks võistluse lõpuks:</p>
+                      <div className="font-mono text-center text-purple-800 font-semibold">
+                        Kl = Ka + ^K
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.weight_correction_section")}</h3>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Kaalu korrigeerimine
+                </h3>
                 <div className="space-y-4 text-sm text-gray-700">
                   <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.weight_correction.high_weight")}</p>
-                    <p className="mb-2">{t("rating.calculator.weight_correction.high_weight_desc")}</p>
+                    <p className="font-medium mb-2">Kui Ka &gt; 10:</p>
+                    <p className="mb-2">
+                      Kaalusid korrigeeritakse iga nädala esmaspäeva teisipäeva seisuga enne uute tulemuste arvutamist järgmise valemi alusel:
+                    </p>
                     <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                       <div className="font-mono text-center text-red-800 font-semibold">
-                        {t("rating.calculator.weight_correction.high_weight_formula")}
+                        Ku = Ka - ((Ka * Ka) / 225)
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <p className="font-medium mb-2">{t("rating.calculator.weight_correction.low_weight")}</p>
-                    <p className="mb-2">{t("rating.calculator.weight_correction.low_weight_desc")}</p>
+                    <p className="font-medium mb-2">Kui Ka &lt; 11:</p>
+                    <p className="mb-2">Kaalusid korrigeeritakse kord nädalas, esmaspäeviti-teisipäeviti:</p>
                     <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
                       <div className="font-mono text-center text-indigo-800 font-semibold">
-                        {t("rating.calculator.weight_correction.low_weight_formula")}
+                        Ku = Ka - 0.25
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Ranking Compilation Section */}
               <div>
-                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">{t("rating.calculator.ranking_section")}</h3>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Reitingu koostamine
+                </h3>
                 <div className="space-y-3 text-sm text-gray-700">
-                  <p>{t("rating.calculator.ranking_compilation.intro")}</p>
+                  <p>Reiting koostatakse paigutuspunktide (P) alusel, kus Rl on reitingupunktid ja Ku on korrigeeritud kaalud.</p>
                   
                   <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-3">
                     <div className="font-mono text-center text-teal-800 font-semibold">
-                      {t("rating.calculator.ranking_compilation.placement_formula")}
+                      Paigutuspunktide muutus (^P) = (Rl - (3 * Ku)) / 6
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <div className="font-mono text-center text-green-800 font-semibold text-sm">
-                        {t("rating.calculator.ranking_compilation.positive_change")}
+                        Kui ^P &gt; 0 siis P = Rl - ^P
                       </div>
                     </div>
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                       <div className="font-mono text-center text-gray-800 font-semibold text-sm">
-                        {t("rating.calculator.ranking_compilation.negative_change")}
+                        Kui ^P &le; 0 siis P = Rl
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Reitingu punktide muutused
+                </h3>
+                
+                <div className="space-y-3 mb-4">
+                  <p className="text-sm text-gray-700">
+                    <strong>Kui kõrgema reitinguga mängija võidab:</strong>
+                  </p>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-gray-300 text-sm">
+                      <thead>
+                        <tr className="bg-[#4C97F1]/10">
+                          <th className="border border-gray-300 px-3 py-2 text-left">
+                            Reitingu punktide vahe
+                          </th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">
+                            Võitja (+X)
+                          </th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">
+                            Kaotaja (-X)
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="border border-gray-300 px-3 py-2">
+                            0 - 10
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
+                            +2
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">
+                            -2
+                          </td>
+                        </tr>
+                        <tr className="bg-gray-50">
+                          <td className="border border-gray-300 px-3 py-2">
+                            11 - 40
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
+                            +1
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-red-600 font-medium">
+                            -1
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 px-3 py-2">
+                            üle 40
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">
+                            0
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">
+                            0
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-xs text-gray-600 font-medium">
+                    NB! Kui vahe on suurem, siis ei saa kumbki mängija plusse ega miinuseid - ebavõrdsed vastased.
+                  </p>
+                </div>
+
+                <div className="mb-4">
+                  <p className="text-sm text-gray-700 mb-3">
+                    <strong>Kui madalama reitinguga mängija võidab:</strong>
+                  </p>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="font-mono text-center text-blue-800 font-semibold mb-2">
+                      (Reitingu punktide erinevuse absoluutväärtus + 5) ÷ 3
+                    </div>
+                    <p className="text-sm text-blue-700 text-center">
+                      Võitja teenib ülaltoodud valemiga arvutatud arvu võidupunkte ja kaotaja kaotab sama arvu punkte.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <p className="font-medium mb-2 text-orange-800">Reitingumuutust ei toimu kui:</p>
+                  <ul className="space-y-1 text-sm text-orange-700">
+                    <li>• Võidab tugevam mängija ja reitingu vahe on üle 40 punkti - ebavõrdne kohtumine.</li>
+                    <li>• Võidab nõrgem mängija ja reitingupunktide vahe on üle 40 punkti - juhuslik võit.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Turniiri/võistluste koefitsiendid
+                </h3>
+
+                <div className="overflow-x-auto mb-3">
+                  <table className="w-full border border-gray-300 text-sm">
+                    <thead>
+                      <tr className="bg-[#4C97F1]/10">
+                        <th className="border border-gray-300 px-3 py-2 text-left">
+                          Võistlus/Turniir
+                        </th>
+                        <th className="border border-gray-300 px-3 py-2 text-center">
+                          Võidu koefitsient
+                        </th>
+                        <th className="border border-gray-300 px-3 py-2 text-center">
+                          Kaotuse koefitsient
+                        </th>
+                        <th className="border border-gray-300 px-3 py-2 text-center">
+                          Lisapunktid - 1. koht
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border border-gray-300 px-3 py-2 font-medium">
+                          Est MV
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">
+                          x 1,4
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">
+                          x 1
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
+                          +2
+                        </td>
+                      </tr>
+                      <tr className="bg-gray-50">
+                        <td className="border border-gray-300 px-3 py-2 font-medium">
+                          ELTL GP (Etapp)
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">
+                          x 1,1
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">
+                          x 1
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
+                          +1
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-300 px-3 py-2 font-medium">
+                          Top 10 (16)
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">
+                          x 1,2
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">
+                          x 1
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
+                          +2
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-gray-600">
+                  *Võistluste koefitsendid kehtivad vaid täiskasvanute võistlustel täiskasvanute absoluutjärjestuses.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Uue mängija reitingu arvestus
+                </h3>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>Kui turniiril osales mängija, kes ei oma algreitingut, määratakse talle algreiting.</p>
+                  <p>Algreiting määratakse kõigile ELTL reitingu/kalendri võistlustel osalenud mängijatele.</p>
+                  <p>Emasel reitingu võistlusel osalejale määratakse algreiting järgnevalt:</p>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-gray-300 text-sm">
+                      <thead>
+                        <tr className="bg-[#4C97F1]/10">
+                          <th className="border border-gray-300 px-3 py-2 text-center">
+                            Võitja (+X)
+                          </th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">
+                            Kaotaja (-X)
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-green-600 font-medium">
+                            +1
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-gray-500">
+                            0
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <p className="mt-3">
+                    Juhul kui mängijale on algreiting juba määratud (k.a. 0 reitingupunkti) toimub edaspidine reitingu arvestus üldise reitingu arvutamise metoodika alusel.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Välismängija reitingu arvestus
+                </h3>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>
+                    ELTL välismängija litsentsi omavad mängijad kantakse ELTL reitingu andmebaasi arvestusse, kuid neid ei arvestata Eesti paremusjärjestuse edetabelis.
+                  </p>
+                  <p>
+                    Viimase 180 päeva jooksul ELTL reitinguvõistlusel osalenud välismängijate osas arvestatakse reitingupunktid vastavalt reitingu arvestuse põhimõtetele võrreldes seda olemasoleva statistilise andmebaasiga.
+                  </p>
+                  <p>
+                    Välismängijale, kes on omandanud ELTL välismängija litsentsi, kuid ei ole 180 päeva jooksul ELTL reitingu võistlusel osalenud määratakse punktid võistluste kohtuniku parima teadmise alusel võistluste(le) paigutustabeli alusel.
+                  </p>
+                  
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <p className="font-medium mb-2">Näide:</p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border border-gray-300 text-xs">
+                        <thead>
+                          <tr className="bg-gray-100">
+                            <th className="border border-gray-300 px-2 py-1">Võistluse paigutus</th>
+                            <th className="border border-gray-300 px-2 py-1">R</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-300 px-2 py-1">X+1 Mängija EST</td>
+                            <td className="border border-gray-300 px-2 py-1">70</td>
+                          </tr>
+                          <tr className="bg-blue-50">
+                            <td className="border border-gray-300 px-2 py-1">X+2 Mängija (VÄLIS)</td>
+                            <td className="border border-gray-300 px-2 py-1">(70+60)/2 = 65</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 px-2 py-1">X+3 Mängija EST</td>
+                            <td className="border border-gray-300 px-2 py-1">60</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  
+                  <p>
+                    Välismängijad kellel on kehtiv ELTL välismängija litsents kuvatakse filtreeritavas reitingu arvestuse tabelis. Välismängijaid kellel kehtivat litsentsi ei ole filtreeritavas reitingu arvestuse tabelis ei kuvata, kuid nende osas on võimalik teha andmebaasi päringut võistlus(t)ele paigutamise eesmärgil.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  Reitingust väljalangemine
+                </h3>
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p>
+                    Mängija langeb reitingust välja kui ta ei ole 180 päeva jooksul reitinguturniiril mänginud (võistlustele lihtsalt kirjapanemine ei ole aluseks reitingus püsimiseks).
+                  </p>
+                  <p>
+                    Mängija väljalangemisel reitingust tema reitingupunktid ei kao.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#4C97F1] mb-3">
+                  WO (walkover) – loobumisvõidu arvestus
+                </h3>
+                <p className="text-sm text-gray-700">
+                  [Sisu täiendatakse vastavalt vajadusele]
+                </p>
+              </div>
+
               <div className="flex justify-end pt-4 border-t">
-                <Button 
+                <Button
                   onClick={() => setIsRatingInfoOpen(false)}
                   className="bg-[#4C97F1] hover:bg-[#4C97F1]/90"
                 >
-                  {t("rating.calculator.cancel")}
+                  Sulge
                 </Button>
               </div>
             </div>

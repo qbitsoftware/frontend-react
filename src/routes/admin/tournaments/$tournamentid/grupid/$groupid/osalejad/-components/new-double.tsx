@@ -60,10 +60,14 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                        {t("admin.tournaments.groups.participants.doubles.individual_participants")}
+                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                            t("admin.tournaments.groups.participants.dynamic.individual_participants") :
+                            t("admin.tournaments.groups.participants.doubles.individual_participants")}
                     </h3>
                     <p className="text-sm text-gray-600">
-                        {t("admin.tournaments.groups.participants.doubles.individual_participants_description")}
+                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                            t("admin.tournaments.groups.participants.dynamic.individual_participants_description") :
+                            t("admin.tournaments.groups.participants.doubles.individual_participants_description")}
                     </p>
                 </div>
                 <div className="overflow-x-auto">
@@ -81,10 +85,14 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                        {t("admin.tournaments.groups.participants.doubles.pairs_participants")}
+                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                            t("admin.tournaments.groups.participants.dynamic.pairs_participants") :
+                            t("admin.tournaments.groups.participants.doubles.pairs_participants")}
                     </h3>
                     <p className="text-sm text-gray-600">
-                        {t("admin.tournaments.groups.participants.doubles.pairs_participants_description")}
+                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                            t("admin.tournaments.groups.participants.dynamic.pairs_participants_description") :
+                            t("admin.tournaments.groups.participants.doubles.pairs_participants_description")}
                     </p>
                 </div>
                 <div className="overflow-x-auto">

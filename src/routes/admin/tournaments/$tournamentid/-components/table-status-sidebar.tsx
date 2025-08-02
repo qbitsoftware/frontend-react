@@ -127,8 +127,14 @@ const TableStatusSidebar = () => {
 
   const handleRowClick = (table: TableStatus) => {
     if (table.tournament_table_id) {
+      // Get the match ID from the table data
+      const matchId = tournamentTables?.data?.find(t => t.id.toString() === table.id)?.match?.match?.id;
+      
+      const searchParams = matchId ? { openMatch: matchId.toString() } : {};
+      
       router.navigate({
         to: `/admin/tournaments/${tournamentid}/grupid/${table.tournament_table_id}/mangud`,
+        search: searchParams,
       });
     }
   };

@@ -49,11 +49,14 @@ function RouteComponent() {
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId);
 
   const handleGroupChange = (newGroupId: number) => {
+    // Navigate to parent route with selectedGroup parameter
     navigate({
-      to: "/admin/tournaments/$tournamentid/grupid/$groupid/tabelid",
+      to: "/admin/tournaments/$tournamentid/tabelid",
       params: {
         tournamentid: params.tournamentid,
-        groupid: newGroupId.toString(),
+      },
+      search: {
+        selectedGroup: newGroupId.toString(),
       },
     });
   };

@@ -34,13 +34,12 @@ export default function ParticipantHeader({ team }: Props) {
                     )}
                 </TableHead>
                 <TableHead className="">
-                    {t(
-                        "admin.tournaments.groups.participants.table.yob"
-                    )}
+                RP
                 </TableHead>
+
                 <TableHead className="">
                     {t(
-                        "admin.tournaments.groups.participants.table.foreign_player"
+                        "admin.tournaments.groups.participants.table.yob"
                     )}
                 </TableHead>
                 <TableHead className="">
@@ -50,12 +49,17 @@ export default function ParticipantHeader({ team }: Props) {
                 </TableHead>
                 <TableHead className="">
                     {t(
-                        "admin.tournaments.groups.participants.table.nationality"
+                        "admin.tournaments.groups.participants.table.sex"
                     )}
                 </TableHead>
                 <TableHead className="">
                     {t(
-                        "admin.tournaments.groups.participants.table.sex"
+                        "admin.tournaments.groups.participants.table.foreign_player"
+                    )}
+                </TableHead>
+                <TableHead className="">
+                    {t(
+                        "admin.tournaments.groups.participants.table.nationality"
                     )}
                 </TableHead>
                 <TableHead className="">

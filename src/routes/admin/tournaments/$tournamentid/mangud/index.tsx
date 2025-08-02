@@ -8,6 +8,11 @@ import Loader from '@/components/loader'
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/mangud/',
 )({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      selectedGroup: search.selectedGroup as string | undefined,
+    }
+  },
   loader: ({ params }) => {
     return { params }
   },
@@ -17,6 +22,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { params } = Route.useLoaderData()
+  const { selectedGroup } = Route.useSearch()
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -24,19 +30,24 @@ function RouteComponent() {
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
 
   useEffect(() => {
-    // Auto-redirect to first group when component loads
     if (tablesQuery.data?.data && tablesQuery.data.data.length > 0) {
-      const firstGroupId = tablesQuery.data.data[0].id
+      const targetGroupId = selectedGroup
+        ? tablesQuery.data.data.find(table => table.id.toString() === selectedGroup)?.id
+        : tablesQuery.data.data[0].id
+      
+      const groupId = targetGroupId || tablesQuery.data.data[0].id
+      
       navigate({
         to: '/admin/tournaments/$tournamentid/grupid/$groupid/mangud',
         params: {
           tournamentid: params.tournamentid,
-          groupid: firstGroupId.toString(),
+          groupid: groupId.toString(),
         },
+        search: { selectedGroup: undefined, openMatch: undefined },
         replace: true,
       })
     }
-  }, [tablesQuery.data?.data, navigate, params.tournamentid])
+  }, [tablesQuery.data?.data, navigate, params.tournamentid, selectedGroup])
 
   if (tablesQuery.isLoading) {
     return <Loader />
@@ -46,6 +57,5 @@ function RouteComponent() {
     return <div>{t('errors.general.description')}</div>
   }
 
-  // This component will quickly redirect, so we just show a loader
   return <Loader />
 }

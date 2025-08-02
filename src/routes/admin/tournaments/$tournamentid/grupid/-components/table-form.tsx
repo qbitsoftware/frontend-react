@@ -267,16 +267,16 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
                       name="second_class"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Second Class</FormLabel>
+                          <FormLabel>{t("admin.tournaments.create_tournament.main_bracket")}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select second class type" />
+                                <SelectValue placeholder={t("admin.tournaments.create_tournament.main_bracket_placeholder")} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
                               {tournament_types && tournament_types.data && tournament_types.data.map((type) => {
-                                if (type.id === 2 || type.id === 1) {
+                                if (type.id === 2 || type.id === 1 || type.name === "double_elimination_tabletennis" || type.name === "double_elimination_tabletennis_top_heavy") {
                                   return (
                                     <SelectItem key={type.id} value={type.name}>
                                       {t(`admin.tournaments.create_tournament.tournament_tables.${type.name}`)}

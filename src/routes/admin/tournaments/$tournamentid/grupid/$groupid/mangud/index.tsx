@@ -14,6 +14,11 @@ import { CompactClassFilters } from '@/routes/admin/tournaments/-components/comp
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/mangud/',
 )({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      openMatch: search.openMatch as string | undefined,
+    }
+  },
   errorComponent: () => <ErrorPage />,
   loader: async ({ context: { queryClient }, params }) => {
     const matches: MatchesResponse | undefined = undefined
@@ -38,6 +43,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { tournamentid, groupid } = Route.useParams()
+  const { openMatch } = Route.useSearch()
   const navigate = useNavigate()
 
   const tournamentId = Number(tournamentid)
@@ -58,10 +64,12 @@ function RouteComponent() {
 
   const handleGroupChange = (newGroupId: number) => {
     navigate({
-      to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
+      to: "/admin/tournaments/$tournamentid/mangud",
       params: {
         tournamentid: tournamentid,
-        groupid: newGroupId.toString(),
+      },
+      search: {
+        selectedGroup: newGroupId.toString(),
       },
     });
   }
@@ -101,6 +109,7 @@ function RouteComponent() {
           data={matches.data ?? []}
           all_matches={matchesForTimeChange.data ?? []}
           tournament_table={tableData.data}
+          openMatchId={openMatch}
         />
       </div>
     </div>

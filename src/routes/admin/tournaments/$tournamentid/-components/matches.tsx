@@ -24,6 +24,7 @@ interface MatchesProps {
   tournament_id: number;
   tournament_table: TournamentTable;
   player_count: number;
+  openMatchId?: string;
 }
 
 type FilterOptions = MatchState | "all";
@@ -34,6 +35,7 @@ export const Matches: React.FC<MatchesProps> = ({
   tournament_table,
   player_count,
   all_matches,
+  openMatchId,
 }: MatchesProps) => {
   const [isRegroupingModalOpen, setIsRegroupingModalOpen] = useState(false);
   const [isTimeEditingModalOpen, setIsTimeEditingModalOpen] = useState(false);
@@ -55,6 +57,16 @@ export const Matches: React.FC<MatchesProps> = ({
       }
     }
   }, [data]);
+
+  useEffect(() => {
+    if (openMatchId && data.length > 0) {
+      const matchToOpen = data.find(match => match.match.id.toString() === openMatchId);
+      if (matchToOpen) {
+        setSelectedMatch(matchToOpen);
+        setIsOpen(true);
+      }
+    }
+  }, [openMatchId, data]);
 
   const filteredData = useMemo(() => {
     let filtered;
@@ -100,6 +112,13 @@ export const Matches: React.FC<MatchesProps> = ({
     setIsOpen(true);
   };
 
+  const handleModalClose = () => {
+    setIsOpen(false);
+    if (openMatchId) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  };
+
   if (data.length > 0) {
     return (
       <Card className="w-full border-stone-100">
@@ -133,6 +152,20 @@ export const Matches: React.FC<MatchesProps> = ({
               </span>{" "}
               {tournament_table.class}
             </h3>
+            <div className="flex items-center gap-4 ml-6 text-xs text-gray-600">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-white border border-gray-300"></div>
+                <span>{t("admin.tournaments.matches.legend.upcoming")}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-100 border border-green-200"></div>
+                <span>{t("admin.tournaments.matches.legend.ongoing")}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-gray-100 border border-gray-300"></div>
+                <span>{t("admin.tournaments.matches.legend.finished")}</span>
+              </div>
+            </div>
           </div>
 
           {tournament_table.type === "champions_league" && (
@@ -171,6 +204,8 @@ export const Matches: React.FC<MatchesProps> = ({
           <MatchesTable
             matches={filteredData}
             handleRowClick={handleCardClick}
+            tournament_id={tournament_id}
+            group_id={tournament_table.id}
           />
           {selectedMatch &&
           (tournament_table.solo ||
@@ -178,7 +213,7 @@ export const Matches: React.FC<MatchesProps> = ({
               tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
             <MatchDialog
               open={isOpen}
-              onClose={() => setIsOpen(false)}
+              onClose={handleModalClose}
               match={selectedMatch}
               tournamentId={tournament_id}
             />
@@ -187,7 +222,7 @@ export const Matches: React.FC<MatchesProps> = ({
             tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES && (
               <ProtocolModalProvider
                 isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
+                onClose={handleModalClose}
                 tournamentId={tournament_id}
                 match={selectedMatch}
                 playerCount={player_count}

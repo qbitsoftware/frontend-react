@@ -4,7 +4,8 @@
   },
   "common": {
     "cancel": "Katkesta",
-    "confirm": "Kinnita"
+    "confirm": "Kinnita",
+    "close": "Sulge"
   },
   "navbar": {
     "language": {
@@ -65,6 +66,18 @@
       "name": "Nimi",
       "date": "Kuupäev",
       "location": "Asukoht"
+    },
+    "pdf": {
+      "preview": {
+        "title": "PDF printimine",
+        "howToCreate": {
+          "title": "Kuidas luua PDF:",
+          "step1": "Klõpsa all \"Ava prindivaade\"",
+          "step2": "Uues aknas klõpsa \"Salvesta PDF\"",
+          "step3": "Kasuta oma veebilehitseja prindimenüüd PDF-i salvestamiseks"
+        },
+        "openPreview": "Ava prindivaade"
+      }
     },
     "news": {
       "name": "Uudised",
@@ -578,6 +591,7 @@
       "standings": "Kohad",
       "results": "Tabelid",
       "participants": "Osalejad",
+      "tables": "Lauad",
       "gallery": "Galerii",
       "guide": "Juhend",
       "sponsors": "Sponsorid",
@@ -666,7 +680,7 @@
       "combined": "Ühine"
     },
     "last_updated": "Viimati uuendatud",
-    "abbreviations": "Lühendid: NR = koht reitingus, PP = paigutuspunktid, RP = reitingupunktid, ID = ELTLID, SA = sünniaasta",
+    "abbreviations": "Lühendid: NR = koht reitingus, PP = paigutuspunktid, RP = reitingupunktid, KA = kaalud, ID = ELTLID, SA = sünniaasta",
     "license_info": {
       "title": "Litsentsi informatsioon",
       "message": "Litsentsid muutuvad kohustuslikuks alates 1. jaanuarist 2026 ja neid saab osta",
@@ -976,6 +990,7 @@
         "dialog_type": "Tiimi tüüp",
         "dialog_type_placeholder": "Vali tiimi tüüp",
         "team_leagues": "Võistkondlikud",
+        "dynamic": "Dünaamiline (Alagrupid > Põhitabel)",
         "doubles": "Paarismäng",
         "fixed_doubles": "Igamehe paarismäng",
         "errors": {
@@ -997,6 +1012,7 @@
           "double_elimination_tabletennis": "Klassikaline Täiseliminatsioon",
           "double_elimination_tabletennis_top_heavy": "Täiseliminatsioon (poolfinaali kaotajad kolmanda koha peale)",
           "champions_league": "Võistkondlikud liigad",
+          "dynamic": "Dünaamiline (Alagrupid > Põhitabel)",
           "free_for_all": "Tänavapinks",
           "round_robin_full_placement": "Round Robin (2 raundiga)",
           "round_robin": "Round Robin"
@@ -1019,7 +1035,7 @@
         "start_date": "Alguskuupäev",
         "location": "Asukoht",
         "location_placeholder": "Sisestage asukoht",
-        "category": "Kategooria",
+        "category": "Kategooria (valikuline)",
         "category_placeholder": "Sisestage kategooria",
         "number_of_tables": "Laudade arv",
         "number_of_tables_placeholder": "Sisestage laudade arv",
@@ -1046,7 +1062,9 @@
         "ranking": "Reitinguga turniir",
         "ranking_description": "Reiting arvutatakse iga esmaspäeva hommikul",
         "team": "Meeskondadega turniir",
-        "team_description": "Luba meeskondadega turniir"
+        "team_description": "Luba meeskondadega turniir",
+        "main_bracket": "Põhitabel",
+        "main_bracket_placeholder": "Vali Põhitabeli formaat"
       },
       "tables": {
         "no_tables": "Laudu pole veel lisatud",
@@ -1123,7 +1141,8 @@
           "class": "Grupi nimi on kohustuslik",
           "type": "Turniiri tüüp on kohustuslik",
           "min_team_size": "Minimaalne tiimi suurus on 2",
-          "dialog_type": "Tiimi tüübi valik on nõutud"
+          "dialog_type": "Tiimi tüübi valik on nõutud",
+          "second_class": "Põhitabeli formaat on nöutud"
         },
         "solo": "Üksik",
         "team": "Meeskondadega",
@@ -1136,9 +1155,9 @@
         "no_results": "Tulemusi pole",
         "change_time": "Aegade muutmine",
         "order": {
-          "title": "Genereeri mängud",
+          "title": "Genereeri võistlustabel",
           "title_order": "Mängijate järjekord",
-          "order_by_rating": "Järjesta reitingu järgi",
+          "order_by_rating": "Järjesta mängijad reitingu järgi",
           "placeholder": "Asetus",
           "random": "Suvaliselt",
           "by_rating": "Lauatennis",
@@ -1260,6 +1279,7 @@
             "team_name_placeholder": "Lisa meeskonna nimi",
             "name_placeholder": "Nimi",
             "generate_pairs": "Genereeri Paarid",
+            "generate_subgroups": "Genereeri Alagrupid",
             "download_template": "Laadi alla Excel mall",
             "import_excel": "Impordi Excel",
             "add_player": {
@@ -1305,6 +1325,14 @@
             "pairs_participants_description": "Juba moodustatud paarismangu osalejad",
             "teams_merged_successfully": "Meeskonnad ühendati edukalt",
             "teams_merge_error": "Meeskondade ühendamisel tekkis viga"
+          },
+          "dynamic": {
+            "first_tab": "Alagrupid",
+            "second_tab": "Põhitabel",
+            "individual_participants": "Üksikosalejad",
+            "individual_participants_description": "Mängijad, keda pole veel paigutatud alagruppidesse",
+            "pairs_participants": "Alagrupid",
+            "pairs_participants_description": "Siin näed alagruppidesse paigutatud mängijaid"
           }
         }
       },
@@ -1392,17 +1420,25 @@
           "round": "Ring",
           "class": "Grupp",
           "table": "Laud",
-          "participant_1": "Osaleja 1",
-          "participant_2": "Osaleja 2",
-          "participant_1_score": "Osaleja 1 tulemus",
-          "participant_2_score": "Osaleja 2 tulemus",
+          "confirm": "Kinnita",
+          "participant_1": "P1",
+          "participant_2": "P2",
+          "participant_1_score": "P1 Setid",
+          "participant_2_score": "P2 Setid",
           "winner_bracket": "Plussring",
           "loser_bracket": "Miinusring",
           "winner_placement": "Võitja koht",
           "loser_placement": "Kaotaja koht",
           "winner": "Võitja"
         },
-        "not_played": "Mängimata"
+        "not_played": "Mängimata",
+        "score_updated_success": "Mängu tulemus edukalt uuendatud",
+        "score_update_error": "Mängu tulemuse uuendamine ebaõnnestus",
+        "legend": {
+          "upcoming": "Tulevased",
+          "ongoing": "Käimasolevad",
+          "finished": "Lõppenud"
+        }
       },
       "brackets": {
         "not_found": "Turniiri tabelit ei leitud",
@@ -1429,6 +1465,10 @@
       "description": "Halda kõiki uudiseid siin",
       "add_new": "Uus postitus",
       "delete": "Kustuta",
+      "choose_category": "Vali kategooria",
+      "save_draft": "Salvesta mustandina",
+      "save_public": "Avalikusta",
+      "back": "Tagasi",
       "text": "Alusta esimese blogipostitusega",
       "search": "Otsi blogipostitust...",
       "status_published": "Avaldatud",
