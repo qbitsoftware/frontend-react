@@ -339,7 +339,21 @@ export function formatName(fullName: string) {
 }
 
 export function capitalize(word: string) {
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  if (!word) return word;
+  
+  // we are capitalizing also for cases where it has '-' or '.' in the name, for '-' names or '.' for doubles
+  return word
+    .split(/([-.])/) 
+    .map((part) => {
+      if (part === '-' || part === '.') {
+        return part;
+      }
+      if (part) {
+        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+      }
+      return part;
+    })
+    .join('');
 }
 
 export const getRandomFlag = () => {

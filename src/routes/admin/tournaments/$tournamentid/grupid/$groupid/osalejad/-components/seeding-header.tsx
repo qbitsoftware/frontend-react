@@ -346,7 +346,7 @@ const SeedingHeader = ({
                 size="sm"
                 className="w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
               >
-                <span>{t("admin.tournaments.groups.participants.actions.generate_pairs")}</span>
+                <span>{t("admin.tournaments.groups.participants.actions.generate_subgroups")}</span>
               </Button>
             )}
 
