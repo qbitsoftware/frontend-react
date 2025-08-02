@@ -252,9 +252,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
         const allCells = table.querySelectorAll('th, td');
         allCells.forEach((cell) => {
           const htmlCell = cell as HTMLElement;
-          // Remove any width-related classes
           htmlCell.className = htmlCell.className.replace(/w-\[[^\]]*\]/g, '');
-          // Apply uniform styling
           htmlCell.style.width = cellWidth;
           htmlCell.style.minWidth = '0';
           htmlCell.style.maxWidth = cellWidth;
@@ -352,7 +350,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
         element.style.backgroundColor = "yellow";
         element.classList.add("loser-bracket-split");
         
-        // Move down under current miinusring, keeping horizontal position
         const currentTransform = element.style.transform || "";
         const newTransform = currentTransform 
           ? `${currentTransform} translateY(${matchSpacing}px)`
@@ -472,7 +469,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
           return null;
         }).filter(Boolean);
         
-        // Create match ID mapping and process match IDs
         const matchToIdMap = new Map<HTMLElement, string>();
         sortedMiinusringElements.slice(0, columnsToColor).forEach(({ element }) => {
           if (element.classList.contains('loser-bracket-split')) {
