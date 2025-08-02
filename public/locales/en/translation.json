@@ -4,7 +4,8 @@
   },
   "common": {
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "close": "Close"
   },
   "navbar": {
     "language": {
@@ -71,6 +72,18 @@
       "missing": "No blog posts yet",
       "view_all": "View all",
       "read_more": "Read more"
+    },
+    "pdf": {
+      "preview": {
+        "title": "PDF Print Setup",
+        "howToCreate": {
+          "title": "How to create PDF:",
+          "step1": "Click \"Open Print Preview\" below",
+          "step2": "In the new window, click \"Save PDF\"",
+          "step3": "Use your browser's print dialog to save as PDF"
+        },
+        "openPreview": "Open Print Preview"
+      }
     },
     "calendar": {
       "name": "Calendar",
@@ -1033,7 +1046,9 @@
         "ranking": "Include ranking",
         "ranking_description": "Enable ranking for this tournament",
         "team": "Doubles or Teams",
-        "team_description": "Enable tournament with either doubles or team matchups"
+        "team_description": "Enable tournament with either doubles or team matchups",
+        "main_bracket": "Main Bracket",
+        "main_bracket_placeholder": "Select Main Bracket Type"
       },
       "tables": {
         "no_tables": "No tables have been assigned yet",
@@ -1110,7 +1125,8 @@
           "class": "Class name is required",
           "type": "Tournament type is required",
           "min_team_size": "Minimum team size is 2",
-          "dialog_type": "Team type is required"
+          "dialog_type": "Team type is required",
+          "second_class": "Main bracket type is required"
         },
         "solo": "Solo",
         "team": "Teams",
@@ -1247,6 +1263,7 @@
             "team_name_placeholder": "Insert team name",
             "name_placeholder": "Name",
             "generate_pairs": "Generate Pairs",
+            "generate_subgroups": "Generate Subgroups",  
             "download_template": "Download Template",
             "import_excel": "Import Excel",
             "add_player": {
@@ -1292,6 +1309,14 @@
             "pairs_participants_description": "Already created doubles participants",
             "teams_merged_successfully": "Teams merged successfully",
             "teams_merge_error": "Error merging teams"
+          },
+          "dynamic": {
+            "first_tab": "Subgroup Stage",
+            "second_tab": "Main Bracket",
+            "individual_participants": "Individual Participants",
+            "individual_participants_description": "Individual participants to be placed in round robin subgroups",
+            "pairs_participants": "Subgroups",
+            "pairs_participants_description": "Participants already placed in round robin subgroups"
           }
         }
       },

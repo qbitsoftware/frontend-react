@@ -148,7 +148,7 @@ const EliminationMatch = ({
                 showLabel={true}
               />
               {matchDate && (
-                <div className="flex items-center gap-1 ml-10">
+                <div className="flex items-center gap-1 ml-3">
                   <Clock className="h-3 w-3" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>
                   <span className="font-semibold">
@@ -202,7 +202,7 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-1 font-medium w-[20px] text-xs flex items-center h-full">
+              <span className="px-1 font-medium w-[30px] text-xs flex items-center h-full">
                 {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_1.order : ""}`} */}
                 {`${match.match.type == "winner" && match.match.round == 0
                   ? (match.participant_1.rr_order && match.participant_1.rr_order !== ''
@@ -266,7 +266,7 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-1 font-medium w-[20px] text-xs flex items-center h-full">
+              <span className="px-1 font-medium w-[30px] text-xs flex items-center h-full">
                 {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_2.order : ""}`} */}
                 {`${match.match.type == "winner" && match.match.round == 0
                   ? (match.participant_2.rr_order && match.participant_2.rr_order !== ''
