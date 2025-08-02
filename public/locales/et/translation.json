@@ -179,7 +179,6 @@
       "weekdays": "Tööpäevadel",
       "weekends": "Puhkepäevadel"
     },
-
     "location": {
       "title": "Asukoht",
       "view_in_maps": "Vaata asukohta kaardilt"
@@ -191,9 +190,7 @@
       "memberships": "Liikmelisus",
       "general": "Üldine"
     }
-
   },
-
   "profile": {
     "header": {
       "greeting": "Tere tulemast tagasi",
@@ -1002,7 +999,9 @@
           "end_date": "Lõppkuupäev on kohustuslik",
           "total_tables": "Laudade arv peab olema suurem kui 1",
           "total_tables_max": "Laudade arv ei tohi ületada 200",
-          "category": "Kategooria on kohustuslik"
+          "category": "Kategooria on kohustuslik",
+          "rating_coef_min": "Reitingu koefitsient peab olema suurem kui 1",
+          "rating_coef_max": "Reitingu koefitsient peab olema maksimaalselt 2"
         },
         "tournament_tables": {
           "single_elimination": "Klassikaline Üksikeliminatsioon",
@@ -1035,6 +1034,8 @@
         "start_date": "Alguskuupäev",
         "location": "Asukoht",
         "location_placeholder": "Sisestage asukoht",
+        "rating_coef": "Reitingu koefitsient",
+        "rating_coef_description": "Kasutatakse reitingu arvutamisel",
         "category": "Kategooria (valikuline)",
         "category_placeholder": "Sisestage kategooria",
         "number_of_tables": "Laudade arv",

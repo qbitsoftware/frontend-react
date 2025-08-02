@@ -48,6 +48,7 @@ const createFormSchema = (t: TFunction) => z.object({
   information: z.any(),
   private: z.boolean(),
   calc_rating: z.boolean(),
+  rating_coef: z.number().min(1, { message: t("admin.tournaments.create_tournament.errors.rating_coef_min") }).max(2, { message: t("admin.tournaments.create_tournament.errors.rating_coef_max") }),
 })
 
 export type TournamentFormValues = z.infer<ReturnType<typeof createFormSchema>>
@@ -71,6 +72,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         ...initial_data,
         start_date: new Date(initial_data.start_date),
         end_date: new Date(initial_data.end_date),
+        rating_coef: initial_data.rating_coef ?? 1,
       }
       : {
         name: "",
@@ -83,6 +85,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         information: "",
         private: false,
         calc_rating: false,
+        rating_coef: 1,
       },
   })
 
@@ -367,6 +370,31 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
 
                 <Editor value={value} setValue={setValue} readOnly={false} />
               </div>
+              <FormField
+                control={form.control}
+                name="rating_coef"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col" id="tutorial-tournament-rating-coef">
+                    <FormLabel>{t("admin.tournaments.create_tournament.rating_coef")}</FormLabel>
+                    <FormDescription>
+                      {t("admin.tournaments.create_tournament.rating_coef_description")}
+                    </FormDescription>
+                    <FormControl>
+                      <input
+                        type="range"
+                        min={1}
+                        max={2}
+                        step={0.05}
+                        value={field.value}
+                        onChange={e => field.onChange(Number(e.target.value))}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <div className="text-sm mt-2">{field.value}</div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <div className="flex flex-col-reverse gap-10 md:gap-4 md:flex-row md:justify-between" id="tutorial-tournament-create">
                 {initial_data && (
                   <Button type="button" className="text-red-600" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
