@@ -17,6 +17,7 @@ export type Tournament = {
   total_tables: number;
   information: string;
   media: string;
+  rating_coef: number;
   color?: string;
 };
 

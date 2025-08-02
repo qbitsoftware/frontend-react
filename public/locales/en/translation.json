@@ -182,7 +182,6 @@
       "weekdays": "Weekdays",
       "weekends": "Puhkepäevadel"
     },
-
     "location": {
       "title": "Location",
       "view_in_maps": "View location on map"
@@ -194,7 +193,6 @@
       "memberships": "Memberships",
       "general": "General"
     }
-
   },
   "profile": {
     "header": {
@@ -986,7 +984,9 @@
           "end_date": "End date is required",
           "total_tables": "Total tables must be at least 1",
           "total_tables_max": "Total tables must be at most 200",
-          "category": "Category is required"
+          "category": "Category is required",
+          "rating_coef_min": "Rating coefficient must be at least 1",
+          "rating_coef_max": "Rating coefficient must be at most 2"
         },
         "tournament_tables": {
           "single_elimination": "Single Elimination (No bronze)",
@@ -1020,6 +1020,8 @@
         "location": "Location",
         "location_placeholder": "Enter Location",
         "category": "Category (optional)",
+        "rating_coef": "Rating Coefficient",
+        "rating_coef_description": "Rating coefficient for this tournament. Used to calculate player ratings.",
         "category_placeholder": "Type a Category",
         "number_of_tables": "Number of tables",
         "number_of_tables_placeholder": "Enter number of tables",
@@ -1059,7 +1061,7 @@
       },
       "participants": {
         "round_robin": "Group Draw Participants",
-        "double_elimination": "Main Draw Participants", 
+        "double_elimination": "Main Draw Participants",
         "round_robin_content": "Participants added here will be split into round robin subgroups.",
         "double_elimination_content": "Participants visible here will be playing in the main bracket.",
         "players": "unpaired players",
@@ -1420,7 +1422,7 @@
         "score_update_error": "Failed to update match score",
         "legend": {
           "upcoming": "Upcoming",
-          "ongoing": "Ongoing", 
+          "ongoing": "Ongoing",
           "finished": "Finished"
         }
       },
