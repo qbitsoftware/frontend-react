@@ -293,7 +293,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     const rect = htmlEl.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     const visualRight = rect.right - containerRect.left;
-    const isPlacementMatch = htmlEl.textContent?.trim().match(/^\d+-\d+$/);
+    const isPlacementMatch = htmlEl.textContent?.match(/\b\d+-\d+\b/);
     
     const actualPosition = visualRight > elementRight ? visualRight : elementRight;
     const elementData = { element: htmlEl, position: actualPosition };
@@ -319,29 +319,31 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
   const sortedElements = allElements.sort((a, b) => b.position - a.position);
   
   const mainPlacementMatches = mainBracketElements.filter(({ element }) => {
-    const text = element.textContent?.trim();
-    return text === "1-2" || text === "3-4" || text === "5-6";
+    const text = element.textContent || "";
+    return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])5-6(?:[^0-9]|$)/);
   });
   
   const miinusringPlacementMatches = miinusringElements.filter(({ element }) => {
-    const text = element.textContent?.trim();
-    return text === "1-2" || text === "3-4" || text === "5-6";
+    const text = element.textContent || "";
+    return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])5-6(?:[^0-9]|$)/);
   });
   
   if (bracketSize === 32) {
+    console.log(`32-person bracket detected. Total games in bracket: ${matchElements.length}`);
     if (hasLosersBracket) {
       const sortedMiinusringElements = miinusringElements
         .filter(({ element }) => {
-          const text = element.textContent?.trim();
+          const text = element.textContent || "";
           // Exclude grand final matches from main bracket and already processed matches
-          if (text === "1-2") return false; // Always exclude 1-2 matches
-          if (text === "3-4" && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
+          if (text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/)) return false; // Always exclude 1-2 matches
+          if (text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
           if (element.classList.contains("repositioned-match")) return false; // Exclude already processed matches
           return true;
         })
         .sort((a, b) => b.position - a.position);
       
-      const columnsToColor = 5
+      const columnsToColor = matchElements.length === 99 ? 5 : 3;
+      console.log(`32-player bracket: ${matchElements.length} total games, moving ${columnsToColor} matches to Miinusringi jätk`);
       
       
       const matchSpacing = 800; 
@@ -369,7 +371,16 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
         }))
         .sort((a, b) => b.position - a.position);
       
-      const connectorsToMove = Math.min(sortedConnectors.length, columnsToColor * 2);
+      let connectorsToMove;
+      if (matchElements.length === 99) {
+        connectorsToMove = 8; 
+      } else if (matchElements.length === 97) {
+        connectorsToMove = 6; 
+      } else {
+        connectorsToMove = columnsToColor * 2; // Fallback to 2x multiplier
+      }
+      connectorsToMove = Math.min(sortedConnectors.length, connectorsToMove);
+      console.log(`32-player connectors: moving ${connectorsToMove} connectors (${matchElements.length} total games, ${columnsToColor} matches)`);
       
       sortedConnectors.slice(0, connectorsToMove).forEach(({ element: connectorEl }) => {
         if (!connectorEl.classList.contains('loser-bracket-split')) {
@@ -552,8 +563,8 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     }
   } else if (bracketSize === 64 && !hasLosersBracket) {
     const finalMatch = mainBracketElements.find(({ element }) => {
-      const text = element.textContent?.trim();
-      return text === "1-2" && !element.closest('.loser-bracket-match');
+      const text = element.textContent || "";
+      return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
     });
     
     if (finalMatch) {
@@ -568,8 +579,8 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     }
     
     const thirdFourthMatch = mainBracketElements.find(({ element }) => {
-      const text = element.textContent?.trim();
-      return text === "3-4" && !element.closest('.loser-bracket-match');
+      const text = element.textContent || "";
+      return text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
     });
     
     if (thirdFourthMatch) {
@@ -587,15 +598,15 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     
     if (mainBracketElements.length > 0) {
       grandFinalMatch = mainBracketElements.find(({ element }) => {
-        const text = element.textContent?.trim();
-        return text === "1-2" && !element.closest('.loser-bracket-match');
+        const text = element.textContent || "";
+        return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
       });
     }
     
     if (!grandFinalMatch) {
       const oneTwoMatch = allElements.find(({ element }) => {
-        const text = element.textContent?.trim();
-        return text === "1-2" && !element.closest('.loser-bracket-match');
+        const text = element.textContent || "";
+        return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
       });
       grandFinalMatch = oneTwoMatch || null;
     }
@@ -615,15 +626,15 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     
     if (mainBracketElements.length > 0) {
       thirdFourthMatch = mainBracketElements.find(({ element }) => {
-        const text = element.textContent?.trim();
-        return text === "3-4" && !element.closest('.loser-bracket-match');
+        const text = element.textContent || "";
+        return text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
       });
     }
     
     if (!thirdFourthMatch) {
       const threeFourMatch = allElements.find(({ element }) => {
-        const text = element.textContent?.trim();
-        return text === "3-4" && !element.closest('.loser-bracket-match');
+        const text = element.textContent || "";
+        return text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
       });
       thirdFourthMatch = threeFourMatch || null;
     }
@@ -641,10 +652,10 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     
     const sortedMiinusringElements = miinusringElements
       .filter(({ element }) => {
-        const text = element.textContent?.trim();
+        const text = element.textContent || "";
         // Exclude grand final matches from main bracket and already processed matches
-        if (text === "1-2") return false; // Always exclude 1-2 matches
-        if (text === "3-4" && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
+        if (text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/)) return false; // Always exclude 1-2 matches
+        if (text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
         if (element.classList.contains("repositioned-match")) return false; // Exclude already processed matches
         return true;
       })
@@ -680,7 +691,18 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       }))
       .sort((a, b) => b.position - a.position);
     
-    const connectorsToMove = Math.min(sortedConnectors.length, columnsToColor * 3); // 3x multiplier for connector coverage
+    // VALUES FOR MOVING CONNECTORS
+    let connectorsToMove;
+    if (matchElements.length === 228) {
+      connectorsToMove = 20; 
+    } else if (matchElements.length === 226) {
+      console.log("HOUse")
+      connectorsToMove = 18; 
+    } else {
+      connectorsToMove = columnsToColor * 3; 
+    }
+    connectorsToMove = Math.min(sortedConnectors.length, connectorsToMove);
+    console.log(`64-player connectors: moving ${connectorsToMove} connectors (${matchElements.length} total games, ${columnsToColor} matches)`);
     
     sortedConnectors.slice(0, connectorsToMove).forEach(({ element: connectorEl }) => {
       if (!connectorEl.classList.contains('loser-bracket-split')) {
@@ -831,7 +853,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
               
               if (correspondingMatchItem) {
                 item.element.style.position = 'absolute';
-                const leftOffset = matchElements.length === 228 ? 230 : 0;
+                const leftOffset = 0; // No offset for 64-player brackets
                 item.element.style.left = `${correspondingMatchItem.originalLeft - minLeft - leftOffset + 198 + 0}px`; // 198px (match width) + 8px spacing
                 item.element.style.top = `${correspondingMatchItem.originalTop - minTop + 95}px`; // Start from top with title space 
                 item.element.style.zIndex = '1000';
@@ -845,7 +867,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
           }
           
           item.element.style.position = 'absolute';
-          const leftOffset = matchElements.length === 228 ? 230 : 0;
+          const leftOffset = 0; // No offset for 64-player brackets
           item.element.style.left = `${item.originalLeft - minLeft - leftOffset}px`;
           item.element.style.top = `${item.originalTop - minTop + 80}px`; // 80px to account for title
           
@@ -856,8 +878,8 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
   } else {
     const consolationMatches = sortedElements
       .filter(({ element }) => {
-        const text = element.textContent?.trim();
-        return !text?.match(/^\d+-\d+$/);
+        const text = element.textContent || "";
+        return !text.match(/\b\d+-\d+\b/);
       })
       .slice(0, 5); 
     
