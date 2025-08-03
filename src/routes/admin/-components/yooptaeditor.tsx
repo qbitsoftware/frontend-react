@@ -1,5 +1,5 @@
 import YooptaEditor, { createYooptaEditor } from '@yoopta/editor';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { YooptaContentValue } from '@yoopta/editor';
 import Paragraph from '@yoopta/paragraph';
 import Blockquote from '@yoopta/blockquote';
@@ -9,6 +9,7 @@ import Accordion from '@yoopta/accordion'
 import Code from '@yoopta/code'
 import Embed from '@yoopta/embed'
 import Callout from '@yoopta/callout'
+import File from '@yoopta/file'
 import { Bold, Italic, CodeMark, Underline, Strike, Highlight } from '@yoopta/marks';
 import { HeadingOne, HeadingThree, HeadingTwo } from '@yoopta/headings';
 import { NumberedList, BulletedList, TodoList } from '@yoopta/lists';
@@ -47,7 +48,7 @@ export default function Editor({ value, setValue, readOnly }: Props) {
   const editor = useMemo(() => createYooptaEditor(), []);
   const postImageMutation = usePostImage()
 
-  const uploadFile = async (file: File) => {
+  const uploadImage = useCallback(async (file: File) => {
     try {
       const formData = new FormData();
       formData.append('image', file);
@@ -68,7 +69,31 @@ export default function Editor({ value, setValue, readOnly }: Props) {
         height: 600
       };
     }
-  }
+  }, [postImageMutation])
+
+  const uploadFile = useCallback(async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const result = await postImageMutation.mutateAsync(formData);
+
+      return {
+        url: result.data.url,
+        name: file.name,
+        size: file.size,
+        format: file.type
+      };
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return {
+        url: URL.createObjectURL(file),
+        name: file.name,
+        size: file.size,
+        format: file.type
+      };
+    }
+  }, [postImageMutation])
 
   const plugins = useMemo(() => [
     Paragraph,
@@ -95,11 +120,11 @@ export default function Editor({ value, setValue, readOnly }: Props) {
     Image.extend({
       options: {
         async onUpload(file) {
-          const data = await uploadFile(file);
+          const data = await uploadImage(file);
 
           return {
             src: data.secure_url,
-            alt: 'digitalocean',
+            alt: file.name,
             sizes: {
               width: data.width,
               height: data.height,
@@ -108,7 +133,22 @@ export default function Editor({ value, setValue, readOnly }: Props) {
         },
       },
     }),
-  ], [])
+    File.extend({
+      options: {
+        async onUpload(file) {
+          const data = await uploadFile(file);
+
+          return {
+            src: data.url,
+            alt: data.name,
+            name: data.name,
+            size: data.size,
+            format: data.format,
+          };
+        },
+      },
+    }),
+  ], [uploadImage, uploadFile])
 
 
   if (setValue && readOnly == false) {

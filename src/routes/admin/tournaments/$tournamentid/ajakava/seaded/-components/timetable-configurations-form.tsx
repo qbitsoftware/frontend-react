@@ -1,62 +1,48 @@
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Settings, Save } from "lucide-react";
+import { Settings, Play, Pause } from "lucide-react";
 import { TournamentTable } from "@/types/groups";
 import { Tournament } from "@/types/tournaments";
+import { UseGetTournamentTable, UseGenerateTimeTable } from "@/queries/tables";
 import { toast } from "sonner";
-
-const timetableConfigSchema = z.object({
-  configurations: z.array(
-    z.object({
-      id: z.number(),
-      class: z.string(),
-      enabled: z.boolean(),
-      start_date: z.string().optional(),
-      start_time: z.string().optional(),
-      avg_match_duration: z.number().min(5).max(120),
-      break_duration: z.number().min(0).max(60),
-    })
-  ),
-});
-
-export type TimetableConfigValues = z.infer<typeof timetableConfigSchema>;
 
 interface Props {
   tournamentTables: TournamentTable[];
   tournament: Tournament;
 }
 
-export default function TimetableConfigurationsForm({
-  tournamentTables,
-  tournament,
-}: Props) {
-  const { t } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+interface TableConfigProps {
+  table: TournamentTable;
+  tournament: Tournament;
+}
 
-  // Get tournament date range
+function TableConfiguration({ table, tournament }: TableConfigProps) {
+  const { t } = useTranslation();
+  
+  const tableQuery = useQuery(UseGetTournamentTable(tournament.id, table.id));
+
   const getTournamentDateRange = () => {
+    // Parse dates safely without timezone issues
+    const parseDate = (dateString: string) => {
+      const date = new Date(dateString);
+      // Get the date in YYYY-MM-DD format without timezone conversion
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     const startDate = tournament.start_date
-      ? new Date(tournament.start_date).toISOString().split("T")[0]
+      ? parseDate(tournament.start_date)
       : new Date().toISOString().split("T")[0];
     const endDate = tournament.end_date
-      ? new Date(tournament.end_date).toISOString().split("T")[0]
+      ? parseDate(tournament.end_date)
       : startDate;
     return { startDate, endDate };
   };
@@ -64,269 +50,289 @@ export default function TimetableConfigurationsForm({
   const { startDate: tournamentStartDate, endDate: tournamentEndDate } =
     getTournamentDateRange();
 
-  // Initialize form with current tournament table settings
-  const getInitialConfigurations = () => {
-    return tournamentTables.map((table) => {
-      const hasStartDate = table.start_date && table.start_date !== "";
-      let formattedDate = tournamentStartDate;
-      let formattedTime = "12:00";
+  const detailedTable = tableQuery.data?.data || table;
 
-      if (hasStartDate) {
+  const getInitialDateTime = () => {
+    const hasStartDate = detailedTable.start_date && detailedTable.start_date !== "";
+    let formattedDate = tournamentStartDate;
+    let formattedTime = "12:00";
+
+    if (hasStartDate) {
+      try {
+        const date = new Date(detailedTable.start_date);
+        if (!isNaN(date.getTime())) {
+          formattedDate = date.toISOString().split("T")[0];
+          formattedTime = `${date.getHours().toString().padStart(2, "0")}:${date
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}`;
+        }
+      } catch (error) {
+        console.error("Error parsing date:", error);
+      }
+    }
+
+    return { formattedDate, formattedTime };
+  };
+
+  const { formattedDate, formattedTime } = getInitialDateTime();
+  const [enabled, setEnabled] = useState(detailedTable.time_table || false);
+  const [startDate, setStartDate] = useState(formattedDate);
+  const [startTime, setStartTime] = useState(formattedTime);
+  const [avgMatchDuration, setAvgMatchDuration] = useState(detailedTable.avg_match_duration || 20);
+  const [breakDuration, setBreakDuration] = useState(detailedTable.break_duration || 5);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Generate timetable mutation
+  const timetableMutation = UseGenerateTimeTable(tournament.id, table.id);
+
+  // Check if timetable has been generated (has matches scheduled)
+  const hasGeneratedTimetable = () => {
+    // Check if the table has a start_date set (indicates timetable was generated)
+    return !!(detailedTable.start_date && detailedTable.start_date !== "");
+  };
+
+  const handleGenerateTimetable = async () => {
+    if (!enabled) {
+      toast.error(t("admin.tournaments.timetable.enable_first"));
+      return;
+    }
+
+    const isUpdate = hasGeneratedTimetable();
+    setIsGenerating(true);
+    try {
+      // Combine date and time
+      const combinedDateTime = new Date(`${startDate}T${startTime}:00`);
+      const values = {
+        start_date: startDate,
+        start_time: combinedDateTime.toISOString(),
+        avg_match_duration: avgMatchDuration,
+        break_duration: breakDuration,
+      };
+      
+      await timetableMutation.mutateAsync(values);
+      
+      // Show appropriate success message
+      const successMessage = isUpdate 
+        ? t("admin.tournaments.timetable.updated_successfully")
+        : t("admin.tournaments.timetable.generated_successfully");
+      toast.success(successMessage);
+    } catch (error) {
+      console.error("Error generating timetable:", error);
+      const errorMessage = isUpdate
+        ? t("admin.tournaments.timetable.update_error")
+        : t("admin.tournaments.timetable.generation_error");
+      toast.error(errorMessage);
+    }
+    setIsGenerating(false);
+  };
+
+  useEffect(() => {
+    if (tableQuery.data?.data) {
+      const newTable = tableQuery.data.data;
+      setEnabled(newTable.time_table || false);
+      setAvgMatchDuration(newTable.avg_match_duration || 20);
+      setBreakDuration(newTable.break_duration || 5);
+      
+      if (newTable.start_date) {
         try {
-          const date = new Date(table.start_date);
+          const date = new Date(newTable.start_date);
           if (!isNaN(date.getTime())) {
-            formattedDate = date.toISOString().split("T")[0];
-            formattedTime = `${date.getHours().toString().padStart(2, "0")}:${date
+            const newFormattedDate = date.toISOString().split("T")[0];
+            const newFormattedTime = `${date.getHours().toString().padStart(2, "0")}:${date
               .getMinutes()
               .toString()
               .padStart(2, "0")}`;
+            setStartDate(newFormattedDate);
+            setStartTime(newFormattedTime);
           }
         } catch (error) {
           console.error("Error parsing date:", error);
         }
       }
-
-      return {
-        id: table.id,
-        class: table.class,
-        enabled: table.time_table || false,
-        start_date: formattedDate,
-        start_time: formattedTime,
-        avg_match_duration: table.avg_match_duration || 20,
-        break_duration: table.break_duration || 5,
-      };
-    });
-  };
-
-  const form = useForm<TimetableConfigValues>({
-    resolver: zodResolver(timetableConfigSchema),
-    defaultValues: {
-      configurations: getInitialConfigurations(),
-    },
-  });
-
-  // Reset form when tournament tables change
-  useEffect(() => {
-    form.reset({
-      configurations: getInitialConfigurations(),
-    });
-  }, [tournamentTables]);
-
-  const handleSubmit = async (values: TimetableConfigValues) => {
-    setIsSubmitting(true);
-    try {
-      console.log("Updating timetable configurations:", values);
-      
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      toast.success(t("admin.tournaments.timetable.configurations_saved"));
-    } catch (error) {
-      console.error("Error saving configurations:", error);
-      toast.error(t("admin.tournaments.timetable.configurations_save_error"));
     }
-    setIsSubmitting(false);
-  };
+  }, [tableQuery.data]);
 
-  const configurations = form.watch("configurations");
+  if (tableQuery.isLoading) {
+    return (
+      <Card>
+        <CardContent className="py-6">
+          <div className="flex items-center justify-center">
+            <div className="text-sm text-gray-500">
+              {t("common.loading")}...
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          {configurations.map((config, index) => (
-            <Card key={config.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    <span>{config.class}</span>
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name={`configurations.${index}.enabled`}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                        <FormLabel className="text-sm font-normal">
-                          {t("admin.tournaments.timetable.enable_timetabling")}
-                        </FormLabel>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </CardTitle>
-              </CardHeader>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-base">
+            <Settings className="h-5 w-5" />
+            <span>{detailedTable.class}</span>
+          </div>
+          <div className="flex flex-row items-center space-x-2 space-y-0">
+            <label className="text-sm font-normal">
+              {t("admin.tournaments.timetable.enable_timetabling")}
+            </label>
+            <Switch
+              checked={enabled}
+              onCheckedChange={setEnabled}
+            />
+          </div>
+        </CardTitle>
+      </CardHeader>
 
-              {config.enabled && (
-                <CardContent className="space-y-6">
-                  {/* Date and Time Settings */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name={`configurations.${index}.start_date`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {t("admin.tournaments.timetable.start_date")}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="date"
-                              min={tournamentStartDate}
-                              max={tournamentEndDate}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            {t("admin.tournaments.timetable.date_range_info", {
-                              start: tournamentStartDate,
-                              end: tournamentEndDate,
-                            })}
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+      {enabled && (
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                {t("admin.tournaments.timetable.start_date")}
+              </label>
+              <Input
+                type="date"
+                min={tournamentStartDate}
+                max={tournamentEndDate}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {t("admin.tournaments.timetable.date_range_info", {
+                  start: tournamentStartDate,
+                  end: tournamentEndDate,
+                })}
+              </p>
+            </div>
 
-                    <FormField
-                      control={form.control}
-                      name={`configurations.${index}.start_time`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {t("admin.tournaments.timetable.start_time")}
-                          </FormLabel>
-                          <FormControl>
-                            <Input type="time" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                {t("admin.tournaments.timetable.start_time")}
+              </label>
+              <Input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+            </div>
+          </div>
 
-                  {/* Duration Settings */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name={`configurations.${index}.avg_match_duration`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {t("admin.tournaments.timetable.match_duration")}
-                          </FormLabel>
-                          <div className="grid grid-cols-[1fr,80px] items-center gap-4">
-                            <FormControl>
-                              <Slider
-                                min={5}
-                                max={120}
-                                step={5}
-                                value={[field.value || 20]}
-                                onValueChange={(values) => {
-                                  field.onChange(values[0]);
-                                }}
-                                className="pt-2"
-                              />
-                            </FormControl>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                min={5}
-                                max={120}
-                                value={field.value}
-                                onChange={(e) => {
-                                  const value = parseInt(e.target.value);
-                                  if (!isNaN(value)) {
-                                    field.onChange(Math.min(120, Math.max(5, value)));
-                                  }
-                                }}
-                                className="w-20"
-                              />
-                            </FormControl>
-                          </div>
-                          <FormDescription>
-                            {t("admin.tournaments.timetable.match_duration_desc")}
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+          {/* Duration Settings */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                {t("admin.tournaments.timetable.match_duration")}
+              </label>
+              <div className="grid grid-cols-[1fr,80px] items-center gap-4">
+                <Slider
+                  min={5}
+                  max={120}
+                  step={5}
+                  value={[avgMatchDuration]}
+                  onValueChange={(values) => setAvgMatchDuration(values[0])}
+                  className="pt-2"
+                />
+                <Input
+                  type="number"
+                  min={5}
+                  max={120}
+                  value={avgMatchDuration}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (!isNaN(value)) {
+                      setAvgMatchDuration(Math.min(120, Math.max(5, value)));
+                    }
+                  }}
+                  className="w-20"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {t("admin.tournaments.timetable.match_duration_desc")}
+              </p>
+            </div>
 
-                    <FormField
-                      control={form.control}
-                      name={`configurations.${index}.break_duration`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {t("admin.tournaments.timetable.break_duration")}
-                          </FormLabel>
-                          <div className="grid grid-cols-[1fr,80px] items-center gap-4">
-                            <FormControl>
-                              <Slider
-                                min={0}
-                                max={60}
-                                step={1}
-                                value={[field.value || 5]}
-                                onValueChange={(values) => {
-                                  field.onChange(values[0]);
-                                }}
-                                className="pt-2"
-                              />
-                            </FormControl>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                min={0}
-                                max={60}
-                                value={field.value}
-                                onChange={(e) => {
-                                  const value = parseInt(e.target.value);
-                                  if (!isNaN(value)) {
-                                    field.onChange(Math.min(60, Math.max(0, value)));
-                                  }
-                                }}
-                                className="w-20"
-                              />
-                            </FormControl>
-                          </div>
-                          <FormDescription>
-                            {t("admin.tournaments.timetable.break_duration_desc")}
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              )}
-            </Card>
-          ))}
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                {t("admin.tournaments.timetable.break_duration")}
+              </label>
+              <div className="grid grid-cols-[1fr,80px] items-center gap-4">
+                <Slider
+                  min={0}
+                  max={60}
+                  step={1}
+                  value={[breakDuration]}
+                  onValueChange={(values) => setBreakDuration(values[0])}
+                  className="pt-2"
+                />
+                <Input
+                  type="number"
+                  min={0}
+                  max={60}
+                  value={breakDuration}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (!isNaN(value)) {
+                      setBreakDuration(Math.min(60, Math.max(0, value)));
+                    }
+                  }}
+                  className="w-20"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {t("admin.tournaments.timetable.break_duration_desc")}
+              </p>
+            </div>
+          </div>
 
-          <div className="flex justify-end pt-6">
+          {/* Generate/Update Timetable Button */}
+          <div className="flex justify-end pt-4 border-t">
             <Button
-              type="submit"
-              disabled={isSubmitting}
+              onClick={handleGenerateTimetable}
+              disabled={isGenerating || !enabled}
               className="flex items-center gap-2"
             >
-              {isSubmitting ? (
+              {isGenerating ? (
                 <>
-                  <Save className="h-4 w-4 animate-spin" />
-                  {t("admin.tournaments.timetable.saving")}
+                  <Pause className="h-4 w-4 animate-spin" />
+                  {hasGeneratedTimetable() 
+                    ? t("admin.tournaments.timetable.updating")
+                    : t("admin.tournaments.timetable.generating")
+                  }
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4" />
-                  {t("admin.tournaments.timetable.save_configurations")}
+                  <Play className="h-4 w-4" />
+                  {hasGeneratedTimetable() 
+                    ? t("admin.tournaments.timetable.update")
+                    : t("admin.tournaments.timetable.generate")
+                  }
                 </>
               )}
             </Button>
           </div>
-        </form>
-      </Form>
+        </CardContent>
+      )}
+    </Card>
+  );
+}
+
+export default function TimetableConfigurationsForm({
+  tournamentTables,
+  tournament,
+}: Props) {
+  return (
+    <div className="space-y-6">
+      {tournamentTables.map((table) => (
+        <TableConfiguration
+          key={table.id}
+          table={table}
+          tournament={tournament}
+        />
+      ))}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -17,7 +17,6 @@ import {
   UsePostTournament,
   UsePatchTournament,
   UseDeleteTournament,
-  UseGetTournamentCategories,
 } from "@/queries/tournaments"
 import { useTranslation } from "react-i18next"
 import { useState as useStateOriginal } from "react"
@@ -33,7 +32,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { YooptaContentValue } from "@yoopta/editor"
 import Editor from "../../-components/yooptaeditor"
-import { t, TFunction } from "i18next"
+import { TFunction } from "i18next"
 import { Tournament } from "@/types/tournaments"
 import { toast } from "sonner"
 
@@ -45,6 +44,7 @@ const createFormSchema = (t: TFunction) => z.object({
   total_tables: z.number().min(1, { message: t("admin.tournaments.create_tournament.errors.total_tables") }).max(200, { message: t("admin.tournaments.create_tournament.errors.total_tables_max") }),
   category: z.string().optional(),
   location: z.string().min(1, { message: t("admin.tournaments.create_tournament.errors.location") }),
+  organizer: z.string().optional(),
   information: z.any(),
   private: z.boolean(),
   calc_rating: z.boolean(),
@@ -81,6 +81,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         total_tables: 1,
         sport: "tabletennis",
         location: "",
+        organizer: "",
         category: "",
         information: "",
         private: false,
@@ -91,7 +92,6 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
 
   const [showDeleteDialog, setShowDeleteDialog] = useStateOriginal(false)
   const deleteMutation = UseDeleteTournament(initial_data?.id)
-  const { data: tournament_categories } = UseGetTournamentCategories()
   const router = useRouter()
 
   let postMutation = UsePostTournament()
@@ -185,134 +185,241 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         </CardHeader>
         <CardContent className="p-4 rounded-lg bg-card border border-stone-100 shadow-sm">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Basic Information Section */}
+              <div className="space-y-6">
+                <div className="border-b pb-3">
+                  <h3 className="text-lg font-semibold text-gray-900">{t("admin.tournaments.create_tournament.basic_info", "Basic Information")}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{t("admin.tournaments.create_tournament.basic_info_desc", "Essential tournament details")}</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem id="tutorial-tournament-name">
+                        <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.name")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            id="tournament-name-input"
+                            autoComplete="off"
+                            placeholder={t("admin.tournaments.create_tournament.name_placeholder")}
+                            className="h-10"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem id="tutorial-tournament-location">
+                        <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.location")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            id="tournament-location-input"
+                            autoComplete="off"
+                            placeholder={t("admin.tournaments.create_tournament.location_placeholder")}
+                            className="h-10"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="start_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col" id="tutorial-tournament-start-date">
+                        <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.start_date")}</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                id="start-date-button"
+                                variant={"outline"}
+                                className={`w-full h-10 pl-3 text-left font-normal justify-start ${!field.value && "text-muted-foreground"}`}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>{t("admin.tournaments.create_tournament.start_date_placeholder")}</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="end_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col" id="tutorial-tournament-end-date">
+                        <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.end_date")}</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                id="end-date-button"
+                                variant={"outline"}
+                                className={`w-full h-10 pl-3 text-left font-normal justify-start ${!field.value && "text-muted-foreground"}`}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>{t("admin.tournaments.create_tournament.start_date_placeholder")}</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="total_tables"
+                    render={({ field }) => (
+                      <FormItem id="tutorial-tournament-tables">
+                        <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.number_of_tables")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            id="tournament-tables-input"
+                            type="number"
+                            placeholder={t("admin.tournaments.create_tournament.number_of_tables_placeholder")}
+                            className="h-10"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "") {
+                                field.onChange(0);
+                              } else {
+                                const cleanedValue = value.replace(/^0+/, '');
+                                field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
+                              }
+                            }}
+                            value={field.value === 0 ? '' : field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="organizer"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.organizer")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            autoComplete="off"
+                            placeholder={t("admin.tournaments.create_tournament.organizer_placeholder")}
+                            className="h-10"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Configuration Section */}
+              <div className="space-y-6">
+                <div className="border-b pb-3">
+                  <h3 className="text-lg font-semibold text-gray-900">{t("admin.tournaments.create_tournament.configuration", "Configuration")}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{t("admin.tournaments.create_tournament.configuration_desc", "Tournament settings and options")}</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="calc_rating"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-200 bg-gray-50/50 p-4" id="tutorial-tournament-rating">
+                        <div className="space-y-0.5 pr-4">
+                          <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.ranking")}</FormLabel>
+                          <FormDescription className="text-xs">
+                            {t("admin.tournaments.create_tournament.ranking_description")}
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch id="tournament-rating-switch" checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="private"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-200 bg-gray-50/50 p-4" id="tutorial-tournament-private">
+                        <div className="space-y-0.5 pr-4">
+                          <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.private")}</FormLabel>
+                          <FormDescription className="text-xs">
+                            {t("admin.tournaments.create_tournament.private_description")}
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch id="tournament-private-switch" checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Rating Coefficient */}
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="rating_coef"
                   render={({ field }) => (
-                    <FormItem
-                      id="tutorial-tournament-name"
-                    >
-                      <FormLabel>{t("admin.tournaments.create_tournament.name")}</FormLabel>
+                    <FormItem className="space-y-3" id="tutorial-tournament-rating-coef">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.rating_coef")}</FormLabel>
+                          <FormDescription className="text-xs mt-1">
+                            {t("admin.tournaments.create_tournament.rating_coef_description")}
+                          </FormDescription>
+                        </div>
+                        <div className="text-sm font-semibold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                          {field.value}
+                        </div>
+                      </div>
                       <FormControl>
-                        <Input
-                          id="tournament-name-input"
-                          autoComplete="off"
-                          placeholder={t("admin.tournaments.create_tournament.name_placeholder")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem className="" id="tutorial-tournament-location">
-                      <FormLabel>{t("admin.tournaments.create_tournament.location")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="tournament-location-input"
-                          autoComplete="off"
-                          placeholder={t("admin.tournaments.create_tournament.location_placeholder")}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="start_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col" id="tutorial-tournament-start-date">
-                      <FormLabel>{t("admin.tournaments.create_tournament.start_date")}</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              id="start-date-button"
-                              variant={"outline"}
-                              className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>{t("admin.tournaments.create_tournament.start_date_placeholder")}</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="end_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col" id="tutorial-tournament-end-date">
-                      <FormLabel>{t("admin.tournaments.create_tournament.end_date")}</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              id="end-date-button"
-                              variant={"outline"}
-                              className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>{t("admin.tournaments.create_tournament.start_date_placeholder")}</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-
-
-                <FormField
-                  control={form.control}
-                  name="total_tables"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col" id="tutorial-tournament-tables">
-                      <FormLabel>{t("admin.tournaments.create_tournament.number_of_tables")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="tournament-tables-input"
-                          type="number"
-                          placeholder={t("admin.tournaments.create_tournament.number_of_tables_placeholder")}
-                          {...field}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === "") {
-                              field.onChange(0);
-                            } else {
-                              const cleanedValue = value.replace(/^0+/, '');
-                              field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
-                            }
-                          }}
-                          value={field.value === 0 ? '' : field.value}
+                        <input
+                          type="range"
+                          min={1}
+                          max={2}
+                          step={0.05}
+                          value={field.value}
+                          onChange={e => field.onChange(Number(e.target.value))}
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                         />
                       </FormControl>
                       <FormMessage />
@@ -320,93 +427,31 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                   )}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="calc_rating"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4" id="tutorial-tournament-rating">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">{t("admin.tournaments.create_tournament.ranking")}</FormLabel>
-                      <FormDescription>
-                        {t("admin.tournaments.create_tournament.ranking_description")}
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch id="tournament-rating-switch" checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
 
-              <FormField
-                control={form.control}
-                name="private"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4" id="tutorial-tournament-private">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">{t("admin.tournaments.create_tournament.private")}</FormLabel>
-                      <FormDescription>
-                        {t("admin.tournaments.create_tournament.private_description")}
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch id="tournament-private-switch" checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <CategoryInput field={field} categories={tournament_categories?.data || []} />
-                )}
-              />
-
-              {/* Pane siiia */}
-              <div className="w-full flex flex-col gap-4" id="tutorial-tournament-information">
-                <p className="text-sm">{t("admin.tournaments.create_tournament.additional_information")} </p>
-
-                <Editor value={value} setValue={setValue} readOnly={false} />
+              {/* Additional Information Section */}
+              <div className="space-y-6">
+                <div className="border-b pb-3">
+                  <h3 className="text-lg font-semibold text-gray-900">{t("admin.tournaments.create_tournament.additional_information")}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{t("admin.tournaments.create_tournament.additional_info_desc", "Optional details and description")}</p>
+                </div>
+                
+                <div className="bg-gray-50/50 rounded-lg p-4 border border-gray-200" id="tutorial-tournament-information">
+                  <Editor value={value} setValue={setValue} readOnly={false} />
+                </div>
               </div>
-              <FormField
-                control={form.control}
-                name="rating_coef"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col" id="tutorial-tournament-rating-coef">
-                    <FormLabel>{t("admin.tournaments.create_tournament.rating_coef")}</FormLabel>
-                    <FormDescription>
-                      {t("admin.tournaments.create_tournament.rating_coef_description")}
-                    </FormDescription>
-                    <FormControl>
-                      <input
-                        type="range"
-                        min={1}
-                        max={2}
-                        step={0.05}
-                        value={field.value}
-                        onChange={e => field.onChange(Number(e.target.value))}
-                        className="w-full"
-                      />
-                    </FormControl>
-                    <div className="text-sm mt-2">{field.value}</div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex flex-col-reverse gap-10 md:gap-4 md:flex-row md:justify-between" id="tutorial-tournament-create">
+
+              {/* Action Buttons */}
+              <div className="flex flex-col-reverse gap-4 pt-6 border-t md:flex-row md:justify-between" id="tutorial-tournament-create">
                 {initial_data && (
-                  <Button type="button" className="text-red-600" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
+                  <Button type="button" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
                     {t("admin.tournaments.delete")}
                   </Button>
                 )}
-                <Button id="tournament-create-button" type="submit" className="md:w-[200px] w-full">
+                <Button id="tournament-create-button" type="submit" className="md:w-[200px] w-full h-11 font-medium">
                   {initial_data
                     ? t("admin.tournaments.create_tournament.button_edit")
                     : t("admin.tournaments.create_tournament.button_create")}
                 </Button>
-
               </div>
             </form>
           </Form>
@@ -416,81 +461,3 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
   )
 }
 
-function CategoryInput({
-  field,
-  categories,
-}: {
-  field: { value: string | undefined; onChange: (v: string) => void }
-  categories: { category: string }[]
-}) {
-  const [inputValue, setInputValue] = useState(field.value || "")
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setInputValue(value)
-    field.onChange(value)
-    setShowSuggestions(true)
-  }
-
-
-  const handleSuggestionClick = (category: string) => {
-    setInputValue(category)
-    field.onChange(category)
-    setShowSuggestions(false)
-
-    if (inputRef.current) {
-      inputRef.current.value = category
-
-      const inputEvent = new Event('input', { bubbles: true })
-      const changeEvent = new Event('change', { bubbles: true })
-
-      inputRef.current.dispatchEvent(inputEvent)
-      inputRef.current.dispatchEvent(changeEvent)
-    }
-
-    inputRef.current?.focus()
-  }
-
-
-
-  const filteredCategories = categories.filter((cat) =>
-    cat.category.toLowerCase().startsWith(inputValue.toLowerCase()),
-  )
-
-  return (
-    <FormItem className="flex flex-col" id="tutorial-tournament-category">
-      <FormLabel>{t("admin.tournaments.create_tournament.category")}</FormLabel>
-      <div className="relative">
-        <FormControl>
-          <Input
-            ref={inputRef}
-            id="tournament-category-input"
-            placeholder={t("admin.tournaments.create_tournament.category_placeholder")}
-            autoComplete="off"
-            value={inputValue}
-            onChange={handleInputChange}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-          />
-        </FormControl>
-        {showSuggestions && filteredCategories.length > 0 && (
-          <ul className="absolute z-50 w-full bg-white border mt-1 max-h-60 overflow-auto rounded-md shadow-lg">
-            {filteredCategories.map((cat) => (
-              <li
-                key={cat.category}
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSuggestionClick(cat.category)}
-              >
-                {cat.category}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <FormMessage />
-    </FormItem>
-  )
-}

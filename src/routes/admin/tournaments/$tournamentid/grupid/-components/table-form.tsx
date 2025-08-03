@@ -99,7 +99,7 @@ interface TableFormProps {
   onTimetableToggle?: (enabled: boolean) => void
 }
 
-export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, onTimetableToggle }) => {
+export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) => {
 
   const { t } = useTranslation()
 
@@ -621,30 +621,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
                       {t("admin.tournaments.create_tournament.woman_weight_description")}
                     </FormDescription>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="time_table"
-                render={({ field }) => (
-                  <FormItem className="mt-5 flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">{t("admin.tournaments.timetable.timetabled_tournament")}</FormLabel>
-                      <FormDescription>
-                        {t("admin.tournaments.timetable.timetabled_tournament_desc")}
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked)
-                          onTimetableToggle?.(checked)
-                        }}
-                      />
-                    </FormControl>
                   </FormItem>
                 )}
               />

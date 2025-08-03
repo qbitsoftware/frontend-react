@@ -6,7 +6,7 @@ import Editor from "@/routes/admin/-components/yooptaeditor";
 import { useState, useMemo, useEffect } from "react";
 import { YooptaContentValue } from "@yoopta/editor";
 import { useTranslation } from "react-i18next";
-import { Calendar, Grid3X3, MapPin, Trophy, Users, ExternalLink, Navigation, RotateCcw } from 'lucide-react';
+import { Calendar, Grid3X3, MapPin, Users, ExternalLink, Navigation, RotateCcw } from 'lucide-react';
 import { ShareSection } from './-components/share-tournament';
 
 interface YooptaEditorNode {
@@ -258,17 +258,6 @@ function RouteComponent() {
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <Trophy className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      {t('competitions.category')}
-                    </p>
-                    <p className="font-medium text-gray-900">
-                      {tournament.category}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
                   <Grid3X3 className="w-5 h-5 text-gray-400" />
                   <div>
                     <p className="text-sm text-gray-500">
@@ -286,7 +275,7 @@ function RouteComponent() {
                       {t('competitions.organizer')}
                     </p>
                     <p className="font-medium text-gray-900">
-                      ELTL
+                      {tournament.organizer || 'ELTL'}
                     </p>
                   </div>
                 </div>

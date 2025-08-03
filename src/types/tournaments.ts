@@ -9,6 +9,7 @@ export type Tournament = {
   start_date: string;
   end_date: string;
   location: string;
+  organizer?: string;
   category: string;
   image: string;
   sport: string;
