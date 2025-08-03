@@ -283,14 +283,19 @@ const SeedingHeader = ({
               {t("admin.tournaments.groups.order.order_by_rating")}
             </Button>
 
-            {/* Generate Matches Button - only show when games are NOT generated */}
-            {!disabled && (
+            {/* Generate Matches Button - show when games are NOT generated, OR when it's a dynamic tournament */}
+            {(!disabled || table_data.type === GroupType.DYNAMIC) && (
               <Button
                 onClick={() => handleSeeding("rating")}
                 size="sm"
                 className="w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
               >
-                <span>{t("admin.tournaments.groups.order.title")}</span>
+                <span>
+                  {disabled && table_data.type === GroupType.DYNAMIC
+                    ? t("admin.tournaments.groups.participants.actions.generate_tables")
+                    : t("admin.tournaments.groups.order.title")
+                  }
+                </span>
                 <img src={seeds3} className="h-4 w-4 object-contain" />
               </Button>
             )}
