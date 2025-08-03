@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useRouter } from '@tanstack/react-router'
 import { TFunction } from 'i18next'
 import { Loader2 } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
@@ -34,6 +34,8 @@ const createFormSchema = (t: TFunction) => z.object({
   size: z.number(),
   time_table: z.boolean().optional(),
   second_class: z.string().optional(),
+  has_consolation: z.boolean().optional(),
+  consolation_class: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.solo) return;
 
@@ -64,6 +66,14 @@ const createFormSchema = (t: TFunction) => z.object({
       code: z.ZodIssueCode.custom,
       message: t('admin.tournaments.groups.errors.second_class'),
       path: ['second_class']
+    });
+  }
+
+  if (data.type === GroupType.DYNAMIC && data.has_consolation && data.consolation_class === "") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: t('admin.tournaments.groups.errors.consolation_class'),
+      path: ['consolation_class']
     });
   }
 
@@ -126,6 +136,8 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
         avg_match_duration: 15,
         time_table: false,
         second_class: "",
+        has_consolation: false,
+        consolation_class: "",
       },
   })
 
@@ -133,6 +145,15 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
   if (initial_data) {
     postMutation = UsePatchTournamentTable(Number(tournamentid), initial_data.id)
   }
+
+  // Automatically set solo to true when dynamic type is selected
+  const watchedType = form.watch("type");
+  useEffect(() => {
+    if (watchedType === GroupType.DYNAMIC) {
+      form.setValue("solo", true);
+      form.setValue("dialog_type", "");
+    }
+  }, [watchedType, form])
 
   const handleSubmit = async (values: TournamentTableForm) => {
     try {
@@ -151,7 +172,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
           to: `/admin/tournaments/${tournamentid}/grupid/${res.data.id}/`,
         })
       }
-    } catch (error) {
+    } catch {
       if (initial_data) {
         toast.error(t('toasts.tournament_tables.updated_error'))
       } else {
@@ -169,8 +190,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
       })
       toast.message(t('toasts.tournament_tables.deleted'))
       setShowDeleteDialog(false)
-    } catch (error) {
-      void error
+    } catch {
       toast.error(t('toasts.tournament_tables.deleted_error'))
     }
   }
@@ -262,34 +282,122 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
                   <div></div>
                 ) : form.watch("type") === GroupType.DYNAMIC ?
                   (
-                    <FormField
-                      control={form.control}
-                      name="second_class"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("admin.tournaments.create_tournament.main_bracket")}</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <>
+                      <FormItem>
+                        <FormLabel>
+                          {form.watch("type") === GroupType.DYNAMIC 
+                            ? t("admin.tournaments.create_tournament.max_participants")
+                            : t("admin.tournaments.create_tournament.tournament_size")
+                          }
+                        </FormLabel>
+                        <Select
+                          onValueChange={(value) => form.setValue("size", Number.parseInt(value, 10))}
+                          defaultValue={String(form.getValues().size || "")}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={"Vali turniiri suurus"} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {isLoading && (
+                              <SelectItem className="flex justify-center items-center" value="loading">
+                                <Loader />
+                              </SelectItem>
+                            )}
+                            {tournament_sizes && tournament_sizes.data && tournament_sizes.data.map((size) => {
+                              return (
+                                <SelectItem key={size.id} value={String(size.size)}>
+                                  {size.size}
+                                </SelectItem>
+                              )
+                            })}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                      <FormField
+                        control={form.control}
+                        name="second_class"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("admin.tournaments.create_tournament.main_bracket")}</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={t("admin.tournaments.create_tournament.main_bracket_placeholder")} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {tournament_types && tournament_types.data && tournament_types.data.map((type) => {
+                                  if (type.id === 2 || type.id === 1 || type.name === "double_elimination_tabletennis" || type.name === "double_elimination_tabletennis_top_heavy") {
+                                    return (
+                                      <SelectItem key={type.id} value={type.name}>
+                                        {t(`admin.tournaments.create_tournament.tournament_tables.${type.name}`)}
+                                      </SelectItem>
+                                    )
+                                  }
+                                })}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="has_consolation"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="">
+                              <FormLabel className="text-base">{t("admin.tournaments.create_tournament.consolation_bracket")}</FormLabel>
+                              <FormDescription>{t("admin.tournaments.create_tournament.consolation_bracket_description")}</FormDescription>
+                            </div>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder={t("admin.tournaments.create_tournament.main_bracket_placeholder")} />
-                              </SelectTrigger>
+                              <Switch
+                                checked={field.value || false}
+                                onCheckedChange={(checked) => {
+                                  field.onChange(checked);
+                                  if (!checked) {
+                                    form.setValue("consolation_class", "");
+                                  }
+                                }}
+                              />
                             </FormControl>
-                            <SelectContent>
-                              {tournament_types && tournament_types.data && tournament_types.data.map((type) => {
-                                if (type.id === 2 || type.id === 1 || type.name === "double_elimination_tabletennis" || type.name === "double_elimination_tabletennis_top_heavy") {
-                                  return (
-                                    <SelectItem key={type.id} value={type.name}>
-                                      {t(`admin.tournaments.create_tournament.tournament_tables.${type.name}`)}
-                                    </SelectItem>
-                                  )
-                                }
-                              })}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
+                          </FormItem>
+                        )}
+                      />
+                      {form.watch("has_consolation") && (
+                        <FormField
+                          control={form.control}
+                          name="consolation_class"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t("admin.tournaments.create_tournament.consolation_bracket_type")}</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={t("admin.tournaments.create_tournament.consolation_bracket_placeholder")} />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {tournament_types && tournament_types.data && tournament_types.data.map((type) => {
+                                    if (type.id === 2 || type.id === 1 || type.name === "double_elimination_tabletennis" || type.name === "double_elimination_tabletennis_top_heavy") {
+                                      return (
+                                        <SelectItem key={type.id} value={type.name}>
+                                          {t(`admin.tournaments.create_tournament.tournament_tables.${type.name}`)}
+                                        </SelectItem>
+                                      )
+                                    }
+                                  })}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       )}
-                    />
+                    </>
                   ) : form.watch("type") === GroupType.CHAMPIONS_LEAGUE ? <div></div> : (
                     <FormItem>
                       <FormLabel>{t("admin.tournaments.create_tournament.tournament_size")}</FormLabel>
@@ -324,29 +432,31 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
                     </FormItem>
                   )}
 
-                <FormField
-                  control={form.control}
-                  name="solo"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="">
-                        <FormLabel className="text-base">{t("admin.tournaments.create_tournament.team")}</FormLabel>
-                        <FormDescription>{t("admin.tournaments.create_tournament.team_description")}</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={!field.value}
-                          onCheckedChange={(checked) => {
-                            field.onChange(!checked);
-                            if (!checked) {
-                              form.setValue("dialog_type", "");
-                            }
-                          }}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+{form.watch("type") !== GroupType.DYNAMIC && (
+                  <FormField
+                    control={form.control}
+                    name="solo"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="">
+                          <FormLabel className="text-base">{t("admin.tournaments.create_tournament.team")}</FormLabel>
+                          <FormDescription>{t("admin.tournaments.create_tournament.team_description")}</FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={!field.value}
+                            onCheckedChange={(checked) => {
+                              field.onChange(!checked);
+                              if (!checked) {
+                                form.setValue("dialog_type", "");
+                              }
+                            }}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 {!form.watch("solo") && (
                   <FormField
@@ -440,7 +550,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
                 control={form.control}
                 name="woman_weight"
                 render={({ field }) => (
-                  < FormItem className="w-[1/2]">
+                  < FormItem className="w-[1/2] mt-5">
                     <FormLabel>{t("admin.tournaments.create_tournament.woman_weight")}</FormLabel>
                     <div className="grid grid-cols-[1fr,80px] items-center gap-4">
                       <FormControl>
@@ -451,7 +561,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, on
                           value={[field.value && field.value >= 1 && field.value <= 10 ? field.value : 1]}
                           onValueChange={(values) => {
                             field.onChange(values[0]);
-                            setWomanWeightInputValue(String(values[0]));
+                                setWomanWeightInputValue(String(values[0]));
                           }}
                           className="pt-2"
                         />

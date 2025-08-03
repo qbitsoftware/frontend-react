@@ -1017,7 +1017,7 @@
           "round_robin": "Round Robin"
         },
         "back": "Tagasi",
-        "edit_group": "Muuda grupi seadistusi",
+        "edit_group": "Muuda klassi seadistusi",
         "create_group": "Loo võistlusklass",
         "title_create": "Loo uus turniir",
         "woman_weight": "Naiste reitingu kaal",
@@ -1042,8 +1042,8 @@
         "number_of_tables_placeholder": "Sisestage laudade arv",
         "number_of_groups_placeholder": "Sisestage alagruppide arv",
         "group_amount": "Alagrupid",
-        "class": "Grupi nimi",
-        "class_placeholder": "Sisestage grupi nimi",
+        "class": "Võistlusklassi nimi",
+        "class_placeholder": "Sisestage klassi nimi",
         "tournament_size": "Tabeli suurus (osalejate/meeskondade arv)",
         "min_team_size": "Minimaalne tiimi suurus",
         "additional_information": "Lisa-informatsioon",
@@ -1055,7 +1055,7 @@
         },
         "end_date": "Lõppkuupäev",
         "start_date_placeholder": "Pick a date",
-        "type": "Tabeli tüüp",
+        "type": "Võistlussüsteem / Tabeli tüüp",
         "type_placeholder": "Vali turniiri tüüp",
         "max_team_size": "Maksimaalne tiimi suurus",
         "private": "Privaatne turniir",
@@ -1064,8 +1064,13 @@
         "ranking_description": "Reiting arvutatakse iga esmaspäeva hommikul",
         "team": "Meeskondadega turniir",
         "team_description": "Luba meeskondadega turniir",
-        "main_bracket": "Põhitabel",
-        "main_bracket_placeholder": "Vali Põhitabeli formaat"
+        "main_bracket": "Põhiturniiri tabel",
+        "main_bracket_placeholder": "Vali Põhitabeli formaat",
+        "consolation_bracket": "Kas toimub ka lohutusturniir?",
+        "consolation_bracket_type": "Lohutusturniiri tabel",
+        "consolation_bracket_description": "Eraldi tabel mängijatele, kes finaalturniirie ei jõudnud",
+        "consolation_bracket_placeholder": "Vali Lohutusturniiri tabeli formaat",
+        "max_participants": "Maksimaalne osalejate arv"
       },
       "tables": {
         "no_tables": "Laudu pole veel lisatud",
@@ -1143,7 +1148,8 @@
           "type": "Turniiri tüüp on kohustuslik",
           "min_team_size": "Minimaalne tiimi suurus on 2",
           "dialog_type": "Tiimi tüübi valik on nõutud",
-          "second_class": "Põhitabeli formaat on nöutud"
+          "second_class": "Põhitabeli formaat on nöutud",
+          "consolation_class": "Lohutusturniiri tabeli formaat on nöutud"
         },
         "solo": "Üksik",
         "team": "Meeskondadega",
@@ -1458,7 +1464,17 @@
         "reset": "Lähtesta",
         "generating": "Genereeritakse...",
         "timetabled_tournament": "Ajakavaga turniir",
-        "timetabled_tournament_desc": "Lülita sisse ajakava sätete näitamiseks ja mängude automaatseks ajastamiseks"
+        "timetabled_tournament_desc": "Lülita sisse ajakava sätete näitamiseks ja mängude automaatseks ajastamiseks",
+        "schedule": "Ajakava",
+        "configurations": "Ajakava seaded",
+        "configurations_description": "Konfigureeri iga võistlusklassi jaoks ajakava seaded: kas ajakava on lubatud, algusaeg ja mängu kestused",
+        "enable_timetabling": "Luba ajakava",
+        "date_range_info": "Kuupäev peab olema turniiri kuupäevade vahemikus: {{start}} - {{end}}",
+        "no_data": "Andmed puuduvad",
+        "configurations_saved": "Ajakava seaded salvestatud edukalt",
+        "configurations_save_error": "Ajakava sätete salvestamine nurjus",
+        "saving": "Salvestatakse...",
+        "save_configurations": "Salvesta seaded"
       }
     },
     "blogs": {

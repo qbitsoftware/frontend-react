@@ -1050,7 +1050,11 @@
         "team": "Doubles or Teams",
         "team_description": "Enable tournament with either doubles or team matchups",
         "main_bracket": "Main Bracket",
-        "main_bracket_placeholder": "Select Main Bracket Type"
+        "main_bracket_placeholder": "Select Main Bracket Type",
+        "consolation_bracket": "Consolation Bracket",
+        "consolation_bracket_description": "Add consolation bracket for players eliminated from main bracket",
+        "consolation_bracket_placeholder": "Select Consolation Bracket Type",
+        "max_participants": "Maximum number of participants"
       },
       "tables": {
         "no_tables": "No tables have been assigned yet",
@@ -1128,7 +1132,8 @@
           "type": "Tournament type is required",
           "min_team_size": "Minimum team size is 2",
           "dialog_type": "Team type is required",
-          "second_class": "Main bracket type is required"
+          "second_class": "Main bracket type is required",
+          "consolation_class": "Consolation bracket type is required"
         },
         "solo": "Solo",
         "team": "Teams",
@@ -1443,7 +1448,17 @@
         "reset": "Reset",
         "generating": "Generating...",
         "timetabled_tournament": "Timetabled Tournament",
-        "timetabled_tournament_desc": "Enable to show timetable settings and schedule matches automatically"
+        "timetabled_tournament_desc": "Enable to show timetable settings and schedule matches automatically",
+        "schedule": "Schedule",
+        "configurations": "Timetable Configurations",
+        "configurations_description": "Configure timetable settings for each tournament class: enable timetabling, start times, and match durations",
+        "enable_timetabling": "Enable Timetabling",
+        "date_range_info": "Date must be within tournament date range: {{start}} - {{end}}",
+        "no_data": "No data available",
+        "configurations_saved": "Timetable configurations saved successfully",
+        "configurations_save_error": "Failed to save timetable configurations",
+        "saving": "Saving...",
+        "save_configurations": "Save Configurations"
       }
     },
     "blogs": {

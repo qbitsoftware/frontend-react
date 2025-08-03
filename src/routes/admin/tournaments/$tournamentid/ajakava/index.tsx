@@ -316,11 +316,6 @@ function RouteComponent() {
 
     return (
         <div className="h-screen bg-white flex flex-col">
-            <div className="bg-white border-b px-4 py-2">
-                <h1 className="text-lg font-semibold text-gray-600">
-                    {t('competitions.timetable.view.title')}
-                </h1>
-            </div>
 
             {/* Day Tabs */}
             {tournamentDays.length > 1 && (
