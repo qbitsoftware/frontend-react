@@ -19,9 +19,9 @@ interface PDFPreviewModalProps {
 const PDF_STYLES = {
   PRINT_CSS: `
     @media print {
-      body { margin: 0; padding: 0; background: white !important; }
+      body { margin: 0; padding: 0 0 0 20px; background: white !important; }
       .debug-header, .debug-info { display: none !important; }
-      .debug-content { margin: 0 !important; padding: 0 !important; }
+      .debug-content { margin: 0 0 0 20px !important; padding: 0 !important; }
       .debug-highlight { background: transparent !important; border: none !important; }
       .bracket-connector, .bg-blue-200, .bg-blue-400 { 
         background: transparent !important; 
@@ -66,19 +66,23 @@ const PDF_STYLES = {
         text-overflow: ellipsis !important;
         padding: 4px !important;
       }
-      @page { margin: 0; size: A4; }
+      /* Add left margin to main content containers */
+      body > div, .bracket-container, #bracket-container, [id^="bracket-container"] {
+        margin-left: 30px !important;
+      }
+      @page { margin: 0 0 0 40px; size: A4; }
       .round-robin-page { page: round-robin; }
-      @page round-robin { size: A4 landscape; margin: 0; }
+      @page round-robin { size: A4 landscape; margin: 0 0 0 20px; }
       /* Alternative approach for better browser support */
-      @page :has(.round-robin-page) { size: A4 landscape; margin: 0; }
-      /* Force landscape for round robin with different selectors */
+      @page :has(.round-robin-page) { size: A4 landscape; margin: 0 0 0 20px; }
+      /* Force landscape for round robin with different  selectors */
       body:has(.round-robin-page) { page: landscape-forced; }
-      @page landscape-forced { size: A4 landscape; margin: 0; }
+      @page landscape-forced { size: A4 landscape; margin: 0 0 0 20px; }
     }
   `,
   
   SCREEN_CSS: `
-    body { margin: 0; padding: 20px; font-family: system-ui; background: #f3f4f6; }
+    body { margin: 0; padding: 20px 20px 20px 50px; font-family: system-ui; background: #f3f4f6; }
     .debug-header { 
       position: fixed; top: 0; left: 0; right: 0; background: #1f2937; 
       color: white; padding: 10px 20px; z-index: 9999; 
@@ -152,13 +156,19 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
   container.querySelectorAll(".text-xs").forEach((el) => {
     const htmlEl = el as HTMLElement;
+    const textContent = htmlEl.textContent?.trim() || "";
+    
+    if (textContent.includes("(Bye)") || textContent === "(Bye)") {
+      htmlEl.style.marginLeft = "25px"; 
+    }
+    
     const isParticipant = htmlEl.classList.contains("cursor-pointer") ||
-      (htmlEl.textContent?.trim() && htmlEl.textContent.trim().length > 2 && 
-       !htmlEl.textContent?.includes("Table") && 
-       !htmlEl.textContent?.includes("(Bye)"));
+      (textContent && textContent.length > 2 && 
+       !textContent.includes("Table") && 
+       !textContent.includes("(Bye)"));
     
     if (isParticipant) {
-      const nameLength = htmlEl.textContent?.trim()?.length || 0;
+      const nameLength = textContent.length;
       if (nameLength > 25) htmlEl.className = htmlEl.className.replace("text-xs", "text-[10px]");
       else if (nameLength <= 12) htmlEl.className = htmlEl.className.replace("text-xs", "text-sm");
     }
@@ -849,11 +859,11 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
               
               if (correspondingMatchItem) {
                 item.element.style.position = 'absolute';
-                const leftOffset = 0; // No offset for 64-player brackets
+                const leftOffset = 0; 
                 item.element.style.left = `${correspondingMatchItem.originalLeft - minLeft - leftOffset + 198 + 0}px`; // 198px (match width) + 8px spacing
                 item.element.style.top = `${correspondingMatchItem.originalTop - minTop + 95}px`; // Start from top with title space 
                 item.element.style.zIndex = '1000';
-                item.element.style.pointerEvents = 'none'; // Don't interfere with interactions
+                item.element.style.pointerEvents = 'none'; 
                 
                 matchContainer.appendChild(item.element);
                 console.log(`Moved match ID ${item.element.textContent?.trim()} to right side of match`);
@@ -863,9 +873,9 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
           }
           
           item.element.style.position = 'absolute';
-          const leftOffset = 0; // No offset for 64-player brackets
+          const leftOffset = 0; 
           item.element.style.left = `${item.originalLeft - minLeft - leftOffset}px`;
-          item.element.style.top = `${item.originalTop - minTop + 80}px`; // 80px to account for title
+          item.element.style.top = `${item.originalTop - minTop + 80}px`; 
           
           matchContainer.appendChild(item.element);
         }
