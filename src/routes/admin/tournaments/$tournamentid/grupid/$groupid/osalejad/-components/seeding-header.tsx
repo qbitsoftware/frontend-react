@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { MatchesResponse, UseGetMatchesQuery } from "@/queries/match";
-import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantJoin } from "@/queries/participants";
+import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantJoin, UsePostParticipantMove } from "@/queries/participants";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import seeds3 from "@/assets/seeds3.png";
 import { DialogType, TournamentTable } from "@/types/groups";
 import { toast } from 'sonner';
-import { GroupType } from "@/types/matches";
+import { GroupType, TTState } from "@/types/matches";
 import { Participant } from "@/types/participants";
 import {
   AlertDialog,
@@ -45,6 +45,7 @@ const SeedingHeader = ({
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
   const assignPairs = UsePostParticipantJoin(tournament_id, table_data.id, 'doubles')
   const assignRoundRobin = UsePostParticipantJoin(tournament_id, table_data.id, 'dynamic')
+  const moveParticipant = UsePostParticipantMove(tournament_id, table_data.id);
   const importMutation = UseImportParticipants(tournament_id, table_data.id)
   const [showWarningModal, setShowWarningModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -197,6 +198,16 @@ const SeedingHeader = ({
     }
   }
 
+  const handleParticipantMoving = async () => {
+    try {
+      await moveParticipant.mutateAsync()
+      toast.message("Siia tuleb toast, aga success")
+    } catch (error) {
+      void error
+      toast.error("siia tuleb toast, aga mingi kala on kuskil")
+    }
+  }
+
   const handleDownloadTemplate = () => {
     let headers: string[];
     let filename: string;
@@ -247,15 +258,12 @@ const SeedingHeader = ({
               {(() => {
                 if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
                   const pairs = participants.filter((participant) => participant.players.length > 1);
-                  console.log("hello")
-                  console.log(pairs.length)
                   return pairs.length;
                 }
                 if (table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
                   return participants.filter((participant) => participant.type === "round_robin").length;
                 }
                 if (table_data.type == GroupType.DYNAMIC) {
-                  console.log("HELELELEEL")
                   return participants.filter((participant) => participant.type !== "round_robin").length;
                 }
                 return participants.length;
@@ -331,7 +339,7 @@ const SeedingHeader = ({
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
-                </AlertDialog>
+              </AlertDialog>
             )}
 
             {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
@@ -354,12 +362,20 @@ const SeedingHeader = ({
                 <span>{t("admin.tournaments.groups.participants.actions.generate_subgroups")}</span>
               </Button>
             )}
+            {table_data.type === GroupType.DYNAMIC && table_data.state == TTState.TT_STATE_FINISHED && (
+              <Button
+                // disabled={disabled}
+                onClick={handleParticipantMoving}
+                size="sm"
+                className="w-full h-9 text-sm font-medium flex items-center justify-center gap-1.5 bg-midnightTable hover:bg-midnightTable/90"
+              >
+                <span>Vii Mangijad edasi jargmisesse vooru</span>
+              </Button>
+            )}
 
           </div>
 
           <div className="flex flex-col gap-2 flex-1">
-            <div className="text-xs font-medium text-gray-600 sm:hidden">Excel Actions</div>
-            
             <Button
               onClick={handleDownloadTemplate}
               variant="outline"
@@ -370,7 +386,7 @@ const SeedingHeader = ({
               {t('admin.tournaments.groups.import.download_template', 'Download Template')}
               <FileSpreadsheet className="h-3 w-3 text-green-600" />
             </Button>
-            
+
             <input
               ref={fileInputRef}
               type="file"

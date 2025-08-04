@@ -1435,6 +1435,9 @@
         "network": {
           "title": "Serveri viga",
           "description": "Serveril tekkis probleeme turniiride leidmisega"
+        },
+        "general": {
+          "max_sets": "Maksimaalselt on lubatud 7 geimi parimast 7-st!"
         }
       },
       "table": {

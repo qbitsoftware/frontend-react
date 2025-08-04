@@ -10,6 +10,17 @@ export interface TournamentTableResponse {
     error: string | null;
 }
 
+export interface TournamentTableWithStagesResponse {
+    data: TournamentTableWithStages
+    message: string;
+    error: string | null;
+}
+
+interface TournamentTableWithStages {
+    group: TournamentTable | null;
+    stages: TournamentTable[] | null;
+}
+
 interface TournamentTablesResponse {
     data: TournamentTable[] | null
     message: string;
@@ -46,7 +57,7 @@ export function UseGetTournamentTablesQuery(tournament_id: number) {
 
 
 export const UseGetTournamentTable = (tournament_id: number, tournament_table_id: number) => {
-    return queryOptions<TournamentTableResponse>({
+    return queryOptions<TournamentTableWithStagesResponse>({
         queryKey: ["tournament_table", tournament_table_id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}`, {
@@ -60,7 +71,7 @@ export const UseGetTournamentTable = (tournament_id: number, tournament_table_id
 }
 
 export const UseGetTournamentTableQuery = (tournament_id: number, tournament_table_id: number) => {
-    return useQuery<TournamentTableResponse>({
+    return useQuery<TournamentTableWithStagesResponse>({
         queryKey: ["tournament_table", tournament_table_id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}`, {
