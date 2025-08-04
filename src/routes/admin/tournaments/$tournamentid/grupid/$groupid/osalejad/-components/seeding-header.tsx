@@ -57,7 +57,7 @@ const SeedingHeader = ({
   const checkPowerOf2Warning = (): boolean => {
     let participantCount = participants?.length || 0;
     if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-      const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
+      const pairs = participants?.filter((participant) => participant.players.length == 2) || [];
       participantCount = pairs.length;
     }
 
@@ -121,7 +121,7 @@ const SeedingHeader = ({
   const getWarningMessage = () => {
     let participantCount = participants?.length || 0;
     if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-      const pairs = participants?.filter((participant) => participant.extra_data?.is_parent === true) || [];
+      const pairs = participants?.filter((participant) => participant.players.length == 2) || [];
       participantCount = pairs.length;
     }
 
@@ -246,18 +246,24 @@ const SeedingHeader = ({
             <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] text-sm">
               {(() => {
                 if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-                  const pairs = participants.filter((participant) => participant.extra_data?.is_parent === true);
+                  const pairs = participants.filter((participant) => participant.players.length > 1);
+                  console.log("hello")
+                  console.log(pairs.length)
                   return pairs.length;
                 }
                 if (table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
                   return participants.filter((participant) => participant.type === "round_robin").length;
+                }
+                if (table_data.type == GroupType.DYNAMIC) {
+                  console.log("HELELELEEL")
+                  return participants.filter((participant) => participant.type !== "round_robin").length;
                 }
                 return participants.length;
               })()} / {table_data.size}{" "}
             </p>
             {(table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) && (
               <p className="bg-blue-50 font-medium px-3 py-1 rounded-full border border-blue-200 text-blue-700 text-sm">
-                {participants.filter((participant) => participant.extra_data?.is_parent === false).length} {t('admin.tournaments.participants.players')}
+                {participants.filter((participant) => participant.players.length == 1).length} {t('admin.tournaments.participants.players')}
               </p>
             )}
           </div>
@@ -265,13 +271,10 @@ const SeedingHeader = ({
       </div>
 
       <div className="flex flex-col gap-3 w-full">
-        {/* Main Action Row */}
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           {/* Left Column - Tournament Management */}
           <div className="flex flex-col gap-2 flex-1">
             <div className="text-xs font-medium text-gray-600 sm:hidden">Tournament Management</div>
-            
-            {/* Order by Rating Button */}
             <Button
               onClick={handleOrder}
               disabled={disabled}
@@ -283,7 +286,6 @@ const SeedingHeader = ({
               {t("admin.tournaments.groups.order.order_by_rating")}
             </Button>
 
-            {/* Generate Matches Button - show when games are NOT generated, OR when it's a dynamic tournament */}
             {(!disabled || table_data.type === GroupType.DYNAMIC) && (
               <Button
                 onClick={() => handleSeeding("rating")}
@@ -300,7 +302,6 @@ const SeedingHeader = ({
               </Button>
             )}
 
-            {/* Reset Games Button - only show when games ARE generated */}
             {disabled && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -333,7 +334,6 @@ const SeedingHeader = ({
                 </AlertDialog>
             )}
 
-            {/* Pairing buttons (conditionally shown) */}
             {table_data.dialog_type === DialogType.DT_FIXED_DOUBLES && (
               <Button
                 disabled={disabled}
@@ -371,7 +371,6 @@ const SeedingHeader = ({
               <FileSpreadsheet className="h-3 w-3 text-green-600" />
             </Button>
             
-            {/* Import Excel Button */}
             <input
               ref={fileInputRef}
               type="file"

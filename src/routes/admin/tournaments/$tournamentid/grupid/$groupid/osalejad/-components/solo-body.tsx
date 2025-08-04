@@ -1,4 +1,4 @@
-import { TournamentTable } from '@/types/groups'
+import { TournamentTable, DialogType } from '@/types/groups'
 import { Participant } from '@/types/participants'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { ParticipantFormValues } from '../../../../-components/participant-forms/form-utils'
@@ -134,8 +134,13 @@ export default function SoloParticipants({ participants, group_participant, tour
                                 {participants && participants.map((participant, key) => (
                                     <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} renderRR={renderRR} />
                                 ))}
-
-                                {(tournament_table.size > participants.length || group_participant || tournament_table.type == GroupType.DYNAMIC) && <TableRow>
+                                {(() => {
+                                    console.log(participants)
+                                    if (tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                                        return tournament_table.size > participants.length / 2;
+                                    }
+                                    return tournament_table.size > participants.length || group_participant || tournament_table.type == GroupType.DYNAMIC;
+                                })() && <TableRow>
                                     <TableCell colSpan={2}></TableCell>
                                     <TableCell colSpan={6} className="p-4">
                                         <div className="flex gap-3 items-center max-w-xs">
