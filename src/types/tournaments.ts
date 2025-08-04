@@ -20,6 +20,8 @@ export type Tournament = {
   media: string;
   rating_coef: number;
   color?: string;
+  registration_type: string;
+  registration_link?: string;
 };
 
 export type TournamentInformation = {

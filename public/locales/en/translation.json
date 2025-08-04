@@ -577,6 +577,11 @@
     "registration_info": "Registration required for participation",
     "welcome_message": "Welcome to this tournament! Registration is available on-site.",
     "onsite_registration_only": "Registration only on-site",
+    "registration_google_forms_description": "Registration to this tournament is through Google Forms",
+    "registration_google_forms_button": "Register via Google Forms",
+    "registration_excel_description": "Registration to this tournament is through Excel",
+    "registration_excel_button": "Register via Excel",
+    "registration_onsite_description": "Registration to this tournament is on-site",
     "about_event": "About This Event",
     "view_in_maps": "View in Maps",
     "contact_organizer": "Contact Organizer",
@@ -986,7 +991,8 @@
           "total_tables_max": "Total tables must be at most 200",
           "category": "Category is required",
           "rating_coef_min": "Rating coefficient must be at least 1",
-          "rating_coef_max": "Rating coefficient must be at most 2"
+          "rating_coef_max": "Rating coefficient must be at most 2",
+          "registration_type": "Registration type is required"
         },
         "tournament_tables": {
           "single_elimination": "Single Elimination (No bronze)",
@@ -1061,7 +1067,16 @@
         "consolation_bracket": "Consolation Bracket",
         "consolation_bracket_description": "Add consolation bracket for players eliminated from main bracket",
         "consolation_bracket_placeholder": "Select Consolation Bracket Type",
-        "max_participants": "Maximum number of participants"
+        "max_participants": "Maximum number of participants",
+        "registration_type": "Registration",
+        "registration_type_placeholder": "Select registration type",
+        "registration_onsite": "Registration on-site at the venue",
+        "registration_google_forms": "Google Forms",
+        "registration_excel": "Excel",
+        "google_forms_link": "Google Forms Link",
+        "google_forms_link_placeholder": "Enter Google Forms URL",
+        "excel_link": "Excel Sheet Link",
+        "excel_link_placeholder": "Enter Excel sheet URL"
       },
       "tables": {
         "no_tables": "No tables available",

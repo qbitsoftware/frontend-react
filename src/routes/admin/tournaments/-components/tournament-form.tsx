@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Loader2 } from "lucide-react"
+import { CalendarIcon, Loader2, Building, FileText, FileSpreadsheet } from "lucide-react"
 import { useRouter } from "@tanstack/react-router"
 
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   UsePostTournament,
   UsePatchTournament,
@@ -49,6 +50,8 @@ const createFormSchema = (t: TFunction) => z.object({
   private: z.boolean(),
   calc_rating: z.boolean(),
   rating_coef: z.number().min(1, { message: t("admin.tournaments.create_tournament.errors.rating_coef_min") }).max(2, { message: t("admin.tournaments.create_tournament.errors.rating_coef_max") }),
+  registration_type: z.string({ message: t("admin.tournaments.create_tournament.errors.registration_type") }),
+  registration_link: z.string().optional(),
 })
 
 export type TournamentFormValues = z.infer<ReturnType<typeof createFormSchema>>
@@ -87,6 +90,8 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         private: false,
         calc_rating: false,
         rating_coef: 1,
+        registration_type: "onsite",
+        registration_link: "",
       },
   })
 
@@ -346,6 +351,76 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                       </FormItem>
                     )}
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="registration_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">{t("admin.tournaments.create_tournament.registration_type", "Registration")}</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-10">
+                              <SelectValue placeholder={t("admin.tournaments.create_tournament.registration_type_placeholder", "Select registration type")} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="onsite">
+                              <div className="flex items-center gap-2">
+                                <Building className="h-4 w-4" />
+                                {t("admin.tournaments.create_tournament.registration_onsite", "Registration on-site at the venue")}
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="google_forms">
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-purple-600" />
+                                {t("admin.tournaments.create_tournament.registration_google_forms", "Google Forms")}
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="excel">
+                              <div className="flex items-center gap-2">
+                                <FileSpreadsheet className="h-4 w-4 text-green-600" />
+                                {t("admin.tournaments.create_tournament.registration_excel", "Excel")}
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {(form.watch("registration_type") === "google_forms" || form.watch("registration_type") === "excel") && (
+                    <FormField
+                      control={form.control}
+                      name="registration_link"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            {form.watch("registration_type") === "google_forms" 
+                              ? t("admin.tournaments.create_tournament.google_forms_link", "Google Forms Link")
+                              : t("admin.tournaments.create_tournament.excel_link", "Excel Sheet Link")
+                            }
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              autoComplete="off"
+                              placeholder={
+                                form.watch("registration_type") === "google_forms"
+                                  ? t("admin.tournaments.create_tournament.google_forms_link_placeholder", "Enter Google Forms URL")
+                                  : t("admin.tournaments.create_tournament.excel_link_placeholder", "Enter Excel sheet URL")
+                              }
+                              className="h-10"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
               </div>
 

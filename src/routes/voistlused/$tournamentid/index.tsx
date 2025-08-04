@@ -6,7 +6,7 @@ import Editor from "@/routes/admin/-components/yooptaeditor";
 import { useState, useMemo, useEffect } from "react";
 import { YooptaContentValue } from "@yoopta/editor";
 import { useTranslation } from "react-i18next";
-import { Calendar, Grid3X3, MapPin, Users, ExternalLink, Navigation, RotateCcw } from 'lucide-react';
+import { Calendar, Grid3X3, MapPin, Users, ExternalLink, Navigation, RotateCcw, Building, FileText, FileSpreadsheet } from 'lucide-react';
 import { ShareSection } from './-components/share-tournament';
 
 interface YooptaEditorNode {
@@ -171,6 +171,46 @@ function RouteComponent() {
 
   const status = getStatusInfo();
 
+  const getRegistrationInfo = () => {
+    const type = tournament.registration_type;
+    
+    switch (type) {
+      case 'google_forms':
+        return {
+          icon: FileText,
+          color: 'text-purple-600',
+          bgColor: 'bg-purple-600 hover:bg-purple-700',
+          text: t('competitions.registration_google_forms_description', 'Registration to this tournament is through Google Forms'),
+          buttonText: t('competitions.registration_google_forms_button', 'Register via Google Forms'),
+          link: tournament.registration_link,
+          disabled: !tournament.registration_link
+        };
+      case 'excel':
+        return {
+          icon: FileSpreadsheet,
+          color: 'text-green-600',
+          bgColor: 'bg-green-600 hover:bg-green-700',
+          text: t('competitions.registration_excel_description', 'Registration to this tournament is through Excel'),
+          buttonText: t('competitions.registration_excel_button', 'Register via Excel'),
+          link: tournament.registration_link,
+          disabled: !tournament.registration_link
+        };
+      case 'onsite':
+      default:
+        return {
+          icon: Building,
+          color: 'text-gray-600',
+          bgColor: 'bg-gray-400',
+          text: t('competitions.registration_onsite_description', 'Registration to this tournament is on-site'),
+          buttonText: t('competitions.onsite_registration_only', 'Registration only on-site'),
+          link: null,
+          disabled: true
+        };
+    }
+  };
+
+  const registrationInfo = getRegistrationInfo();
+
   const mapsEmbedUrl = (() => {
     if (showDirections && userLocation && coordinates) {
       return `https://maps.google.com/maps?saddr=${userLocation.lat},${userLocation.lng}&daddr=${coordinates.lat},${coordinates.lng}&dirflg=d&output=embed`;
@@ -227,18 +267,32 @@ function RouteComponent() {
                 {t('competitions.registration')}
               </h3>
               <div className="flex items-center gap-3 mb-6">
-                <Users className="w-5 h-5 text-gray-400" />
+                <registrationInfo.icon className={`w-5 h-5 ${registrationInfo.color}`} />
                 <p className="text-gray-600">
-                  {t('competitions.registration_info')}
+                  {registrationInfo.text}
                 </p>
               </div>
-              <button
-                type="button"
-                className="w-full bg-gray-400 text-white rounded-lg py-3 px-4 font-medium cursor-not-allowed"
-                disabled={true}
-              >
-                {t('competitions.onsite_registration_only')}
-              </button>
+              {registrationInfo.link ? (
+                <a
+                  href={registrationInfo.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 px-4 font-medium transition-colors inline-flex items-center justify-center gap-2`}
+                >
+                  <registrationInfo.icon className="w-4 h-4" />
+                  {registrationInfo.buttonText}
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 px-4 font-medium cursor-not-allowed inline-flex items-center justify-center gap-2`}
+                  disabled={registrationInfo.disabled}
+                >
+                  <registrationInfo.icon className="w-4 h-4" />
+                  {registrationInfo.buttonText}
+                </button>
+              )}
             </div>
 
             {tournament.information && hasContent && (
