@@ -34,21 +34,21 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { table_data } = Route.useLoaderData()
   const [showTimetable, setShowTimetable] = useState<boolean>(
-    table_data?.data?.time_table|| false
+    table_data?.data?.group?.time_table|| false
   )
 
-  if (!table_data || !table_data.data) {
+  if (!table_data || !table_data.data || !table_data.data.group) {
     return <></>
   }
   
   return (
     <div>
       <TournamentTableForm 
-        initial_data={table_data.data} 
+        initial_data={table_data.data.group} 
         onTimetableToggle={setShowTimetable}
       />
       {showTimetable && (
-        <TimetableForm tournament_table={table_data.data} />
+        <TimetableForm tournament_table={table_data.data.group} />
       )}
     </div>
   )

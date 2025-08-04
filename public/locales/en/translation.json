@@ -1419,6 +1419,9 @@
         "network": {
           "title": "Network error",
           "description": "An error occurred while fetching tournaments"
+        },
+        "general": {
+          "max_sets": "A maximum of 7 scores are allowed for best of 7!"
         }
       },
       "table": {
