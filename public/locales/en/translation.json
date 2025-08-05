@@ -581,7 +581,13 @@
     "registration_google_forms_button": "Register via Google Forms",
     "registration_excel_description": "Registration to this tournament is through Excel",
     "registration_excel_button": "Register via Excel",
+    "registration_email_description": "Registration to this tournament is by email",
+    "registration_email_button": "Register via Email",
+    "registration_email_not_provided": "Email not provided",
     "registration_onsite_description": "Registration to this tournament is on-site",
+    "registered_players_list": "Registered Players List",
+    "registered_players_description": "View the current list of registered participants",
+    "view_registered_players": "View List",
     "about_event": "About This Event",
     "view_in_maps": "View in Maps",
     "contact_organizer": "Contact Organizer",
@@ -992,7 +998,8 @@
           "category": "Category is required",
           "rating_coef_min": "Rating coefficient must be at least 1",
           "rating_coef_max": "Rating coefficient must be at most 2",
-          "registration_type": "Registration type is required"
+          "registration_type": "Registration type is required",
+          "invalid_url": "URL must start with https:// or http://"
         },
         "tournament_tables": {
           "single_elimination": "Single Elimination (No bronze)",
@@ -1068,15 +1075,20 @@
         "consolation_bracket_description": "Add consolation bracket for players eliminated from main bracket",
         "consolation_bracket_placeholder": "Select Consolation Bracket Type",
         "max_participants": "Maximum number of participants",
-        "registration_type": "Registration",
+        "registration_type": "How should players register?",
         "registration_type_placeholder": "Select registration type",
         "registration_onsite": "Registration on-site at the venue",
         "registration_google_forms": "Google Forms",
         "registration_excel": "Excel",
+        "registration_email": "By Email",
         "google_forms_link": "Google Forms Link",
         "google_forms_link_placeholder": "Enter Google Forms URL",
         "excel_link": "Excel Sheet Link",
-        "excel_link_placeholder": "Enter Excel sheet URL"
+        "excel_link_placeholder": "Enter Excel sheet URL",
+        "email_address": "Email Address",
+        "email_address_placeholder": "Enter email address",
+        "registered_players_link": "Registered Players List Link (Optional)",
+        "registered_players_link_placeholder": "Enter link where players can see registered participants"
       },
       "tables": {
         "no_tables": "No tables available",

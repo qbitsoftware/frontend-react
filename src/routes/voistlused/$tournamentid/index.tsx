@@ -6,7 +6,7 @@ import Editor from "@/routes/admin/-components/yooptaeditor";
 import { useState, useMemo, useEffect } from "react";
 import { YooptaContentValue } from "@yoopta/editor";
 import { useTranslation } from "react-i18next";
-import { Calendar, Grid3X3, MapPin, Users, ExternalLink, Navigation, RotateCcw, Building, FileText, FileSpreadsheet } from 'lucide-react';
+import { Calendar, Grid3X3, MapPin, Users, ExternalLink, Navigation, RotateCcw, Building, FileText, FileSpreadsheet, Mail } from 'lucide-react';
 import { ShareSection } from './-components/share-tournament';
 
 interface YooptaEditorNode {
@@ -179,7 +179,7 @@ function RouteComponent() {
         return {
           icon: FileText,
           color: 'text-purple-600',
-          bgColor: 'bg-purple-600 hover:bg-purple-700',
+          bgColor: 'bg-purple-500 hover:bg-purple-700',
           text: t('competitions.registration_google_forms_description', 'Registration to this tournament is through Google Forms'),
           buttonText: t('competitions.registration_google_forms_button', 'Register via Google Forms'),
           link: tournament.registration_link,
@@ -189,11 +189,21 @@ function RouteComponent() {
         return {
           icon: FileSpreadsheet,
           color: 'text-green-600',
-          bgColor: 'bg-green-600 hover:bg-green-700',
+          bgColor: 'bg-green-500 hover:bg-green-700',
           text: t('competitions.registration_excel_description', 'Registration to this tournament is through Excel'),
           buttonText: t('competitions.registration_excel_button', 'Register via Excel'),
           link: tournament.registration_link,
           disabled: !tournament.registration_link
+        };
+      case 'email':
+        return {
+          icon: Mail,
+          color: 'text-blue-600',
+          bgColor: 'bg-[#4C97F1] hover:bg-blue-300',
+          text: t('competitions.registration_email_description', 'Registration to this tournament is by email'),
+          buttonText: tournament.registration_link || t('competitions.registration_email_not_provided', 'Email not provided'),
+          link: null,
+          disabled: true
         };
       case 'onsite':
       default:
@@ -294,6 +304,33 @@ function RouteComponent() {
                 </button>
               )}
             </div>
+
+            {tournament.registered_players_link && (
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Users className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">
+                        {t('competitions.registered_players_list', 'Registered Players List')}
+                      </h3>
+                      <p className="text-xs text-gray-600">
+                        {t('competitions.registered_players_description', 'View the current list of registered participants')}
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href={tournament.registered_players_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#4C97F1] hover:bg-blue-700 text-white rounded-md py-2 px-3 text-sm font-medium transition-colors inline-flex items-center gap-2"
+                  >
+                    {t('competitions.view_registered_players', 'View List')}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+            )}
 
             {tournament.information && hasContent && (
               <div>

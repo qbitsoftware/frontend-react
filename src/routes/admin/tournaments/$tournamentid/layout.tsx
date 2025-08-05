@@ -51,7 +51,7 @@ function RouteComponent() {
   const { selectedGroup } = Route.useSearch();
   const { t } = useTranslation();
   const tournament_tables = UseGetTournamentTablesQuery(Number(tournamentid));
-
+  
   // Extract current group ID from URL path if we're on a group-specific route
   const currentGroupId = React.useMemo(() => {
     const pathMatch = location.pathname.match(/\/grupid\/(\d+)/);
@@ -76,7 +76,7 @@ function RouteComponent() {
   const handleGroupsMouseLeave = () => {
     groupsHoverTimeoutRef.current = setTimeout(() => {
       setShowGroupsDropdown(false);
-    }, 150);
+    }, 200);
   };
 
   useEffect(() => {
@@ -119,7 +119,7 @@ function RouteComponent() {
   return (
     <div className="mx-auto min-h-[95vh] h-full">
       <div className="w-full relative">
-        <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-between items-start lg:items-center w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20">
+        <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-between items-start lg:items-center w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20 overflow-visible">
           <div className="flex items-center gap-2 flex-shrink-0">
             <Link to="/admin/tournaments">
               <Button
@@ -134,9 +134,9 @@ function RouteComponent() {
               {tournament_data.data?.name}
             </h5>
           </div>
-          <div className="relative w-full lg:w-auto overflow-hidden">
+          <div className="relative w-full lg:w-auto overflow-visible">
             <Tabs value={currentTab} className="w-full lg:w-auto">
-              <div className="w-full overflow-x-auto">
+              <div className="w-full overflow-x-auto overflow-y-visible">
                 <TabsList className="p-1 md:p-0 flex flex-row justify-start items-center gap-1 px-1 min-w-max">
                   <Link to={`/admin/tournaments/${tournamentid}`}>
                     <TabsTrigger
@@ -208,7 +208,7 @@ function RouteComponent() {
               tournament_tables.data.data && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full mt-2 w-100 bg-white border border-gray-200 rounded-xl shadow-2xl z-[999999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-visible flex flex-col"
+                  className="absolute top-full mt-2 pt-2 w-100 bg-white border border-gray-200 rounded-xl shadow-2xl z-[999999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-visible flex flex-col"
                   style={{
                     left: dropdownPosition.left,
                     right: dropdownPosition.right,
@@ -218,7 +218,7 @@ function RouteComponent() {
                   onMouseLeave={handleGroupsMouseLeave}
                 >
                   <GroupDropdown
-                    groups={tournament_tables.data.data}
+                    groups={tournament_tables.data?.data || []}
                     tournament_id={Number(tournamentid)}
                   />
                 </div>
