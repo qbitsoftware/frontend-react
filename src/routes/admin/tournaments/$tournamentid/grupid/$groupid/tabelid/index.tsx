@@ -98,7 +98,7 @@ function RouteComponent() {
     );
   } else {
     const availableTables = tablesQuery.data.data || [];
-    const groupIds = tournamentTableData.data.stages?.map((stage) => stage.id) || [];
+    const groupIds = tournamentTableData.data.stages?.map((stage) => stage.id) || [groupId];
 
     return (
       <div className="min-h-screen px-2">

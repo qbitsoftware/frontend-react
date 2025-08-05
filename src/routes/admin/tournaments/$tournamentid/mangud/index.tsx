@@ -32,11 +32,21 @@ function RouteComponent() {
   useEffect(() => {
     if (tablesQuery.data?.data && tablesQuery.data.data.length > 0) {
       const targetGroupId = selectedGroup
-        ? tablesQuery.data.data.find(table => table.id.toString() === selectedGroup)?.id
+        ? (() => {
+          const tableMatch = tablesQuery.data.data.find(table => table.id.toString() === selectedGroup)
+          if (tableMatch) return tableMatch.id
+
+          for (const table of tablesQuery.data.data) {
+            const stageMatch = table.stages?.find(stage => stage.id.toString() === selectedGroup)
+            if (stageMatch) return stageMatch.id
+          }
+
+          return null
+        })()
         : tablesQuery.data.data[0].id
-      
+
       const groupId = targetGroupId || tablesQuery.data.data[0].id
-      
+
       navigate({
         to: '/admin/tournaments/$tournamentid/grupid/$groupid/mangud',
         params: {

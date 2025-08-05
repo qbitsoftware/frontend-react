@@ -32,9 +32,10 @@ interface Props {
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
     renderRR?: boolean
+    isSecondary?: boolean
 }
 
-export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams, renderRR }: Props) {
+export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams, renderRR, isSecondary }: Props) {
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: participant.id })
 
@@ -114,6 +115,9 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
     }
 
     const handleDeleteParticipant = () => {
+        if (setSelectedTeams && selectedTeams) {
+            setSelectedTeams({ p1_id: "", p2_id: "", type: selectedTeams.type })
+        }
         try {
             deleteParticipant(participantState)
             toast.message(t("toasts.participants.deleted"))
@@ -153,7 +157,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
     }
 
     const handleRowClick = () => {
-        if (editing) return
+        if (editing || isSecondary) return
 
         if (setSelectedTeams) {
             // For Round robin

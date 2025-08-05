@@ -5,7 +5,7 @@ import { ParticipantsResponse } from "@/queries/participants"
 import { Button } from "@/components/ui/button"
 import { useParticipantUtils } from "@/hooks/useParticipantUtils"
 import { useTranslation } from "react-i18next"
-import { TournamentTable } from "@/types/groups"
+import { DialogType, TournamentTable } from "@/types/groups"
 import { GroupType } from "@/types/matches"
 import { filterGroups } from "./participant-utils"
 import GroupInput from "./group-input"
@@ -16,20 +16,36 @@ import { cn } from "@/lib/utils"
 
 interface NewSoloProps {
     participant_data: ParticipantsResponse
+    all_participants: Participant[] | null
     tournament_id: number
     tournament_table: TournamentTable
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
     renderRR?: boolean
+    isSecondary?: boolean
 }
 
-export const NewSolo = ({ participant_data, tournament_id, tournament_table, selectedTeams, setSelectedTeams, renderRR = false }: NewSoloProps) => {
+export const NewSolo = ({ participant_data, all_participants, tournament_id, tournament_table, selectedTeams, setSelectedTeams, renderRR = false, isSecondary }: NewSoloProps) => {
     const { addOrUpdateParticipant, addNewRoundRobinGroup } = useParticipantUtils(tournament_id, tournament_table.id)
 
     const [participants, setParticipantsState] = useState<Participant[]>([])
+    const [isDisabledInput, setIsDisabledInput] = useState(false)
     useEffect(() => {
         if (participant_data && participant_data.data) {
             setParticipantsState(participant_data.data)
+        }
+        if (all_participants && tournament_table.type === GroupType.DYNAMIC) {
+            setIsDisabledInput(all_participants.filter(p => p.group_name === "round_robin").length >= tournament_table.size)
+        } else if (all_participants && (tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES)) {
+            let counter = 0
+            all_participants.map((p) => {
+                if (p.players) {
+                    counter += p.players.length
+                }
+            })
+            if (Math.floor(counter / 2) >= tournament_table.size || isSecondary) {
+                setIsDisabledInput(true)
+            }
         }
     }, [participant_data])
 
@@ -64,6 +80,7 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table, sel
                                 selectedTeams={selectedTeams}
                                 setSelectedTeams={setSelectedTeams}
                                 renderRR={renderRR}
+                                isSecondary={isSecondary}
                             />
                         </div>
                     )
@@ -90,6 +107,8 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table, sel
             addOrUpdateParticipant={addOrUpdateParticipant}
             selectedTeams={selectedTeams}
             setSelectedTeams={setSelectedTeams}
+            disableInputForDynamic={isDisabledInput}
+            isSecondary={isSecondary}
         />
     )
 }

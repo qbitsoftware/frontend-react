@@ -49,6 +49,8 @@ export function UseGetTournamentTablesQuery(tournament_id: number) {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables`, {
                 withCredentials: true,
             })
+
+            console.log("Tournament Tables Data:", data);
             return data;
         },
     });

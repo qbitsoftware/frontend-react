@@ -83,10 +83,8 @@ const TableStatusSidebar = () => {
   const router = useRouter();
 
   if (!tournamentid) {
-    console.log("returning case we dont have tid")
     return null;
   }
-  console.log("execuitn..")
   const { data: tournamentTables } = UseGetFreeVenues(
     Number(tournamentid),
     true,

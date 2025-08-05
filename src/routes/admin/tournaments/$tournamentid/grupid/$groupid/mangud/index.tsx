@@ -93,12 +93,13 @@ function RouteComponent() {
   }
 
   const availableTables = tablesQuery.data.data || [];
+  const groupIds = tableData.data.stages?.map((stage) => stage.id) || [groupId];
 
   return (
     <div className="min-h-screen px-2">
       <CompactClassFilters
         availableTables={availableTables}
-        activeGroupId={[groupId]}
+        activeGroupId={groupIds}
         onGroupChange={handleGroupChange}
       />
 
