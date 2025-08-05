@@ -285,7 +285,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                     <>
                       <FormItem>
                         <FormLabel>
-                          {form.watch("type") === GroupType.DYNAMIC 
+                          {form.watch("type") === GroupType.DYNAMIC
                             ? t("admin.tournaments.create_tournament.max_participants")
                             : t("admin.tournaments.create_tournament.tournament_size")
                           }
@@ -432,7 +432,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                     </FormItem>
                   )}
 
-{form.watch("type") !== GroupType.DYNAMIC && (
+                {form.watch("type") !== GroupType.DYNAMIC && (
                   <FormField
                     control={form.control}
                     name="solo"
@@ -475,12 +475,17 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                             <SelectItem value="team_leagues">
                               {t("admin.tournaments.create_tournament.team_leagues")}
                             </SelectItem>
-                            <SelectItem value="doubles">
-                              {t("admin.tournaments.create_tournament.doubles")}
-                            </SelectItem>
-                            <SelectItem value="fixed_doubles">
-                              {t("admin.tournaments.create_tournament.fixed_doubles")}
-                            </SelectItem>
+                            {form.watch("type") !== GroupType.ROUND_ROBIN && form.watch("type") !== GroupType.ROUND_ROBIN_FULL_PLACEMENT && form.watch("type") !== GroupType.CHAMPIONS_LEAGUE &&
+                              (
+                                <>
+                                  <SelectItem value="doubles">
+                                    {t("admin.tournaments.create_tournament.doubles")}
+                                  </SelectItem>
+                                  <SelectItem value="fixed_doubles">
+                                    {t("admin.tournaments.create_tournament.fixed_doubles")}
+                                  </SelectItem>
+                                </>
+                              )}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -561,7 +566,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                           value={[field.value && field.value >= 1 && field.value <= 10 ? field.value : 1]}
                           onValueChange={(values) => {
                             field.onChange(values[0]);
-                                setWomanWeightInputValue(String(values[0]));
+                            setWomanWeightInputValue(String(values[0]));
                           }}
                           className="pt-2"
                         />

@@ -20,11 +20,10 @@ interface NewSoloProps {
     tournament_table: TournamentTable
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
-    activeTab?: number
     renderRR?: boolean
 }
 
-export const NewSolo = ({ participant_data, tournament_id, tournament_table, selectedTeams, setSelectedTeams, activeTab = 0, renderRR = false }: NewSoloProps) => {
+export const NewSolo = ({ participant_data, tournament_id, tournament_table, selectedTeams, setSelectedTeams, renderRR = false }: NewSoloProps) => {
     const { addOrUpdateParticipant, addNewRoundRobinGroup } = useParticipantUtils(tournament_id, tournament_table.id)
 
     const [participants, setParticipantsState] = useState<Participant[]>([])
@@ -64,7 +63,6 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table, sel
                                 addOrUpdateParticipant={addOrUpdateParticipant}
                                 selectedTeams={selectedTeams}
                                 setSelectedTeams={setSelectedTeams}
-                                activeTab={activeTab}
                                 renderRR={renderRR}
                             />
                         </div>
@@ -92,7 +90,6 @@ export const NewSolo = ({ participant_data, tournament_id, tournament_table, sel
             addOrUpdateParticipant={addOrUpdateParticipant}
             selectedTeams={selectedTeams}
             setSelectedTeams={setSelectedTeams}
-            activeTab={activeTab}
         />
     )
 }

@@ -1,7 +1,6 @@
 import { ParticipantsResponse, UsePostParticipantMerge } from "@/queries/participants"
 import { TournamentTable } from "@/types/groups"
 import { NewSolo } from "./new-solo"
-import { NewTeams } from "./new-teams"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
@@ -17,14 +16,13 @@ interface Props {
     participant_data: ParticipantsResponse
     tournament_id: number
     tournament_table: TournamentTable
-    acitveTab?: number
 }
 
-export default function NewDouble({ participant_data, tournament_id, tournament_table, acitveTab = 0 }: Props) {
+export default function NewDouble({ participant_data, tournament_id, tournament_table }: Props) {
     const { t } = useTranslation()
     const mergeMutation = UsePostParticipantMerge(tournament_id, tournament_table.id)
-    const soloParticipants = acitveTab == 1 ? participant_data.data?.filter(p => p.group_id === "" && p.type !== "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length === 1) || []
-    const teamParticipants = acitveTab == 1 ? participant_data.data?.filter(p => p.group_id !== "" || p.type === "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length > 1) || []
+    const soloParticipants = tournament_table.type === GroupType.DYNAMIC ? participant_data.data?.filter(p => p.group_id === "" && p.type !== "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length === 1) || []
+    const teamParticipants = tournament_table.type === GroupType.DYNAMIC ? participant_data.data?.filter(p => p.group_id !== "" || p.type === "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length > 1) || []
     const soloData: ParticipantsResponse = {
         ...participant_data,
         data: soloParticipants,
@@ -60,12 +58,12 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                        {tournament_table.type === GroupType.DYNAMIC ?
                             t("admin.tournaments.groups.participants.dynamic.individual_participants") :
                             t("admin.tournaments.groups.participants.doubles.individual_participants")}
                     </h3>
                     <p className="text-sm text-gray-600">
-                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                        {tournament_table.type === GroupType.DYNAMIC ?
                             t("admin.tournaments.groups.participants.dynamic.individual_participants_description") :
                             t("admin.tournaments.groups.participants.doubles.individual_participants_description")}
                     </p>
@@ -77,7 +75,6 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                         tournament_table={tournament_table}
                         selectedTeams={selectedTeams}
                         setSelectedTeams={setSelectedTeams}
-                        activeTab={acitveTab}
                     />
                 </div>
             </div>
@@ -85,35 +82,25 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                        {tournament_table.type === GroupType.DYNAMIC ?
                             t("admin.tournaments.groups.participants.dynamic.pairs_participants") :
                             t("admin.tournaments.groups.participants.doubles.pairs_participants")}
                     </h3>
                     <p className="text-sm text-gray-600">
-                        {tournament_table.type === GroupType.DYNAMIC && acitveTab === 1 ? 
+                        {tournament_table.type === GroupType.DYNAMIC ?
                             t("admin.tournaments.groups.participants.dynamic.pairs_participants_description") :
                             t("admin.tournaments.groups.participants.doubles.pairs_participants_description")}
                     </p>
                 </div>
                 <div className="overflow-x-auto">
-                    {acitveTab === 1 ? (
-                        <NewSolo
-                            participant_data={teamData}
-                            tournament_id={tournament_id}
-                            tournament_table={tournament_table}
-                            selectedTeams={selectedTeams}
-                            setSelectedTeams={setSelectedTeams}
-                            activeTab={acitveTab}
-                            renderRR
-                        />
-                    ) : (
-                        <NewTeams
-                            participant_data={teamData}
-                            tournament_id={tournament_id}
-                            tournament_table={tournament_table}
-                            activeTab={acitveTab}
-                        />
-                    )}
+                    <NewSolo
+                        participant_data={teamData}
+                        tournament_id={tournament_id}
+                        tournament_table={tournament_table}
+                        selectedTeams={selectedTeams}
+                        setSelectedTeams={setSelectedTeams}
+                        renderRR
+                    />
                 </div>
             </div>
         </div>

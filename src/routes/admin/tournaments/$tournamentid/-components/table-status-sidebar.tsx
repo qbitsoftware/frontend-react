@@ -27,16 +27,16 @@ const MatchTimer = ({ startTime }: { startTime: string }) => {
       const start = new Date(startTime);
       const now = new Date();
       const diffMs = now.getTime() - start.getTime();
-      
+
       if (diffMs < 0) {
         setDuration("0:00");
         setMinutes(0);
         return;
       }
-      
+
       const diffMinutes = Math.floor(diffMs / 60000);
       const diffSeconds = Math.floor((diffMs % 60000) / 1000);
-      
+
       setDuration(`${diffMinutes}:${diffSeconds.toString().padStart(2, '0')}`);
       setMinutes(diffMinutes);
     };
@@ -68,11 +68,11 @@ const formatPlayerName = (fullName: string): string => {
   const parts = fullName.trim().split(' ').filter(part => part.length > 0);
   if (parts.length === 0) return fullName;
   if (parts.length === 1) return parts[0];
-  
+
   // Take all parts except the last one as first names, convert to initials
   const firstNames = parts.slice(0, -1).map(name => name.charAt(0).toUpperCase() + '.');
   const lastName = parts[parts.length - 1];
-  
+
   return `${firstNames.join('')} ${lastName}`;
 };
 
@@ -82,6 +82,11 @@ const TableStatusSidebar = () => {
   const { tournamentid } = useParams({ strict: false });
   const router = useRouter();
 
+  if (!tournamentid) {
+    console.log("returning case we dont have tid")
+    return null;
+  }
+  console.log("execuitn..")
   const { data: tournamentTables } = UseGetFreeVenues(
     Number(tournamentid),
     true,
@@ -109,13 +114,13 @@ const TableStatusSidebar = () => {
         match:
           match?.p1?.name && match?.p2?.name
             ? {
-                participant1: match.p1.name,
-                participant2: match.p2.name,
-                groupName: tournamentTableId
-                  ? groupsMap.get(tournamentTableId) || ""
-                  : "",
-                startTime: match.match?.start_date,
-              }
+              participant1: match.p1.name,
+              participant2: match.p2.name,
+              groupName: tournamentTableId
+                ? groupsMap.get(tournamentTableId) || ""
+                : "",
+              startTime: match.match?.start_date,
+            }
             : undefined,
       };
     });
@@ -129,9 +134,9 @@ const TableStatusSidebar = () => {
     if (table.tournament_table_id) {
       // Get the match ID from the table data
       const matchId = tournamentTables?.data?.find(t => t.id.toString() === table.id)?.match?.match?.id;
-      
+
       const searchParams = matchId ? { openMatch: matchId.toString() } : {};
-      
+
       router.navigate({
         to: `/admin/tournaments/${tournamentid}/grupid/${table.tournament_table_id}/mangud`,
         search: searchParams,

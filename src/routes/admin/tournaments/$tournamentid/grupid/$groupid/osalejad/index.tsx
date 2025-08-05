@@ -11,6 +11,7 @@ import { UseGetTournamentAdmin } from '@/queries/tournaments'
 import { DialogType } from '@/types/groups'
 import NewDouble from './-components/new-double'
 import { CompactClassFilters } from '@/routes/admin/tournaments/-components/compact-class-filters'
+import { GroupType } from '@/types/matches'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -132,6 +133,12 @@ function RouteComponent() {
 
                   {table_data.data.group.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
                     <NewTeams
+                      participant_data={participant_data}
+                      tournament_id={Number(tournamentid)}
+                      tournament_table={table_data.data.group}
+                    />
+                  ) : table_data.data.group.type === GroupType.DYNAMIC ? (
+                    <NewDouble
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
                       tournament_table={table_data.data.group}

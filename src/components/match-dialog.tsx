@@ -93,6 +93,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 
   const handleClose = () => {
     form.reset({ scores: [] });
+    setSetsError("")
     onClose(false);
   };
 
