@@ -612,7 +612,13 @@
     "registration_google_forms_button": "Registreeru Google Forms kaudu",
     "registration_excel_description": "Registreerimine sellele võistlusele toimub Excel tabeli kaudu",
     "registration_excel_button": "Registreeru Excel tabeli kaudu",
+    "registration_email_description": "Registreerimine sellele võistlusele toimub e-maili kaudu",
+    "registration_email_button": "Registreeru E-maili kaudu",
+    "registration_email_not_provided": "E-posti aadress puudub",
     "registration_onsite_description": "Registreerimine sellele võistlusele toimub kohapeal",
+    "registered_players_list": "Registreeritud Mängijate Nimekiri",
+    "registered_players_description": "Vaata praegust registreeritud osalejate nimekirja",
+    "view_registered_players": "Vaata Nimekirja",
     "about_event": "Kirjeldus",
     "view_in_maps": "Vaata kaardilt",
     "contact_organizer": "Võta ühendust korraldajaga",
@@ -1007,7 +1013,8 @@
           "category": "Kategooria on kohustuslik",
           "rating_coef_min": "Reitingu koefitsient peab olema suurem kui 1",
           "rating_coef_max": "Reitingu koefitsient peab olema maksimaalselt 2",
-          "registration_type": "Registreerimise tüüp on kohustuslik"
+          "registration_type": "Registreerimise tüüp on kohustuslik",
+          "invalid_url": "URL peab algama https:// või http://"
         },
         "tournament_tables": {
           "single_elimination": "Klassikaline Üksikeliminatsioon",
@@ -1084,15 +1091,20 @@
         "consolation_bracket_description": "Eraldi tabel mängijatele, kes finaalturniirie ei jõudnud",
         "consolation_bracket_placeholder": "Vali Lohutusturniiri tabeli formaat",
         "max_participants": "Maksimaalne osalejate arv",
-        "registration_type": "Võistlusele registreerimine",
+        "registration_type": "Kuidas peaksid mängijad end registreerima?",
         "registration_type_placeholder": "Vali registreerimise tüüp",
-        "registration_onsite": "Registreerimine kohapeal võistluspaigal",
+        "registration_onsite": "Registreerimine võistluspaigal",
         "registration_google_forms": "Google Forms",
         "registration_excel": "Excel",
+        "registration_email": "Meili kaudu",
         "google_forms_link": "Google Forms Link",
         "google_forms_link_placeholder": "https://docs.google.com/forms...",
         "excel_link": "Excel-tabeli Link",
-        "excel_link_placeholder": "Sisesta Excel-tabeli URL"
+        "excel_link_placeholder": "Sisesta Excel-tabeli URL",
+        "email_address": "Registreerimise meiliaadress",
+        "email_address_placeholder": "Sisesta e-posti aadress",
+        "registered_players_link": "Registreeritud mängijate nimekirja link (valikuline)",
+        "registered_players_link_placeholder": "Sisesta link, kus mängijad saavad näha registreeritud osalejaid"
       },
       "tables": {
         "no_tables": "Laudu pole saadaval",
