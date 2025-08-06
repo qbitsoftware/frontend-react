@@ -5,7 +5,12 @@
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "close": "Close"
+    "close": "Close",
+    "completed": "Completed",
+    "or": "OR",
+    "winner": "Winner",
+    "consolation": "Consolation",
+    "subgroups": "Subgroups"
   },
   "navbar": {
     "language": {
@@ -975,12 +980,12 @@
       "delete": "Delete a tournament",
       "setup": {
         "step1": {
-          "title": "Import Participants",
+          "title": "1. Add Participants",
           "description": "Download template and import participants or add them manually."
         },
         "step2": {
-          "pairs": "Generate pairs",
-          "subgroups": "Generate Subgroups",
+          "pairs": "2. Generate pairs",
+          "subgroups": "2. Generate Subgroups",
           "seeding": "Set Order & Seeding",
           "pairs_desc": "Create doubles pairs automatically",
           "subgroups_desc": "Organize into round robin groups",
@@ -989,7 +994,17 @@
         "step3": {
           "advance": "Advance Players to Next Round",
           "advance_desc": "Move qualified players to the next round"
-        }
+        },
+        "add_manually": "Add Manually",
+        "download_template": "Download Excel Template",
+        "import_excel": "Import Participants from Excel",
+        "order_rating": "Order by Rating",
+        "generate_pairs": "Generate Pairs",
+        "generate_subgroups": "Generate Subgroups",
+        "generate_seeding": "Generate Matches",
+        "generate_tables": "Generate Tables",
+        "advance_players": "Advance Players",
+        "reset_seeding": "Reset Seeding"
       },
       "warnings": {
         "bracket_size_mismatch": {
@@ -1830,7 +1845,13 @@
       "order_success": "Order updated successfully",
       "order_error": "Order update failed. Please try again",
       "reset_success": "Matches reset successfully",
-      "reset_error": "Matches reset failed. Please try again"
+      "reset_error": "Matches reset failed. Please try again",
+      "advance_success": "Players advanced successfully",
+      "advance_error": "Failed to advance players. Please try again",
+      "invalid_file_format": "Please select an Excel file (.xlsx or .xls)",
+      "import_success": "Participants imported successfully",
+      "double_pairing_success": "Double pairs assigned successfully",
+      "double_pairing_error": "Error assigning double pairs"
     },
     "protocol_modals": {
       "updated_match_score": "Match score updated successfully",

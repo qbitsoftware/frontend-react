@@ -176,7 +176,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                     return
                 }
 
-                let test: selectedTeams = {
+                const test: selectedTeams = {
                     p1_id: "",
                     p2_id: "",
                     type: tournament_table.type === GroupType.DYNAMIC ? 'round_robin' : 'double'
