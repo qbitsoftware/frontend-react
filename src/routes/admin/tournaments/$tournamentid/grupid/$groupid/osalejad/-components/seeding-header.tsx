@@ -355,7 +355,7 @@ const SeedingHeader = ({
                   <p className="text-xs text-gray-600 mb-2">{step.description}</p>
 
                   {/* Action buttons for current/available steps */}
-                  {(isCurrentStep || (step.actions === 'advance' && step.id === 3)) && (
+                  {(step.actions === 'import' || isCurrentStep || (step.actions === 'advance' && step.id === 3)) && (
                     <div className="flex flex-wrap gap-2">
                       {step.actions === 'import' && (
                         <>

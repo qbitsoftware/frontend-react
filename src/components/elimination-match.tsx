@@ -96,6 +96,15 @@ const EliminationMatch = ({
     return false;
   };
 
+  const isEmptyDate = (date: string | Date) => {
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth() + 1;
+    const day = dateObj.getDate();
+
+    return (month === 1 && day === 1) || year === 1;
+  };
+
   const onMatchClick = (match: TableMatch) => {
     if (handleSelectMatch) {
       const matchWrapper: MatchWrapper = {
@@ -147,7 +156,7 @@ const EliminationMatch = ({
                 }
                 showLabel={true}
               />
-              {matchDate && (
+              {matchDate && !isEmptyDate(matchDate) && (
                 <div className="flex items-center gap-1 ml-3">
                   <Clock className="h-3 w-3" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>
@@ -165,7 +174,7 @@ const EliminationMatch = ({
                 {t("admin.tournaments.matches.table.table")}{" "}
                 {match.match.extra_data.table}
               </span>
-              {matchDate && (
+              {matchDate && !isEmptyDate(matchDate) && (
                 <div className="flex items-center gap-1 ml-20">
                   <Clock className="h-3 w-3" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>
