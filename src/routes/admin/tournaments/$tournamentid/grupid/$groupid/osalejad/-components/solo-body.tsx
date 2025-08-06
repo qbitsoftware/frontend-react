@@ -138,6 +138,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                                     // if (tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
                                     //     return tournament_table.size > participants.length / 2;
                                     // }
+                                    console.log("is disabled input", disableInputForDynamic)
                                     if (tournament_table.type === GroupType.DYNAMIC || tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
                                         return !disableInputForDynamic
                                     }

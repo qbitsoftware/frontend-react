@@ -95,11 +95,24 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                     </p>
                 </div>
                 <div className="overflow-x-auto">
-                    <NewTeams
-                        participant_data={teamData}
-                        tournament_id={tournament_id}
-                        tournament_table={tournament_table}
-                    />
+                    {tournament_table.type === GroupType.DYNAMIC ? (
+                        <NewSolo
+                            all_participants={participant_data.data}
+                            participant_data={teamData}
+                            tournament_id={tournament_id}
+                            tournament_table={tournament_table}
+                            selectedTeams={selectedTeams}
+                            setSelectedTeams={setSelectedTeams}
+                            // isSecondary={true}
+                            renderRR
+                        />
+                    ) : (
+                        <NewTeams
+                            participant_data={teamData}
+                            tournament_id={tournament_id}
+                            tournament_table={tournament_table}
+                        />
+                    )}
                 </div>
             </div>
         </div>

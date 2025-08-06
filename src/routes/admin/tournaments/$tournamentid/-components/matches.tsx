@@ -205,12 +205,13 @@ export const Matches: React.FC<MatchesProps> = ({
             matches={filteredData}
             handleRowClick={handleCardClick}
             tournament_id={tournament_id}
+            tournament_table={tournament_table}
             group_id={tournament_table.id}
           />
           {selectedMatch &&
-          (tournament_table.solo ||
-            (!tournament_table.solo &&
-              tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
+            (tournament_table.solo ||
+              (!tournament_table.solo &&
+                tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
             <MatchDialog
               open={isOpen}
               onClose={handleModalClose}

@@ -51,7 +51,7 @@ const SeedingHeader = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getClosestPowerOf2 = (num: number): number => {
-    if (num <= 8) return 8;
+    if (num <= 4) return 4;
     return Math.pow(2, Math.ceil(Math.log2(num)));
   };
 

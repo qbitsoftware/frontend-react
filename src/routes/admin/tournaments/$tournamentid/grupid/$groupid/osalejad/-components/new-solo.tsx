@@ -30,6 +30,7 @@ export const NewSolo = ({ participant_data, all_participants, tournament_id, tou
 
     const [participants, setParticipantsState] = useState<Participant[]>([])
     const [isDisabledInput, setIsDisabledInput] = useState(false)
+
     useEffect(() => {
         if (participant_data && participant_data.data) {
             setParticipantsState(participant_data.data)
@@ -43,9 +44,7 @@ export const NewSolo = ({ participant_data, all_participants, tournament_id, tou
                     counter += p.players.length
                 }
             })
-            if (Math.floor(counter / 2) >= tournament_table.size || isSecondary) {
-                setIsDisabledInput(true)
-            }
+            setIsDisabledInput(Math.floor(counter / 2) >= tournament_table.size)
         }
     }, [participant_data])
 
@@ -54,7 +53,7 @@ export const NewSolo = ({ participant_data, all_participants, tournament_id, tou
             return
         }
         if (setSelectedTeams) {
-            if (selectedTeams) {
+            if (selectedTeams && selectedTeams.p1_id !== "") {
                 setSelectedTeams({ p1_id: selectedTeams.p1_id, p2_id: group_id, type: 'round_robin' })
             }
         }
@@ -64,11 +63,14 @@ export const NewSolo = ({ participant_data, all_participants, tournament_id, tou
 
     if (tournament_table.type == GroupType.ROUND_ROBIN || tournament_table.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT || (tournament_table.type == GroupType.DYNAMIC && renderRR)) {
         const groups = filterGroups(participants)
+        const sortedGroups = groups.sort((a, b) =>
+            a.groupParticipant.name.localeCompare(b.groupParticipant.name)
+        )
         return (
             <div className="">
-                {groups.map((p, key) => {
+                {sortedGroups.map((p, key) => {
                     return (
-                        <div key={key} onClick={() => handleTeamClick(p.groupParticipant.id)} className={cn("mt-5", tournament_table.type === GroupType.DYNAMIC && selectedTeams ? "cursor-pointer hover:bg-blue-100" : "")}>
+                        <div key={key} onClick={() => handleTeamClick(p.groupParticipant.id)} className={cn("mt-5", tournament_table.type === GroupType.DYNAMIC && selectedTeams && selectedTeams.p1_id != "" ? "cursor-pointer hover:bg-blue-100" : "")}>
                             <GroupInput group={p.groupParticipant} tournament_id={tournament_id} tournament_table_id={tournament_table.id} />
                             <SoloParticipants
                                 participants={p.participants}
