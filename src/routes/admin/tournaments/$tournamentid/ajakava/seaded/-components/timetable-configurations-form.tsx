@@ -50,7 +50,8 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
   const { startDate: tournamentStartDate, endDate: tournamentEndDate } =
     getTournamentDateRange();
 
-  const detailedTable = tableQuery.data?.data || table;
+  // Handle both TournamentTable and TournamentTableWithStages
+  const detailedTable = tableQuery.data?.data?.group || table;
 
   const getInitialDateTime = () => {
     const hasStartDate = detailedTable.start_date && detailedTable.start_date !== "";
@@ -83,12 +84,9 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
   const [breakDuration, setBreakDuration] = useState(detailedTable.break_duration || 5);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Generate timetable mutation
   const timetableMutation = UseGenerateTimeTable(tournament.id, table.id);
 
-  // Check if timetable has been generated (has matches scheduled)
   const hasGeneratedTimetable = () => {
-    // Check if the table has a start_date set (indicates timetable was generated)
     return !!(detailedTable.start_date && detailedTable.start_date !== "");
   };
 
@@ -101,7 +99,6 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
     const isUpdate = hasGeneratedTimetable();
     setIsGenerating(true);
     try {
-      // Combine date and time
       const combinedDateTime = new Date(`${startDate}T${startTime}:00`);
       const values = {
         start_date: startDate,
@@ -112,7 +109,6 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
       
       await timetableMutation.mutateAsync(values);
       
-      // Show appropriate success message
       const successMessage = isUpdate 
         ? t("admin.tournaments.timetable.updated_successfully")
         : t("admin.tournaments.timetable.generated_successfully");
@@ -129,7 +125,7 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
 
   useEffect(() => {
     if (tableQuery.data?.data) {
-      const newTable = tableQuery.data.data;
+      const newTable = tableQuery.data.data?.group || table;
       setEnabled(newTable.time_table || false);
       setAvgMatchDuration(newTable.avg_match_duration || 20);
       setBreakDuration(newTable.break_duration || 5);

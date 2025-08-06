@@ -612,7 +612,13 @@
     "registration_google_forms_button": "Registreeru Google Forms kaudu",
     "registration_excel_description": "Registreerimine sellele võistlusele toimub Excel tabeli kaudu",
     "registration_excel_button": "Registreeru Excel tabeli kaudu",
+    "registration_email_description": "Registreerimine sellele võistlusele toimub e-maili kaudu",
+    "registration_email_button": "Registreeru E-maili kaudu",
+    "registration_email_not_provided": "E-posti aadress puudub",
     "registration_onsite_description": "Registreerimine sellele võistlusele toimub kohapeal",
+    "registered_players_list": "Registreeritud Mängijate Nimekiri",
+    "registered_players_description": "Vaata praegust registreeritud osalejate nimekirja",
+    "view_registered_players": "Vaata Nimekirja",
     "about_event": "Kirjeldus",
     "view_in_maps": "Vaata kaardilt",
     "contact_organizer": "Võta ühendust korraldajaga",
@@ -976,6 +982,24 @@
       "description": "Võistluste loomine ja haldamine",
       "add_new": "Uus Võistlus",
       "delete": "Kustuta Võistlus",
+      "setup": {
+        "step1": {
+          "title": "Impordi mängijad",
+          "description": "Laadi alla mall ja impordi osalejad või lisa need käsitsi."
+        },
+        "step2": {
+          "pairs": "Genereeri paarid",
+          "subgroups": "Genereeri alagrupid",
+          "seeding": "Määra järjekord ja seeding",
+          "pairs_desc": "Loo paarismängud automaatselt",
+          "subgroups_desc": "Organiseeri round robin alagrupid",
+          "seeding_desc": "Järjesta reitingu järgi ja genereeri tabel"
+        },
+        "step3": {
+          "advance": "Edasi mängijad järgmisse vooru",
+          "advance_desc": "Liiguta kvalifitseeritud mängijad järgmisse vooru"
+        }
+      },
       "tournaments": {
         "title": "Tournaments",
         "description": "Manage and organize tournaments",
@@ -1007,7 +1031,8 @@
           "category": "Kategooria on kohustuslik",
           "rating_coef_min": "Reitingu koefitsient peab olema suurem kui 1",
           "rating_coef_max": "Reitingu koefitsient peab olema maksimaalselt 2",
-          "registration_type": "Registreerimise tüüp on kohustuslik"
+          "registration_type": "Registreerimise tüüp on kohustuslik",
+          "invalid_url": "URL peab algama https:// või http://"
         },
         "tournament_tables": {
           "single_elimination": "Klassikaline Üksikeliminatsioon",
@@ -1084,15 +1109,20 @@
         "consolation_bracket_description": "Eraldi tabel mängijatele, kes finaalturniirie ei jõudnud",
         "consolation_bracket_placeholder": "Vali Lohutusturniiri tabeli formaat",
         "max_participants": "Maksimaalne osalejate arv",
-        "registration_type": "Registreerimine",
+        "registration_type": "Kuidas peaksid mängijad end registreerima?",
         "registration_type_placeholder": "Vali registreerimise tüüp",
-        "registration_onsite": "Registreerimine kohapeal võistluspaigal",
+        "registration_onsite": "Registreerimine võistluspaigal",
         "registration_google_forms": "Google Forms",
         "registration_excel": "Excel",
+        "registration_email": "Meili kaudu",
         "google_forms_link": "Google Forms Link",
-        "google_forms_link_placeholder": "Sisesta Google Forms URL",
+        "google_forms_link_placeholder": "https://docs.google.com/forms...",
         "excel_link": "Excel-tabeli Link",
-        "excel_link_placeholder": "Sisesta Excel-tabeli URL"
+        "excel_link_placeholder": "Sisesta Excel-tabeli URL",
+        "email_address": "Registreerimise meiliaadress",
+        "email_address_placeholder": "Sisesta e-posti aadress",
+        "registered_players_link": "Registreeritud mängijate nimekirja link (valikuline)",
+        "registered_players_link_placeholder": "Sisesta link, kus mängijad saavad näha registreeritud osalejaid"
       },
       "tables": {
         "no_tables": "Laudu pole saadaval",
@@ -1287,7 +1317,9 @@
             "player_updated_error": "Mängija uuendamisel ilmnes viga",
             "player_removed_error": "Mängija kustutamisel ilmnes viga",
             "player_added": "Mängija edukalt lisatud",
-            "max_players": "Maksimaalne mängijate arv meeskonnas on täis"
+            "max_players": "Maksimaalne mängijate arv meeskonnas on täis",
+            "participant_move_successful": "Osalejad edukalt liigutatud edasi",
+            "participant_move_error": "Osalejate liigutamisel tekkis viga"
           },
           "actions": {
             "save": "Salvesta",
@@ -1435,6 +1467,9 @@
         "network": {
           "title": "Serveri viga",
           "description": "Serveril tekkis probleeme turniiride leidmisega"
+        },
+        "general": {
+          "max_sets": "Maksimaalselt on lubatud 7 geimi parimast 7-st!"
         }
       },
       "table": {

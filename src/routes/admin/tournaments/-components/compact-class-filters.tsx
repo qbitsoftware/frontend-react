@@ -4,7 +4,7 @@ import { TournamentTable } from "@/types/groups";
 
 interface CompactClassFiltersProps {
   availableTables: TournamentTable[];
-  activeGroupId: number;
+  activeGroupId: number[];
   onGroupChange: (groupId: number) => void;
 }
 
@@ -28,7 +28,7 @@ export const CompactClassFilters = ({
                 onClick={() => onGroupChange(table.id)}
                 className={cn(
                   "flex-shrink-0 px-2 py-1.5 text-xs font-medium transition-all duration-200 border border-transparent rounded-md min-w-[60px] whitespace-nowrap",
-                  activeGroupId === table.id
+                  activeGroupId.includes(table.id)
                     ? "border-[#4C97F1] text-[#4C97F1] bg-blue-50/50"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300"
                 )}

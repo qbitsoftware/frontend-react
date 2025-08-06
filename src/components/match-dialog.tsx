@@ -64,14 +64,11 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   const { t } = useTranslation();
   const { reset } = form;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [usePoints, setUsePoints] = useState(false);
   const [isForfeit, setIsForfeit] = useState(match.match.forfeit || false);
   const [forfeitWinner, setForfeitWinner] = useState<string>("");
-
-
-  useEffect(() => {
-    console.log("forfeit value", isForfeit)
-  }, [isForfeit])
+  const [setsError, setSetsError] = useState<string>("");
 
   useEffect(() => {
     if (match && open) {
@@ -96,6 +93,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 
   const handleClose = () => {
     form.reset({ scores: [] });
+    setSetsError("")
     onClose(false);
   };
 
@@ -112,12 +110,15 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   );
 
   const resetMatch = async () => {
+    setIsSubmitting(true);
     try {
       await useResetMatch.mutateAsync();
       toast.success(t("toasts.protocol_modals.match_reset_success"));
     } catch (error) {
       void error;
       toast.error(t("toasts.protocol_modals.match_reset_error"));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -127,11 +128,12 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   });
 
   const handleSubmit = async (data: MatchFormValues) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     let sendMatch: Match
-    console.log("isforfeit", isForfeit)
     if (isForfeit) {
       sendMatch = match.match
-      sendMatch.winner_id = forfeitWinner 
+      sendMatch.winner_id = forfeitWinner
       sendMatch.forfeit = true;
 
     } else {
@@ -176,9 +178,12 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     try {
       await usePatchMatch.mutateAsync(sendMatch);
       toast.message(t("toasts.protocol_modals.updated_match_score"));
+      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
       void error;
       toast.error(t("toasts.protocol_modals.updated_match_score_error"));
+    } finally {
+      setIsSubmitting(false);
     }
     handleClose();
   };
@@ -197,6 +202,15 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     const p2Sets = playerIndex === 2 ? newSetValue : currentSets.p2_sets;
 
     const totalSets = p1Sets + p2Sets;
+
+    // Validate total sets
+    if (totalSets > 7) {
+      setSetsError(t("admin.tournaments.errors.general.max_sets", "Maximum of 7 sets allowed for best of 7"));
+      return;
+    } else {
+      setSetsError("");
+    }
+
     const newScores = [];
 
     for (let i = 0; i < totalSets; i++) {
@@ -422,21 +436,28 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                           </div>
                         ))
                       ) : (
-                        <div className="flex items-start space-x-2">
-                          <Input
-                            type="text"
-                            value={
-                              extractSetsFromPoints(form.watch("scores")).p1_sets
-                            }
-                            onChange={(e) => handleSetChange(1, e.target.value)}
-                          />
-                          <Input
-                            type="text"
-                            value={
-                              extractSetsFromPoints(form.watch("scores")).p2_sets
-                            }
-                            onChange={(e) => handleSetChange(2, e.target.value)}
-                          />
+                        <div className="space-y-2">
+                          <div className="flex items-start space-x-2">
+                            <Input
+                              type="text"
+                              value={
+                                extractSetsFromPoints(form.watch("scores")).p1_sets
+                              }
+                              onChange={(e) => handleSetChange(1, e.target.value)}
+                            />
+                            <Input
+                              type="text"
+                              value={
+                                extractSetsFromPoints(form.watch("scores")).p2_sets
+                              }
+                              onChange={(e) => handleSetChange(2, e.target.value)}
+                            />
+                          </div>
+                          {setsError && (
+                            <p className="text-red-500 text-sm">
+                              {setsError}
+                            </p>
+                          )}
                         </div>
                       )}
                       {form.formState.errors.scores &&
@@ -525,6 +546,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
               <div>
                 <Button
                   type="button"
+                  disabled={isSubmitting}
                   className="bg-black/90"
                   onClick={resetMatch}
                 >
@@ -541,6 +563,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                   {t("protocol.actions.cancel")}
                 </Button>
                 <Button
+                  disabled={isSubmitting}
                   type="submit"
                   className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 rounded-md"
                 >

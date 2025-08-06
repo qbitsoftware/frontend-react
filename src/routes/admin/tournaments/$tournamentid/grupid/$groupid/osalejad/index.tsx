@@ -10,10 +10,8 @@ import SeedingHeader from './-components/seeding-header'
 import { UseGetTournamentAdmin } from '@/queries/tournaments'
 import { DialogType } from '@/types/groups'
 import NewDouble from './-components/new-double'
-import { GroupType } from '@/types/matches'
-import { useState } from 'react'
 import { CompactClassFilters } from '@/routes/admin/tournaments/-components/compact-class-filters'
-import { useTranslation } from 'react-i18next'
+import { GroupType } from '@/types/matches'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
@@ -38,11 +36,9 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const { t } = useTranslation()
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid, groupid } = Route.useParams()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<number>(1)
 
   const tournamentId = Number(tournamentid)
   const groupId = Number(groupid)
@@ -80,106 +76,85 @@ function RouteComponent() {
     tablesQuery.data?.data
   ) {
     const availableTables = tablesQuery.data.data || [];
+    const groupIds = table_data.data.stages?.map((stage) => stage.id) || [groupId];
 
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="px-2">
           <CompactClassFilters
             availableTables={availableTables}
-            activeGroupId={groupId}
+            activeGroupId={groupIds}
             onGroupChange={handleGroupChange}
           />
         </div>
-        
+
         {tournament_data &&
           table_data &&
           participant_data &&
-          participant_data.data && (
+          participant_data.data &&
+          table_data.data.group
+          && (
             () => {
-              const first_participants = {
-                ...participant_data,
-                data: participant_data.data?.filter((p) => p.group === 1) || []
-              }
-
-              const second_participants = {
-                ...participant_data,
-                data: participant_data.data?.filter((p) => p.group === 2) || []
-              }
 
               return (
                 <>
-                  {table_data.data.type === GroupType.DYNAMIC && (
+                  {table_data.data.stages && table_data.data.stages.length >= 1 && (
                     <div className="border-b border-gray-200 mb-4">
                       <nav className="-mb-px flex space-x-8">
-                        <button
-                          onClick={() => setActiveTab(1)}
-                          className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 1
-                            ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        >
-                          {t("admin.tournaments.groups.participants.dynamic.first_tab")}
-                        </button>
-                        <button
-                          onClick={() => setActiveTab(2)}
-                          className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 2
-                            ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        >
-                          {t("admin.tournaments.groups.participants.dynamic.second_tab")}
-                        </button>
+                        {table_data.data.stages?.map((stage) => {
+                          return (
+                            <button
+                              key={stage.id}
+                              onClick={() => navigate({
+                                to: "/admin/tournaments/$tournamentid/grupid/$groupid/osalejad",
+                                params: {
+                                  tournamentid,
+                                  groupid: stage.id.toString()
+                                },
+                                search: { selectedGroup: undefined }
+                              })}
+                              className={`py-2 px-1 border-b-2 font-medium text-sm ${groupId === stage.id
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                            >
+                              {stage.class}
+                            </button>
+                          )
+                        })}
                       </nav>
                     </div>
                   )}
                   <SeedingHeader
                     tournament_id={Number(tournamentid)}
-                    table_data={table_data.data}
+                    table_data={table_data.data.group}
                     participants={participant_data.data}
                   />
 
-                  {table_data.data.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                  {table_data.data.group.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
                     <NewTeams
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
-                      tournament_table={table_data.data}
+                      tournament_table={table_data.data.group}
                     />
-                  ) : table_data.data.type === GroupType.DYNAMIC ? (
-                    activeTab === 1 ? (
-                      <NewDouble
-                        participant_data={first_participants}
-                        tournament_id={Number(tournamentid)}
-                        tournament_table={table_data.data}
-                        acitveTab={activeTab}
-                      />
-                    ) : (
-                      table_data.data.solo ? (
-                        <NewSolo
-                          participant_data={second_participants}
-                          tournament_id={Number(tournamentid)}
-                          tournament_table={table_data.data}
-                          activeTab={activeTab}
-                        />
-                      ) : (
-                        <NewTeams
-                          participant_data={second_participants}
-                          tournament_id={Number(tournamentid)}
-                          tournament_table={table_data.data}
-                          activeTab={activeTab}
-                        />
-                      )
-                    )
-                  ) : table_data.data.solo ? (
-                    <NewSolo
+                  ) : table_data.data.group.type === GroupType.DYNAMIC ? (
+                    <NewDouble
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
-                      tournament_table={table_data.data}
+                      tournament_table={table_data.data.group}
+                    />
+                  ) : table_data.data.group.solo ? (
+                    <NewSolo
+                      all_participants={participant_data.data}
+                      participant_data={participant_data}
+                      tournament_id={Number(tournamentid)}
+                      tournament_table={table_data.data.group}
                     />
                   ) : (
                     <NewDouble
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
-                      tournament_table={table_data.data}
+                      tournament_table={table_data.data.group}
                     />
                   )}
                 </>

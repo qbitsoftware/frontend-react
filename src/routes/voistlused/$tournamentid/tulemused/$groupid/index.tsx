@@ -53,15 +53,15 @@ function RouteComponent() {
   });
 
   useEffect(() => {
-    if (tableQuery.data?.data) {
-      const type = tableQuery.data.data.type;
-      if (type === GroupType.CHAMPIONS_LEAGUE || type === GroupType.ROUND_ROBIN || type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+    if (tableQuery.data?.data && tableQuery.data.data.group) {
+      const type = tableQuery.data.data.group.type;
+      if (type === GroupType.CHAMPIONS_LEAGUE || type === GroupType.ROUND_ROBIN || type === GroupType.ROUND_ROBIN_FULL_PLACEMENT || type === GroupType.DYNAMIC) {
         setActiveTab("bracket");
       } else {
         setActiveTab("placement");
       }
     }
-  }, [tableQuery.data?.data?.type]);
+  }, [tableQuery.data?.data?.group?.type]);
 
   if (tableQuery.isLoading || bracketQuery.isLoading || tablesQuery.isLoading) {
     return (<Loader />)
@@ -71,13 +71,13 @@ function RouteComponent() {
     return <div>{t("errors.general.description")}</div>;
   }
 
-  if (!bracketQuery.data?.data || !tableQuery.data?.data || !tablesQuery.data?.data) {
+  if (!bracketQuery.data?.data || !tableQuery.data?.data || !tablesQuery.data?.data || !tableQuery.data.data.group) {
     return <div>{t("errors.general.title")}</div>;
   }
 
-  const tournamentType = tableQuery.data.data.type;
+  const tournamentType = tableQuery.data.data.group?.type;
   const isMeistrikad = tournamentType === GroupType.CHAMPIONS_LEAGUE;
-  const isRoundRobinFull = tournamentType === GroupType.ROUND_ROBIN || tournamentType === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
+  const isRoundRobinFull = tournamentType === GroupType.ROUND_ROBIN || tournamentType === GroupType.ROUND_ROBIN_FULL_PLACEMENT || tournamentType === GroupType.DYNAMIC;
   const isFreeForAll = tournamentType === GroupType.FREE_FOR_ALL;
 
   const handleSelectMatch = (match: MatchWrapper) => {
@@ -118,7 +118,7 @@ function RouteComponent() {
         activeGroupId={groupId}
         onGroupChange={handleGroupChange}
       />
-      
+
       <div className="flex justify-center">
         <Tabs
           value={activeTab}
@@ -199,8 +199,8 @@ function RouteComponent() {
                 <GroupStageBracket
                   brackets={bracketQuery.data.data.round_robins[0]}
                   onMatchSelect={handleSelectMatch}
-                  name={tableQuery.data.data.class}
-                  tournament_table={tableQuery.data.data}
+                  name={tableQuery.data.data.group.class}
+                  tournament_table={tableQuery.data.data.group}
                 />
               )}
             </TabsContent>
@@ -217,7 +217,7 @@ function RouteComponent() {
               bracketQuery.data.data.eliminations[0]?.elimination ? (
               <EliminationBrackets
                 data={bracketQuery.data.data}
-                tournament_table={tableQuery.data.data}
+                tournament_table={tableQuery.data.data.group}
                 handleSelectMatch={handleSelectMatch}
               />
             ) : (
@@ -230,13 +230,13 @@ function RouteComponent() {
 
           {/* Leaderboard tab content */}
           <TabsContent value="leaderboard" className="w-full mt-6">
-            <StandingsProtocol group_id={groupId} tournament_table={tableQuery.data.data}/>
+            <StandingsProtocol group_id={groupId} tournament_table={tableQuery.data.data.group} />
           </TabsContent>
         </Tabs>
       </div>
-      
+
       {/* Match details modal */}
-      {selectedMatch && !tableQuery.data.data.solo && (
+      {selectedMatch && !tableQuery.data.data.group.solo && (
         <Protocol
           key={selectedMatch.match.id}
           tournamentId={tournamentId}

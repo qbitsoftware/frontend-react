@@ -22,6 +22,7 @@ export type Tournament = {
   color?: string;
   registration_type: string;
   registration_link?: string;
+  registered_players_link?: string;
 };
 
 export type TournamentInformation = {

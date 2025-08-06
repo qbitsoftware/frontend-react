@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Loader2, Building, FileText, FileSpreadsheet } from "lucide-react"
+import { CalendarIcon, Loader2, Building, FileText, FileSpreadsheet, Mail } from "lucide-react"
 import { useRouter } from "@tanstack/react-router"
 
 import { Button } from "@/components/ui/button"
@@ -52,6 +52,25 @@ const createFormSchema = (t: TFunction) => z.object({
   rating_coef: z.number().min(1, { message: t("admin.tournaments.create_tournament.errors.rating_coef_min") }).max(2, { message: t("admin.tournaments.create_tournament.errors.rating_coef_max") }),
   registration_type: z.string({ message: t("admin.tournaments.create_tournament.errors.registration_type") }),
   registration_link: z.string().optional(),
+  registered_players_link: z.string().optional(),
+}).refine((data) => {
+  // Validate registration_link for URL-based registration types
+  if ((data.registration_type === "google_forms" || data.registration_type === "excel") && data.registration_link) {
+    return data.registration_link.startsWith("https://") || data.registration_link.startsWith("http://");
+  }
+  return true;
+}, {
+  message: t("admin.tournaments.create_tournament.errors.invalid_url"),
+  path: ["registration_link"]
+}).refine((data) => {
+  // Validate registered_players_link if provided
+  if (data.registered_players_link && data.registered_players_link.trim() !== "") {
+    return data.registered_players_link.startsWith("https://") || data.registered_players_link.startsWith("http://");
+  }
+  return true;
+}, {
+  message: t("admin.tournaments.create_tournament.errors.invalid_url"),
+  path: ["registered_players_link"]
 })
 
 export type TournamentFormValues = z.infer<ReturnType<typeof createFormSchema>>
@@ -92,6 +111,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
         rating_coef: 1,
         registration_type: "onsite",
         registration_link: "",
+        registered_players_link: "",
       },
   })
 
@@ -164,7 +184,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
               onClick={handleDelete}
               className="bg-red-600 text-white hover:bg-red-700"
               disabled={deleteMutation.isPending}
-            >
+              >
               {deleteMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -385,6 +405,12 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                                 {t("admin.tournaments.create_tournament.registration_excel", "Excel")}
                               </div>
                             </SelectItem>
+                            <SelectItem value="email">
+                              <div className="flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-blue-600" />
+                                {t("admin.tournaments.create_tournament.registration_email", "Registration by Email")}
+                              </div>
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -392,7 +418,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                     )}
                   />
 
-                  {(form.watch("registration_type") === "google_forms" || form.watch("registration_type") === "excel") && (
+                  {(form.watch("registration_type") === "google_forms" || form.watch("registration_type") === "excel" || form.watch("registration_type") === "email") && (
                     <FormField
                       control={form.control}
                       name="registration_link"
@@ -401,7 +427,9 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                           <FormLabel className="text-sm font-medium">
                             {form.watch("registration_type") === "google_forms" 
                               ? t("admin.tournaments.create_tournament.google_forms_link", "Google Forms Link")
-                              : t("admin.tournaments.create_tournament.excel_link", "Excel Sheet Link")
+                              : form.watch("registration_type") === "excel"
+                              ? t("admin.tournaments.create_tournament.excel_link", "Excel Sheet Link")
+                              : t("admin.tournaments.create_tournament.email_address", "Email Address")
                             }
                           </FormLabel>
                           <FormControl>
@@ -410,8 +438,33 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({ initial_data }) 
                               placeholder={
                                 form.watch("registration_type") === "google_forms"
                                   ? t("admin.tournaments.create_tournament.google_forms_link_placeholder", "Enter Google Forms URL")
-                                  : t("admin.tournaments.create_tournament.excel_link_placeholder", "Enter Excel sheet URL")
+                                  : form.watch("registration_type") === "excel"
+                                  ? t("admin.tournaments.create_tournament.excel_link_placeholder", "Enter Excel sheet URL")
+                                  : t("admin.tournaments.create_tournament.email_address_placeholder", "Enter email address")
                               }
+                              className="h-10"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {form.watch("registration_type") !== "onsite" && (
+                    <FormField
+                      control={form.control}
+                      name="registered_players_link"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            {t("admin.tournaments.create_tournament.registered_players_link", "Registered Players List Link (Optional)")}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              autoComplete="off"
+                              placeholder={t("admin.tournaments.create_tournament.registered_players_link_placeholder", "Enter link where players can see registered participants")}
                               className="h-10"
                               {...field}
                             />

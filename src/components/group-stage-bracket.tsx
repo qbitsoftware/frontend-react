@@ -353,13 +353,13 @@ export default function GroupStageBracket({
       ? group_participant.participant.name
       : `Group ${groupIndex + 1}`;
     return (
-    
+
       <div
         key={groupIndex}
         id={`bracket-container-${groupIndex}`}
         className="flex items-center pb-10 pt-5 mx-auto flex-col w-[70vw] overflow-x-auto px-4 rounded-lg"
       >
-   
+
         <h3 className="font-bold mb-4">{group_name}</h3>
         <Table className="table-fixed min-w-max rounded-lg">
           <TableHeader>
@@ -489,8 +489,8 @@ export default function GroupStageBracket({
           <span>{t("admin.tournaments.groups.tables.print")}</span>
         </Button>
       </div>
-      
-      <div id="all-brackets-container">
+
+      <div id="all-brackets-container" className="max-w-[400px]">
         {roundRobins
           .sort((a, b) => {
             const groupA = a.find(
@@ -509,7 +509,7 @@ export default function GroupStageBracket({
             renderGroupTable(roundRobinBracket, index)
           )}
       </div>
-      
+
       <PDFPreviewModal
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}

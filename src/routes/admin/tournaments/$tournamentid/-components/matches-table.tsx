@@ -9,11 +9,13 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
+import { DialogType, TournamentTable } from "@/types/groups"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
     handleRowClick: (match: MatchWrapper) => void
     tournament_id: number
+    tournament_table: TournamentTable
     group_id: number
 }
 
@@ -22,6 +24,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     handleRowClick,
     tournament_id,
     group_id,
+    tournament_table,
 }: MatchesTableProps) => {
     const { t } = useTranslation()
     const queryClient = useQueryClient()
@@ -29,7 +32,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
 
     const getScore = (match: MatchWrapper, player: ParticipantType) => {
-        if (match.match.table_type === "champions_league") {
+        if (match.match.table_type === "champions_league" || tournament_table.dialog_type === DialogType.DT_TEAM_LEAGUES) {
             return player === ParticipantType.P1 ? match.match.extra_data.team_1_total || 0 : match.match.extra_data.team_2_total || 0
         }
 
@@ -101,7 +104,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             const p2Score = pending.p2 ?? getScore(match, ParticipantType.P2)
 
             const scores = []
-            
+
             for (let i = 0; i < p1Score; i++) {
                 scores.push({
                     number: i + 1,
@@ -109,7 +112,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                     p2_score: 0
                 })
             }
-            
+
             for (let i = 0; i < p2Score; i++) {
                 scores.push({
                     number: p1Score + i + 1,
@@ -117,14 +120,14 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                     p2_score: 11
                 })
             }
-            
+
             let winner_id = ""
             if (p1Score > p2Score) {
                 winner_id = match.match.p1_id
             } else if (p2Score > p1Score) {
                 winner_id = match.match.p2_id
             }
-            
+
             const updatedMatch = {
                 ...match.match,
                 winner_id,
@@ -134,26 +137,26 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                     score: scores
                 }
             }
-            
+
             await axiosInstance.patch(
-                `/api/v1/tournaments/${tournament_id}/tables/${group_id}/match/${match.match.id}`, 
-                updatedMatch, 
+                `/api/v1/tournaments/${tournament_id}/tables/${group_id}/match/${match.match.id}`,
+                updatedMatch,
                 { withCredentials: true }
             )
-            
+
             queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.refetchQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['matches', group_id] })
             queryClient.invalidateQueries({ queryKey: ['venues', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', group_id] })
             queryClient.refetchQueries({ queryKey: ['tournament_table', group_id] })
-            
+
             setPendingScores(prev => {
                 const newScores = { ...prev }
                 delete newScores[match.match.id]
                 return newScores
             })
-            
+
             toast.success(t("admin.tournaments.matches.score_updated_success"))
         } catch (error) {
             console.error('Failed to update score:', error)
@@ -176,7 +179,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         const hasScores = match.match.extra_data.score && match.match.extra_data.score.length > 0
         const pendingScore = getPendingScore(match.match.id, player)
         const displayScore = pendingScore !== null ? pendingScore : (hasScores ? currentScore : null)
-        
+
         const handleScoreChange = (value: string) => {
             const newScore = parseInt(value)
             updatePendingScore(match.match.id, player, newScore)
@@ -224,92 +227,92 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                     </TableHeader>
                     <TableBody>
                         {matches.map((match) => {
-                            const hasPendingScores = pendingScores[match.match.id] && 
+                            const hasPendingScores = pendingScores[match.match.id] &&
                                 (pendingScores[match.match.id].p1 !== null || pendingScores[match.match.id].p2 !== null)
                             const isLoading = loadingUpdates.has(match.match.id)
-                            
+
                             return (
-                            <TableRow key={`match-${match.match.id}`} className={getRowClassName(match)}>
-                                <TableCell>
-                                    <Button
-                                        disabled={match.p1.id === "" || match.p2.id === ""}
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleRowClick(match)}
-                                    >
-                                        {t("admin.tournaments.matches.table.modify")}
-                                    </Button>
-                                </TableCell>
-                                <TableCell>
-                                    {match.match.round}
-                                </TableCell>
-                                <TableCell>
-                                    <TableNumberForm
-                                        brackets={false}
-                                        match={match.match}
-                                        initialTableNumber={match.match.extra_data ? match.match.extra_data.table : "0"}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    {renderPlayer(match, ParticipantType.P1)}
-                                </TableCell>
-                                <TableCell>
-                                    {match.match.table_type === "champions_league" ? (
-                                        getScore(match, ParticipantType.P1)
-                                    ) : (
-                                        <ScoreSelector
-                                            match={match}
-                                            player={ParticipantType.P1}
-                                            currentScore={getScore(match, ParticipantType.P1)}
-                                            isDisabled={match.p1.id === "" || match.p2.id === "" || match.match.state === MatchState.FINISHED}
+                                <TableRow key={`match-${match.match.id}`} className={getRowClassName(match)}>
+                                    <TableCell>
+                                        <Button
+                                            disabled={match.p1.id === "" || match.p2.id === ""}
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleRowClick(match)}
+                                        >
+                                            {t("admin.tournaments.matches.table.modify")}
+                                        </Button>
+                                    </TableCell>
+                                    <TableCell>
+                                        {match.match.round}
+                                    </TableCell>
+                                    <TableCell>
+                                        <TableNumberForm
+                                            brackets={false}
+                                            match={match.match}
+                                            initialTableNumber={match.match.extra_data ? match.match.extra_data.table : "0"}
                                         />
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {hasPendingScores && (
-                                        <div className="mx-auto flex gap-1 justify-center">
-                                            <Button
-                                                size="sm"
-                                                onClick={() => submitScore(match)}
-                                                disabled={isLoading}
-                                                className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
-                                            >
-                                                {isLoading ? "..." : "✓"}
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => clearPendingScore(match.match.id)}
-                                                disabled={isLoading}
-                                                className="text-red-600 hover:text-red-700 w-8 h-8 p-0"
-                                            >
-                                                ✕
-                                            </Button>
-                                        </div>
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {match.match.table_type === "champions_league" ? (
-                                        getScore(match, ParticipantType.P2)
-                                    ) : (
-                                        <ScoreSelector
-                                            match={match}
-                                            player={ParticipantType.P2}
-                                            currentScore={getScore(match, ParticipantType.P2)}
-                                            isDisabled={match.p1.id === "" || match.p2.id === "" || match.match.state === MatchState.FINISHED}
-                                        />
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {renderPlayer(match, ParticipantType.P2)}
-                                </TableCell>
-                                <TableCell className="whitespace-nowrap">
-                                    {getWinnerName(match)}
-                                </TableCell>
-                                <TableCell>
-                                    {match.match.type === "winner" ? t("admin.tournaments.matches.table.winner_bracket") : match.match.type === "loser" ? t("admin.tournaments.matches.table.loser_bracket") : ""}
-                                </TableCell>
-                            </TableRow>
+                                    </TableCell>
+                                    <TableCell>
+                                        {renderPlayer(match, ParticipantType.P1)}
+                                    </TableCell>
+                                    <TableCell>
+                                        {match.match.table_type === "champions_league" || tournament_table.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                                            getScore(match, ParticipantType.P1)
+                                        ) : (
+                                            <ScoreSelector
+                                                match={match}
+                                                player={ParticipantType.P1}
+                                                currentScore={getScore(match, ParticipantType.P1)}
+                                                isDisabled={match.p1.id === "" || match.p2.id === "" || match.match.state === MatchState.FINISHED}
+                                            />
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {hasPendingScores && (
+                                            <div className="mx-auto flex gap-1 justify-center">
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => submitScore(match)}
+                                                    disabled={isLoading}
+                                                    className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
+                                                >
+                                                    {isLoading ? "..." : "✓"}
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => clearPendingScore(match.match.id)}
+                                                    disabled={isLoading}
+                                                    className="text-red-600 hover:text-red-700 w-8 h-8 p-0"
+                                                >
+                                                    ✕
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {match.match.table_type === "champions_league" || tournament_table.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                                            getScore(match, ParticipantType.P2)
+                                        ) : (
+                                            <ScoreSelector
+                                                match={match}
+                                                player={ParticipantType.P2}
+                                                currentScore={getScore(match, ParticipantType.P2)}
+                                                isDisabled={match.p1.id === "" || match.p2.id === "" || match.match.state === MatchState.FINISHED}
+                                            />
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {renderPlayer(match, ParticipantType.P2)}
+                                    </TableCell>
+                                    <TableCell className="whitespace-nowrap">
+                                        {getWinnerName(match)}
+                                    </TableCell>
+                                    <TableCell>
+                                        {match.match.type === "winner" ? t("admin.tournaments.matches.table.winner_bracket") : match.match.type === "loser" ? t("admin.tournaments.matches.table.loser_bracket") : ""}
+                                    </TableCell>
+                                </TableRow>
                             )
                         })}
                         {matches.length === 0 && (
