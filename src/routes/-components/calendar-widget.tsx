@@ -1,11 +1,9 @@
 import React, { useMemo } from "react";
 import { Tournament } from "@/types/tournaments";
 import { Link } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
   formatDateRange,
-  useTournamentEvents,
   ProcessedEvent,
   getAbbreviatedMonth,
 } from "../voistlused/-components/calendar-utils";
@@ -19,9 +17,27 @@ interface Props {
 
 const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
-  const events = useTournamentEvents(tournaments, queryClient);
+  // const events = useTournamentEvents(tournaments, queryClient);
+  const events: ProcessedEvent[] = [];
+  tournaments.map((tournament) => {
+    events.push({
+      id: tournament.id,
+      name: tournament.name,
+      start_date: tournament.start_date,
+      end_date: tournament.end_date,
+      sport: tournament.sport,
+      category: tournament.category,
+      color: tournament.color || "#4C97F1",
+      isGameday: false,
+      parentTournamentId: undefined,
+      eventType: "",
+      class: "",
+      order: undefined,
+      round: 0,
+    });
+  })
 
   const { upcomingEvents, pastEvents } = useMemo(() => {
     if (isLoading || !events.length) {
@@ -64,8 +80,8 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
         <div className="group mb-2 sm:mb-3 relative">
           <div className={`
             flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border transition-all duration-300
-            ${isUpcoming 
-              ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20 hover:border-[#4C97F1]/40 hover:shadow-lg hover:shadow-[#4C97F1]/10' 
+            ${isUpcoming
+              ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20 hover:border-[#4C97F1]/40 hover:shadow-lg hover:shadow-[#4C97F1]/10'
               : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
             }
           `}>
@@ -73,8 +89,8 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <div className={`
                 px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
-                ${isUpcoming 
-                  ? 'bg-[#4C97F1] text-white border-[#4C97F1]' 
+                ${isUpcoming
+                  ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
                   : 'bg-gray-100 text-gray-700 border-gray-200'
                 }
               `}>
@@ -85,20 +101,20 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
                   {formatDateRange(event.start_date, event.end_date).split(" - ")[0]}
                 </div>
               </div>
-              
+
               {event.end_date !== event.start_date && (
                 <>
                   <div className="w-2 sm:w-3 h-px bg-gray-300"></div>
                   <div className={`
                     px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
-                    ${isUpcoming 
-                      ? 'bg-[#4C97F1] text-white border-[#4C97F1]' 
+                    ${isUpcoming
+                      ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
                       : 'bg-gray-100 text-gray-700 border-gray-200'
                     }
                   `}>
                     <div className="text-xs font-medium opacity-90">
                       {event.end_date !== event.start_date &&
-                      new Date(event.start_date).getMonth() !==
+                        new Date(event.start_date).getMonth() !==
                         new Date(event.end_date).getMonth()
                         ? getAbbreviatedMonth(event.end_date)
                         : getAbbreviatedMonth(event.start_date)}
@@ -119,7 +135,7 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
               `} title={event.name}>
                 {event.name}
               </h6>
-              
+
               <div className="flex items-center gap-1 sm:gap-2">
                 {event.isGameday && event.order ? (
                   <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
@@ -153,8 +169,8 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
     <div className="mb-3 relative">
       <div className={`
         flex items-center gap-4 p-4 rounded-xl border
-        ${isUpcoming 
-          ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20' 
+        ${isUpcoming
+          ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20'
           : 'bg-white border-gray-200'
         }
       `}>
@@ -241,11 +257,11 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
         <div className="space-y-2 sm:space-y-3">
           {upcomingEvents.length > 0
             ? upcomingEvents.map((event) => (
-                <EventCard key={event.id} event={event} isUpcoming={true} />
-              ))
+              <EventCard key={event.id} event={event} isUpcoming={true} />
+            ))
             : [1, 2, 3].map((_, index) => (
-                <EventCardSkeleton key={`upcoming-skeleton-${index}`} isUpcoming />
-              ))}
+              <EventCardSkeleton key={`upcoming-skeleton-${index}`} isUpcoming />
+            ))}
         </div>
       </div>
 
@@ -259,14 +275,14 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
         <div className="space-y-2 sm:space-y-3">
           {pastEvents.length > 0
             ? pastEvents.map((event) => (
-                <EventCard key={event.id} event={event} isUpcoming={false} />
-              ))
+              <EventCard key={event.id} event={event} isUpcoming={false} />
+            ))
             : [1, 2, 3].map((_, index) => (
-                <EventCardSkeleton
-                  key={`upcoming-skeleton-${index}`}
-                  isUpcoming={false}
-                />
-              ))}
+              <EventCardSkeleton
+                key={`upcoming-skeleton-${index}`}
+                isUpcoming={false}
+              />
+            ))}
         </div>
       </div>
     </div>

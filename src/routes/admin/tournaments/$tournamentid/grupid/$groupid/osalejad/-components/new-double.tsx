@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 import { GroupType } from "@/types/matches"
+import { NewTeams } from "./new-teams"
 
 export interface selectedTeams {
     type: 'double' | 'round_robin'
@@ -70,6 +71,7 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                 </div>
                 <div className="overflow-x-auto">
                     <NewSolo
+                        all_participants={participant_data.data}
                         participant_data={soloData}
                         tournament_id={tournament_id}
                         tournament_table={tournament_table}
@@ -93,14 +95,24 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                     </p>
                 </div>
                 <div className="overflow-x-auto">
-                    <NewSolo
-                        participant_data={teamData}
-                        tournament_id={tournament_id}
-                        tournament_table={tournament_table}
-                        selectedTeams={selectedTeams}
-                        setSelectedTeams={setSelectedTeams}
-                        renderRR
-                    />
+                    {tournament_table.type === GroupType.DYNAMIC ? (
+                        <NewSolo
+                            all_participants={participant_data.data}
+                            participant_data={teamData}
+                            tournament_id={tournament_id}
+                            tournament_table={tournament_table}
+                            selectedTeams={selectedTeams}
+                            setSelectedTeams={setSelectedTeams}
+                            // isSecondary={true}
+                            renderRR
+                        />
+                    ) : (
+                        <NewTeams
+                            participant_data={teamData}
+                            tournament_id={tournament_id}
+                            tournament_table={tournament_table}
+                        />
+                    )}
                 </div>
             </div>
         </div>

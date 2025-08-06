@@ -982,6 +982,24 @@
       "description": "Võistluste loomine ja haldamine",
       "add_new": "Uus Võistlus",
       "delete": "Kustuta Võistlus",
+      "setup": {
+        "step1": {
+          "title": "Impordi mängijad",
+          "description": "Laadi alla mall ja impordi osalejad või lisa need käsitsi."
+        },
+        "step2": {
+          "pairs": "Genereeri paarid",
+          "subgroups": "Genereeri alagrupid",
+          "seeding": "Määra järjekord ja seeding",
+          "pairs_desc": "Loo paarismängud automaatselt",
+          "subgroups_desc": "Organiseeri round robin alagrupid",
+          "seeding_desc": "Järjesta reitingu järgi ja genereeri tabel"
+        },
+        "step3": {
+          "advance": "Edasi mängijad järgmisse vooru",
+          "advance_desc": "Liiguta kvalifitseeritud mängijad järgmisse vooru"
+        }
+      },
       "tournaments": {
         "title": "Tournaments",
         "description": "Manage and organize tournaments",
@@ -1299,7 +1317,9 @@
             "player_updated_error": "Mängija uuendamisel ilmnes viga",
             "player_removed_error": "Mängija kustutamisel ilmnes viga",
             "player_added": "Mängija edukalt lisatud",
-            "max_players": "Maksimaalne mängijate arv meeskonnas on täis"
+            "max_players": "Maksimaalne mängijate arv meeskonnas on täis",
+            "participant_move_successful": "Osalejad edukalt liigutatud edasi",
+            "participant_move_error": "Osalejate liigutamisel tekkis viga"
           },
           "actions": {
             "save": "Salvesta",

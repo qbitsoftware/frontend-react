@@ -31,10 +31,11 @@ interface SoloParticipantsProps {
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
     renderRR?: boolean
+    disableInputForDynamic?: boolean
+    isSecondary?: boolean
 }
 
-export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams, renderRR }: SoloParticipantsProps) {
-
+export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams, renderRR, disableInputForDynamic, isSecondary }: SoloParticipantsProps) {
     const { t } = useTranslation()
 
     const [forceDisableOrdering, setForceDisableOrdering] = useState(false)
@@ -131,12 +132,17 @@ export default function SoloParticipants({ participants, group_participant, tour
                             <ParticipantHeader />
                             <TableBody>
                                 {participants && participants.map((participant, key) => (
-                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} renderRR={renderRR} />
+                                    <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} renderRR={renderRR} isSecondary={isSecondary} />
                                 ))}
                                 {(() => {
-                                    if (tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-                                        return tournament_table.size > participants.length / 2;
+                                    // if (tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                                    //     return tournament_table.size > participants.length / 2;
+                                    // }
+                                    console.log("is disabled input", disableInputForDynamic)
+                                    if (tournament_table.type === GroupType.DYNAMIC || tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                                        return !disableInputForDynamic
                                     }
+
                                     return tournament_table.size > participants.length || group_participant || tournament_table.type == GroupType.DYNAMIC;
                                 })() && <TableRow>
                                         <TableCell colSpan={2}></TableCell>

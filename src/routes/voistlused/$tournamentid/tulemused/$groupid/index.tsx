@@ -55,7 +55,7 @@ function RouteComponent() {
   useEffect(() => {
     if (tableQuery.data?.data && tableQuery.data.data.group) {
       const type = tableQuery.data.data.group.type;
-      if (type === GroupType.CHAMPIONS_LEAGUE || type === GroupType.ROUND_ROBIN || type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+      if (type === GroupType.CHAMPIONS_LEAGUE || type === GroupType.ROUND_ROBIN || type === GroupType.ROUND_ROBIN_FULL_PLACEMENT || type === GroupType.DYNAMIC) {
         setActiveTab("bracket");
       } else {
         setActiveTab("placement");
@@ -77,7 +77,7 @@ function RouteComponent() {
 
   const tournamentType = tableQuery.data.data.group?.type;
   const isMeistrikad = tournamentType === GroupType.CHAMPIONS_LEAGUE;
-  const isRoundRobinFull = tournamentType === GroupType.ROUND_ROBIN || tournamentType === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
+  const isRoundRobinFull = tournamentType === GroupType.ROUND_ROBIN || tournamentType === GroupType.ROUND_ROBIN_FULL_PLACEMENT || tournamentType === GroupType.DYNAMIC;
   const isFreeForAll = tournamentType === GroupType.FREE_FOR_ALL;
 
   const handleSelectMatch = (match: MatchWrapper) => {

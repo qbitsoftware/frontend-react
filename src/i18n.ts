@@ -9,6 +9,7 @@ i18n
     .use(initReactI18next)
     .init({
         fallbackLng: 'et',
+        lng: "et",
         debug: false,
     });
 

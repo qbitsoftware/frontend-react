@@ -76,7 +76,7 @@ function RouteComponent() {
     tablesQuery.data?.data
   ) {
     const availableTables = tablesQuery.data.data || [];
-    const groupIds = table_data.data.stages?.map((stage) => stage.id) || [];
+    const groupIds = table_data.data.stages?.map((stage) => stage.id) || [groupId];
 
     return (
       <div className="min-h-screen bg-gray-50">
@@ -145,6 +145,7 @@ function RouteComponent() {
                     />
                   ) : table_data.data.group.solo ? (
                     <NewSolo
+                      all_participants={participant_data.data}
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
                       tournament_table={table_data.data.group}

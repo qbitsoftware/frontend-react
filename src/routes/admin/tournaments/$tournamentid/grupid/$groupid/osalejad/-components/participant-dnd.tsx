@@ -32,9 +32,10 @@ interface Props {
     selectedTeams?: selectedTeams | undefined
     setSelectedTeams?: (teams: selectedTeams) => void
     renderRR?: boolean
+    isSecondary?: boolean
 }
 
-export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams, renderRR }: Props) {
+export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams, renderRR, isSecondary }: Props) {
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: participant.id })
 
@@ -114,6 +115,9 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
     }
 
     const handleDeleteParticipant = () => {
+        if (setSelectedTeams && selectedTeams) {
+            setSelectedTeams({ p1_id: "", p2_id: "", type: selectedTeams.type })
+        }
         try {
             deleteParticipant(participantState)
             toast.message(t("toasts.participants.deleted"))
@@ -153,7 +157,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
     }
 
     const handleRowClick = () => {
-        if (editing) return
+        if (editing || isSecondary) return
 
         if (setSelectedTeams) {
             // For Round robin
@@ -330,7 +334,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                 <Input className="w-[50px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Rank" onChange={(e) => updateField("rank", Number(e.target.value))} value={participantState.rank || 0} />
             </TableCell>
             <TableCell className="text-center py-0.5 px-2">
-                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="PP" value={participantState.players[0].extra_data.rate_points || 0} onChange={(e) => updateField("players.0.extra_data.eltl_id", Number(e.target.value))} />
+                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="PP" value={participantState.players[0].extra_data.rate_points || 0} onChange={(e) => updateField("players.0.extra_data.rate_points", Number(e.target.value))} />
             </TableCell>
 
             <TableCell className="text-center py-0.5 px-2">
