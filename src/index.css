@@ -3,6 +3,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Chatbot font styling */
+[class*="chatbot"], [id*="chatbot"], [data-chatbot], iframe[src*="chatbot"] {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Additional chatbot styling overrides */
+div[style*="position: fixed"][style*="bottom"][style*="right"] {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+div[style*="position: fixed"][style*="bottom"][style*="right"] * {
+  font-family: 'Poppins', sans-serif !important;
+}
+
 @layer base {
   :root {
     --background: 120 8% 99%;
