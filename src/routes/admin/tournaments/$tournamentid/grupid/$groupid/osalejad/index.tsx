@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { UseGetTournamentTableQuery, UseGetTournamentTablesQuery } from '@/queries/tables'
 import Loader from '@/components/loader'
 import ErrorPage from '@/components/error'
@@ -39,6 +41,7 @@ function RouteComponent() {
   const { tournament_data } = Route.useLoaderData()
   const { tournamentid, groupid } = Route.useParams()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const tournamentId = Number(tournamentid)
   const groupId = Number(groupid)
@@ -55,8 +58,42 @@ function RouteComponent() {
 
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
 
+  const [highlightInput, setHighlightInput] = useState(false)
+  const [glowBracketTabs, setGlowBracketTabs] = useState(false)
+
+  const handleHighlightInput = () => {
+    setHighlightInput(true)
+    // Reset after 3 seconds
+    setTimeout(() => {
+      setHighlightInput(false)
+    }, 3000)
+  }
+
+  const handleGlowBracketTabs = () => {
+    setGlowBracketTabs(true)
+    // Reset after 3 seconds
+    setTimeout(() => {
+      setGlowBracketTabs(false)
+    }, 3000)
+  }
+
+  const translateBracketName = (originalName: string, isDynamic: boolean = false) => {
+    if (originalName.includes(' - Winner')) {
+      return t('common.winner');
+    }
+    
+    if (originalName.includes(' - Consolation')) {
+      return t('common.consolation');
+    }
+    
+    if (isDynamic && !originalName.includes(' - ')) {
+      return t('common.subgroups');
+    }
+    
+    return originalName;
+  }
+
   const handleGroupChange = (newGroupId: number) => {
-    // Navigate to parent route with selectedGroup parameter
     navigate({
       to: "/admin/tournaments/$tournamentid/osalejad",
       params: {
@@ -102,6 +139,28 @@ function RouteComponent() {
                     <div className="border-b border-gray-200 mb-4">
                       <nav className="-mb-px flex space-x-8">
                         {table_data.data.stages?.map((stage) => {
+                          const isWinner = stage.class.toLowerCase().includes('winner');
+                          const isConsolation = stage.class.toLowerCase().includes('consolation') ||
+                                               stage.class.toLowerCase().includes('loser');
+                          const isWinnerOrConsolation = isWinner || isConsolation;
+                          
+                          // Check if this is a dynamic tournament
+                          const isDynamic = table_data.data.group?.type === GroupType.DYNAMIC;
+                          
+                          const getGlowClasses = () => {
+                            if (!glowBracketTabs || !isWinnerOrConsolation) return '';
+                            
+                            if (isWinner) {
+                              return 'ring-2 ring-green-400 bg-green-50 shadow-lg rounded-md';
+                            } else if (isConsolation) {
+                              return 'ring-2 ring-orange-400 bg-orange-50 shadow-lg rounded-md';
+                            }
+                            return '';
+                          };
+
+                          // Get translated bracket name
+                          const translatedName = translateBracketName(stage.class, isDynamic || false);
+                          
                           return (
                             <button
                               key={stage.id}
@@ -113,12 +172,13 @@ function RouteComponent() {
                                 },
                                 search: { selectedGroup: undefined }
                               })}
-                              className={`py-2 px-1 border-b-2 font-medium text-sm ${groupId === stage.id
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
+                              className={`py-2 px-2 border-b-2 font-medium text-sm transition-all duration-300 ${
+                                groupId === stage.id
+                                  ? 'border-blue-500 text-blue-600'
+                                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                              } ${getGlowClasses()}`}
                             >
-                              {stage.class}
+                              {translatedName}
                             </button>
                           )
                         })}
@@ -129,6 +189,8 @@ function RouteComponent() {
                     tournament_id={Number(tournamentid)}
                     table_data={table_data.data.group}
                     participants={participant_data.data}
+                    onHighlightInput={handleHighlightInput}
+                    onGlowBracketTabs={handleGlowBracketTabs}
                   />
 
                   {table_data.data.group.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
@@ -149,6 +211,7 @@ function RouteComponent() {
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
                       tournament_table={table_data.data.group}
+                      highlightInput={highlightInput}
                     />
                   ) : (
                     <NewDouble

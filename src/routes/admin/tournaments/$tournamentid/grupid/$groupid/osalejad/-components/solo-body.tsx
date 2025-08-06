@@ -33,9 +33,10 @@ interface SoloParticipantsProps {
     renderRR?: boolean
     disableInputForDynamic?: boolean
     isSecondary?: boolean
+    highlightInput?: boolean
 }
 
-export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams, renderRR, disableInputForDynamic, isSecondary }: SoloParticipantsProps) {
+export default function SoloParticipants({ participants, group_participant, tournament_id, tournament_table, setParticipantsState, addOrUpdateParticipant, selectedTeams, setSelectedTeams, renderRR, disableInputForDynamic, isSecondary, highlightInput }: SoloParticipantsProps) {
     const { t } = useTranslation()
 
     const [forceDisableOrdering, setForceDisableOrdering] = useState(false)
@@ -162,7 +163,11 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                                 placeholder={t("admin.tournaments.groups.participants.actions.name_placeholder")}
                                                                 value={searchTerm}
                                                                 onChange={(e) => { setSearchTerm(e.target.value) }}
-                                                                className="w-full"
+                                                                className={`w-full transition-all duration-300 ${
+                                                                    highlightInput 
+                                                                        ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg' 
+                                                                        : ''
+                                                                }`}
                                                             />
                                                         </PopoverTrigger>
                                                         {playerSuggestions && playerSuggestions.data &&

@@ -23,9 +23,10 @@ interface NewSoloProps {
     setSelectedTeams?: (teams: selectedTeams) => void
     renderRR?: boolean
     isSecondary?: boolean
+    highlightInput?: boolean
 }
 
-export const NewSolo = ({ participant_data, all_participants, tournament_id, tournament_table, selectedTeams, setSelectedTeams, renderRR = false, isSecondary }: NewSoloProps) => {
+export const NewSolo = ({ participant_data, all_participants, tournament_id, tournament_table, selectedTeams, setSelectedTeams, renderRR = false, isSecondary, highlightInput }: NewSoloProps) => {
     const { addOrUpdateParticipant, addNewRoundRobinGroup } = useParticipantUtils(tournament_id, tournament_table.id)
 
     const [participants, setParticipantsState] = useState<Participant[]>([])
@@ -111,6 +112,7 @@ export const NewSolo = ({ participant_data, all_participants, tournament_id, tou
             setSelectedTeams={setSelectedTeams}
             disableInputForDynamic={isDisabledInput}
             isSecondary={isSecondary}
+            highlightInput={highlightInput}
         />
     )
 }

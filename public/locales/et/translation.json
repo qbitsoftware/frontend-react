@@ -5,7 +5,12 @@
   "common": {
     "cancel": "Katkesta",
     "confirm": "Kinnita",
-    "close": "Sulge"
+    "close": "Sulge",
+    "completed": "Lõpetatud",
+    "or": "VÕI",
+    "winner": "Põhiturniir",
+    "consolation": "Lohutusturniir",
+    "subgroups": "Alagrupid"
   },
   "navbar": {
     "language": {
@@ -984,7 +989,7 @@
       "delete": "Kustuta Võistlus",
       "setup": {
         "step1": {
-          "title": "Impordi mängijad",
+          "title": "1. Lisa osalejad",
           "description": "Laadi alla mall ja impordi osalejad või lisa need käsitsi."
         },
         "step2": {
@@ -996,9 +1001,19 @@
           "seeding_desc": "Järjesta reitingu järgi ja genereeri tabel"
         },
         "step3": {
-          "advance": "Edasi mängijad järgmisse vooru",
-          "advance_desc": "Liiguta kvalifitseeritud mängijad järgmisse vooru"
-        }
+          "advance": "Liiguta mängijad alagruppidest põhitabelisse",
+          "advance_desc": "Juhul kui on lisatud lohutusturniir, siis viiakse mängijaid ka sinna"
+        },
+        "add_manually": "Lisa käsitsi",
+        "download_template": "Laadi alla Exceli mall",
+        "import_excel": "Impordi osalejad Excelist",
+        "order_rating": "Järjesta osalejad reitingu järgi",
+        "generate_pairs": "Genereeri paarid",
+        "generate_subgroups": "Genereeri alagrupid",
+        "generate_seeding": "Alusta mängudega",
+        "generate_tables": "Genereeri tabelid",
+        "advance_players": "Liiguta mängijad edasi",
+        "reset_seeding": "Lähtesta mängud"
       },
       "tournaments": {
         "title": "Tournaments",
@@ -1848,7 +1863,13 @@
       "order_success": "Osalejate järjekorda panemine õnnestus",
       "order_error": "Osalejate järjekorda panemine nurjus. Palun proovige uuesti",
       "reset_success": "Mängude lähtestatud edukalt",
-      "reset_error": "Mängude lähtestamine nurjus. Palun proovige uuesti"
+      "reset_error": "Mängude lähtestamine nurjus. Palun proovige uuesti",
+      "advance_success": "Mängijad edutati edukalt järgmisse ringi",
+      "advance_error": "Mängijate edutamine järgmisse ringi nurjus. Palun proovige uuesti",
+      "invalid_file_format": "Palun valige Excel fail (.xlsx või .xls)",
+      "import_success": "Osalejate importimine õnnestus",
+      "double_pairing_success": "Paaride määramine õnnestus",
+      "double_pairing_error": "Paaride määramine nurjus"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",

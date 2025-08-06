@@ -1,0 +1,1018 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww32120\viewh15880\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 To ceate a new tournament, a user should first log in, then go to the admin panel, from there select \'92Tournaments\'92, \'91new Tournament\'92 and fill out all the necessary basic information for the tournament. After that the user should add one or more tournament classes and specify bracket types for each class. Once that is done they should add participants to each tournament class and generate games.\
+\
+# Estonian Table Tennis League (ELTA) Platform - Knowledge Base (Part 1/10)\
+\
+## Overview\
+The Estonian Table Tennis League (ELTA) platform is a comprehensive web application built with React, TypeScript, and modern web technologies. It serves as the central hub for table tennis activities in Estonia, providing tournament management, player ratings, licensing, and community features for both administrators and public users.\
+\
+## Main Navigation Structure\
+\
+### Public Navigation Menu\
+- **News (Uudised)** - `/uudised`\
+  - All News - `/uudised`\
+  - Competitions - `/uudised?category=competitions`\
+  - News - `/uudised?category=news`\
+  - Good Read - `/uudised?category=good_read`\
+  - Results - `/uudised?category=results`\
+- **Tournaments (V\'f5istlused)** - `/voistlused`\
+- **Clubs (Klubid)** - `/klubid`\
+- **Ratings (Reiting)** - `/reiting`\
+- **Rules (Reeglid)** - `/reeglid`\
+- **Contact (Kontakt)** - `/kontakt`\
+- **License (Litsents)** - `/litsents`\
+\
+### Admin Access\
+- **Admin Dashboard** - `/admin/dashboard` (visible only to users with admin roles)\
+\
+## Very important, keep in mind that logging in the website is only for authorized admins who were granted an account by the Estonian Table Tennis Federation.\
+\
+### Login Process\
+1. **Navigate to Login**: Go to `/login`\
+2. **Enter Credentials**: Email/password authentication\
+3. **Automatic Redirect**: System redirects to appropriate section after successful login\
+4. **Error Handling**: Clear error messages for invalid credentials\
+\
+### User Roles & Permissions\
+- **Root Admin** (`ROLE_ROOT_ADMIN`): Full system access including clubs management\
+- **Organization Admin** (`ROLE_ORG_ADMIN`): Tournament and dashboard access\
+- **Solo Admin** (`ROLE_SOLO_ADMIN`): Tournament and dashboard access\
+- **Media Admin** (`ROLE_MEDIA_ADMIN`): Blog management access\
+\
+## Homepage Features (/)\
+\
+### Widget-Based Dashboard\
+The homepage displays a responsive grid of widgets providing:\
+- **Latest News**: Recent articles and updates\
+- **Tournament Calendar**: Upcoming and ongoing tournaments\
+- **Player Ratings**: Top-rated players and recent changes\
+- **Video Content**: Tournament highlights and educational content\
+\
+### Quick Access Navigation\
+- Direct links to all major platform sections\
+- Mobile-optimized layout with touch-friendly interactions\
+- Responsive design adapting to different screen sizes\
+\
+### User Journey from Homepage\
+1. **Land on Homepage**: Users see overview of all platform activities\
+2. **Browse Latest Content**: Quick preview of news, tournaments, and ratings\
+3. **Navigate to Sections**: Direct access to specific areas of interest\
+4. **Responsive Experience**: Optimized for both mobile and desktop viewing\
+\
+\
+## Tournament System for Public Users\
+\
+### Tournament Listing (/voistlused/)\
+\
+#### Accessing Tournament List\
+1. **Navigate to Tournaments**: Click "V\'f5istlused" in main navigation or go to `/voistlused`\
+2. **View Tournament Calendar**: See all tournaments displayed in calendar format\
+3. **Filter Options**: Use available filters to find specific tournaments\
+4. **Tournament Status**: Visual indicators show upcoming, ongoing, and completed tournaments\
+\
+#### Tournament Status Indicators\
+- **Upcoming**: Tournaments not yet started (registration may be open)\
+- **Ongoing**: Currently active tournaments with live results\
+- **Completed**: Finished tournaments with final results\
+\
+### Individual Tournament Details (/voistlused/$tournamentid/)\
+\
+#### Viewing Tournament Information\
+1. **Access Tournament**: Click on any tournament from the list\
+2. **Tournament Overview**: See comprehensive tournament details including:\
+   - Tournament name and dates\
+   - Location with embedded Google Maps\
+   - Organizer information\
+   - Number of tables available\
+   - Tournament status and format\
+\
+#### Registration Process\
+1. **Check Registration Type**: Tournaments support different registration methods:\
+   - **Google Forms**: Click provided link to external Google Form\
+   - **Excel Registration**: Download and submit Excel template\
+   - **Email Registration**: Contact organizer via email\
+   - **On-site Only**: Register at tournament venue\
+\
+2. **Follow Registration Instructions**: Each tournament displays specific registration requirements\
+3. **Registration Status**: View if registration is open, closed, or not required\
+\
+#### Location Services\
+1. **View Map**: Interactive Google Maps showing tournament venue\
+2. **Get Directions**: \
+   - Click "Get Directions" for navigation from current location\
+   - Opens external mapping service (Google Maps, Apple Maps)\
+3. **Venue Details**: Complete address and contact information\
+\
+#### Tournament Content\
+- **Rich Descriptions**: Detailed tournament information using rich text editor\
+- **Tournament Rules**: Specific rules and regulations for the event\
+- **Contact Information**: Organizer details and communication methods\
+\
+### Tournament Navigation Sub-sections\
+\
+#### Schedule (/voistlused/$tournamentid/ajakava/)\
+1. **Access Schedule**: Click "Ajakava" tab in tournament navigation\
+2. **View Match Times**: See scheduled matches with times and table assignments\
+3. **Filter Matches**: Filter by group/class, date, or match status\
+4. **Real-time Updates**: Live updates as matches progress\
+\
+#### Players (/voistlused/$tournamentid/mangijad/)\
+1. **Access Players**: Click "M\'e4ngijad" tab\
+2. **View Participants**: See all registered players/teams by group\
+3. **Player Information**: Click on players to view profiles and ratings\
+4. **Team Information**: For team tournaments, view team compositions\
+\
+#### Results (/voistlused/$tournamentid/tulemused/)\
+1. **Access Results**: Click "Tulemused" tab\
+2. **View Brackets**: See tournament brackets and progression\
+3. **Live Results**: Real-time score updates during matches\
+4. **Final Standings**: Complete results after tournament completion\
+5. **Group Results**: Results organized by tournament groups/classes\
+\
+#### Gallery (/voistlused/$tournamentid/galerii/)\
+1. **Access Gallery**: Click "Galerii" tab\
+2. **View Photos**: Tournament photos and highlights\
+3. **Download Images**: Save tournament memories\
+\
+#### Media (/voistlused/$tournamentid/meedia/)\
+1. **Access Media**: Click "Meedia" tab\
+2. **Videos**: Tournament videos and highlights\
+3. **Documents**: Tournament protocols and official documents\
+\
+### Tournament Participation User Journey\
+\
+#### For New Participants\
+1. **Discover Tournament**: Browse tournament list or calendar\
+2. **Check Details**: Review tournament information and requirements\
+3. **Register**: Follow registration process for specific tournament\
+4. **Prepare**: Get location details and schedule information\
+5. **Participate**: Attend tournament and track progress through results section\
+\
+#### For Returning Participants\
+1. **Check Schedule**: Access familiar tournaments through calendar\
+2. **Quick Registration**: Use saved information for faster registration\
+3. **Track Results**: Monitor progress through results section\
+4. **Share Experience**: Access gallery and media for sharing\
+\
+\
+## Player Ratings System (/reiting/)\
+\
+### Accessing the Ratings System\
+1. **Navigate to Ratings**: Click "Reiting" in main navigation or go to `/reiting`\
+2. **View Rating Tables**: See comprehensive player rankings with sorting options\
+3. **Search Players**: Use search functionality to find specific players\
+4. **Filter by Categories**: Filter ratings by gender and age classes\
+\
+### Rating Categories and Filters\
+\
+#### Gender Categories\
+- **Men (Mehed)**: Male player rankings\
+- **Women (Naised)**: Female player rankings\
+- **Combined View**: Option to view all players together\
+\
+#### Age Class Filtering\
+- **Various Age Groups**: Filter by specific age categories\
+- **Open Class**: View players across all age groups\
+- **Junior Categories**: Youth and junior player rankings\
+- **Senior Categories**: Adult and senior player rankings\
+\
+### Player Profile System\
+\
+#### Accessing Player Profiles\
+1. **Search Player**: Use search function to find specific player\
+2. **Click Player Name**: Click on any player in rankings table\
+3. **View Profile Modal**: Detailed player information opens in overlay\
+\
+#### Player Profile Information\
+- **Current Rating**: Latest rating points and position\
+- **Rating History**: Historical rating changes with visual charts\
+- **Match History**: Recent matches with results and opponents\
+- **Club Affiliation**: Current club membership with logo\
+- **License Status**: Active/inactive license information\
+- **Personal Information**: Name, age category, gender\
+\
+#### Rating History Charts\
+- **Visual Representation**: Line graphs showing rating progression over time\
+- **Time Period Selection**: View different time ranges\
+- **Peak Performance**: Identify highest rating achievements\
+- **Trend Analysis**: Understand rating trajectory\
+\
+### Rating Calculator\
+\
+#### Using the Rating Calculator\
+1. **Access Calculator**: Available within ratings section\
+2. **Enter Match Details**:\
+   - Your current rating\
+   - Opponent's current rating\
+   - Match result (win/loss)\
+3. **Calculate Impact**: See predicted rating change\
+\
+### Match History Tracking\
+\
+#### Recent Matches Display\
+- **Match Results**: Win/loss records with scores\
+- **Opponent Information**: Details about match opponents\
+- **Tournament Context**: Which tournaments matches were played in\
+- **Date Information**: When matches occurred\
+- **Rating Impact**: How each match affected player rating\
+\
+### Club Integration in Ratings\
+\
+#### Club Affiliation Display\
+- **Club Logos**: Visual identification of player clubs\
+- **Club Rankings**: See how clubs perform through member ratings\
+- **Club Loyalty**: Track player movement between clubs\
+\
+### Rating System User Journey\
+\
+#### For New Players\
+1. **Check Initial Status**: Search for existing rating (may be unrated initially)\
+2. **Understand System**: Learn how ratings work through information provided\
+3. **Track Progress**: Monitor rating development after first tournaments\
+4. **Set Goals**: Use rating calculator to plan improvement strategy\
+\
+#### For Experienced Players\
+1. **Monitor Position**: Regular checks of current ranking and position\
+2. **Analyze Trends**: Review rating history for performance patterns\
+3. **Strategic Planning**: Use rating calculator for match selection\
+4. **Compare Performance**: Check against peers and rivals\
+5. **Historical Review**: Track long-term progress and achievements\
+\
+### Rating Information Display\
+\
+#### Rating Table Columns\
+- **Rank**: Current position in rankings\
+- **Player Name**: Full name with link to profile\
+- **Club**: Current club affiliation with logo\
+- **Rating Points**: Current rating value\
+- **Change**: Recent rating changes (up/down indicators)\
+- **Matches Played**: Number of rated matches\
+- **Last Activity**: Date of most recent rated match\
+\
+#### Sorting and Navigation\
+- **Sort Options**: Sort by rank, name, club, rating, or activity\
+- **Pagination**: Navigate through large player lists\
+- **Quick Jump**: Jump to specific ranking ranges\
+- **Search Integration**: Quick search within current view\
+\
+## Calendar System and News/Blog Platform\
+\
+### Calendar System (/kalender/)\
+\
+#### Accessing the Tournament Calendar\
+1. **Navigate to Calendar**: Click "Kalender" in main navigation or go to `/kalender`\
+2. **View Tournament Schedule**: See visual calendar with all tournaments marked\
+3. **Navigation Options**: Browse between months and years\
+4. **Mobile Optimization**: Automatic scroll to current month on mobile devices\
+\
+#### Calendar Features\
+- **Visual Tournament Display**: Tournaments shown as events on calendar dates\
+- **Multiple View Modes**: Month view with tournament indicators\
+- **Year Navigation**: Quick jump between years for long-term planning\
+- **Tournament Filtering**: Filter tournaments by type or status\
+- **Empty State Handling**: Clear messaging when no tournaments are scheduled\
+\
+#### Using the Calendar\
+1. **Browse Months**: Use navigation arrows to move between months\
+2. **Click Tournament**: Click on any tournament date to view details\
+3. **Plan Participation**: Use calendar view for tournament scheduling\
+4. **Export Options**: Save tournament dates to personal calendar (if available)\
+\
+### News and Blog System (/uudised/)\
+\
+#### Accessing News Content\
+1. **Navigate to News**: Click "Uudised" in main navigation or go to `/uudised`\
+2. **Browse Categories**: Use category filters to find specific content types\
+3. **Search Articles**: Use search functionality to find specific topics\
+4. **Pagination**: Navigate through multiple pages of articles\
+\
+#### News Categories\
+- **All Articles**: Complete list of all published content\
+- **Competitions (V\'f5istlused)**: Tournament-related news and announcements\
+- **News (Uudised)**: General table tennis news and updates  \
+- **Good Read (Hea Lugemine)**: In-depth articles and features\
+- **Results (Tulemused)**: Tournament results and achievement highlights\
+\
+#### Article Display and Navigation\
+- **Responsive Layout**: \
+  - Mobile: Compact card layout for easy scrolling\
+  - Desktop: Grid layout showing more articles simultaneously\
+- **Article Previews**: Title, excerpt, category, and publication date\
+- **Category Filtering**: URL-based category filtering with clear navigation\
+- **Search Integration**: Find articles by title, content, or keywords\
+\
+#### Reading Individual Articles (/uudised/$blogid)\
+\
+#### Accessing Full Articles\
+1. **Click Article**: Click on any article card from the news listing\
+2. **Full Content Display**: Rich article content with integrated media\
+3. **Article Information**: Publication date, category, and author information\
+4. **Social Sharing**: Share articles through various platforms\
+\
+#### Article Features\
+- **Rich Media Support**: Images, videos, and embedded content\
+- **Responsive Reading**: Optimized typography for different screen sizes\
+- **Navigation**: Easy return to news listing\
+- **Related Content**: Suggestions for similar articles (if implemented)\
+\
+### Content Management for Users\
+\
+#### User-Generated Content Interaction\
+- **Comments**: Engage with articles through comment system (if enabled)\
+- **Social Sharing**: Share interesting articles with community\
+- **Bookmarking**: Save articles for later reading (if implemented)\
+\
+### News and Calendar User Journey\
+\
+#### Staying Updated with News\
+1. **Regular Browsing**: Visit news section for latest updates\
+2. **Category Focus**: Use category filters to find relevant content\
+3. **Search Specific Topics**: Use search for particular interests\
+4. **Share Content**: Distribute interesting articles to community\
+\
+#### Tournament Planning with Calendar\
+1. **View Annual Schedule**: Use calendar for year-long tournament planning\
+2. **Identify Conflicts**: Check for scheduling conflicts with other events\
+3. **Plan Participation**: Select tournaments based on calendar availability\
+4. **Set Reminders**: Use calendar information for personal scheduling\
+\
+#### Combined Usage Patterns\
+- **Tournament Announcements**: News articles often announce upcoming tournaments shown in calendar\
+- **Results Coverage**: News articles provide detailed coverage of tournament results\
+- **Community Updates**: News keeps community informed about calendar changes\
+\
+### Content Discovery Features\
+\
+#### Search Functionality\
+- **Article Search**: Find articles by keywords, titles, or content\
+- **Category Integration**: Search within specific categories\
+- **Date Filtering**: Find articles from specific time periods\
+- **Relevance Sorting**: Results ordered by relevance to search terms\
+\
+#### Content Organization\
+- **Chronological Listing**: Most recent articles displayed first\
+- **Category Organization**: Clear separation by content type\
+- **Archive Access**: Ability to browse historical content\
+- **Featured Content**: Highlighting important or popular articles\
+\
+# Estonian Table Tennis League (ELTA) Platform - Knowledge Base (Part 5/10)\
+\
+## Club Directory and Licensing System\
+\
+### Club Directory (/klubid/)\
+\
+#### Accessing the Club Directory\
+1. **Navigate to Clubs**: Click "Klubid" in main navigation or go to `/klubid`\
+2. **Browse Club Grid**: View all registered table tennis clubs in grid layout\
+3. **Club Information**: Click on clubs to view detailed information\
+4. **Find Local Clubs**: Discover clubs in specific regions or areas\
+\
+#### Club Directory Features\
+- **Visual Club Display**: Grid-based layout with club profiles and logos\
+- **Club Information Modals**: Detailed club information in popup overlays\
+- **Contact Information**: Club addresses, phone numbers, and websites\
+- **Member Information**: See club player affiliations and members\
+\
+#### Club Profile Information\
+Each club profile contains:\
+- **Club Name**: Official club designation\
+- **Logo/Visual Identity**: Club logos and identifying images\
+- **Contact Details**: Address, phone, email, website\
+- **Location Information**: Geographic location and directions\
+- **Member Listings**: Players affiliated with the club\
+- **Club Statistics**: Number of members, tournaments hosted, etc.\
+\
+#### Using Club Directory\
+1. **Browse All Clubs**: View complete list of registered clubs\
+2. **Click for Details**: Click club cards to open detailed information\
+3. **Contact Clubs**: Use provided contact information to reach clubs\
+4. **Find Training Partners**: Discover clubs near your location\
+5. **Join Communities**: Connect with local table tennis communities\
+\
+### Licensing System (/litsents/)\
+\
+#### Accessing the Licensing System\
+1. **Navigate to Licensing**: Click "Litsents" in main navigation or go to `/litsents`\
+2. **License Purchase Workflow**: Complete step-by-step license application\
+3. **Player Verification**: Search existing players or register new players\
+4. **Payment Processing**: Secure payment gateway integration\
+\
+#### License Application Process\
+\
+#### Step 1: Player Identification\
+1. **Search Existing Players**: Search database for existing player records\
+2. **Manual Entry Option**: Enter new player information if not found\
+3. **Estonian ID Validation**: \
+   - Automatic validation for Estonian players\
+   - Birth date and gender extraction from Estonian ID\
+   - Government database verification\
+4. **Foreign Player Support**: Manual entry for non-Estonian players\
+\
+#### Step 2: Player Information Validation\
+- **Automatic Data Population**: Estonian IDs auto-fill birth date and gender\
+- **Manual Verification**: Confirm or correct auto-populated information\
+- **Required Fields**: Ensure all necessary information is complete\
+- **Data Accuracy**: Verify information before proceeding\
+\
+#### Step 3: License Type Selection\
+Available license types based on:\
+- **Age Categories**:\
+  - Child License: For younger players\
+  - Youth License: For junior players\
+  - Adult License: For standard adult players  \
+  - Senior License: For older players\
+- **Club Membership Status**: Different rates for club members vs. non-members\
+- **Nationality**: Estonian vs. Foreign player licenses\
+- **Pricing Transparency**: Clear pricing for each license type\
+\
+#### Step 4: Payment and Confirmation\
+1. **Email Requirement**: Provide email address for receipt delivery\
+2. **Payment Processing**: Secure payment gateway integration\
+3. **Payment Status Tracking**: Real-time payment confirmation\
+4. **Receipt Generation**: Automatic email receipt upon successful payment\
+\
+#### License Purchase User Journey\
+\
+#### For New License Holders\
+1. **Access Licensing**: Navigate to licensing section\
+2. **Search/Enter Information**: Find existing record or create new player entry\
+3. **Validate Estonian ID**: System automatically validates and populates data\
+4. **Select License Type**: Choose appropriate license based on age/category\
+5. **Provide Email**: Enter email for receipt and communication\
+6. **Complete Payment**: Process payment through secure gateway\
+7. **Receive Confirmation**: Get email confirmation and license activation\
+\
+#### For License Renewals\
+1. **Find Existing Record**: Search for existing player in database\
+2. **Verify Information**: Confirm current information is accurate\
+3. **Select Renewal**: Choose appropriate renewal license type\
+4. **Process Payment**: Complete renewal payment\
+5. **Update Status**: License status updated automatically\
+\
+#### Payment Status Handling\
+- **Success Page** (`/litsents/success`): Confirmation of successful payment\
+- **Failure Handling**: Error messages and retry options\
+- **Cancellation Page** (`/litsents/cancel`): Handle cancelled transactions\
+- **Email Notifications**: Automatic receipt delivery upon completion\
+\
+#### Estonian ID Integration Features\
+- **Real-time Validation**: Immediate verification against government systems\
+- **Data Extraction**: Automatic birth date and gender determination\
+- **Error Handling**: Clear messaging for invalid IDs\
+- **Privacy Protection**: Secure handling of personal identification data\
+\
+### Club and Licensing Integration\
+\
+#### Club Membership Benefits\
+- **License Discounts**: Reduced licensing fees for club members\
+- **Club Verification**: System validates club membership status\
+- **Member Directory**: Clubs can track member license status\
+- **Bulk Processing**: Options for clubs to handle multiple member licenses\
+\
+# Estonian Table Tennis League (ELTL) Platform - Knowledge Base (Part 6/10)\
+\
+## User Profile Management and Contact Information\
+\
+### User Profile System (/profile/)\
+\
+#### Accessing User Profile\
+1. **Login Required**: Must be authenticated to access profile features\
+2. **Navigate to Profile**: Click profile icon/menu or go to `/profile`\
+3. **Profile Overview**: View personal information and account status\
+4. **Profile Settings**: Access account management and preferences\
+\
+#### Profile Information Display\
+- **Personal Details**: Name, email, club affiliation, license status\
+- **Account Statistics**: Registration date, activity level, participation history\
+- **Tournament History**: List of tournaments participated in\
+- **Rating Information**: Current rating and historical data\
+- **Club Membership**: Current and previous club affiliations\
+\
+#### Profile Management Features\
+\
+#### Personal Settings (/profile/settings/)\
+1. **Access Settings**: Click "Settings" in profile navigation\
+2. **Account Information**:\
+   - Update email address\
+   - Change password\
+   - Modify personal information\
+3. **Preferences**:\
+   - Language selection (Estonian/English)\
+   - Notification preferences\
+   - Privacy settings\
+4. **Save Changes**: Apply updates to account information\
+\
+#### Tournament Participation History (/profile/tournaments/)\
+1. **Access Tournament History**: Click "Tournaments" in profile navigation\
+2. **Participation Record**: View all tournaments you've participated in\
+3. **Tournament Details**: Click tournaments to view detailed information\
+4. **Results Tracking**: See your results and performance in each tournament\
+5. **Future Tournaments**: View upcoming tournaments you're registered for\
+\
+#### Profile User Journey\
+\
+#### Setting Up Profile\
+1. **Complete Registration**: Finish account creation process\
+2. **Verify Information**: Confirm personal details are accurate\
+3. **Set Preferences**: Configure language and notification settings\
+4. **Join Club**: Associate with table tennis club if applicable\
+\
+#### Managing Profile\
+1. **Regular Updates**: Keep contact information current\
+2. **Track Participation**: Monitor tournament history and results\
+3. **Privacy Management**: Control information visibility\
+4. **Account Security**: Regularly update password and security settings\
+\
+### Contact Information (/kontakt/)\
+\
+#### Accessing Contact Information\
+1. **Navigate to Contact**: Click "Kontakt" in main navigation or go to `/kontakt`\
+2. **Organization Details**: Complete ELTA contact information\
+3. **Multiple Contact Methods**: Various ways to reach the organization\
+\
+#### Contact Information Available\
+\
+#### Physical Location\
+- **Complete Address**: Full postal address for ELTA headquarters\
+- **Interactive Map**: Embedded Google Maps showing location\
+- **Directions**: Get directions from current location\
+- **Office Hours**: When the office is open for visits\
+\
+#### Contact Methods\
+- **Phone Numbers**: Direct phone lines for different inquiries\
+- **Email Addresses**: Specific emails for different departments:\
+  - General inquiries\
+  - Tournament questions\
+  - Membership issues\
+  - Technical support\
+- **Emergency Contact**: After-hours contact information when available\
+\
+#### Banking Information\
+- **Payment Details**: Bank account information for:\
+  - Tournament fees\
+  - Membership payments\
+  - License payments\
+  - Donation processing\
+- **Reference Numbers**: Proper reference formatting for payments\
+- **Payment Instructions**: How to properly make payments to ELTA\
+\
+#### Inquiry Categories\
+The contact page provides specific guidance for:\
+- **Tournament Inquiries**: Questions about specific tournaments or participation\
+- **Membership Questions**: Club membership and player registration issues\
+- **Technical Support**: Website and system-related problems\
+- **General Information**: Other questions about table tennis in Estonia\
+\
+#### Using Contact Information\
+\
+#### For Tournament Questions\
+1. **Check Tournament Details**: First review tournament-specific information\
+2. **Identify Contact Method**: Use tournament-specific contact if available\
+3. **General Tournament Line**: Use ELTA general line for broader questions\
+4. **Email Support**: Send detailed questions via email for complex issues\
+\
+#### For Technical Issues\
+1. **Try Self-Help**: Check if issue can be resolved through website features\
+2. **Document Problem**: Note specific error messages or issues encountered\
+3. **Contact Support**: Use technical support contact methods\
+4. **Provide Details**: Include browser, device, and specific problem description\
+\
+#### For Payment Issues\
+1. **Check Banking Details**: Verify correct account information\
+2. **Confirm Reference**: Ensure proper payment reference format\
+3. **Contact Finance**: Use specific financial inquiry contact methods\
+4. **Keep Records**: Save payment confirmations and transaction details\
+\
+### Profile and Contact Integration\
+\
+#### Account Support\
+- **Profile Issues**: Use contact information for account-related problems\
+- **Password Recovery**: Technical support for login issues\
+- **Data Updates**: Request help with profile information changes\
+- **Privacy Concerns**: Contact for privacy and data protection questions\
+\
+#### Community Connection\
+- **Local Contacts**: Connect with regional representatives\
+- **Club Inquiries**: Get help finding or joining local clubs  \
+- **Event Information**: Ask about upcoming events and activities\
+- **Volunteer Opportunities**: Inquire about helping with table tennis activities\
+\
+# Estonian Table Tennis League (ELTA) Platform - Knowledge Base (Part 7/10)\
+\
+## Admin Dashboard and Tournament Management\
+\
+### Admin Access and Dashboard (/admin/dashboard/)\
+\
+#### Accessing Admin Features\
+1. **Admin Login Required**: Must have admin role permissions\
+2. **Role-Based Access**: Different admin levels have different capabilities:\
+   - Root Admin: Full system access including clubs\
+   - Organization Admin: Tournament and dashboard access\
+   - Solo Admin: Tournament and dashboard access  \
+   - Media Admin: Blog management access\
+3. **Automatic Redirect**: Admin users automatically redirected to dashboard\
+4. **Navigation**: Admin sidebar appears for authenticated admin users\
+\
+#### Admin Dashboard Features\
+- **Personalized Welcome**: Time-based greetings (morning/day/evening)\
+- **System Statistics Overview**:\
+  - Active tournaments count\
+  - Total tournaments in system\
+  - Total registered users\
+- **Tournament Activity Chart**: Visual representation of monthly tournament distribution\
+- **Quick Access Tables**:\
+  - Recently created tournaments with management links\
+  - Upcoming tournaments with direct navigation\
+- **Administrative Shortcuts**: One-click access to common admin tasks\
+\
+#### Dashboard Navigation\
+- **Main Statistics**: High-level system overview at a glance\
+- **Recent Activity**: Latest tournaments and system activity\
+- **Quick Actions**: Direct links to tournament creation and management\
+- **System Health**: Overview of platform performance and status\
+\
+### Tournament Creation (/admin/tournaments/new/)\
+\
+#### Creating a New Tournament\
+1. **Access Tournament Creation**: \
+   - From admin dashboard click "Add New Tournament"\
+   - Navigate to `/admin/tournaments/` and click "Add New" button\
+2. **Tournament Form**: Complete comprehensive tournament setup form\
+\
+#### Tournament Configuration Options\
+\
+#### Basic Tournament Information\
+- **Tournament Name**: Official tournament title\
+- **Location**: Venue name and address\
+- **Dates**: Start date, end date, and duration\
+- **Organizer Information**: Contact details and responsible party\
+- **Table Count**: Number of available tables for matches\
+- **Tournament Description**: Rich text description using Yoopta Editor\
+\
+#### Registration Settings\
+Choose registration method:\
+- **On-site Registration Only**: Players register at venue\
+- **Google Forms Integration**: Link to external Google Form\
+- **Excel Sheet Registration**: Upload/download Excel template\
+- **Email Registration**: Players register via email contact\
+\
+#### Tournament Features\
+- **Rating Calculation**: Toggle whether tournament affects player ratings\
+- **Rating Coefficient**: Set impact multiplier (1.0-2.0 scale) for rating changes\
+- **Private Tournament**: Control public visibility of tournament\
+- **Tournament Categories**: Assign tournament to appropriate categories\
+- **Tournament Types**: Select from available tournament formats\
+\
+#### Advanced Configuration\
+- **Group/Class Structure**: Define tournament divisions and categories\
+- **Tournament Format**: Single elimination, double elimination, group stage, etc.\
+- **Scoring System**: Configure match scoring and advancement rules\
+- **Media Settings**: Enable gallery, video, and media uploads\
+\
+### Tournament Management Workflow\
+\
+#### Post-Creation Setup\
+1. **Tournament Created**: Basic tournament information saved\
+2. **Structure Setup**: Create groups/classes within tournament\
+3. **Participant Management**: Add players/teams to tournament groups\
+4. **Schedule Creation**: Set up match times and table assignments\
+5. **Tournament Launch**: Activate tournament for public viewing\
+\
+#### Tournament Administration (/admin/tournaments/)\
+- **Tournament List**: View all tournaments in system\
+- **Status Management**: Track tournament progress and status\
+- **Quick Actions**: Edit, delete, or manage tournaments directly from list\
+- **Filtering Options**: Find tournaments by status, date, or other criteria\
+- **Bulk Operations**: Manage multiple tournaments simultaneously\
+\
+### Admin Tournament Creation User Journey\
+\
+#### Planning Phase\
+1. **Determine Tournament Details**: Gather all necessary information\
+2. **Choose Registration Method**: Decide how participants will register\
+3. **Set Tournament Parameters**: Configure rating impact and visibility\
+4. **Prepare Description**: Create comprehensive tournament information\
+\
+#### Creation Process\
+1. **Access Creation Form**: Navigate to new tournament creation\
+2. **Fill Basic Information**: Enter tournament name, dates, location\
+3. **Configure Registration**: Set up chosen registration method\
+4. **Set Advanced Options**: Configure rating settings and tournament type\
+5. **Add Rich Description**: Use editor to create detailed tournament information\
+6. **Save Tournament**: Submit form to create tournament in system\
+\
+#### Post-Creation Tasks\
+1. **Review Created Tournament**: Verify all information is correct\
+2. **Set Up Structure**: Create tournament groups and classes\
+3. **Configure Media**: Enable gallery and media features if desired\
+4. **Prepare for Participants**: Set up participant management\
+5. **Plan Schedule**: Prepare for match scheduling and table assignments\
+\
+### Tournament Form Features\
+\
+#### Rich Text Editor (Yoopta Editor)\
+- **Advanced Formatting**: Rich text capabilities for tournament descriptions\
+- **Media Integration**: Embed images and media in tournament descriptions\
+- **Mobile Optimization**: Editor works on mobile devices\
+- **Preview Mode**: See how description will appear to public users\
+\
+#### Form Validation\
+- **Required Field Validation**: Ensure all necessary information provided\
+- **Date Validation**: Verify tournament dates are logical and future-dated\
+- **Email Validation**: Validate contact email addresses\
+- **URL Validation**: Check external links for registration forms\
+\
+#### Save and Continue Options\
+- **Draft Mode**: Save tournament as draft for later completion\
+- **Immediate Publishing**: Make tournament immediately visible to public\
+- **Edit After Creation**: Modify tournament details after initial creation\
+\
+## Tournament Structure Management (/admin/tournaments/$tournamentid/grupid/)\
+\
+#### Creating Tournament Groups/Classes\
+1. **Access Group Management**: Navigate to tournament and click "Groups" section\
+2. **Create New Group**: Click "Create New Group" or "Uus Grupp"\
+3. **Group Configuration**:\
+   - **Group Name**: Define class/group title\
+   - **Tournament Format**: Choose competition type (solo, teams, doubles)\
+   - **Group Settings**: Configure specific rules and parameters\
+\
+#### Tournament Format Options\
+- **Solo Competitions**: Individual player tournaments\
+- **Team Competitions**: Club-based team tournaments  \
+- **Dynamic Doubles**: Pair formations with rotating partnerships\
+- **Mixed Formats**: Combinations of different competition types\
+\
+#### Group Management Features\
+- **Multiple Groups**: Create multiple classes within single tournament\
+- **Group Navigation**: Easy switching between different tournament groups\
+- **Group Settings**: Individual configuration for each group\
+- **Table Assignment**: Assign specific tables to groups\
+\
+### Participant Management (/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/)\
+\
+#### Adding Participants to Groups\
+1. **Select Tournament Group**: Choose specific group/class to manage\
+2. **Add Participants**: Different methods based on tournament type:\
+   - **Solo Players**: Add individual players from database\
+   - **Teams**: Add complete teams with member rosters\
+   - **Doubles Pairs**: Create doubles partnerships\
+\
+#### Participant Management Features\
+\
+#### Player Search and Addition\
+- **Database Search**: Find existing players in system\
+- **Quick Add**: Add players directly to tournament group\
+- **New Player Creation**: Create new player records if needed\
+- **Batch Import**: Add multiple players simultaneously\
+\
+#### Seeding and Organization\
+- **Drag-and-Drop Seeding**: Visual participant reordering interface\
+- **Seeding Numbers**: Assign seeding positions to participants\
+- **Group Switching**: Move participants between different groups\
+- **Participant Removal**: Remove participants if needed\
+\
+#### Team Management (Team Tournaments)\
+- **Team Creation**: Set up team rosters and lineups\
+- **Player Assignment**: Assign players to specific teams\
+- **Team Captain**: Designate team leadership\
+- **Substitutions**: Handle player substitutions and changes\
+\
+### Match Management System (/admin/tournaments/$tournamentid/mangud/)\
+\
+#### Match Overview and Control\
+1. **Access Match Management**: Navigate to tournament "Matches" section\
+2. **Match Status Filtering**: View matches by status:\
+   - **All Matches**: Complete match overview\
+   - **Created**: Scheduled but not yet started\
+   - **Ongoing**: Currently in progress\
+   - **Finished**: Completed matches\
+\
+#### Match Control Features\
+\
+#### Score Entry and Management\
+- **Match Modal System**: Comprehensive match management interface\
+- **Score Entry**: Input match results and game scores\
+- **Match Status Updates**: Change match status (Created \uc0\u8594  Ongoing \u8594  Finished)\
+- **Forfeit Handling**: Process player withdrawals and forfeits\
+- **Score Corrections**: Edit scores after initial entry\
+\
+#### Table and Time Management\
+- **Table Assignment**: Assign matches to specific tables\
+- **Time Scheduling**: Set match start times\
+- **Schedule Editing**: Modify match times during tournament\
+- **Table Status**: Track table availability and usage\
+\
+#### Advanced Match Features\
+- **Protocol Generation**: Create PDF match protocols\
+- **Real-time Updates**: Live score and status tracking\
+- **Match Notes**: Add administrative notes to matches\
+- **Result Validation**: Verify score accuracy and completion\
+\
+### Tournament Scheduling (/admin/tournaments/$tournamentid/ajakava/)\
+\
+#### Schedule Configuration\
+1. **Access Scheduling**: Navigate to tournament "Schedule" section\
+2. **Timetable Settings**: Configure tournament timing parameters\
+3. **Advanced Settings** (`/admin/tournaments/$tournamentid/ajakava/seaded/`):\
+   - **Match Duration**: Set expected match lengths\
+   - **Break Times**: Configure breaks between matches\
+   - **Table Rotation**: Set up table assignment rotation\
+   - **Time Blocks**: Define tournament time segments\
+\
+#### Schedule Management Features\
+\
+#### Time Configuration\
+- **Tournament Hours**: Set daily tournament start/end times\
+- **Match Intervals**: Configure time between matches\
+- **Break Scheduling**: Plan lunch breaks and rest periods\
+- **Overtime Planning**: Handle schedule overruns\
+\
+#### Table Scheduling\
+- **Table Assignment**: Assign matches to specific tables\
+- **Table Availability**: Track which tables are free/occupied\
+- **Table Optimization**: Maximize table usage efficiency\
+- **Table Status Display**: Visual representation of table usage\
+\
+#### Real-time Schedule Adjustments\
+- **Live Updates**: Modify schedule during tournament\
+- **Delay Handling**: Adjust for match delays\
+- **Emergency Changes**: Handle unexpected schedule modifications\
+- **Participant Notifications**: Inform players of schedule changes\
+\
+### Regrouping and Advanced Management\
+\
+#### Participant Regrouping (/admin/tournaments/$tournamentid/-components/regrouping)\
+- **Mid-Tournament Changes**: Reorganize participants during tournament\
+- **Group Rebalancing**: Move players between groups for balance\
+- **Bracket Adjustments**: Modify tournament brackets as needed\
+- **Seeding Reset**: Recalculate seeding based on performance\
+\
+#### Tournament Tables and Brackets (/admin/tournaments/$tournamentid/tabelid/)\
+- **Bracket Visualization**: Visual tournament bracket display\
+- **Advancement Tracking**: Monitor player/team progression\
+- **Result Integration**: Automatic bracket updates from match results\
+- **Final Standings**: Generate complete tournament rankings\
+\
+### Admin Tournament Management User Journey\
+\
+#### Tournament Preparation\
+1. **Structure Creation**: Set up groups and tournament format\
+2. **Participant Addition**: Add all players/teams to appropriate groups\
+3. **Seeding Setup**: Organize participants in competitive order\
+4. **Schedule Planning**: Create match times and table assignments\
+\
+#### During Tournament\
+1. **Match Monitoring**: Track ongoing matches and results\
+2. **Score Entry**: Input results as matches complete\
+3. **Schedule Adjustments**: Handle timing changes and delays\
+4. **Problem Resolution**: Address participant issues and conflicts\
+\
+#### Tournament Completion\
+1. **Final Results**: Ensure all matches completed and scored\
+2. **Protocol Generation**: Create official tournament documentation\
+3. **Result Publication**: Make final standings available to public\
+4. **Archive Management**: Store tournament data for historical record\
+\
+## Admin Content Management and Club Administration\
+\
+### Blog/News Management (/admin/blog/)\
+\
+#### Accessing Blog Administration\
+1. **Admin Role Required**: Must have Media Admin role or higher\
+2. **Navigate to Blog**: Access from admin sidebar or go to `/admin/blog/`\
+3. **Content Overview**: View all blog posts and their status\
+4. **Content Management**: Create, edit, and manage blog articles\
+\
+#### Blog Management Features\
+\
+#### Content Creation (/admin/blog/new/)\
+1. **Create New Post**: Click "New Post" or navigate to `/admin/blog/new/`\
+2. **Rich Content Editor**: Use Yoopta Editor for advanced content creation\
+3. **Article Configuration**:\
+   - **Title**: Article headline\
+   - **Category**: Assign to appropriate news category\
+   - **Content**: Full article content with rich media\
+   - **Publication Status**: Draft or immediate publication\
+\
+#### Content Management Dashboard\
+- **Article Listing**: View all articles with status indicators\
+- **Search and Filter**: Find articles by title, category, or date\
+- **Quick Actions**: Edit, delete, or change status directly from list\
+- **Publication Control**: Manage draft/published states\
+\
+#### Article Editing (/admin/blog/$blogid/)\
+1. **Select Article**: Click on any article from the management list\
+2. **Edit Content**: Modify article using rich text editor\
+3. **Update Categories**: Change article categorization\
+4. **Publication Management**: Switch between draft and published states\
+5. **Save Changes**: Apply updates to article\
+\
+#### Rich Content Features (Yoopta Editor)\
+- **Advanced Formatting**: Headers, lists, emphasis, quotes\
+- **Media Integration**: Embed images, videos, and other media\
+- **Link Management**: Add internal and external links\
+- **Mobile Editing**: Editor optimized for mobile content creation\
+- **Auto-Save**: Prevent content loss with automatic saving\
+\
+### Club Administration (/admin/clubs/) - Root Admin Only\
+\
+#### Accessing Club Management\
+1. **Root Admin Role Required**: Only Root Admins can access club features\
+2. **Navigate to Clubs**: Access from admin sidebar or go to `/admin/clubs/`\
+3. **Club Overview**: View all clubs in system\
+4. **My Clubs**: See clubs you directly administer\
+\
+#### Club Management Features\
+\
+#### Club Information Management\
+- **Club Details**: Manage complete club information\
+- **Contact Information**: Address, phone, email, website\
+- **Visual Identity**: Upload and manage club logos/avatars\
+- **Location Data**: Geographic location and venue information\
+- **Club Statistics**: Track membership and activity levels\
+\
+#### Player Management for Clubs\
+\
+#### Adding Players to Clubs\
+1. **Search Existing Players**: Find players already in system\
+2. **Player Search Interface**: Search by name, Estonian ID, or other criteria\
+3. **Add to Club**: Associate players with current club\
+4. **New Player Creation**: Create new player records when needed\
+\
+#### New Player Registration Process\
+1. **Player Information Entry**:\
+   - **Estonian Players**: Use Estonian ID validation system\
+   - **Foreign Players**: Manual information entry\
+   - **Birth Date**: Automatic extraction from Estonian ID or manual entry\
+   - **Gender**: Auto-determined or manually specified\
+\
+2. **Estonian ID Integration**:\
+   - **Real-time Validation**: Immediate verification against government database\
+   - **Data Extraction**: Automatic birth date and gender determination\
+   - **Error Handling**: Clear messages for invalid IDs\
+   - **Privacy Protection**: Secure handling of personal data\
+\
+#### Player Management Features\
+- **License Status Tracking**: Monitor player licensing status\
+- **Rating Integration**: View player ratings and performance\
+- **Club History**: Track player movement between clubs\
+- **Membership Duration**: Monitor how long players have been with club\
+\
+#### Club Administration User Journey\
+\
+#### Setting Up Club Management\
+1. **Access Club Section**: Navigate to club administration\
+2. **Review Club Information**: Verify club details are current\
+3. **Update Contact Information**: Ensure contact details are accurate\
+4. **Upload Visual Assets**: Add club logo and identifying images\
+\
+#### Managing Club Membership\
+1. **Review Current Members**: See all players associated with club\
+2. **Add New Members**: \
+   - Search existing players to add to club\
+   - Create new player records for club members\
+   - Handle Estonian ID validation for Estonian players\
+   - Process foreign players with manual data entry\
+3. **Monitor Licensing**: Track which members have valid licenses\
+4. **Member Communications**: Use player contact information for club communications\
+\
+#### Ongoing Club Administration\
+- **Membership Updates**: Add/remove players as membership changes\
+- **License Monitoring**: Track member license renewals and expiration\
+- **Club Information Updates**: Keep club details current\
+- **Performance Tracking**: Monitor club member ratings and tournament performance\
+\
+### Feedback Management (/admin/feedback/)\
+\
+#### Internal Communication System\
+1. **Access Feedback**: Navigate to feedback section in admin panel\
+2. **Submit Feedback**: Simple form for admin-to-system communication\
+3. **Issue Reporting**: Report bugs, problems, or improvement suggestions\
+4. **Feature Requests**: Suggest new features or enhancements\
+\
+#### Feedback Features\
+- **Direct Communication**: Channel to development team\
+- **Issue Categories**: Categorize different types of feedback\
+- **Priority Levels**: Indicate urgency of issues or requests\
+- **Follow-up Tracking**: Monitor response to submitted feedback\
+\
+### Media and Content Integration\
+\
+#### Tournament Media Management\
+- **Image Galleries**: Manage tournament photo galleries\
+- **Video Content**: Handle tournament video uploads and management\
+- **Document Management**: Store and organize tournament protocols and documents\
+- **Media Organization**: Categorize and tag media content for easy retrieval\
+\
+#### Content Publishing Workflow\
+1. **Content Creation**: Create articles, media, or other content\
+2. **Review Process**: Internal review before publication\
+3. **Publication**: Make content live for public viewing\
+4. **Updates and Maintenance**: Ongoing content management and updates}
