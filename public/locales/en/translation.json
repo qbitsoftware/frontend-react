@@ -973,6 +973,24 @@
       "description": "Manage and organize tournaments",
       "add_new": "New Tournament",
       "delete": "Delete a tournament",
+      "setup": {
+        "step1": {
+          "title": "Import Participants",
+          "description": "Download template and import participants or add them manually."
+        },
+        "step2": {
+          "pairs": "Generate pairs",
+          "subgroups": "Generate Subgroups",
+          "seeding": "Set Order & Seeding",
+          "pairs_desc": "Create doubles pairs automatically",
+          "subgroups_desc": "Organize into round robin groups",
+          "seeding_desc": "Order by rating and generate bracket"
+        },
+        "step3": {
+          "advance": "Advance Players to Next Round",
+          "advance_desc": "Move qualified players to the next round"
+        }
+      },
       "warnings": {
         "bracket_size_mismatch": {
           "title": "This bracket size might not be suitable for the amount of participants!",
@@ -1283,7 +1301,9 @@
             "player_updated_error": "Issue updating player data",
             "player_removed_error": "Player successfully removed",
             "player_added": "Player successfully added",
-            "max_players": "Exceeding maximum set team size"
+            "max_players": "Exceeding maximum set team size",
+            "participant_move_successful": "Participant moved successfully",
+            "participant_move_error": "Error moving participant"
           },
           "actions": {
             "save": "Save",
