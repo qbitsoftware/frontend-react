@@ -54,29 +54,38 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
   const detailedTable = tableQuery.data?.data?.group || table;
 
   const getInitialDateTime = () => {
+    console.log("detailedTable data:", detailedTable);
+    console.log("detailedTable.start_date:", detailedTable.start_date);
+    
     const hasStartDate = detailedTable.start_date && detailedTable.start_date !== "";
     let formattedDate = tournamentStartDate;
     let formattedTime = "12:00";
 
     if (hasStartDate) {
       try {
+        console.log("Parsing start_date:", detailedTable.start_date);
         const date = new Date(detailedTable.start_date);
+        console.log("Parsed date object:", date);
         if (!isNaN(date.getTime())) {
           formattedDate = date.toISOString().split("T")[0];
           formattedTime = `${date.getHours().toString().padStart(2, "0")}:${date
             .getMinutes()
             .toString()
             .padStart(2, "0")}`;
+          console.log("Formatted date/time:", formattedDate, formattedTime);
         }
       } catch (error) {
         console.error("Error parsing date:", error);
       }
+    } else {
+      console.log("No start_date found, using defaults");
     }
 
     return { formattedDate, formattedTime };
   };
 
   const { formattedDate, formattedTime } = getInitialDateTime();
+  console.log("Initial detailedTable.time_table:", detailedTable.time_table);
   const [enabled, setEnabled] = useState(detailedTable.time_table || false);
   const [startDate, setStartDate] = useState(formattedDate);
   const [startTime, setStartTime] = useState(formattedTime);
@@ -126,25 +135,31 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
   useEffect(() => {
     if (tableQuery.data?.data) {
       const newTable = tableQuery.data.data?.group || table;
+      console.log("useEffect - newTable.time_table:", newTable.time_table);
       setEnabled(newTable.time_table || false);
       setAvgMatchDuration(newTable.avg_match_duration || 20);
       setBreakDuration(newTable.break_duration || 5);
       
       if (newTable.start_date) {
         try {
+          console.log("useEffect - Parsing start_date:", newTable.start_date);
           const date = new Date(newTable.start_date);
+          console.log("useEffect - Parsed date object:", date);
           if (!isNaN(date.getTime())) {
             const newFormattedDate = date.toISOString().split("T")[0];
             const newFormattedTime = `${date.getHours().toString().padStart(2, "0")}:${date
               .getMinutes()
               .toString()
               .padStart(2, "0")}`;
+            console.log("useEffect - Setting new date/time:", newFormattedDate, newFormattedTime);
             setStartDate(newFormattedDate);
             setStartTime(newFormattedTime);
           }
         } catch (error) {
           console.error("Error parsing date:", error);
         }
+      } else {
+        console.log("useEffect - No start_date in newTable:", newTable);
       }
     }
   }, [tableQuery.data]);

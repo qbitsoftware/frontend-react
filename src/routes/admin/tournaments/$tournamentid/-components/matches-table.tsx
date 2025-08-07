@@ -132,6 +132,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 ...match.match,
                 winner_id,
                 state: winner_id ? MatchState.FINISHED : MatchState.ONGOING,
+                use_sets: true,
                 extra_data: {
                     ...match.match.extra_data,
                     score: scores
