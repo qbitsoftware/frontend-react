@@ -6,7 +6,7 @@ import ErrorPage from "@/components/error";
 import { useTranslation } from "react-i18next";
 import { ErrorResponse } from "@/types/errors";
 import ITTFMatchComponent from "./-components/new-match-comp";
-import { MatchState, MatchWrapper } from "@/types/matches";
+import { GroupType, MatchState, MatchWrapper } from "@/types/matches";
 import {
   filterMatchesByGameday,
   getUniqueClasses,
@@ -47,11 +47,26 @@ function RouteComponent() {
   const { t } = useTranslation();
   const initialSetupDone = useRef(false);
 
-  // Memoize table lookup map for O(1) access
   const tableMap = useMemo(() => {
-    if (!tournamentTables?.data) return new Map();
+    const map = new Map();
 
-    return new Map(tournamentTables.data.map((table) => [table.id, table]));
+    if (!tournamentTables?.data) return map;
+
+    tournamentTables.data.forEach((table) => {
+      // Add the main table
+      map.set(table.id, table);
+
+      // Add each stage if its id is not already in the map
+      if (Array.isArray(table.stages)) {
+        table.stages.forEach((stage) => {
+          if (!map.has(stage.id)) {
+            map.set(stage.id, stage);
+          }
+        });
+      }
+    });
+
+    return map;
   }, [tournamentTables?.data]);
 
   // Memoize unique matches to avoid recalculation
@@ -60,11 +75,29 @@ function RouteComponent() {
     return getUniqueMatches(matchesData.data);
   }, [matchesData?.data]);
 
-  // Memoize class-filtered matches
   const classFilteredMatches = useMemo(() => {
     if (activeClass === "all") return safeMatches;
-    return safeMatches.filter((match) => match.class === activeClass);
-  }, [safeMatches, activeClass]);
+
+    // Find all table and stage IDs that match the activeClass
+    const relevantTableIds = new Set<string | number>();
+    if (tournamentTables?.data) {
+      tournamentTables.data.forEach((table) => {
+        if (table.class === activeClass) {
+          relevantTableIds.add(table.id);
+          if (Array.isArray(table.stages)) {
+            table.stages.forEach((stage) => {
+              relevantTableIds.add(stage.id);
+            });
+          }
+        }
+      });
+    }
+
+    // Filter matches whose tournament_table_id is in relevantTableIds
+    return safeMatches.filter(
+      (match) => relevantTableIds.has(match.match.tournament_table_id)
+    );
+  }, [safeMatches, activeClass, tournamentTables?.data]);
 
   // Memoize unique gamedays and classes
   const uniqueGamedays = useMemo(
@@ -73,15 +106,15 @@ function RouteComponent() {
   );
 
   const uniqueClasses = useMemo(
-    () => getUniqueClasses(safeMatches),
-    [safeMatches],
+    () => getUniqueClasses(tournamentTables?.data || []),
+    [],
   );
 
   // Memoize filtered and sorted matches
   const { displayMatches, displayMatchCount } = useMemo(() => {
     // Filter by date/gameday
     let matches = classFilteredMatches;
-    
+
     if (activeDay !== "all") {
       // If activeDay is a number, filter by that specific date
       if (typeof activeDay === "number" && activeDay >= 0 && activeDay < uniqueGamedays.length) {
@@ -98,11 +131,12 @@ function RouteComponent() {
         return false;
       }
 
-      const isByeGame = match.p1?.name?.toLowerCase().includes("bye") || 
-                       match.p2?.name?.toLowerCase().includes("bye");
+      const isByeGame = match.p1?.name?.toLowerCase().includes("bye") ||
+        match.p2?.name?.toLowerCase().includes("bye");
 
       return !isByeGame;
     });
+
 
     // Filter by status
     if (activeStatus !== "all") {
@@ -211,7 +245,14 @@ function RouteComponent() {
       });
     }
 
-    setActiveDay(bestDayIndex);
+    const table = tournamentTables?.data?.find((tbl) => tbl.class === activeClass);
+
+    if (table?.type === GroupType.CHAMPIONS_LEAGUE) {
+      setActiveDay(bestDayIndex);
+    } else {
+      setActiveDay("all");
+    }
+
     initialSetupDone.current = true;
   }, [uniqueGamedays]);
 

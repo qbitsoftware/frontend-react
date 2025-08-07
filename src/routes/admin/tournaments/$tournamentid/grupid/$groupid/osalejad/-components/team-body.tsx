@@ -20,9 +20,10 @@ interface NewTeamProps {
     participants: Participant[]
     group_participant?: Participant
     setParticipantsState: Dispatch<SetStateAction<Participant[]>>
+    highLightInput?: boolean
 }
 
-export default function TeamParticipants({ tournament_id, tournament_table, participants, setParticipantsState, group_participant }: NewTeamProps) {
+export default function TeamParticipants({ tournament_id, tournament_table, participants, setParticipantsState, group_participant, highLightInput }: NewTeamProps) {
     const { addOrUpdateParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
     const [globalEdit, setGlobalEdit] = useState(false)
     const [forceDisableOrdering, setForceDisableOrdering] = useState(false)
@@ -137,6 +138,11 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
                         placeholder={t("admin.tournaments.groups.participants.actions.add_team")}
                         value={newParticipantName}
                         onChange={(e) => setNewParticipantName(e.target.value)}
+                        className={`w-full transition-all duration-300 ${highLightInput
+                            ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg'
+                            : ''
+                            }`}
+
                     />
                     <Button
                         onClick={handleAddParticipant}
@@ -155,6 +161,10 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
                             placeholder={t("admin.tournaments.groups.participants.actions.add_team")}
                             value={newParticipantName}
                             onChange={(e) => setNewParticipantName(e.target.value)}
+                            className={`w-full transition-all duration-300 ${highLightInput
+                                ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg'
+                                : ''
+                                }`}
                         />
                         <Button
                             onClick={handleAddParticipant}

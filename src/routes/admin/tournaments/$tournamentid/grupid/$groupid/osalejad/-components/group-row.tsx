@@ -272,6 +272,7 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                                     placeholder={"Nimi"}
                                                     value={searchTerm}
                                                     onChange={(e) => { setSearchTerm(e.target.value) }}
+                                                    className="min-w-[120px]"
                                                 />
                                             </PopoverTrigger>
                                             {playerSuggestions && playerSuggestions.data &&

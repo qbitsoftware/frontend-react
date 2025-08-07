@@ -136,20 +136,12 @@ function RouteComponent() {
                 const minutes = String(date.getUTCMinutes()).padStart(2, '0')
                 const timeString = `${hours}:${minutes}`
 
-
-                if (match.match.id == '907290f7-bb98-46e9-87be-8b4473e855c9') {
-                    console.log("time stirng", timeString)
-                    console.log('match start date', match.match.start_date)
-                }
-
                 times.add(timeString)
             }
         })
 
         return Array.from(times).sort()
     }, [dayMatches])
-
-    console.log('timeSlots', timeSlots)
 
     const rounds = useMemo(() => {
         if (timeSlots.length === 0) return []

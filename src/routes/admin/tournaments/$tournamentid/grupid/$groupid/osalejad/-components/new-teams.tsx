@@ -16,9 +16,10 @@ interface NewTeamsProps {
     tournament_table: TournamentTable
     tournament_id: number
     activeTab?: number
+    highLightInput?: boolean
 }
 
-export const NewTeams = ({ participant_data, tournament_table, tournament_id }: NewTeamsProps) => {
+export const NewTeams = ({ participant_data, tournament_table, tournament_id, highLightInput }: NewTeamsProps) => {
     const { addNewRoundRobinGroup } = useParticipantUtils(tournament_id, tournament_table.id)
     const [participants, setParticipantsState] = useState<Participant[]>([])
 
@@ -60,6 +61,7 @@ export const NewTeams = ({ participant_data, tournament_table, tournament_id }: 
                                 tournament_table={tournament_table}
                                 setParticipantsState={setParticipantsState}
                                 group_participant={p.groupParticipant}
+                                highLightInput={highLightInput}
                             />
                         </div>
                     )
@@ -85,6 +87,7 @@ export const NewTeams = ({ participant_data, tournament_table, tournament_id }: 
             tournament_table={tournament_table}
             participants={participants}
             setParticipantsState={setParticipantsState}
+            highLightInput={highLightInput}
         />
     )
 }

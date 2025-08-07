@@ -304,3 +304,16 @@ export const UseDeleteTournament = (id: number | undefined) => {
     },
   });
 };
+
+export const UseGetHomePageTournaments = () => {
+  return queryOptions<TournamentsResponse>({
+    queryKey: ["home_tournaments"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/v1/homepage/tournaments`, {
+        params: { public: true, homepage: true },
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
+}

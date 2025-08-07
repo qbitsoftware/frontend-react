@@ -184,9 +184,7 @@ const SeedingHeader = ({
       await importMutation.mutateAsync(file)
       toast.message(t('toasts.participants.import_success'));
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error && 'response' in error
-        ? (error as { response?: { data: { error: string } } }).response?.data.error
-        : 'Import failed';
+      const errorMessage = (error as any)?.response?.data?.error?.message ?? 'Import failed';
       toast.error(errorMessage);
     }
 
@@ -386,12 +384,12 @@ const SeedingHeader = ({
                             className="h-8 text-xs flex items-center gap-1.5"
                           >
                             <UserPlus className="h-3 w-3" />
-{t('admin.tournaments.setup.add_manually')}
+                            {t('admin.tournaments.setup.add_manually')}
                           </Button>
-                          
+
                           {/* Divider */}
                           <span className="text-xs text-gray-400 font-medium">{t('common.or')}</span>
-                          
+
                           {/* Excel import option */}
                           <Button
                             onClick={handleDownloadTemplate}

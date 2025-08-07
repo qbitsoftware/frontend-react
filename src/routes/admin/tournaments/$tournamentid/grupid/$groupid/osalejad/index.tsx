@@ -77,20 +77,16 @@ function RouteComponent() {
     }, 3000)
   }
 
-  const translateBracketName = (originalName: string, isDynamic: boolean = false) => {
-    if (originalName.includes(' - Winner')) {
+  const translateBracketName = (index: number) => {
+    if (index === 1) {
       return t('common.winner');
     }
-    
-    if (originalName.includes(' - Consolation')) {
+
+    if (index === 2) {
       return t('common.consolation');
     }
-    
-    if (isDynamic && !originalName.includes(' - ')) {
-      return t('common.subgroups');
-    }
-    
-    return originalName;
+
+    return t('common.subgroups');
   }
 
   const handleGroupChange = (newGroupId: number) => {
@@ -138,18 +134,14 @@ function RouteComponent() {
                   {table_data.data.stages && table_data.data.stages.length >= 1 && (
                     <div className="border-b border-gray-200 mb-4">
                       <nav className="-mb-px flex space-x-8">
-                        {table_data.data.stages?.map((stage) => {
-                          const isWinner = stage.class.toLowerCase().includes('winner');
-                          const isConsolation = stage.class.toLowerCase().includes('consolation') ||
-                                               stage.class.toLowerCase().includes('loser');
+                        {table_data.data.stages?.map((stage, index) => {
+                          const isWinner = index == 1
+                          const isConsolation = index == 2
                           const isWinnerOrConsolation = isWinner || isConsolation;
-                          
-                          // Check if this is a dynamic tournament
-                          const isDynamic = table_data.data.group?.type === GroupType.DYNAMIC;
-                          
+
                           const getGlowClasses = () => {
                             if (!glowBracketTabs || !isWinnerOrConsolation) return '';
-                            
+
                             if (isWinner) {
                               return 'ring-2 ring-green-400 bg-green-50 shadow-lg rounded-md';
                             } else if (isConsolation) {
@@ -159,8 +151,8 @@ function RouteComponent() {
                           };
 
                           // Get translated bracket name
-                          const translatedName = translateBracketName(stage.class, isDynamic || false);
-                          
+                          const translatedName = translateBracketName(index);
+
                           return (
                             <button
                               key={stage.id}
@@ -172,11 +164,10 @@ function RouteComponent() {
                                 },
                                 search: { selectedGroup: undefined }
                               })}
-                              className={`py-2 px-2 border-b-2 font-medium text-sm transition-all duration-300 ${
-                                groupId === stage.id
-                                  ? 'border-blue-500 text-blue-600'
-                                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                              } ${getGlowClasses()}`}
+                              className={`py-2 px-2 border-b-2 font-medium text-sm transition-all duration-300 ${groupId === stage.id
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                } ${getGlowClasses()}`}
                             >
                               {translatedName}
                             </button>
@@ -198,12 +189,14 @@ function RouteComponent() {
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
                       tournament_table={table_data.data.group}
+                      highLightInput={highlightInput}
                     />
                   ) : table_data.data.group.type === GroupType.DYNAMIC ? (
                     <NewDouble
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
                       tournament_table={table_data.data.group}
+                      highlightInput={highlightInput}
                     />
                   ) : table_data.data.group.solo ? (
                     <NewSolo
@@ -218,6 +211,7 @@ function RouteComponent() {
                       participant_data={participant_data}
                       tournament_id={Number(tournamentid)}
                       tournament_table={table_data.data.group}
+                      highlightInput={highlightInput}
                     />
                   )}
                 </>
