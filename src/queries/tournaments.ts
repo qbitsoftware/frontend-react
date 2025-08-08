@@ -305,12 +305,27 @@ export const UseDeleteTournament = (id: number | undefined) => {
   });
 };
 
+export type TournamentEvent = {
+  tournament: Tournament
+  is_gameday: boolean
+  is_finals: boolean
+  gameday_date: string
+  class: string
+  order: number
+  parent_tournament_id: number
+}
+
+export type TournamentsHomepageResponse = {
+  data: TournamentEvent[] | null;
+  message: string;
+  error: string | null;
+};
+
 export const UseGetHomePageTournaments = () => {
-  return queryOptions<TournamentsResponse>({
+  return queryOptions<TournamentsHomepageResponse>({
     queryKey: ["home_tournaments"],
     queryFn: async () => {
       const { data } = await axiosInstance.get(`/api/v1/homepage/tournaments`, {
-        params: { public: true, homepage: true },
         withCredentials: true,
       });
       return data;
