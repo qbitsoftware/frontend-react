@@ -1,4 +1,5 @@
 import i18n from '@/i18n';
+import { TournamentTable } from '@/types/groups';
 import { MatchWrapper } from '@/types/matches';
 
 /**
@@ -72,11 +73,20 @@ export function filterMatchesByGameday(matches: MatchWrapper[], gameday: string)
 /**
  * Get unique classes from matches
  */
-export function getUniqueClasses(matches: MatchWrapper[]): string[] {
+// export function getUniqueClasses(matches: MatchWrapper[]): string[] {
+//   return [...new Set(
+//     matches
+//       .filter(match => match.class)
+//       .map(match => match.class)
+//   )]
+//     .filter(Boolean)
+//     .sort();
+// }
+export function getUniqueClasses(groups: TournamentTable[]): string[] {
   return [...new Set(
-    matches
-      .filter(match => match.class)
-      .map(match => match.class)
+    groups
+      .filter(group => group.class)
+      .map(group => group.class)
   )]
     .filter(Boolean)
     .sort();

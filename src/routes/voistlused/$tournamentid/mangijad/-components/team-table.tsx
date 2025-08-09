@@ -40,34 +40,34 @@ const TeamTable: React.FC<TeamTableProps> = ({ participants, table_data }) => {
   }
 
   return (
-    <div className=" w-full md:w-[320px] h-full rounded-md">
+    <div className="w-full h-full rounded-md">
       {participants && participants.length > 0 ? (
-        <div className=" flex flex-col gap-2">
+        <div className="space-y-2 max-h-80 overflow-y-auto">
           {participants.map((participant) => (
             <div
               key={participant.id}
               onClick={() => handleCardClick(participant)}
-              className=" border bg-white rounded-lg px-3 py-1 cursor-pointer hover:shadow-md transition-shadow duration-200 hover:bg-gray-50"
+              className="border border-gray-200 bg-white rounded-lg px-4 py-3 cursor-pointer hover:shadow-sm hover:border-gray-300 transition-all duration-200 hover:bg-gray-50"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-10 w-10">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <Avatar className="h-9 w-9 flex-shrink-0 border-2 border-white shadow-sm">
                     <AvatarImage
                       src={participant.extra_data.image_url}
                       className="object-cover"
                     />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-gray-100">
                       <img src={clubPlaceholder} className='rounded-full' alt="Club" />
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <h6 className="font-medium text-gray-900 ">
+                  <div className="min-w-0 flex-1">
+                    <h6 className="font-medium text-gray-900 text-sm truncate">
                       {participant.name}
                     </h6>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-sm text-gray-600">
+                <div className="text-right flex-shrink-0">
+                  <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded-full">
                     {participant.players ? participant.players.length : 0}
                   </span>
                 </div>
@@ -76,8 +76,8 @@ const TeamTable: React.FC<TeamTableProps> = ({ participants, table_data }) => {
           ))}
         </div>
       ) : (
-        <div className="bg-white shadow-lg rounded-lg p-8 text-center h-full flex items-center justify-center">
-          <p className="text-gray-500 text-lg">{t('competitions.participants.no_players')}</p>
+        <div className="bg-gray-50 rounded-lg p-8 text-center">
+          <p className="text-gray-500">{t('competitions.participants.no_players')}</p>
         </div>
       )}
 

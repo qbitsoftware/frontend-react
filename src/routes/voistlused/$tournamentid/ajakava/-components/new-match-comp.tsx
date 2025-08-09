@@ -235,9 +235,13 @@ const ITTFMatchUserComponent = ({
             isWinner ? "text-green-700" : "text-gray-700",
           )}
         >
-          {match.match.forfeit
+          {match.match.forfeit && match.match.forfeit_type === "WO"
             ? (isWinner ? "w" : "o")
-            : totalScore
+            : (match.match.forfeit && match.match.forfeit_type === "RET") ?
+              (isWinner ? "-" : "RET")
+              : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
+                (isWinner ? "-" : "DQ")
+                : totalScore
           }
         </div>
       </div>

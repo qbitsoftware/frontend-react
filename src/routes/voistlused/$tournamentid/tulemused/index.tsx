@@ -72,7 +72,6 @@ function RouteComponent() {
     table.participants && table.participants.length > 0
   ) || [];
 
-
   const hasTableWithParticipants = tablesWithParticipants.length > 0;
 
 

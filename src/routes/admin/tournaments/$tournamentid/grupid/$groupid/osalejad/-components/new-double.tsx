@@ -17,9 +17,10 @@ interface Props {
     participant_data: ParticipantsResponse
     tournament_id: number
     tournament_table: TournamentTable
+    highlightInput?: boolean
 }
 
-export default function NewDouble({ participant_data, tournament_id, tournament_table }: Props) {
+export default function NewDouble({ participant_data, tournament_id, tournament_table, highlightInput }: Props) {
     const { t } = useTranslation()
     const mergeMutation = UsePostParticipantMerge(tournament_id, tournament_table.id)
     const soloParticipants = tournament_table.type === GroupType.DYNAMIC ? participant_data.data?.filter(p => p.group_id === "" && p.type !== "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length === 1) || []
@@ -77,6 +78,7 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                         tournament_table={tournament_table}
                         selectedTeams={selectedTeams}
                         setSelectedTeams={setSelectedTeams}
+                        highlightInput={highlightInput}
                     />
                 </div>
             </div>
@@ -103,6 +105,7 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                             tournament_table={tournament_table}
                             selectedTeams={selectedTeams}
                             setSelectedTeams={setSelectedTeams}
+                            highlightInput={highlightInput}
                             // isSecondary={true}
                             renderRR
                         />
@@ -111,6 +114,7 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                             participant_data={teamData}
                             tournament_id={tournament_id}
                             tournament_table={tournament_table}
+                            highLightInput={highlightInput}
                         />
                     )}
                 </div>

@@ -3,7 +3,7 @@ import ErrorPage from "@/components/error";
 import GroupBracket from "@/components/group-bracket";
 import { UseGetBracket } from "@/queries/brackets";
 import { UseGetTournamentTable, UseGetTournamentTables } from "@/queries/tables";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
@@ -76,9 +76,14 @@ function RouteComponent() {
   }
 
   const tournamentType = tableQuery.data.data.group?.type;
+  const hasStages = tableQuery.data.data.stages && tableQuery.data.data.stages.length > 1;
   const isMeistrikad = tournamentType === GroupType.CHAMPIONS_LEAGUE;
   const isRoundRobinFull = tournamentType === GroupType.ROUND_ROBIN || tournamentType === GroupType.ROUND_ROBIN_FULL_PLACEMENT || tournamentType === GroupType.DYNAMIC;
   const isFreeForAll = tournamentType === GroupType.FREE_FOR_ALL;
+
+  // Check if current stage is part of dynamic tournament
+  const isDynamicTournamentStage = hasStages && tableQuery.data.data.stages &&
+    tableQuery.data.data.stages[0]?.type === GroupType.DYNAMIC;
 
   const handleSelectMatch = (match: MatchWrapper) => {
     if ((match.match.p1_id === "" || match.match.p1_id === "empty") || (match.match.p2_id === "" || match.match.p2_id === "empty")) {
@@ -112,12 +117,44 @@ function RouteComponent() {
 
   return (
     <div className="min-h-screen px-2 sm:px-4 lg:px-6">
-      {/* Class Navigation - Show at the top for all views */}
-      <ClassFilters
-        availableTables={availableTables}
-        activeGroupId={groupId}
-        onGroupChange={handleGroupChange}
-      />
+      {/* Consolidated Navigation */}
+      <div className="space-y-3 mb-6">
+        {/* Primary Class Navigation */}
+        <ClassFilters
+          availableTables={availableTables}
+          activeGroupId={groupId}
+          onGroupChange={handleGroupChange}
+        />
+
+        {/* Secondary Stage Navigation - Only show if has stages */}
+        {hasStages && tableQuery.data.data.stages && (
+          <div className="border-l-2 border-gray-200 pl-4">
+            <div className="flex flex-wrap gap-1">
+              {tableQuery.data.data.stages.map((stage, index) => (
+                <Link
+                  key={stage.id}
+                  to="/voistlused/$tournamentid/tulemused/$groupid"
+                  params={{
+                    tournamentid: params.tournamentid,
+                    groupid: stage.id.toString(),
+                  }}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${stage.id === groupId
+                    ? 'bg-gray-600 text-white'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
+                    }`}
+                >
+
+                  {index === 1 && isDynamicTournamentStage
+                    ? `${t('common.winner')}`
+                    : index === 2 && isDynamicTournamentStage
+                      ? `${t('common.consolation')}`
+                      : `${t('common.subgroups')}`}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="flex justify-center">
         <Tabs
@@ -127,24 +164,25 @@ function RouteComponent() {
           defaultValue={activeTab}
         >
           <div className="flex flex-col items-start">
-            <TabsList className="h-10 space-x-1 sm:space-x-2 bg-transparent">
+            {/* Reduced visual weight of tab navigation */}
+            <TabsList className="h-9 space-x-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
               {isMeistrikad && (
                 <>
                   <TabsTrigger
                     value="bracket"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
+                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
                   >
                     {t("competitions.bracket")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="placement"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
+                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
                   >
                     {t("competitions.play_off")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="leaderboard"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
+                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
                   >
                     {t("competitions.navbar.standings")}
                   </TabsTrigger>
@@ -155,13 +193,13 @@ function RouteComponent() {
                 <>
                   <TabsTrigger
                     value="bracket"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
+                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
                   >
                     {t("competitions.bracket")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="leaderboard"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
+                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
                   >
                     {t("competitions.navbar.standings")}
                   </TabsTrigger>
@@ -172,13 +210,13 @@ function RouteComponent() {
                 <>
                   <TabsTrigger
                     value="placement"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
+                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
                   >
                     {t("competitions.play_off")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="leaderboard"
-                    className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-700 text-xs sm:text-sm px-2 sm:px-3"
+                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
                   >
                     {t("competitions.navbar.standings")}
                   </TabsTrigger>

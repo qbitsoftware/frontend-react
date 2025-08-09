@@ -27,7 +27,6 @@ interface Props {
 }
 
 export default function TimetableForm({ tournament_table }: Props) {
-    console.log("tournament table", tournament_table)
     const { t } = useTranslation()
     const [durationInputValue, setDurationInputValue] = useState<string>('avg_match_duration' in tournament_table ? String(tournament_table.avg_match_duration) : '20')
     const [breakInputValue, setBreakInputValue] = useState<string>('break_duration' in tournament_table ? String(tournament_table.break_duration) : '5')

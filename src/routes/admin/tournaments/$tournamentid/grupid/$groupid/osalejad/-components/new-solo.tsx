@@ -84,6 +84,7 @@ export const NewSolo = ({ participant_data, all_participants, tournament_id, tou
                                 setSelectedTeams={setSelectedTeams}
                                 renderRR={renderRR}
                                 isSecondary={isSecondary}
+                                highlightInput={highlightInput}
                             />
                         </div>
                     )

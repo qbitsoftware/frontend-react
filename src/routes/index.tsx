@@ -3,12 +3,13 @@ import HomePageGrid from "./-components/home-grid";
 import { UseGetUsers } from "@/queries/users";
 import { UseGetBlogsOption } from "@/queries/blogs";
 import ErrorPage from "@/components/error";
-import { UseGetTournamentsPublic } from "@/queries/tournaments";
+import { UseGetHomePageTournaments } from "@/queries/tournaments";
 
 export const Route = createFileRoute("/")({
   component: Index,
   loader: async ({ context: { queryClient } }) => {
-    const tournamentsPromise = queryClient.ensureQueryData(UseGetTournamentsPublic());
+    // const tournamentsPromise = queryClient.ensureQueryData(UseGetTournamentsPublic());
+    const tournamentsPromise = queryClient.ensureQueryData(UseGetHomePageTournaments());
     const usersPromise = queryClient.ensureQueryData(UseGetUsers());
     const blogsPromise = queryClient.ensureQueryData(UseGetBlogsOption());
 
