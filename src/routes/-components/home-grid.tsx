@@ -4,11 +4,11 @@ import NewsWidget from "./news-widget";
 import CalendarWidget from "./calendar-widget";
 import RatingWidget from "./rating-widget";
 import Adboard from "./adboard";
-import { Tournament } from "@/types/tournaments";
 import { User } from "@/types/users";
 import { Blog } from "@/types/blogs";
 import { useTranslation } from "react-i18next";
 import VideoBoard from "./videos";
+import { TournamentEvent } from "@/queries/tournaments";
 
 interface DataStatus {
   tournamentsEmpty: boolean;
@@ -17,7 +17,7 @@ interface DataStatus {
 }
 
 interface Props {
-  tournaments: Tournament[] | null;
+  tournaments: TournamentEvent[] | null;
   users: User[] | null;
   articles: Blog[] | null;
   dataStatus: DataStatus;
@@ -64,7 +64,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
             >
               <div className="py-2 px-2 sm:px-4 flex-grow" ref={calendarRef}>
                 <CalendarWidget
-                  tournaments={tournaments || []}
+                  events={tournaments || []}
                   isEmpty={false}
                 />
               </div>
@@ -82,7 +82,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
               </div>
             </div>
           </div>
-          
+
           {/* Rating Widget - Full width on mobile, 2 cols on tablet, 2 cols on desktop */}
           <div className="sm:col-span-2 lg:col-span-2 flex flex-col order-1 sm:order-2 lg:order-2">
             <WidgetWrapper
@@ -95,7 +95,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
               </div>
             </WidgetWrapper>
           </div>
-          
+
           {/* Videos Widget */}
           <div className="flex flex-col order-3 sm:order-3 lg:order-3">
             <WidgetWrapper

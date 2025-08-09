@@ -136,10 +136,6 @@ export default function SoloParticipants({ participants, group_participant, tour
                                     <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} renderRR={renderRR} isSecondary={isSecondary} />
                                 ))}
                                 {(() => {
-                                    // if (tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-                                    //     return tournament_table.size > participants.length / 2;
-                                    // }
-                                    console.log("is disabled input", disableInputForDynamic)
                                     if (tournament_table.type === GroupType.DYNAMIC || tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
                                         return !disableInputForDynamic
                                     }
@@ -163,11 +159,10 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                                 placeholder={t("admin.tournaments.groups.participants.actions.name_placeholder")}
                                                                 value={searchTerm}
                                                                 onChange={(e) => { setSearchTerm(e.target.value) }}
-                                                                className={`w-full transition-all duration-300 ${
-                                                                    highlightInput 
-                                                                        ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg' 
-                                                                        : ''
-                                                                }`}
+                                                                className={`w-full transition-all duration-300 ${highlightInput
+                                                                    ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg'
+                                                                    : ''
+                                                                    }`}
                                                             />
                                                         </PopoverTrigger>
                                                         {playerSuggestions && playerSuggestions.data &&

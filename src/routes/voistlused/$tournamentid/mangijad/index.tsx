@@ -4,7 +4,7 @@ import Group from "./-components/group";
 import { ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ErrorPage from "@/components/error";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ErrorResponse } from "@/types/errors";
 import {
@@ -38,6 +38,7 @@ function RouteComponent() {
   const { tables_data } = Route.useLoaderData();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeClass, setActiveClass] = useState<string>("all");
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
   const { t } = useTranslation();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +64,6 @@ function RouteComponent() {
     tables.forEach((table) => {
       if (table.participants) {
         table.participants.forEach((player: any) => {
-          // Use player ID if available, otherwise use name as fallback
           const playerId = player.id || player.name;
           if (playerId) {
             uniquePlayerIds.add(playerId);
@@ -103,13 +103,77 @@ function RouteComponent() {
       .filter((table) => table.participants.length > 0);
   }
 
+  // Determine how many groups to open based on screen size and total groups
+  const getGroupsToOpen = (totalGroups: number, screenWidth: number) => {
+    if (screenWidth < 1024) {
+      // Mobile/tablet (< lg)
+      return totalGroups >= 1 ? 1 : 0;
+    } else if (screenWidth < 1280) {
+      // Large screens (lg, < xl)
+      if (totalGroups === 1) return 1;
+      if (totalGroups === 2) return 2;
+      return 2; // For 3+ groups, open first 2
+    } else {
+      // Extra large screens (xl+)
+      if (totalGroups === 1) return 1;
+      if (totalGroups === 2) return 2;
+      if (totalGroups === 3) return 3;
+      return 3; // For 4+ groups, open first 3
+    }
+  };
+
+  // Update open groups when filtered data changes
+  useEffect(() => {
+    if (filteredData.length > 0) {
+      const screenWidth = window.innerWidth;
+      const groupsToOpen = getGroupsToOpen(filteredData.length, screenWidth);
+
+      const newOpenGroups = new Set<string>();
+      for (let i = 0; i < Math.min(groupsToOpen, filteredData.length); i++) {
+        newOpenGroups.add(filteredData[i].id.toString());
+      }
+      setOpenGroups(newOpenGroups);
+    }
+  }, [filteredData]);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (filteredData.length > 0) {
+        const screenWidth = window.innerWidth;
+        const groupsToOpen = getGroupsToOpen(filteredData.length, screenWidth);
+
+        const newOpenGroups = new Set<string>();
+        for (let i = 0; i < Math.min(groupsToOpen, filteredData.length); i++) {
+          newOpenGroups.add(filteredData[i].id.toString());
+        }
+        setOpenGroups(newOpenGroups);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [filteredData]);
+
+  const handleGroupToggle = (groupId: string) => {
+    setOpenGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <>
       {tables_data &&
-      tables_data.data &&
-      tables_data.data.some(
-        (table) => table.participants && table.participants.length > 0
-      ) ? (
+        tables_data.data &&
+        tables_data.data.some(
+          (table) => table.participants && table.participants.length > 0
+        ) ? (
         <div className="">
           <h4 className="font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700">
             {t("competitions.participants.title")}
@@ -166,15 +230,26 @@ function RouteComponent() {
                 </p>
               </div>
             </div>
-            <div className="flex flex-col gap-4 md:gap-8 my-2 py-5 ">
+            <div className="flex flex-col gap-4 md:gap-6 my-2 py-5">
               {filteredData.length > 0 ? (
-                filteredData.map((table) => (
-                  <Group key={table.id} group={table} />
-                ))
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredData.map((table) => (
+                    <Group
+                      key={table.id}
+                      group={table}
+                      isOpen={openGroups.has(table.id.toString())}
+                      onToggle={() => handleGroupToggle(table.id.toString())}
+                    />
+                  ))}
+                </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  {t("competitions.participants.no_players_found_search")}"
-                  {searchQuery}"
+                <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                  <div className="max-w-md mx-auto">
+                    <p className="text-lg font-medium mb-2">
+                      {t("competitions.participants.no_players_found_search")}
+                    </p>
+                    <p className="text-sm text-gray-400">"{searchQuery}"</p>
+                  </div>
                 </div>
               )}
             </div>

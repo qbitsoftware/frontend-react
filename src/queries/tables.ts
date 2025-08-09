@@ -50,7 +50,6 @@ export function UseGetTournamentTablesQuery(tournament_id: number) {
                 withCredentials: true,
             })
 
-            console.log("Tournament Tables Data:", data);
             return data;
         },
     });
@@ -105,6 +104,7 @@ export const UsePatchTournamentTable = (tournament_id: number, tournament_table_
                 return oldData
             })
             queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
+            queryClient.resetQueries({ queryKey: ['participants', tournament_table_id] })
             queryClient.resetQueries({ queryKey: ['bracket', tournament_table_id] })
             queryClient.resetQueries({ queryKey: ['matches', tournament_table_id] })
         }

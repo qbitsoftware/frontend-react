@@ -1,43 +1,21 @@
 import React, { useMemo } from "react";
-import { Tournament } from "@/types/tournaments";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
   formatDateRange,
-  ProcessedEvent,
   getAbbreviatedMonth,
 } from "../voistlused/-components/calendar-utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TournamentEvent } from "@/queries/tournaments";
 
 interface Props {
-  tournaments: Tournament[];
+  events: TournamentEvent[];
   isEmpty: boolean;
   isLoading?: boolean;
 }
 
-const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
+const CalendarWidget = ({ events, isEmpty, isLoading = false }: Props) => {
   const { t } = useTranslation();
-  // const queryClient = useQueryClient();
-
-  // const events = useTournamentEvents(tournaments, queryClient);
-  const events: ProcessedEvent[] = [];
-  tournaments.map((tournament) => {
-    events.push({
-      id: tournament.id,
-      name: tournament.name,
-      start_date: tournament.start_date,
-      end_date: tournament.end_date,
-      sport: tournament.sport,
-      category: tournament.category,
-      color: tournament.color || "#4C97F1",
-      isGameday: false,
-      parentTournamentId: undefined,
-      eventType: "",
-      class: "",
-      order: undefined,
-      round: 0,
-    });
-  })
 
   const { upcomingEvents, pastEvents } = useMemo(() => {
     if (isLoading || !events.length) {
@@ -45,19 +23,24 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
     }
 
     const now = new Date();
+    const getStartDate = (event: TournamentEvent) =>
+      (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.start_date);
+    const getEndDate = (event: TournamentEvent) =>
+      (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.end_date);
+
     const upcoming = events
-      .filter((event) => new Date(event.end_date) >= now)
+      .filter((event) => getEndDate(event) >= now)
       .sort(
         (a, b) =>
-          new Date(a.start_date).getTime() - new Date(b.start_date).getTime(),
+          getStartDate(a).getTime() - getStartDate(b).getTime()
       )
       .slice(0, 3);
 
     const past = events
-      .filter((event) => new Date(event.end_date) < now)
+      .filter((event) => getEndDate(event) < now)
       .sort(
         (a, b) =>
-          new Date(b.start_date).getTime() - new Date(a.start_date).getTime(),
+          getStartDate(b).getTime() - getStartDate(a).getTime()
       )
       .slice(0, 3);
 
@@ -68,15 +51,15 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
     event,
     isUpcoming,
   }: {
-    event: ProcessedEvent;
+    event: TournamentEvent;
     isUpcoming: boolean;
   }) => {
-    const linkPath = event.isGameday
-      ? `/voistlused/${event.parentTournamentId}`
-      : `/voistlused/${event.id}`;
+    const linkPath = event.is_gameday
+      ? `/voistlused/${event.parent_tournament_id}`
+      : `/voistlused/${event.tournament.id}`;
 
     return (
-      <Link to={linkPath} key={event.id}>
+      <Link to={linkPath} key={event.tournament.id}>
         <div className="group mb-2 sm:mb-3 relative">
           <div className={`
             flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border transition-all duration-300
@@ -87,24 +70,23 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
           `}>
             {/* Date Display */}
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-              <div className={`
-                px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
-                ${isUpcoming
-                  ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
-                  : 'bg-gray-100 text-gray-700 border-gray-200'
-                }
-              `}>
-                <div className="text-xs font-medium opacity-90">
-                  {getAbbreviatedMonth(event.start_date)}
+              {event.is_gameday ? (
+                <div className={`
+                  px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
+                  ${isUpcoming
+                    ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
+                    : 'bg-gray-100 text-gray-700 border-gray-200'
+                  }
+                `}>
+                  <div className="text-xs font-medium opacity-90">
+                    {getAbbreviatedMonth(event.gameday_date)}
+                  </div>
+                  <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
+                    {new Date(event.gameday_date).getDate()}
+                  </div>
                 </div>
-                <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
-                  {formatDateRange(event.start_date, event.end_date).split(" - ")[0]}
-                </div>
-              </div>
-
-              {event.end_date !== event.start_date && (
+              ) : (
                 <>
-                  <div className="w-2 sm:w-3 h-px bg-gray-300"></div>
                   <div className={`
                     px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
                     ${isUpcoming
@@ -113,16 +95,35 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
                     }
                   `}>
                     <div className="text-xs font-medium opacity-90">
-                      {event.end_date !== event.start_date &&
-                        new Date(event.start_date).getMonth() !==
-                        new Date(event.end_date).getMonth()
-                        ? getAbbreviatedMonth(event.end_date)
-                        : getAbbreviatedMonth(event.start_date)}
+                      {getAbbreviatedMonth(event.tournament.start_date)}
                     </div>
                     <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
-                      {formatDateRange(event.start_date, event.end_date).split(" - ")[1]}
+                      {formatDateRange(event.tournament.start_date, event.tournament.end_date).split(" - ")[0]}
                     </div>
                   </div>
+
+                  {event.tournament.end_date !== event.tournament.start_date && (
+                    <>
+                      <div className="w-2 sm:w-3 h-px bg-gray-300"></div>
+                      <div className={`
+                        px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
+                        ${isUpcoming
+                          ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
+                          : 'bg-gray-100 text-gray-700 border-gray-200'
+                        }
+                      `}>
+                        <div className="text-xs font-medium opacity-90">
+                          {new Date(event.tournament.start_date).getMonth() !==
+                            new Date(event.tournament.end_date).getMonth()
+                            ? getAbbreviatedMonth(event.tournament.end_date)
+                            : getAbbreviatedMonth(event.tournament.start_date)}
+                        </div>
+                        <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
+                          {formatDateRange(event.tournament.start_date, event.tournament.end_date).split(" - ")[1]}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -132,12 +133,16 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
               <h6 className={`
                 font-semibold text-sm sm:text-base mb-0.5 sm:mb-1 truncate group-hover:text-[#4C97F1] transition-colors duration-200
                 ${isUpcoming ? 'text-gray-900' : 'text-gray-800'}
-              `} title={event.name}>
-                {event.name}
+              `} title={event.tournament.name}>
+                {event.tournament.name}
               </h6>
 
               <div className="flex items-center gap-1 sm:gap-2">
-                {event.isGameday && event.order ? (
+                {event.is_finals ? (
+                  <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                    {t("calendar.play_off")}
+                  </span>
+                ) : event.is_gameday && event.order ? (
                   <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
                     {t("calendar.game_day")} {event.order}
                   </span>
@@ -146,7 +151,7 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
                     text-xs sm:text-sm truncate
                     ${isUpcoming ? 'text-gray-600' : 'text-gray-500'}
                   `}>
-                    {event.category}
+                    {event.tournament.category}
                   </span>
                 )}
               </div>
@@ -256,8 +261,8 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
 
         <div className="space-y-2 sm:space-y-3">
           {upcomingEvents.length > 0
-            ? upcomingEvents.map((event) => (
-              <EventCard key={event.id} event={event} isUpcoming={true} />
+            ? upcomingEvents.map((event, index) => (
+              <EventCard key={index} event={event} isUpcoming={true} />
             ))
             : [1, 2, 3].map((_, index) => (
               <EventCardSkeleton key={`upcoming-skeleton-${index}`} isUpcoming />
@@ -274,8 +279,8 @@ const CalendarWidget = ({ tournaments, isEmpty, isLoading = false }: Props) => {
         </div>
         <div className="space-y-2 sm:space-y-3">
           {pastEvents.length > 0
-            ? pastEvents.map((event) => (
-              <EventCard key={event.id} event={event} isUpcoming={false} />
+            ? pastEvents.map((event, index) => (
+              <EventCard key={index} event={event} isUpcoming={false} />
             ))
             : [1, 2, 3].map((_, index) => (
               <EventCardSkeleton

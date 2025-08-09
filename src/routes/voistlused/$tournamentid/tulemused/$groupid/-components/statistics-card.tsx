@@ -100,23 +100,28 @@ export const StatisticsCard = ({ protocol, index }: StatisticsProps) => {
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            {parent_match.match.forfeit ?
+                                            {parent_match.match.forfeit && parent_match.match.forfeit_type == "WO" ?
                                                 (parent_match.match.winner_id === parent_match.match.p1_id ? "w" : "o") + " - " +
                                                 (parent_match.match.winner_id === parent_match.match.p2_id ? "w" : "o")
-                                                :
-                                                (() => {
-                                                    if (!parent_match.match.extra_data?.score || !Array.isArray(parent_match.match.extra_data.score)) {
-                                                        return "0 - 0";
-                                                    }
+                                                : parent_match.match.forfeit && parent_match.match.forfeit_type == "RET" ?
+                                                    (parent_match.match.winner_id === parent_match.match.p1_id ? "w" : "RET") + " - " +
+                                                    (parent_match.match.winner_id === parent_match.match.p2_id ? "w" : "RET")
+                                                    : parent_match.match.forfeit && parent_match.match.forfeit_type == "DSQ" ?
+                                                        (parent_match.match.winner_id === parent_match.match.p1_id ? "w" : "DQ") + " - " +
+                                                        (parent_match.match.winner_id === parent_match.match.p2_id ? "w" : "DQ") :
+                                                        (() => {
+                                                            if (!parent_match.match.extra_data?.score || !Array.isArray(parent_match.match.extra_data.score)) {
+                                                                return "0 - 0";
+                                                            }
 
-                                                    const p1Sets = parent_match.match.extra_data.score.reduce((count, set) =>
-                                                        count + (set.p1_score > set.p2_score ? 1 : 0), 0);
+                                                            const p1Sets = parent_match.match.extra_data.score.reduce((count, set) =>
+                                                                count + (set.p1_score > set.p2_score ? 1 : 0), 0);
 
-                                                    const p2Sets = parent_match.match.extra_data.score.reduce((count, set) =>
-                                                        count + (set.p2_score > set.p1_score ? 1 : 0), 0);
+                                                            const p2Sets = parent_match.match.extra_data.score.reduce((count, set) =>
+                                                                count + (set.p2_score > set.p1_score ? 1 : 0), 0);
 
-                                                    return `${p1Sets} - ${p2Sets}`;
-                                                })()
+                                                            return `${p1Sets} - ${p2Sets}`;
+                                                        })()
                                             }
                                         </TableCell>
 
@@ -166,5 +171,5 @@ export const StatisticsCard = ({ protocol, index }: StatisticsProps) => {
                 </CardContent>
             </Card>
         )
-    } 
+    }
 }

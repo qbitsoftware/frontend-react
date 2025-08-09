@@ -89,9 +89,17 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
                 : p1_sets > p2_sets
               ) && "text-green-700",
             )}>
-              {match.match.forfeit
+              {/* {match.match.forfeit
                 ? (match.match.winner_id === match.participant_1.id ? "w" : "o")
                 : p1_sets
+              } */}
+              {match.match.forfeit && match.match.forfeit_type === "WO"
+                ? (match.match.winner_id === match.participant_1.id ? "w" : "o")
+                : (match.match.forfeit && match.match.forfeit_type === "RET") ?
+                  (match.match.winner_id === match.participant_1.id ? "" : "RET")
+                  : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
+                    (match.match.winner_id === match.participant_1.id ? "" : "DQ")
+                    : p2_sets
               }
             </span>
           </div>
@@ -114,9 +122,17 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
                 : p2_sets > p1_sets
               ) && "text-green-700",
             )}>
-              {match.match.forfeit
+              {/* {match.match.forfeit
                 ? (match.match.winner_id === match.participant_2.id ? "w" : "o")
                 : p2_sets
+              } */}
+              {match.match.forfeit && match.match.forfeit_type === "WO"
+                ? (match.match.winner_id === match.participant_2.id ? "w" : "o")
+                : (match.match.forfeit && match.match.forfeit_type === "RET") ?
+                  (match.match.winner_id === match.participant_2.id ? "-" : "RET")
+                  : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
+                    (match.match.winner_id === match.participant_2.id ? "-" : "DQ")
+                    : p2_sets
               }
             </span>
           </div>
