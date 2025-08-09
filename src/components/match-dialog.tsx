@@ -22,6 +22,7 @@ import { Match, MatchWrapper, Score } from "@/types/matches";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { Switch } from "./ui/switch";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { extractSetsFromPoints } from "./utils/utils";
 
 interface MatchDialogProps {
@@ -46,6 +47,8 @@ const matchFormSchema = z.object({
 
 type MatchFormValues = z.infer<typeof matchFormSchema>;
 
+export type ForFeitType = "" | "DSQ" | "RET" | "WO";
+
 const MatchDialog: React.FC<MatchDialogProps> = ({
   open,
   onClose,
@@ -66,16 +69,35 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usePoints, setUsePoints] = useState(false);
-  const [isForfeit, setIsForfeit] = useState(match.match.forfeit || false);
-  const [forfeitWinner, setForfeitWinner] = useState<string>("");
+  const [matchOutcome, setMatchOutcome] = useState<ForFeitType>("");
+  const [outcomeWinner, setOutcomeWinner] = useState<string>("");
   const [setsError, setSetsError] = useState<string>("");
 
   useEffect(() => {
     if (match && open) {
-      setIsForfeit(match.match.forfeit || false);
+      // Determine match outcome from existing match data
       if (match.match.forfeit) {
-        setForfeitWinner(match.match.winner_id)
+        switch (match.match.forfeit_type) {
+          case "WO":
+            setMatchOutcome("WO");
+            setOutcomeWinner(match.match.winner_id);
+            break;
+          case "RET":
+            setMatchOutcome("RET");
+            setOutcomeWinner(match.match.winner_id);
+            break;
+          case "DSQ":
+            setMatchOutcome("DSQ");
+            setOutcomeWinner(match.match.winner_id);
+            break;
+          default:
+            setMatchOutcome("");
+        }
+      } else {
+        setMatchOutcome("");
+        setOutcomeWinner("");
       }
+
       reset({
         tableReferee: match.match.extra_data?.table_referee || "",
         mainReferee: match.match.extra_data?.head_referee || "",
@@ -94,6 +116,8 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   const handleClose = () => {
     form.reset({ scores: [] });
     setSetsError("")
+    setMatchOutcome("");
+    setOutcomeWinner("");
     onClose(false);
   };
 
@@ -131,11 +155,25 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     if (isSubmitting) return;
     setIsSubmitting(true);
     let sendMatch: Match
-    if (isForfeit) {
-      sendMatch = match.match
-      sendMatch.winner_id = forfeitWinner
-      sendMatch.forfeit = true;
 
+    if (matchOutcome !== "") {
+      sendMatch = match.match
+      sendMatch.winner_id = outcomeWinner
+      sendMatch.forfeit = true;
+      sendMatch.forfeit_type = matchOutcome
+      sendMatch.extra_data = {
+        ...sendMatch.extra_data,
+        head_referee: data.mainReferee,
+        table_referee: data.tableReferee,
+      };
+      if (matchOutcome === "RET") {
+        const scores: Score[] = data.scores.map((score, index) => ({
+          number: index,
+          p1_score: score.player1,
+          p2_score: score.player2,
+        }));
+        sendMatch.extra_data.score = scores;
+      }
     } else {
       const scores: Score[] = data.scores.map((score, index) => ({
         number: index,
@@ -156,7 +194,8 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         location: match.match.location,
         start_date: new Date().toISOString(),
         bracket: match.match.bracket,
-        forfeit: isForfeit,
+        forfeit: false,
+        forfeit_type: "",
         state: match.match.state,
         use_sets: !usePoints,
         extra_data: {
@@ -172,7 +211,6 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         previous_match_readable_id_1: 0,
         previous_match_readable_id_2: 0,
       };
-
     }
 
     try {
@@ -256,68 +294,129 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                   </div>
                 </div>
 
-                {/* Forfeit Section */}
+                {/* Match Outcome Section */}
                 <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
                   <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                     <CardTitle className="text-lg text-gray-900 dark:text-white">
-                      <div className="flex items-center justify-between gap-2">
-                        {t("protocol.forfeit.title", "Forfeit")}
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            {t("protocol.forfeit.enable")}
-                          </span>
-                          <Switch
-                            checked={isForfeit}
-                            onCheckedChange={setIsForfeit}
-                          />
-                        </div>
-                      </div>
+                      {t("protocol.match_outcome.title", "Match Outcome")}
                     </CardTitle>
                   </CardHeader>
-                  {isForfeit && (
-                    <CardContent className="space-y-4 pt-4">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                        {t("protocol.forfeit.description", "Select the winner by forfeit")}
+                  <CardContent className="space-y-4 pt-4">
+                    <RadioGroup
+                      value={matchOutcome}
+                      onValueChange={(value: ForFeitType) => {
+                        setMatchOutcome(value);
+                        if (value === "") {
+                          setOutcomeWinner("");
+                        }
+                      }}
+                      className="grid grid-cols-4 gap-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="" id="normal" />
+                        <label htmlFor="" className="text-sm font-medium">
+                          {t("protocol.match_outcome.normal", "Normal")}
+                        </label>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <Button
-                          type="button"
-                          variant={forfeitWinner === match.p1.id ? "default" : "outline"}
-                          onClick={() => setForfeitWinner(match.p1.id)}
-                          className={`p-4 h-auto ${forfeitWinner === match.p1.id
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                            }`}
-                        >
-                          <div className="text-center">
-                            <div className="font-medium">{match.p1.name}</div>
-                          </div>
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={forfeitWinner === match.p2.id ? "default" : "outline"}
-                          onClick={() => setForfeitWinner(match.p2.id)}
-                          className={`p-4 h-auto ${forfeitWinner === match.p2.id
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                            }`}
-                        >
-                          <div className="text-center">
-                            <div className="font-medium">{match.p2.name}</div>
-                          </div>
-                        </Button>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="WO" id="walkover" />
+                        <label htmlFor="walkover" className="text-sm font-medium">
+                          {t("protocol.match_outcome.walkover", "WO")}
+                        </label>
                       </div>
-                    </CardContent>
-                  )}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="RET" id="retirement" />
+                        <label htmlFor="retirement" className="text-sm font-medium">
+                          {t("protocol.match_outcome.retirement", "RET")}
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="DSQ" id="disqualification" />
+                        <label htmlFor="disqualification" className="text-sm font-medium">
+                          {t("protocol.match_outcome.disqualification", "DSQ")}
+                        </label>
+                      </div>
+                    </RadioGroup>
+
+                    {(matchOutcome === "WO" || matchOutcome === "DSQ") && (
+                      <div className="mt-4">
+                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          {matchOutcome === "WO" && t("protocol.match_outcome.walkover_description", "Select winner by walkover")}
+                          {matchOutcome === "DSQ" && t("protocol.match_outcome.disqualification_description", "Select winner by disqualification")}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button
+                            type="button"
+                            variant={outcomeWinner === match.p1.id ? "default" : "outline"}
+                            onClick={() => setOutcomeWinner(match.p1.id)}
+                            className={`py-2 ${outcomeWinner === match.p1.id
+                              ? "bg-blue-600 text-white hover:bg-blue-700"
+                              : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              }`}
+                          >
+                            {match.p1.name}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={outcomeWinner === match.p2.id ? "default" : "outline"}
+                            onClick={() => setOutcomeWinner(match.p2.id)}
+                            className={`py-2 ${outcomeWinner === match.p2.id
+                              ? "bg-blue-600 text-white hover:bg-blue-700"
+                              : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              }`}
+                          >
+                            {match.p2.name}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {matchOutcome === "RET" && (
+                      <div className="mt-4">
+                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          {t("protocol.match_outcome.retirement_description", "Select winner and optionally enter scores before retirement")}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                          <Button
+                            type="button"
+                            variant={outcomeWinner === match.p1.id ? "default" : "outline"}
+                            onClick={() => setOutcomeWinner(match.p1.id)}
+                            className={`py-2 ${outcomeWinner === match.p1.id
+                              ? "bg-blue-600 text-white hover:bg-blue-700"
+                              : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              }`}
+                          >
+                            {match.p1.name}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={outcomeWinner === match.p2.id ? "default" : "outline"}
+                            onClick={() => setOutcomeWinner(match.p2.id)}
+                            className={`py-2 ${outcomeWinner === match.p2.id
+                              ? "bg-blue-600 text-white hover:bg-blue-700"
+                              : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              }`}
+                          >
+                            {match.p2.name}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
                 </Card>
 
-                {/* Scores Section - Hidden when forfeit is enabled */}
-                {!isForfeit && (
+                {/* Scores Section - Hidden when match outcome is WO or DSQ */}
+                {(matchOutcome === "" || matchOutcome === "RET") && (
                   <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
                     <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                       <CardTitle className="text-lg text-gray-900 dark:text-white">
                         <div className="flex items-center justify-between gap-2">
                           {t("protocol.table.sets")} {usePoints ? t("protocol.table.points_mode") : t("protocol.table.sets_mode")}
+                          {matchOutcome === "RET" && (
+                            <span className="text-sm text-orange-600 dark:text-orange-400">
+                              {t("protocol.match_outcome.retirement_scores", "Scores before retirement")}
+                            </span>
+                          )}
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                               {t("protocol.table.use_points")}

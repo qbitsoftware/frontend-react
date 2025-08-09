@@ -1,3 +1,4 @@
+import { ForFeitType } from "@/components/match-dialog";
 import { Participant } from "./participants";
 
 export type PlayerKey = keyof Pick<
@@ -84,6 +85,7 @@ export type Match = {
   location: string;
   bracket: string;
   forfeit: boolean;
+  forfeit_type: ForFeitType;
   start_date: string;
   extra_data: TableTennisExtraData;
   next_winner_bracket?: string;
