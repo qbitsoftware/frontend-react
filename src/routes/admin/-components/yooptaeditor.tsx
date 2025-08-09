@@ -14,6 +14,7 @@ import { Bold, Italic, CodeMark, Underline, Strike, Highlight } from '@yoopta/ma
 import { HeadingOne, HeadingThree, HeadingTwo } from '@yoopta/headings';
 import { NumberedList, BulletedList, TodoList } from '@yoopta/lists';
 import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool';
+import Link from '@yoopta/link';
 import ActionMenu, { DefaultActionMenuRender } from '@yoopta/action-menu-list';
 import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
 import Image from '@yoopta/image';
@@ -97,6 +98,7 @@ export default function Editor({ value, setValue, readOnly }: Props) {
 
   const plugins = useMemo(() => [
     Paragraph,
+    Link,
     Table,
     Divider.extend({
       elementProps: {
