@@ -29,6 +29,7 @@ export type Player = {
   number: number;
   rank: number;
   sex: string;
+  isikukood?: string;
   nationality: string;
   birthdate: string;
   extra_data: PlayerExtraData;

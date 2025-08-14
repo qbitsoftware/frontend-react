@@ -15,7 +15,7 @@ import {
   CreateClubInput,
 } from "@/queries/clubs";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MoreHorizontal, Users, Settings, Plus, X, UserIcon, ArrowLeft, UserPlus } from "lucide-react";
+import { PlusCircle, Users, Settings, Plus, X, UserIcon, ArrowLeft, UserPlus } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { axiosInstance } from "@/queries/axiosconf";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,12 +28,6 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
@@ -53,11 +47,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQueryClient } from "@tanstack/react-query";
 import { Club } from "@/types/clubs";
-import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { UseGetUsersDebounce } from "@/queries/users";
-import { capitalizeWords, useDebounce } from "@/lib/utils";
+import { capitalizeWords, extractBirthDateFromIsikukood, useDebounce } from "@/lib/utils";
 import { User } from "@/types/users";
+import { toast } from 'sonner'
 
 export const Route = createFileRoute("/admin/clubs/")({
   component: RouteComponent,
@@ -71,23 +65,21 @@ function RouteComponent() {
   const deleteClubMutation = useDeleteClub();
   const { t } = useTranslation();
 
-  const { toast } = useToast();
-
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
-  
+
   // My clubs state
   const [myClubs, setMyClubs] = useState<Club[]>([]);
   const [isLoadingMyClubs, setIsLoadingMyClubs] = useState(false);
-  
+
   // Club players state
   const [isPlayersDialogOpen, setIsPlayersDialogOpen] = useState(false);
   const [selectedClubForPlayers, setSelectedClubForPlayers] = useState<Club | null>(null);
   const [clubPlayers, setClubPlayers] = useState<User[]>([]);
   const [isLoadingPlayers, setIsLoadingPlayers] = useState(false);
-  
+
   // Player management state
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -106,12 +98,12 @@ function RouteComponent() {
   });
   const [noEstonianId, setNoEstonianId] = useState(false);
   const [isVerifyingId, setIsVerifyingId] = useState(false);
-  
+
   // Player removal confirmation state
   const [isRemovePlayerDialogOpen, setIsRemovePlayerDialogOpen] = useState(false);
   const [playerToRemove, setPlayerToRemove] = useState<User | null>(null);
   const [isAddingPlayer, setIsAddingPlayer] = useState(false);
-  
+
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const { data: playerSuggestions } = UseGetUsersDebounce(debouncedSearchTerm);
   const [newClub, setNewClub] = useState<CreateClubInput>({
@@ -128,18 +120,12 @@ function RouteComponent() {
   const fetchMyClubs = useCallback(async () => {
     setIsLoadingMyClubs(true);
     try {
-      const { data } = await axiosInstance.get('/api/v1/me/admin-clubs', {
+      const { data } = await axiosInstance.get('/api/v1/clubs/admin/me', {
         withCredentials: true
       });
-      // API response structure: { data: { clubs: [...], club_count: number, ... } }
       setMyClubs(data.data?.clubs || []);
     } catch (error) {
-      console.error('Failed to fetch admin clubs:', error);
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: t("admin.clubs.toast.failed_to_load_my_clubs"),
-        variant: "destructive",
-      });
+      void error;
       setMyClubs([]);
     } finally {
       setIsLoadingMyClubs(false);
@@ -179,7 +165,7 @@ function RouteComponent() {
         birth_date: "",
       });
       setNoEstonianId(false);
-      
+
       // Ensure focus is properly restored after modal closes
       setTimeout(() => {
         document.body.style.pointerEvents = '';
@@ -201,11 +187,7 @@ function RouteComponent() {
       setClubPlayers(data.data || []);
     } catch (error) {
       console.error('Failed to fetch club players:', error);
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: t("admin.clubs.toast.failed_to_load_players"),
-        variant: "destructive",
-      });
+      toast.error(t("admin.clubs.toast.error"));
       setClubPlayers([]);
     } finally {
       setIsLoadingPlayers(false);
@@ -245,18 +227,12 @@ function RouteComponent() {
             website: "",
             image_url: "",
           });
-          toast({
-            title: t("admin.clubs.toast.club_created"),
-          });
+          toast.message(t("admin.clubs.toast.club_created"));
         },
       });
     } catch (error) {
       void error;
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: t("admin.clubs.toast.club_created_error"),
-        variant: "destructive",
-      });
+      toast.error(t("admin.clubs.toast.error"));
     }
   };
 
@@ -269,18 +245,12 @@ function RouteComponent() {
           queryClient.invalidateQueries({ queryKey: ["clubs_query"] });
           setIsEditDialogOpen(false);
           setSelectedClub(null);
-          toast({
-            title: t("admin.clubs.toast.club_updated"),
-          });
+          toast.message(t("admin.clubs.toast.club_updated"));
         },
       });
     } catch (error) {
       void error;
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: t("admin.clubs.toast.club_updated_error"),
-        variant: "destructive",
-      });
+      toast.error(t("admin.clubs.toast.error"));
     }
   };
 
@@ -294,18 +264,12 @@ function RouteComponent() {
           queryClient.invalidateQueries({ queryKey: ["clubs_query"] });
           setIsDeleteDialogOpen(false);
           setSelectedClub(null);
-          toast({
-            title: t("admin.clubs.toast.club_deleted"),
-          });
+          toast.message(t("admin.clubs.toast.club_deleted"));
         },
       });
     } catch (error) {
       void error;
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: t("admin.clubs.toast.club_deleted_error"),
-        variant: "destructive",
-      });
+      toast.error(t("admin.clubs.toast.error"));
     }
   };
 
@@ -342,63 +306,25 @@ function RouteComponent() {
     };
   };
 
-  // Player management functions
-  const extractBirthDateFromIsikukood = (isikukood: string) => {
-    if (!isikukood || isikukood.length < 7) return null;
-    
-    const firstDigit = parseInt(isikukood[0]);
-    const year = isikukood.substring(1, 3);
-    const month = isikukood.substring(3, 5);
-    const day = isikukood.substring(5, 7);
-    
-    let century;
-    if (firstDigit >= 1 && firstDigit <= 2) {
-      century = 1800;
-    } else if (firstDigit >= 3 && firstDigit <= 4) {
-      century = 1900;
-    } else if (firstDigit >= 5 && firstDigit <= 6) {
-      century = 2000;
-    } else if (firstDigit >= 7 && firstDigit <= 8) {
-      century = 2100;
-    } else {
-      return null; 
-    }
-    
-    const fullYear = century + parseInt(year);
-    
-    const monthNum = parseInt(month);
-    const dayNum = parseInt(day);
-    
-    if (monthNum < 1 || monthNum > 12 || dayNum < 1 || dayNum > 31) {
-      return null;
-    }
-    
-    return {
-      year: fullYear,
-      month: monthNum,
-      day: dayNum,
-      dateString: `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    };
-  };
 
   const validateIsikukoodWithBirthDate = (isikukood: string, birthDate: string) => {
     if (!isikukood || !birthDate) return { isValid: true, message: "" };
-    
+
     const extractedDate = extractBirthDateFromIsikukood(isikukood);
     if (!extractedDate) {
-      return { 
-        isValid: false, 
-        message: t("admin.clubs.validation.invalid_estonian_id") 
+      return {
+        isValid: false,
+        message: t("admin.clubs.validation.invalid_estonian_id")
       };
     }
-    
+
     if (extractedDate.dateString !== birthDate) {
-      return { 
-        isValid: false, 
-        message: t("admin.clubs.validation.birth_date_mismatch") 
+      return {
+        isValid: false,
+        message: t("admin.clubs.validation.birth_date_mismatch")
       };
     }
-    
+
     return { isValid: true, message: "" };
   };
 
@@ -410,9 +336,9 @@ function RouteComponent() {
       });
       return;
     }
-    
+
     const validation = validateIsikukoodWithBirthDate(isikukood, birthDate);
-    
+
     if (!validation.isValid) {
       setValidationErrors({
         isikukood: validation.message,
@@ -442,7 +368,7 @@ function RouteComponent() {
       });
 
       const result = response.data;
-      
+
       return {
         isValid: result.isValid,
         message: result.isValid ? "" : t("admin.clubs.validation.name_id_mismatch")
@@ -459,45 +385,34 @@ function RouteComponent() {
   };
 
   const addPlayerToClub = async () => {
-    const requiredFieldsPresent = newPlayer.first_name && newPlayer.last_name && 
-        newPlayer.birth_date && newPlayer.sex && (noEstonianId || newPlayer.isikukood);
-    
+    const requiredFieldsPresent = newPlayer.first_name && newPlayer.last_name &&
+      newPlayer.birth_date && newPlayer.sex && (noEstonianId || newPlayer.isikukood);
+
     if (requiredFieldsPresent) {
       setIsAddingPlayer(true);
       if (!noEstonianId && newPlayer.isikukood) {
         const validation = validateIsikukoodWithBirthDate(newPlayer.isikukood, newPlayer.birth_date);
         if (!validation.isValid) {
           validateForm(newPlayer.isikukood, newPlayer.birth_date);
-          toast({
-            title: t("admin.clubs.toast.error"),
-            description: validation.message,
-            variant: "destructive",
-          });
+          toast.error(t("admin.clubs.toast.error"));
           setIsAddingPlayer(false);
           return;
         }
 
         const verificationResult = await verifyEstonianId(
-          newPlayer.isikukood, 
-          newPlayer.first_name, 
+          newPlayer.isikukood,
+          newPlayer.first_name,
           newPlayer.last_name
         );
-        
+
         if (!verificationResult.isValid && verificationResult.message) {
-          toast({
-            title: t("admin.clubs.toast.error"), 
-            description: verificationResult.message,
-            variant: "destructive",
-          });
+          toast.error(t("admin.clubs.toast.error"));
           setIsAddingPlayer(false);
           return;
         }
 
         if (verificationResult.isValid && verificationResult.message === "") {
-          toast({
-            title: t("admin.clubs.toast.success"),
-            description: t("admin.clubs.toast.id_verification_success"),
-          });
+          toast.message(t("admin.clubs.toast.success"));
         }
       }
 
@@ -516,18 +431,15 @@ function RouteComponent() {
           withCredentials: true
         });
 
-        toast({
-          title: t("admin.clubs.toast.success"),
-          description: t("admin.clubs.toast.player_added"),
-        });
+        toast.message(t("admin.clubs.toast.success"));
 
         // Reset form and refresh players list
-        setNewPlayer({ 
-          first_name: "", 
-          last_name: "", 
-          birth_date: "", 
-          isikukood: "", 
-          sex: "" 
+        setNewPlayer({
+          first_name: "",
+          last_name: "",
+          birth_date: "",
+          isikukood: "",
+          sex: ""
         });
         setValidationErrors({
           isikukood: "",
@@ -536,7 +448,7 @@ function RouteComponent() {
         setNoEstonianId(false);
         setShowManualEntry(false);
         setShowAddPlayer(false);
-        
+
         // Small delay to allow proper modal cleanup before refetching
         setTimeout(() => {
           if (selectedClubForPlayers) {
@@ -545,16 +457,12 @@ function RouteComponent() {
         }, 100);
       } catch (error) {
         console.error('Failed to add player to club:', error);
-        const errorMessage = error instanceof Error && 'response' in error && 
-          error.response && typeof error.response === 'object' && 
+        const errorMessage = error instanceof Error && 'response' in error &&
+          error.response && typeof error.response === 'object' &&
           'data' in error.response && error.response.data &&
-          typeof error.response.data === 'object' && 'message' in error.response.data 
+          typeof error.response.data === 'object' && 'message' in error.response.data
           ? String(error.response.data.message) : t("admin.clubs.toast.failed_to_add_player");
-        toast({
-          title: t("admin.clubs.toast.error"),
-          description: errorMessage,
-          variant: "destructive",
-        });
+        toast.error(t("admin.clubs.toast.error", { error: errorMessage }));
       } finally {
         setIsAddingPlayer(false);
       }
@@ -565,12 +473,8 @@ function RouteComponent() {
       if (!newPlayer.birth_date) missingFields.push(t("admin.clubs.players_modal.create_new.form.birth_date"));
       if (!newPlayer.sex) missingFields.push(t("admin.clubs.players_modal.create_new.form.gender.placeholder"));
       if (!noEstonianId && !newPlayer.isikukood) missingFields.push(t("admin.clubs.players_modal.create_new.form.estonian_id"));
-      
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: t("admin.clubs.toast.missing_required_fields", { fields: missingFields.join(", ") }),
-        variant: "destructive",
-      });
+
+      toast(t("admin.clubs.toast.error"));
     }
   };
 
@@ -584,14 +488,11 @@ function RouteComponent() {
         withCredentials: true
       });
 
-      toast({
-        title: t("admin.clubs.toast.success"),
-        description: t("admin.clubs.toast.player_added_to_club", { playerName: `${user.first_name} ${user.last_name}` }),
-      });
+      toast.message(t("admin.clubs.toast.success"));
 
       setSearchTerm("");
       setPopoverOpen(false);
-      
+
       // Small delay to allow proper modal cleanup before refetching
       setTimeout(() => {
         if (selectedClubForPlayers) {
@@ -600,16 +501,12 @@ function RouteComponent() {
       }, 100);
     } catch (error) {
       console.error('Failed to add player to club:', error);
-      const errorMessage = error instanceof Error && 'response' in error && 
-        error.response && typeof error.response === 'object' && 
+      const errorMessage = error instanceof Error && 'response' in error &&
+        error.response && typeof error.response === 'object' &&
         'data' in error.response && error.response.data &&
-        typeof error.response.data === 'object' && 'message' in error.response.data 
+        typeof error.response.data === 'object' && 'message' in error.response.data
         ? String(error.response.data.message) : t("admin.clubs.toast.failed_to_add_player");
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(t("admin.clubs.toast.error", { error: errorMessage }));
     } finally {
       setIsAddingPlayer(false);
     }
@@ -632,30 +529,23 @@ function RouteComponent() {
         withCredentials: true
       });
 
-      toast({
-        title: t("admin.clubs.toast.success"),
-        description: t("admin.clubs.toast.player_removed_from_club", { playerName: `${playerToRemove.first_name} ${playerToRemove.last_name}` }),
-      });
-      
+      toast.message(t("admin.clubs.toast.success", { playerName: `${playerToRemove.first_name} ${playerToRemove.last_name}` }));
+
       setIsRemovePlayerDialogOpen(false);
       setPlayerToRemove(null);
-      
+
       // Simple cleanup since we no longer have nested modals
       if (selectedClubForPlayers) {
         fetchClubPlayers(selectedClubForPlayers.name);
       }
     } catch (error) {
       console.error('Failed to remove player from club:', error);
-      const errorMessage = error instanceof Error && 'response' in error && 
-        error.response && typeof error.response === 'object' && 
+      const errorMessage = error instanceof Error && 'response' in error &&
+        error.response && typeof error.response === 'object' &&
         'data' in error.response && error.response.data &&
-        typeof error.response.data === 'object' && 'message' in error.response.data 
+        typeof error.response.data === 'object' && 'message' in error.response.data
         ? String(error.response.data.message) : t("admin.clubs.toast.failed_to_remove_player");
-      toast({
-        title: t("admin.clubs.toast.error"),
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(t("admin.clubs.toast.error", { error: errorMessage }));
     }
   };
 
@@ -682,7 +572,7 @@ function RouteComponent() {
             <span className="font-medium text-sm px-1 mb-4 block">
               {myClubs.length} {myClubs.length === 1 ? t("admin.clubs.my_clubs.count.singular") : t("admin.clubs.my_clubs.count.plural")}
             </span>
-            
+
             <Table className="mb-8">
               <TableHeader>
                 <TableRow>
@@ -709,7 +599,7 @@ function RouteComponent() {
                           className="flex items-center gap-1"
                         >
                           <Settings className="h-3 w-3" />
-                        {t("admin.clubs.buttons.manage_info")}
+                          {t("admin.clubs.buttons.manage_info")}
                         </Button>
                         <Button
                           variant="outline"
@@ -767,7 +657,6 @@ function RouteComponent() {
       <Table className="">
         <TableHeader>
           <TableRow>
-            <TableHead className="">{t("admin.clubs.table.actions")}</TableHead>
             <TableHead>{t("admin.clubs.table.image")}</TableHead>
             <TableHead>{t("admin.clubs.table.name")}</TableHead>
             <TableHead>{t("admin.clubs.table.contact_person")}</TableHead>
@@ -783,34 +672,6 @@ function RouteComponent() {
             .reverse()
             .map((club) => (
               <TableRow key={club.id}>
-                <TableCell className="">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className=" px-2 py-1">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setSelectedClub(club);
-                          setIsEditDialogOpen(true);
-                        }}
-                      >
-                        {t("admin.clubs.dropdown.edit")}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => {
-                          setSelectedClub(club);
-                          setIsDeleteDialogOpen(true);
-                        }}
-                      >
-                        {t("admin.clubs.dropdown.delete")}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
                 <TableCell>
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={club.image_url} alt={club.name} />
@@ -954,7 +815,6 @@ function RouteComponent() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Club Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -1111,7 +971,7 @@ function RouteComponent() {
               {t("admin.clubs.players_modal.description")}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-auto space-y-4">
             {/* Add Player Section */}
             {showAddPlayer && (
@@ -1170,9 +1030,8 @@ function RouteComponent() {
                                 playerSuggestions.data.map((user, i) => (
                                   <div
                                     key={i}
-                                    className={`px-4 py-3 cursor-pointer hover:bg-[#4C97F1]/10 hover:text-[#4C97F1] transition-colors rounded-lg mx-1 my-1 ${
-                                      isAddingPlayer ? 'opacity-50 pointer-events-none' : ''
-                                    }`}
+                                    className={`px-4 py-3 cursor-pointer hover:bg-[#4C97F1]/10 hover:text-[#4C97F1] transition-colors rounded-lg mx-1 my-1 ${isAddingPlayer ? 'opacity-50 pointer-events-none' : ''
+                                      }`}
                                     onClick={() => !isAddingPlayer && handlePlayerSelect(user)}
                                   >
                                     <div className="font-medium flex items-center gap-2">
@@ -1301,15 +1160,15 @@ function RouteComponent() {
                         value={newPlayer.isikukood}
                         onChange={(e) => {
                           const newIsikukood = e.target.value;
-                          
+
                           let updatedPlayer = { ...newPlayer, isikukood: newIsikukood };
                           if (newIsikukood && !noEstonianId) {
                             const extractedDate = extractBirthDateFromIsikukood(newIsikukood);
                             if (extractedDate) {
-                              updatedPlayer = { ...updatedPlayer, birth_date: extractedDate.dateString };
+                              updatedPlayer = { ...updatedPlayer, birth_date: extractedDate.dateString, sex: extractedDate.sex };
                             }
                           }
-                          
+
                           setNewPlayer(updatedPlayer);
                           validateForm(newIsikukood, updatedPlayer.birth_date, noEstonianId);
                         }}
@@ -1409,9 +1268,9 @@ function RouteComponent() {
                   </Button>
                 </div>
               )}
-              
+
               <div className="p-4">
-              
+
                 {isLoadingPlayers ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4C97F1] mx-auto mb-4"></div>
@@ -1447,11 +1306,10 @@ function RouteComponent() {
                               {player.birth_date ? new Date(player.birth_date).getFullYear() : '---'}
                             </TableCell>
                             <TableCell>
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                player.sex === 'M' ? 'bg-blue-100 text-blue-800' :
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${player.sex === 'M' ? 'bg-blue-100 text-blue-800' :
                                 player.sex === 'N' ? 'bg-pink-100 text-pink-800' :
-                                'bg-gray-100 text-gray-800'
-                              }`}>
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
                                 {player.sex === 'M' ? t("admin.clubs.players_modal.list.table.gender_male") : player.sex === 'N' ? t("admin.clubs.players_modal.list.table.gender_female") : '---'}
                               </span>
                             </TableCell>
@@ -1475,11 +1333,10 @@ function RouteComponent() {
                                 const licenseInfo = getLicenseInfo(player.license, player.expiration_date);
                                 return (
                                   <span
-                                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                      licenseInfo.isActive
-                                        ? "bg-green-100 text-green-800"
-                                        : "bg-red-100 text-red-800"
-                                    }`}
+                                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${licenseInfo.isActive
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-red-100 text-red-800"
+                                      }`}
                                   >
                                     {licenseInfo.text}
                                   </span>
@@ -1521,7 +1378,7 @@ function RouteComponent() {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsPlayersDialogOpen(false)}>
               {t("admin.clubs.players_modal.close_button")}
@@ -1532,7 +1389,7 @@ function RouteComponent() {
 
       {/* Remove Player Confirmation Dialog - Custom modal to avoid nesting issues */}
       {isRemovePlayerDialogOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4"
           onClick={(e) => {
             // Close on backdrop click
@@ -1551,7 +1408,7 @@ function RouteComponent() {
           tabIndex={-1}
           style={{ pointerEvents: 'auto' }}
         >
-          <div 
+          <div
             className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4"
             onClick={(e) => e.stopPropagation()}
             style={{ pointerEvents: 'auto' }}

@@ -436,11 +436,6 @@ export default function GroupStageBracket({
                         >
                           {rowIndex === colIndex ? (
                             <div className="w-full h-full flex items-center justify-center p-2">
-                              <img
-                                src="/RLogo.png"
-                                alt="Logo"
-                                className="max-w-full max-h-full object-contain opacity-70"
-                              />
                             </div>
                           ) : (
                             renderMatchCell(

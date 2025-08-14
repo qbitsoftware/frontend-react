@@ -7,12 +7,12 @@ import { Blog } from '@/types/blogs'
 import { ArrowLeft, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Editor from '../../-components/yooptaeditor'
-import { useToast } from '@/hooks/use-toast'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Link } from '@tanstack/react-router'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/admin/blog/$blogid/')({
     component: RouteComponent,
@@ -26,7 +26,6 @@ function RouteComponent() {
     const [isPublished, setIsPublished] = useState(false);
     const blogUpdateMutation = UseUpdateBlog()
     const router = useRouter()
-    const { toast } = useToast()
 
 
     useEffect(() => {
@@ -36,53 +35,32 @@ function RouteComponent() {
                 setIsPublished(blogData.data.status === 'published');
                 setCategory(blogData.data.category);
             } catch (error) {
-                console.error('Error parsing blog content:', error);
-                toast({
-                    title: "Error loading blog",
-                    description: "There was an issue loading the blog content.",
-                    variant: "destructive"
-                });
+                toast.error("Error loading blog");
             }
         }
 
         if (!isLoading && (!blogData || !blogData.data)) {
-            toast({
-                title: "Blog not found",
-                description: "The blog post you're looking for could not be found.",
-                variant: "destructive"
-            });
-
+            toast.error("Blog not found");
             router.navigate({ to: '/admin/blog' });
         }
     }, [isLoading, blogData, toast, router]);
 
     const handleClick = async () => {
         if (!value) {
-            toast({
-                title: "Content is empty",
-                description: "Please add some content to your blog post.",
-                variant: "destructive"
-            });
+            toast.error("Content is empty");
             return;
         }
 
         const { title, description, hasImages, imageUrl } = contentParser(value)
 
         if (!title) {
-            toast({
-                title: "Title is missing",
-                description: "Please add a title to your blog post.",
-                variant: "destructive"
-            });
+            toast.error("Title is missing");
             return;
         }
 
         if (blogData) {
             try {
-                toast({
-                    title: "Saving changes",
-                    description: "Please wait while we update your post...",
-                });
+                toast.message("Please wait while we update your post...");
 
                 const blog: Blog = {
                     ...blogData.data,
@@ -99,27 +77,15 @@ function RouteComponent() {
 
                 await blogUpdateMutation.mutateAsync(blog)
 
-                toast({
-                    title: "Success!",
-                    description: `Blog post has been ${isPublished ? 'published' : 'saved as draft'}.`,
-                    variant: "default"
-                });
+                toast.message(`Blog post has been ${isPublished ? 'published' : 'saved as draft'}.`);
 
                 router.navigate({ to: '/admin/blog' })
             } catch (error) {
-                toast({
-                    title: "Failed to update",
-                    description: "An error occurred while updating your blog post.",
-                    variant: "destructive"
-                });
-                console.error('Failed to update blog:', error)
+                toast.error("Failed to update");
             }
 
         } else {
-            toast({
-                title: "Refresh the page",
-                description: "Something went wrong",
-            });
+            toast.message("Refresh the page");
 
         }
     }

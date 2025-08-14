@@ -27,7 +27,7 @@ const AdminBottomNav = () => {
               <div className={`${isActive ? "text-primary" : "text-gray-500"}`}>
                 {item.icon}
               </div>
-              <span className="text-xs mt-1">{item.label}</span>
+              <span className="text-xs mt-1 text-center">{item.label}</span>
             </Link>
           );
         })}

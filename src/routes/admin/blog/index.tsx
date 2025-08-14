@@ -23,7 +23,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +34,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from "react-i18next";
+import { toast } from 'sonner'
 
 export const Route = createFileRoute("/admin/blog/")({
   component: RouteComponent,
@@ -45,7 +45,6 @@ function RouteComponent() {
   const [blogIdToDelete, setBlogIdToDelete] = useState<number | null>(null);
   const deleteMutation = UseDeleteBlog();
   const { data: blogData, isLoading, error } = UseGetBlogsQuery();
-  const { toast } = useToast();
   const { t } = useTranslation();
 
   const handleDeleteClick = (blogId: number) => {
@@ -57,19 +56,10 @@ function RouteComponent() {
 
     try {
       await deleteMutation.mutateAsync(blogIdToDelete);
-      toast({
-        title: "Blog deleted",
-        description: "The blog post has been successfully deleted.",
-        variant: "default",
-      });
+      toast.message("Blog deleted");
       setBlogIdToDelete(null);
     } catch (err) {
-      toast({
-        title: "Failed to delete",
-        description: "There was an error deleting the blog post.",
-        variant: "destructive",
-      });
-      console.error("Failed to delete blog:", err);
+      toast.error("Failed to delete");
     }
   };
 
@@ -256,13 +246,12 @@ function RouteComponent() {
                       </TableCell>
                       <TableCell>
                         <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            blog.status === "published"
-                              ? "bg-green-100 text-green-800"
-                              : blog.status === "draft"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-gray-100 text-gray-800"
-                          }`}
+                          className={`px-2 py-1 text-xs rounded-full ${blog.status === "published"
+                            ? "bg-green-100 text-green-800"
+                            : blog.status === "draft"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-gray-100 text-gray-800"
+                            }`}
                         >
                           {blog.status || "Draft"}
                         </span>

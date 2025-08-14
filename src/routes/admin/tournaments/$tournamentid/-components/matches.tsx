@@ -10,7 +10,7 @@ import {
 import ReGrouping from "./regrouping";
 import TimeEditingModal from "./time-editing-modal";
 import { useTranslation } from "react-i18next";
-import { MatchState, MatchWrapper } from "@/types/matches";
+import { GroupType, MatchState, MatchWrapper } from "@/types/matches";
 import { DialogType, TournamentTable } from "@/types/groups";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ProtocolModalProvider } from "@/providers/protocolProvider";
@@ -220,7 +220,7 @@ export const Matches: React.FC<MatchesProps> = ({
             />
           ) : (
             selectedMatch &&
-            tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES && (
+            (tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES || tournament_table.type === GroupType.CHAMPIONS_LEAGUE) && (
               <ProtocolModalProvider
                 isOpen={isOpen}
                 onClose={handleModalClose}

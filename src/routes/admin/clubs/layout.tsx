@@ -8,7 +8,7 @@ export const Route = createFileRoute('/admin/clubs')({
 
 function RouteComponent() {
   return (
-    <RoleProtected requiredRole={UserRoles.ROLE_ROOT_ADMIN} >
+    <RoleProtected requiredRole={UserRoles.ROLE_ROOT_ADMIN} allowedRoles={[UserRoles.ROLE_CLUB_ADMIN]} >
       <Outlet />
     </RoleProtected>
   )

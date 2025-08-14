@@ -16,6 +16,7 @@ export const playerFormSchema = z.object({
     sport_type: z.string().default("tabletennis"),
     sex: z.string().default("M"),
     number: z.number().optional(),
+    isikukood: z.string().optional(),
     nationality: z.string().default("EE").optional(),
     extra_data: z
         .object({

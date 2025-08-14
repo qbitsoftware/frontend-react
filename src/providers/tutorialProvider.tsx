@@ -65,7 +65,6 @@ const ONBOARDING_FLOWS: Record<string, OnboardingFlow> = {
                 prefillValue: '',
                 triggerCondition: (element) => {
                     const input = element as HTMLInputElement
-                    console.log("error coming from here", input.value)
                     if (!input || !input.value) return false
                     return input.value.length > 0
                 },

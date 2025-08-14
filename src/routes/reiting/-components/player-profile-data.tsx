@@ -105,7 +105,7 @@ export const PlayerProfileData = ({ profile }: PlayerProfileDataProps) => {
             {t("rating.player_modal.sections.rating_progress")}
           </h3>
           <div className="w-full">
-            <PlayerRankingChangeGraph stats={profile.rating_change} />
+            <PlayerRankingChangeGraph stats={profile.rating_events} user={profile.user} />
           </div>
         </div>
       </TabsContent>
