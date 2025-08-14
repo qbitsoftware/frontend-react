@@ -140,7 +140,7 @@ const EliminationMatch = ({
             {bracket}
           </div>
         )}
-        <div className="absolute text-[8px] -top-[15px]">
+        <div className="absolute text-[10px] -top-[15px]">
           {match.match.state !== MatchState.FINISHED &&
             match.participant_1.id != "" &&
             match.participant_2.id != "" &&
@@ -157,7 +157,7 @@ const EliminationMatch = ({
                 showLabel={true}
               />
               {matchDate && !isEmptyDate(matchDate) && (
-                <div className="flex items-center gap-1 ml-3">
+                <div className="flex items-center gap-1 ml-3 whitespace-nowrap">
                   <Clock className="h-3 w-3" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>
                   <span className="font-semibold">
@@ -170,12 +170,12 @@ const EliminationMatch = ({
 
           ) : match.match.extra_data && match.match.extra_data.table && match.match.p1_id != 'empty' && match.match.p2_id != 'empty' ? (
             <div className="flex items-center w-full">
-              <span>
+              <span className="whitespace-nowrap">
                 {t("admin.tournaments.matches.table.table")}{" "}
                 {match.match.extra_data.table}
               </span>
               {matchDate && !isEmptyDate(matchDate) && (
-                <div className="flex items-center gap-1 ml-20">
+                <div className="flex items-center gap-1 ml-3 whitespace-nowrap">
                   <Clock className="h-3 w-3" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>
                   <span className="font-semibold">

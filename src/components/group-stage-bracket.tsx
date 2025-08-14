@@ -357,7 +357,7 @@ export default function GroupStageBracket({
       <div
         key={groupIndex}
         id={`bracket-container-${groupIndex}`}
-        className="flex items-center pb-10 pt-5 mx-auto flex-col w-[70vw] overflow-x-auto px-4 rounded-lg"
+        className="flex items-center pb-10 pt-5 mx-auto flex-col w-full sm:w-[70vw] overflow-x-auto px-0 sm:px-4 rounded-lg"
       >
 
         <h3 className="font-bold mb-4">{group_name}</h3>
@@ -473,14 +473,14 @@ export default function GroupStageBracket({
   };
 
   return (
-    <div className="container mx-auto">
-      <div className="flex justify-end mb-4">
+    <div className="container mx-auto px-0 sm:px-4">
+      <div className="flex justify-end mb-4 px-2 sm:px-0">
         <Button
           variant="outline"
-          className="flex items-center gap-2"
+          className="hidden sm:flex items-center gap-2"
           onClick={handlePrint}
         >
-          <Printer className="h-4 w-4" />
+          <Printer className=" h-4 w-4" />
           <span>{t("admin.tournaments.groups.tables.print")}</span>
         </Button>
       </div>

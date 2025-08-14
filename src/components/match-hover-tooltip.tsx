@@ -30,27 +30,22 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
   const viewportHeight = window.innerHeight;
   const margin = 15;
 
-  // Since we're using fixed positioning, use viewport coordinates directly
   let left = position.x + margin;
   let top = position.y - margin;
   const transform = "translateY(0)";
 
-  // If tooltip would go off the right edge, position it to the left instead
   if (left + tooltipWidth > viewportWidth - margin) {
     left = position.x - tooltipWidth - margin;
   }
 
-  // Ensure tooltip doesn't go off the left edge
   if (left < margin) {
     left = margin;
   }
 
-  // Ensure tooltip doesn't go off the top edge
   if (top < margin) {
     top = margin;
   }
 
-  // Ensure tooltip doesn't go off the bottom edge  
   if (top + tooltipHeight > viewportHeight - margin) {
     top = viewportHeight - tooltipHeight - margin;
   }
@@ -99,7 +94,7 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
                   (match.match.winner_id === match.participant_1.id ? "" : "RET")
                   : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
                     (match.match.winner_id === match.participant_1.id ? "" : "DQ")
-                    : p2_sets
+                    : p1_sets
               }
             </span>
           </div>

@@ -375,6 +375,7 @@
       "processing": "Makse töötlemine...",
       "complete_payment": "Lõpeta makse",
       "payment_failed": "Makse ebaõnnestus. Palun proovige uuesti.",
+      "september_notice": "Litsentsi ostmise funktsioon on saadaval alates septembrist.",
       "status": {
         "success": "Litsents edukalt ostetud!",
         "pending": "Makse on töötlemisel...",

@@ -89,7 +89,7 @@ const SoloTable: React.FC<SoloTableProps> = ({ participants, table_data }) => {
                       </AvatarFallback>
                     </Avatar>
                   </TableCell>
-                  <TableCell className="p-3 truncate max-w-0 font-medium text-gray-900">{participant.name}</TableCell>
+                  <TableCell className="p-3 font-medium text-gray-900">{participant.name}</TableCell>
                   <TableCell className="p-3 text-gray-700">{participant.rank}</TableCell>
                   <TableCell className="p-3 text-gray-700">{participant.extra_data.class}</TableCell>
                   <TableCell className="p-3 truncate max-w-0 text-gray-700">

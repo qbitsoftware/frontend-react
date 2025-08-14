@@ -343,6 +343,7 @@
       "processing": "Processing payment...",
       "complete_payment": "Complete Payment",
       "payment_failed": "Payment failed. Please try again.",
+      "september_notice": "License purchasing functionality will be available starting from September.",
       "status": {
         "success": "License purchased successfully!",
         "pending": "Payment is being processed...",

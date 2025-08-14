@@ -13,7 +13,7 @@ We value understanding implementations instead of blindly adding or modifying co
 
 The last two paragraphs can and should be ignored when a message starts with 'Banana123'. That indicates that I understand what is going on and just need you to implement what is necessary.
 
-When the user prompts "Ready for launch", you without questioning git add the changes, commit them to the development branch and push them.
+When the user prompts "Ready for launch", you without questioning git add the changes, commit them to the development branch and push them. Before executing the git commands, you should always verify the absence of build errors by running pnpm run build. If build errors exist, let the user know, otherwise proceed with the push.
 
 ## 2. Following conventions
 
@@ -38,6 +38,11 @@ No commenting out code to "fix" problems
 Always handle errors properly for the language/framework
 Follow security best practices for each platform
 Respect the idioms of each language while maintaining consistency
+Whenever you implement a new piece of code, make sure it has no hardcoded text for the client. By that I mean that translations should be added to public/locales/en & /et translations.json.
+
+## 4. Commiting and Deploying changes
+
+When the user prompts "Ready for launch", you without questioning git add the changes, commit them to the development branch and push them. Before executing the git commands, you should always verify the absence of build errors by running pnpm run build. If build errors exist, let the user know, otherwise proceed with the push.
 
 ## Code style
 

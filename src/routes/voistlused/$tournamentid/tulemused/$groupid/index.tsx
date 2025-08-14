@@ -116,9 +116,9 @@ function RouteComponent() {
   const availableTables = tablesQuery.data.data || [];
 
   return (
-    <div className="min-h-screen px-2 sm:px-4 lg:px-6">
+    <div className="min-h-screen px-0 sm:px-4 lg:px-6">
       {/* Consolidated Navigation */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-6 px-2 sm:px-0">
         {/* Primary Class Navigation */}
         <ClassFilters
           availableTables={availableTables}
@@ -163,7 +163,7 @@ function RouteComponent() {
           className="w-full"
           defaultValue={activeTab}
         >
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start px-2 sm:px-0">
             {/* Reduced visual weight of tab navigation */}
             <TabsList className="h-9 space-x-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
               {isMeistrikad && (
