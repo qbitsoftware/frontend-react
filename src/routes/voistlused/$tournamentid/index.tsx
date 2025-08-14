@@ -233,11 +233,11 @@ function RouteComponent() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3 space-y-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-8">
+          <div className="lg:col-span-3 space-y-4 sm:space-y-8">
             <div>
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div
                   className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${status.bgColor} ${status.color}`}
                 >
@@ -248,7 +248,7 @@ function RouteComponent() {
                 </div>
               </div>
 
-              <h1 className="text-4xl font-bold text-gray-900 mb-8">
+              <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4 sm:mb-8">
                 {tournament.name}
               </h1>
 
@@ -272,13 +272,13 @@ function RouteComponent() {
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-6">
+            <div className="bg-gray-50 rounded-xl p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 {t('competitions.registration')}
               </h3>
-              <div className="flex items-center gap-3 mb-6">
-                <registrationInfo.icon className={`w-5 h-5 ${registrationInfo.color}`} />
-                <p className="text-gray-600">
+              <div className="flex items-start gap-3 mb-4 sm:mb-6">
+                <registrationInfo.icon className={`w-5 h-5 ${registrationInfo.color} mt-0.5 flex-shrink-0`} />
+                <p className="text-gray-600 text-sm sm:text-base">
                   {registrationInfo.text}
                 </p>
               </div>
@@ -287,7 +287,7 @@ function RouteComponent() {
                   href={registrationInfo.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 px-4 font-medium transition-colors inline-flex items-center justify-center gap-2`}
+                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 sm:py-3 px-4 sm:px-4 font-medium transition-colors inline-flex items-center justify-center gap-2 min-h-[48px]`}
                 >
                   <registrationInfo.icon className="w-4 h-4" />
                   {registrationInfo.buttonText}
@@ -296,7 +296,7 @@ function RouteComponent() {
               ) : (
                 <button
                   type="button"
-                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 px-4 font-medium cursor-not-allowed inline-flex items-center justify-center gap-2`}
+                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 sm:py-3 px-4 sm:px-4 font-medium cursor-not-allowed inline-flex items-center justify-center gap-2 min-h-[48px]`}
                   disabled={registrationInfo.disabled}
                 >
                   <registrationInfo.icon className="w-4 h-4" />
@@ -306,8 +306,8 @@ function RouteComponent() {
             </div>
 
             {tournament.registered_players_link && (
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <div className="flex items-center justify-between">
+              <div className="bg-blue-50 rounded-lg p-3 sm:p-4 border border-blue-200">
+                <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-3 sm:gap-0">
                   <div className="flex items-center gap-3">
                     <Users className="w-4 h-4 text-blue-600" />
                     <div>
@@ -323,7 +323,7 @@ function RouteComponent() {
                     href={tournament.registered_players_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#4C97F1] hover:bg-blue-700 text-white rounded-md py-2 px-3 text-sm font-medium transition-colors inline-flex items-center gap-2"
+                    className="bg-[#4C97F1] hover:bg-blue-700 text-white rounded-md py-2 px-3 text-sm font-medium transition-colors inline-flex items-center gap-2 min-h-[40px] w-full sm:w-auto justify-center"
                   >
                     {t('competitions.view_registered_players', 'View List')}
                     <ExternalLink className="w-3 h-3" />
@@ -374,9 +374,9 @@ function RouteComponent() {
             </div>
           </div>
 
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-gradient-to-br from-[#4C97F1]/10 to-blue-50/50 border border-[#4C97F1]/20 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="bg-gradient-to-br from-[#4C97F1]/10 to-blue-50/50 border border-[#4C97F1]/20 rounded-2xl p-4 sm:p-6">
+              <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
                 <h2 className="text-xl font-bold text-gray-900">{t("competitions.location")}</h2>
               </div>
@@ -426,7 +426,7 @@ function RouteComponent() {
                     <button
                       onClick={getUserLocation}
                       disabled={isLoadingLocation}
-                      className="flex-1 flex items-center justify-center gap-2 bg-[#4C97F1] hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg py-2 px-3 text-sm font-medium transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 bg-[#4C97F1] hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg py-3 px-3 text-sm font-medium transition-colors min-h-[44px]"
                     >
                       <Navigation className="h-4 w-4" />
                       {isLoadingLocation ? t('competitions.getting_location') : t('competitions.get_directions')}
@@ -434,7 +434,7 @@ function RouteComponent() {
                   ) : (
                     <button
                       onClick={() => setShowDirections(false)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg py-2 px-3 text-sm font-medium transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg py-3 px-3 text-sm font-medium transition-colors min-h-[44px]"
                     >
                       <RotateCcw className="h-4 w-4" />
                       {t('competitions.show_location_only')}

@@ -631,51 +631,7 @@ function RouteComponent() {
   };
 
   const handleCompletePayment = async () => {
-    if (!email) {
-      setEmailError("Email address is required");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setEmailError("Please enter a valid email address");
-      return;
-    }
-
-    if (players.length === 0) {
-      toast.error("Please add at least one player to continue");
-      return;
-    }
-
-    setEmailError("");
-
-    try {
-      const result = await createPaymentMutation.mutateAsync({
-        email: email,
-        players: players.map((p) => ({
-          id: p.id,
-          first_name: p.first_name.toUpperCase(),
-          last_name: p.last_name.toUpperCase(),
-          birth_date: p.birth_date.split(" ")[0], // Only send date part (YYYY-MM-DD)
-          licenseType: p.selectedLicenseType || LicenseType.ADULT,
-          eltl_id: p.eltl_id,
-          club_name: p.club?.name || "KLUBITU",
-          sex: p.sex,
-          isikukood: p.isikukood,
-          foreigner: p.foreigner,
-        })),
-        total: calculateTotal(),
-        currency: "EUR",
-      });
-
-      if (result.data?.payment_url) {
-        window.location.href = result.data.payment_url;
-      } else {
-        toast.error(result.error || t("licenses.payment.payment_failed"));
-      }
-    } catch (error) {
-      console.error("Payment initialization error:", error);
-      toast.error(t("licenses.payment.payment_failed"));
-    }
+    toast.message(t("licenses.payment.september_notice"));
   };
 
   return (

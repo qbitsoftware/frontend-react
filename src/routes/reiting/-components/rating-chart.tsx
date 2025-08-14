@@ -1,49 +1,54 @@
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts"
 
 import {
   Card,
   CardContent,
 } from "@/components/ui/card"
-import { Player } from "@/types/players";
-// import {
-//   ChartConfig,
-//   ChartContainer,
-//   ChartTooltip,
-//   ChartTooltipContent,
-// } from "@/components/ui/chart"
-
-// import { mockRatingChartData } from "@/lib/mock_data/rating_mocks"
-
-// const chartConfig = {
-//   ratingPoints: {
-//     label: "Rating Points",
-//     color: "hsl(var(--chart-1))",
-//   },
-//   weightPoints: {
-//     label: "Weight Points",
-//     color: "hsl(var(--chart-2))",
-//   },
-// } satisfies ChartConfig
+import { RatingEvent, User } from "@/types/users";
 
 interface Props {
-  stats: Player[]
+  user: User
+  stats: RatingEvent[]
 }
 
-export function PlayerRankingChangeGraph({ stats }: Props) {
-  const chartData = stats.map((player, index) => ({
-    id: index,
-    month: player.created_at ? new Date(player.created_at).toLocaleString('default', { month: 'long' }) : `Tournament ${index + 1}`,
-    ratingPoints: player.extra_data?.rate_points * Math.floor(Math.random() * 5) + 1 || 0,
-    // ratingPoints: player.rank || 0,
-    weightPoints: player.extra_data?.rate_order * Math.floor(Math.random() * 5) + 1 || 0,
-  }));
+export function PlayerRankingChangeGraph({ stats, user }: Props) {
+  const chartData = stats.map((event, index) => {
+    const date = new Date(event.timestamp);
+    return {
+      id: index,
+      month: `${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`,
+      fullDate: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      ratingPoints: user.rate_points + event.rate_points,
+      weightPoints: user.rate_weigth + event.rate_weight,
+      placementPoints: user.rate_pl_points + event.rate_pl_points,
+      rateOrder: user.rate_order + event.rate_order,
+    };
+  });
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-700 mb-2">{`${label}`}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} style={{ color: entry.color }} className="text-sm">
+              {`${entry.dataKey === 'ratingPoints' ? 'RP' :
+                entry.dataKey === 'weightPoints' ? 'WP' :
+                  entry.dataKey === 'placementPoints' ? 'PP' : 'RO'}: ${entry.value}`}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <Card className="border-0 shadow-none">
       <CardContent className="p-0 pt-4">
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
+            <LineChart
               data={chartData}
               margin={{
                 top: 10,
@@ -58,8 +63,8 @@ export function PlayerRankingChangeGraph({ stats }: Props) {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
-                tick={{ fill: "#777" }}
+                tick={{ fill: "#777", fontSize: 12 }}
+                interval="preserveStartEnd"
               />
               <YAxis
                 tickLine={false}
@@ -67,25 +72,40 @@ export function PlayerRankingChangeGraph({ stats }: Props) {
                 tick={{ fill: "#777" }}
                 width={30}
               />
-              <Area
+              <Tooltip content={<CustomTooltip />} />
+              <Line
                 dataKey="ratingPoints"
-                type="natural"
-                fill="var(--blue-light)"
-                fillOpacity={0.4}
-                stroke="var(--blue-light)"
-                strokeWidth={2}
-                stackId="a"
+                type="monotone"
+                stroke="#2563eb"
+                strokeWidth={3}
+                dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: "#2563eb", strokeWidth: 2 }}
               />
-              <Area
+              <Line
                 dataKey="weightPoints"
-                type="natural"
-                fill="var(--green-light)"
-                fillOpacity={0.4}
-                stroke="var(--green-light)"
-                strokeWidth={2}
-                stackId="b"
+                type="monotone"
+                stroke="#059669"
+                strokeWidth={3}
+                dot={{ fill: "#059669", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: "#059669", strokeWidth: 2 }}
               />
-            </AreaChart>
+              <Line
+                dataKey="placementPoints"
+                type="monotone"
+                stroke="#dc2626"
+                strokeWidth={3}
+                dot={{ fill: "#dc2626", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: "#dc2626", strokeWidth: 2 }}
+              />
+              <Line
+                dataKey="rateOrder"
+                type="monotone"
+                stroke="#7c3aed"
+                strokeWidth={3}
+                dot={{ fill: "#7c3aed", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: "#7c3aed", strokeWidth: 2 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

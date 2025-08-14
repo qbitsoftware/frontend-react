@@ -64,7 +64,6 @@ export const UseGetTournamentTable = (tournament_id: number, tournament_table_id
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}`, {
                 withCredentials: true
             })
-            console.log("Tournament Table Detail Data:", data);
             return data;
         },
         staleTime: 5 * 60 * 1000,

@@ -83,7 +83,7 @@ export const EliminationBrackets = ({
             
             <Button
               variant="outline"
-              className="flex-shrink-0 order-1 sm:order-2 self-end sm:self-auto"
+              className="hidden sm:flex flex-shrink-0 order-1 sm:order-2 self-end sm:self-auto"
               onClick={handlePrint}
             >
               <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -101,7 +101,7 @@ export const EliminationBrackets = ({
         className="bg-[#F8F9FA] relative h-[85vh] flex flex-col overflow-auto"
         id="bracket-container"
       >
-        <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-2 sm:px-4 lg:px-10 min-w-max">
+        <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 min-w-max">
           {data.eliminations.map((eliminations, eliminationIndex) => {
             return eliminations.elimination.map((table, tableIndex) => {
               const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;

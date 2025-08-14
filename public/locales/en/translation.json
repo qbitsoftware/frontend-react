@@ -343,6 +343,7 @@
       "processing": "Processing payment...",
       "complete_payment": "Complete Payment",
       "payment_failed": "Payment failed. Please try again.",
+      "september_notice": "License purchasing functionality will be available starting from September.",
       "status": {
         "success": "License purchased successfully!",
         "pending": "Payment is being processed...",
@@ -1699,7 +1700,7 @@
         "verification_unavailable": "ID verification service unavailable"
       },
       "toast": {
-        "error": "Error",
+        "error": "Error - {{error}}",
         "success": "Success",
         "failed_to_load_players": "Failed to load club players",
         "failed_to_load_my_clubs": "Failed to load your clubs",

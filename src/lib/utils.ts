@@ -340,10 +340,10 @@ export function formatName(fullName: string) {
 
 export function capitalize(word: string) {
   if (!word) return word;
-  
+
   // we are capitalizing also for cases where it has '-' or '.' in the name, for '-' names or '.' for doubles
   return word
-    .split(/([-.])/) 
+    .split(/([-.])/)
     .map((part) => {
       if (part === '-' || part === '.') {
         return part;
@@ -540,3 +540,44 @@ export function capitalizeWords(text: string): string {
     .map(word => capitalize(word))
     .join(' ');
 }
+
+export const extractBirthDateFromIsikukood = (isikukood: string) => {
+  if (!isikukood || isikukood.length < 7) return null;
+
+  const firstDigit = parseInt(isikukood[0]);
+  const year = isikukood.substring(1, 3);
+  const month = isikukood.substring(3, 5);
+  const day = isikukood.substring(5, 7);
+
+  let century;
+  const sex = firstDigit % 2 !== 0 ? "M" : "N";
+
+  if (firstDigit >= 1 && firstDigit <= 2) {
+    century = 1800;
+  } else if (firstDigit >= 3 && firstDigit <= 4) {
+    century = 1900;
+  } else if (firstDigit >= 5 && firstDigit <= 6) {
+    century = 2000;
+  } else if (firstDigit >= 7 && firstDigit <= 8) {
+    century = 2100;
+  } else {
+    return null;
+  }
+
+  const fullYear = century + parseInt(year);
+
+  const monthNum = parseInt(month);
+  const dayNum = parseInt(day);
+
+  if (monthNum < 1 || monthNum > 12 || dayNum < 1 || dayNum > 31) {
+    return null;
+  }
+
+  return {
+    year: fullYear,
+    month: monthNum,
+    day: dayNum,
+    dateString: `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`,
+    sex: sex,
+  };
+};

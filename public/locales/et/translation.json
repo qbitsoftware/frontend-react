@@ -375,6 +375,7 @@
       "processing": "Makse töötlemine...",
       "complete_payment": "Lõpeta makse",
       "payment_failed": "Makse ebaõnnestus. Palun proovige uuesti.",
+      "september_notice": "Litsentsi ostmise funktsioon on saadaval alates septembrist.",
       "status": {
         "success": "Litsents edukalt ostetud!",
         "pending": "Makse on töötlemisel...",
@@ -945,7 +946,7 @@
       "sidebar": {
         "dashboard": "Töölaud",
         "tournaments": "Võistlused",
-        "blogs": "Blogi",
+        "blogs": "Blogi & Uudised",
         "clubs": "Klubid",
         "feedback": "Tagasiside"
       },
@@ -1717,7 +1718,7 @@
         "club_created_error": "Klubi loomine ebaõnnestus. Palun proovige uuesti",
         "club_updated_error": "Klubi uuendamine ebaõnnestus. Palun proovige uuesti",
         "club_deleted_error": "Klubi kustutamine ebaõnnestus. Palun proovige uuesti",
-        "error": "Viga",
+        "error": "Viga - {{error}}",
         "success": "Edukas",
         "failed_to_load_players": "Klubi mängijate laadimine ebaõnnestus",
         "failed_to_load_my_clubs": "Sinu klubide laadimine ebaõnnestus",

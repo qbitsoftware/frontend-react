@@ -61,6 +61,11 @@ const SeedingHeader = ({
 
   const checkPowerOf2Warning = (): boolean => {
     let participantCount = participants?.length || 0;
+    const isStage = participants?.some(participant => participant.rr_order !== "")
+    if (isStage) {
+      return false
+    }
+
     if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
       const pairs = participants?.filter((participant) => participant.players.length == 2) || [];
       participantCount = pairs.length;

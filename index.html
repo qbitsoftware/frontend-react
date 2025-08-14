@@ -7,6 +7,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eesti Lauatenniseliit</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @media (max-width: 1023px) {
+      /* Hide chatbot widget and all potential selectors */
+      [data-chatbot-id],
+      [data-agent-id],
+      .chatbot-widget,
+      .chatbot-button,
+      #chatbot-widget,
+      #chatbot-button,
+      /* Common chatbot widget class patterns */
+      [class*="chatbot"],
+      [class*="widget"],
+      [id*="chatbot"],
+      [id*="widget"],
+      /* Target iframe or div containing the chatbot */
+      iframe[src*="agents.do-ai.run"],
+      iframe[src*="chatbot"],
+      div[style*="position: fixed"][style*="bottom"],
+      div[style*="position: fixed"][style*="right"],
+      /* Generic floating elements in bottom right */
+      div[style*="z-index"][style*="bottom"][style*="right"] {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    }
+  </style>
 </head>
 
 <body>

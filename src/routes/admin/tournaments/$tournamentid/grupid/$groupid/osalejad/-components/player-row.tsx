@@ -226,26 +226,11 @@ export default function PlayerRow({ participant, index, player, updateField, tou
             <TableCell className="text-center py-0.5 px-2">
                 <Input className="w-[35px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="PP" value={participant.players[index].extra_data.rate_points || 0} onChange={(e) => updateField(`players.${index}.extra_data.rate_points`, Number(e.target.value))} />
             </TableCell>
-
             <TableCell className="text-center py-2 px-3">
                 <Input className="w-[120px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField(`players.${index}.birthdate`, e.target.value)} value={formatDateStringYearMonthDay(participant.players[index].birthdate) || ''} />
             </TableCell>
             <TableCell className="text-center py-2 px-3">
-                <Checkbox
-                    checked={participant.players[index].extra_data.foreign_player === true}
-                    disabled={!editing}
-                    onCheckedChange={(checked) => {
-                        updateField(`players.${index}.extra_data.foreign_player`, checked === true)
-                    }
-                    }
-                    className=""
-                />
-            </TableCell>
-            <TableCell className="text-center py-2 px-3">
                 <Input className="w-[160px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Club name" onChange={(e) => updateField(`players.${index}.extra_data.club`, e.target.value)} value={participant.players[index].extra_data.club || ''} />
-            </TableCell>
-            <TableCell className="text-center py-2 px-3">
-                <Input className="w-[50px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Riik" onChange={(e) => updateField(`players.${index}.nationality`, e.target.value)} value={participant.players[index].nationality || ''} />
             </TableCell>
             <TableCell className="text-center py-2 px-3">
                 <Select value={participant.players[index].sex} disabled={!editing} onValueChange={(value) => updateField(`players.${index}.sex`, value)}>
@@ -261,6 +246,22 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                     </SelectContent>
                 </Select>
             </TableCell>
+            <TableCell className="text-center py-2 px-3">
+                <Checkbox
+                    checked={participant.players[index].extra_data.foreign_player === true}
+                    disabled={!editing}
+                    onCheckedChange={(checked) => {
+                        updateField(`players.${index}.extra_data.foreign_player`, checked === true)
+                    }
+                    }
+                    className=""
+                />
+            </TableCell>
+
+            <TableCell className="text-center py-2 px-3">
+                <Input className="w-[50px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Riik" onChange={(e) => updateField(`players.${index}.nationality`, e.target.value)} value={participant.players[index].nationality || ''} />
+            </TableCell>
+
             <TableCell className="text-center py-2 px-3">
                 <EditImgModal id={participant.players[index].id} playerName={`${participant.players[index].first_name} ${participant.players[index].last_name}`} img={participant.players[index].extra_data.image_url} type="player" />
             </TableCell>

@@ -3,5 +3,6 @@ export enum UserRoles {
     ROLE_ORG_ADMIN = 'org_admin',
     ROLE_SOLO_ADMIN = 'solo_admin',
     ROLE_MEDIA_ADMIN = 'media_admin',
+    ROLE_CLUB_ADMIN = 'club_admin',
     ROLE_USER = 'user',
 }

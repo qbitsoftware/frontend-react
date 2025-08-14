@@ -8,7 +8,7 @@ export const Route = createFileRoute('/admin/dashboard')({
 
 function RouteComponent() {
     return (
-        <RoleProtected requiredRole={UserRoles.ROLE_ROOT_ADMIN} allowedRoles={[UserRoles.ROLE_ORG_ADMIN, UserRoles.ROLE_SOLO_ADMIN]} redirectTo='/admin/blog'>
+        <RoleProtected requiredRole={UserRoles.ROLE_ROOT_ADMIN} allowedRoles={[UserRoles.ROLE_ORG_ADMIN, UserRoles.ROLE_SOLO_ADMIN, UserRoles.ROLE_CLUB_ADMIN]} redirectTo='/admin/blog'>
             <Outlet />
         </RoleProtected>
     )

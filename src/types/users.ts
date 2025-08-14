@@ -1,11 +1,26 @@
 import { MatchWrapper } from "./matches";
-import { Player } from "./players";
 import { LicenseType } from "./license";
 
 export interface Profile {
   user: User;
   matches: MatchWrapper[];
-  rating_change: Player[];
+  rating_events: RatingEvent[];
+}
+
+export interface RatingEvent {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  user_id: number;
+  timestamp: string;
+  rate_order: number;
+  rate_pl_points: number;
+  rate_points: number;
+  rate_weight: number;
+  is_delta: boolean;
+  algo_version: string;
+  tournament_id: number;
 }
 
 export type User = {
@@ -40,8 +55,8 @@ export type User = {
   role: number;
   license: string | null;
   expiration_date: string | null;
-  isikukood?: string; 
-  selectedLicenseType?: LicenseType; 
+  isikukood?: string;
+  selectedLicenseType?: LicenseType;
 };
 
 export type UserLogin = {

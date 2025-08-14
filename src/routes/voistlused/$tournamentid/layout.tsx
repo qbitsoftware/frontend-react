@@ -70,7 +70,7 @@ function RouteComponent() {
       <TournamentProvider tournamentData={tournamentData.data}>
         <div className="max-w-[95%] mx-auto min-h-screen flex flex-col">
           <Navbar tournament_tables={tournament_tables?.data || []} />
-          <div className=" px-2 md:px-0 py-4 md:py-10">
+          <div className=" px-0 py-4 md:py-10">
             <Outlet />
           </div>
         </div>

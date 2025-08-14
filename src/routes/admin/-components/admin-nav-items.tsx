@@ -14,7 +14,7 @@ export const getAdminNavigationItems = (t: any, userRole?: string) => {
       label: t("admin.layout.sidebar.dashboard"),
       icon: <LayoutDashboard className="h-5 w-5" />,
       to: "/admin/dashboard",
-      requiredRole: [UserRoles.ROLE_ROOT_ADMIN, UserRoles.ROLE_ORG_ADMIN, UserRoles.ROLE_SOLO_ADMIN],
+      requiredRole: [UserRoles.ROLE_ROOT_ADMIN, UserRoles.ROLE_ORG_ADMIN, UserRoles.ROLE_SOLO_ADMIN, UserRoles.ROLE_CLUB_ADMIN],
     },
     {
       id: "tournaments",
@@ -28,14 +28,14 @@ export const getAdminNavigationItems = (t: any, userRole?: string) => {
       label: t("admin.layout.sidebar.blogs"),
       icon: <FileText className="h-5 w-5" />,
       to: "/admin/blog",
-      requiredRole: [UserRoles.ROLE_ROOT_ADMIN, UserRoles.ROLE_MEDIA_ADMIN],
+      requiredRole: [UserRoles.ROLE_ROOT_ADMIN, UserRoles.ROLE_MEDIA_ADMIN, UserRoles.ROLE_CLUB_ADMIN],
     },
     {
       id: "clubs",
       label: t("admin.layout.sidebar.clubs"),
       icon: <PersonStanding className="h-5 w-5" />,
       to: "/admin/clubs",
-      requiredRole: [UserRoles.ROLE_ROOT_ADMIN],
+      requiredRole: [UserRoles.ROLE_ROOT_ADMIN, UserRoles.ROLE_CLUB_ADMIN],
     },
     {
       id: "feedback",

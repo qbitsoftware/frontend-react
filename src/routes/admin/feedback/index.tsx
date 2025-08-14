@@ -52,7 +52,6 @@ export function FeedbackFormComponent() {
     try {
       const result = await sendUserFeedback(feedbackData)
       if (result.success) {
-        console.log('Feedback submitted successfully')
         setIsSubmitted(true)
         form.reset()
 

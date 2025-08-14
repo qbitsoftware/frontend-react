@@ -12,13 +12,14 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
-import { NewPlayer, NewPlayerFromName } from '@/types/players'
+import { NewPlayer, NewPlayerFromName, Player } from '@/types/players'
 import { Button } from '@/components/ui/button'
 import { PlusCircle } from 'lucide-react'
 import ParticipantDND from './participant-dnd'
 import ParticipantHeader from './table-header'
 import { GroupType, TTState } from '@/types/matches'
 import { selectedTeams } from './new-double'
+import { NewPlayerDialog } from './new-player-dialog'
 
 interface SoloParticipantsProps {
     participants: Participant[]
@@ -44,6 +45,9 @@ export default function SoloParticipants({ participants, group_participant, tour
 
     const [searchTerm, setSearchTerm] = useState("")
     const [popoverOpen, setPopoverOpen] = useState(false);
+    const [newPlayerDialogOpen, setNewPlayerDialogOpen] = useState(false);
+    const [currentParticipant, setCurrentParticipant] = useState<ParticipantFormValues | null>(null);
+    const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
     const { data: playerSuggestions } =
@@ -244,14 +248,9 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                                 class: "",
                                                                 group_id: group_participant?.id,
                                                             }
-                                                            setSearchTerm('')
-                                                            try {
-                                                                await addOrUpdateParticipant(new_participant)
-                                                                toast.message(t("toasts.participants.created"))
-                                                            } catch (error) {
-                                                                void error
-                                                                toast.error(t("toasts.participants.created_error"))
-                                                            }
+                                                            setCurrentParticipant(new_participant)
+                                                            setCurrentPlayer(newPlayer)
+                                                            setNewPlayerDialogOpen(true)
                                                         }
                                                     }
                                                     }
@@ -271,6 +270,35 @@ export default function SoloParticipants({ participants, group_participant, tour
                     </SortableContext>
                 </DndContext>
             </div>
+            {currentParticipant && currentPlayer &&
+                <NewPlayerDialog
+                    isOpen={newPlayerDialogOpen}
+                    onOpenChange={setNewPlayerDialogOpen}
+                    player={currentPlayer}
+                    onPlayerUpdate={async (updatedPlayer) => {
+                        setCurrentPlayer(updatedPlayer);
+                        const updatedParticipant = {
+                            ...currentParticipant,
+                            name: `${capitalizeWords(updatedPlayer.first_name)} ${capitalizeWords(updatedPlayer.last_name)}`,
+                            players: [updatedPlayer]
+                        };
+
+                        setCurrentParticipant(updatedParticipant);
+
+                        //cleanup
+                        setCurrentParticipant(null)
+                        setCurrentPlayer(null)
+                        setSearchTerm('')
+                        try {
+                            await addOrUpdateParticipant(updatedParticipant)
+                            toast.message(t("toasts.participants.created"))
+                        } catch (error) {
+                            void error
+                            toast.error(t("toasts.participants.created_error"))
+                        }
+                    }}
+                />
+            }
         </div >
 
     )
