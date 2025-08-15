@@ -1718,8 +1718,9 @@
         "failed_to_load_my_clubs": "Failed to load your clubs",
         "id_verification_success": "ID verification successful",
         "player_added": "Player added to club successfully",
-        "player_added_to_club": "{{playerName}} added to club successfully",
-        "player_removed_from_club": "{{playerName}} removed from club successfully",
+        "player_added_to_club": "{{playerName}} added to {{clubName}} successfully",
+        "player_removed_from_club": "{{playerName}} removed from {{clubName}} successfully",
+        "new_player_created_and_added": "{{playerName}} created and added to {{clubName}} successfully",
         "failed_to_add_player": "Failed to add player to club",
         "failed_to_remove_player": "Failed to remove player from club",
         "missing_required_fields": "Please fill in all required fields: {{fields}}"

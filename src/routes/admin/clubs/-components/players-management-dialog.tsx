@@ -30,7 +30,7 @@ import { axiosInstance } from "@/queries/axiosconf";
 import { UseGetUsersDebounce } from "@/queries/users";
 import { capitalizeWords, extractBirthDateFromIsikukood, useDebounce } from "@/lib/utils";
 import { toast } from 'sonner';
-import { handleApiError, handleApiSuccess } from "@/lib/api-error-handler";
+import { handleApiError } from "@/lib/api-error-handler";
 
 interface PlayersManagementDialogProps {
   isOpen: boolean;
@@ -72,7 +72,6 @@ export function PlayersManagementDialog({
   const [isRemovePlayerDialogOpen, setIsRemovePlayerDialogOpen] = useState(false);
   const [playerToRemove, setPlayerToRemove] = useState<User | null>(null);
 
-  // Add player confirmation state
   const [isAddPlayerDialogOpen, setIsAddPlayerDialogOpen] = useState(false);
   const [playerToAdd, setPlayerToAdd] = useState<User | null>(null);
   const [isAddNewPlayerDialogOpen, setIsAddNewPlayerDialogOpen] = useState(false);
@@ -186,7 +185,7 @@ export function PlayersManagementDialog({
       setIsAddingPlayer(true);
       setIsVerifyingId(false);
 
-      const response = await axiosInstance.post('/api/v1/clubs/players', {
+      await axiosInstance.post('/api/v1/clubs/players', {
         player_id: null, 
         club_id: selectedClub?.id,
         first_name: newPlayer.first_name,
@@ -199,8 +198,13 @@ export function PlayersManagementDialog({
         withCredentials: true
       });
 
-      const successResult = handleApiSuccess(response.data, t);
-      toast.message(successResult.message);
+      // Use specific success message for new player creation
+      const playerName = `${capitalizeWords(newPlayer.first_name)} ${capitalizeWords(newPlayer.last_name)}`;
+      const clubName = selectedClub.name;
+      toast.message(t("admin.clubs.toast.new_player_created_and_added", { 
+        playerName, 
+        clubName 
+      }));
 
       setNewPlayer({
         first_name: "",
@@ -252,15 +256,19 @@ export function PlayersManagementDialog({
   const handlePlayerSelect = async (user: User) => {
     setIsAddingPlayer(true);
     try {
-      const response = await axiosInstance.post('/api/v1/clubs/players', {
+      await axiosInstance.post('/api/v1/clubs/players', {
         player_id: user.id,
         club_id: selectedClub?.id,
       }, {
         withCredentials: true
       });
 
-      const successResult = handleApiSuccess(response.data, t);
-      toast.message(successResult.message);
+      const playerName = `${capitalizeWords(user.first_name)} ${capitalizeWords(user.last_name)}`;
+      const clubName = selectedClub?.name;
+      toast.message(t("admin.clubs.toast.player_added_to_club", { 
+        playerName, 
+        clubName 
+      }));
 
       setSearchTerm("");
       setPopoverOpen(false);
@@ -290,7 +298,7 @@ export function PlayersManagementDialog({
     if (!selectedClub || !playerToRemove) return;
 
     try {
-      const response = await axiosInstance.delete('/api/v1/clubs/players', {
+      await axiosInstance.delete('/api/v1/clubs/players', {
         data: {
           player_id: playerToRemove.id,
           club_id: selectedClub.id,
@@ -298,8 +306,12 @@ export function PlayersManagementDialog({
         withCredentials: true,
       });
 
-      const successResult = handleApiSuccess(response.data, t);
-      toast.success(successResult.message);
+      const playerName = `${capitalizeWords(playerToRemove.first_name)} ${capitalizeWords(playerToRemove.last_name)}`;
+      const clubName = selectedClub.name;
+      toast.success(t("admin.clubs.toast.player_removed_from_club", { 
+        playerName, 
+        clubName 
+      }));
       fetchClubPlayers(selectedClub.name);
       onPlayersUpdate();
     } catch (error: unknown) {

@@ -1736,8 +1736,9 @@
         "failed_to_load_my_clubs": "Sinu klubide laadimine ebaõnnestus",
         "id_verification_success": "ID kontrollimine õnnestus",
         "player_added": "Mängija lisamine klubi edukas",
-        "player_added_to_club": "{{playerName}} lisamine klubi edukas",
-        "player_removed_from_club": "{{playerName}} eemaldamine klubist edukas",
+        "player_added_to_club": "{{playerName}} lisatud edukalt klubisse {{clubName}}",
+        "player_removed_from_club": "{{playerName}} eemaldatud edukalt klubist {{clubName}}",
+        "new_player_created_and_added": "{{playerName}} loodud ja lisatud edukalt klubisse {{clubName}}",
         "failed_to_add_player": "Mängija lisamine klubi ebaõnnestus",
         "failed_to_remove_player": "Mängija eemaldamine klubist ebaõnnestus",
         "missing_required_fields": "Palun täida kõik nõutavad väljad: {{fields}}"
