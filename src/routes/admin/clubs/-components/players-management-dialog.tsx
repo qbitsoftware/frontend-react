@@ -408,7 +408,7 @@ export function PlayersManagementDialog({
                           </PopoverTrigger>
                           {playerSuggestions && playerSuggestions.data && (
                             <PopoverContent
-                              className="p-0 w-[300px] max-h-[400px] overflow-y-auto"
+                              className="p-0 w-[300px] max-h-[400px]"
                               align="start"
                               sideOffset={5}
                               onInteractOutside={(e) => {
@@ -422,13 +422,19 @@ export function PlayersManagementDialog({
                                 e.preventDefault();
                               }}
                             >
-                              {playerSuggestions.data.length > 0 ? (
-                                playerSuggestions.data.map((user, i) => (
-                                  <div
-                                    key={i}
-                                    className={`px-4 py-3 cursor-pointer hover:bg-[#4C97F1]/10 hover:text-[#4C97F1] transition-colors rounded-lg mx-1 my-1 ${isAddingPlayer ? 'opacity-50 pointer-events-none' : ''}`}
-                                    onClick={() => !isAddingPlayer && handlePlayerSelectClick(user)}
-                                  >
+                              <div 
+                                className="p-1 space-y-1 overflow-y-auto max-h-[400px]"
+                                onWheel={(e) => {
+                                  e.stopPropagation();
+                                }}
+                              >
+                                {playerSuggestions.data.length > 0 ? (
+                                  playerSuggestions.data.map((user, i) => (
+                                    <div
+                                      key={i}
+                                      className={`px-3 py-2 cursor-pointer hover:bg-[#4C97F1]/10 hover:text-[#4C97F1] transition-colors rounded-md ${isAddingPlayer ? 'opacity-50 pointer-events-none' : ''}`}
+                                      onClick={() => !isAddingPlayer && handlePlayerSelectClick(user)}
+                                    >
                                     <div className="font-medium flex items-center gap-2">
                                       <span>
                                         {capitalizeWords(user.first_name)}{" "}
@@ -442,13 +448,14 @@ export function PlayersManagementDialog({
                                       <div className="text-xs text-gray-500">ELTL ID: {user.eltl_id}</div>
                                     )}
                                   </div>
-                                ))
-                              ) : (
-                                <div className="px-4 py-6 text-sm text-gray-500 text-center">
-                                  <UserIcon className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                                  {t("admin.clubs.players_modal.search.no_results")}
-                                </div>
-                              )}
+                                  ))
+                                ) : (
+                                  <div className="px-4 py-6 text-sm text-gray-500 text-center">
+                                    <UserIcon className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                                    {t("admin.clubs.players_modal.search.no_results")}
+                                  </div>
+                                )}
+                              </div>
                             </PopoverContent>
                           )}
                         </Popover>
