@@ -1691,6 +1691,18 @@
           "note": "This action will remove the player from the club but will not delete their account.",
           "cancel": "Cancel",
           "confirm": "Remove Player"
+        },
+        "add_confirmation": {
+          "title": "Add Player to Club",
+          "description": "Are you sure you want to add {{playerName}} to {{clubName}}?",
+          "cancel": "Cancel",
+          "confirm": "Add Player"
+        },
+        "add_new_confirmation": {
+          "title": "Create and Add Player",
+          "description": "Are you sure you want to create and add {{playerName}} to {{clubName}}?",
+          "cancel": "Cancel",
+          "confirm": "Create Player"
         }
       },
       "validation": {
@@ -1711,6 +1723,19 @@
         "failed_to_add_player": "Failed to add player to club",
         "failed_to_remove_player": "Failed to remove player from club",
         "missing_required_fields": "Please fill in all required fields: {{fields}}"
+      },
+      "api_errors": {
+        "player_not_found": "Player with ID {{player_id}} not found",
+        "club_not_found": "Club with ID {{club_id}} not found",
+        "player_already_in_club": "{{player_name}} is already a member of {{current_club_name}}",
+        "player_not_in_club": "{{player_name}} is not a member of {{club_name}}",
+        "validation_failed": "{{field}} is invalid: {{issue}}",
+        "required_field_missing": "{{field}} is required",
+        "invalid_format": "{{field}} has invalid format",
+        "unauthorized": "Authentication required",
+        "forbidden": "You don't have permission to perform this action",
+        "player_added_successfully": "Successfully added {{player_name}} to {{club_name}}",
+        "player_removed_successfully": "Successfully removed {{player_name}} from {{club_name}}"
       }
     },
     "media": {
