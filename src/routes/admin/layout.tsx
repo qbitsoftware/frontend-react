@@ -13,8 +13,6 @@ import ErrorPage from "@/components/error";
 import { UseGetCurrentUser } from "@/queries/users";
 import { ErrorResponse } from "@/types/errors";
 import { useUser } from "@/providers/userProvider";
-import { OnboardingProvider } from "@/providers/tutorialProvider";
-import { GlobalOnboarding } from "@/components/global-onboarding";
 import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
 
 // Helper function to get cookie value
@@ -70,18 +68,18 @@ function RouteComponent() {
   return (
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
-        <OnboardingProvider>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <AdminSidebar />
-            {/* Main Content */}
-            <div className="w-full overflow-x-auto pb-20 lg:pb-0">
-              <Outlet />
-            </div>
-            <TableStatusSidebar />
-          </SidebarProvider>
-          <AdminBottomNav />
-          <GlobalOnboarding />
-        </OnboardingProvider>
+        {/* <OnboardingProvider> */}
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <AdminSidebar />
+          {/* Main Content */}
+          <div className="w-full overflow-x-auto pb-20 lg:pb-0">
+            <Outlet />
+          </div>
+          <TableStatusSidebar />
+        </SidebarProvider>
+        <AdminBottomNav />
+        {/* <GlobalOnboarding /> */}
+        {/* </OnboardingProvider> */}
       </div>
     </div>
   );

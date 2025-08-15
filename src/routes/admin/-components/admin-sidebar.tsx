@@ -8,7 +8,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { House } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import sidebarLogo from "@/assets/sidebar-logo.png";
@@ -20,6 +20,7 @@ import { useUser } from "@/providers/userProvider";
 const AdminSidebar = () => {
   const { t } = useTranslation();
   const { state } = useSidebar();
+  const location = useLocation();
   const isCollapsed = state === "collapsed";
   const { user } = useUser()
   const menuItems = getAdminNavigationItems(t, user?.role);

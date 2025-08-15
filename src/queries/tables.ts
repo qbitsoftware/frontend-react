@@ -16,7 +16,7 @@ export interface TournamentTableWithStagesResponse {
     error: string | null;
 }
 
-interface TournamentTableWithStages {
+export interface TournamentTableWithStages {
     group: TournamentTable | null;
     stages: TournamentTable[] | null;
 }

@@ -228,7 +228,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
     const today = new Date();
     const day = today.getDay();
 
-    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+    const diff = today.getDate() - day + (day === 0 ? -6 : 2);
 
     const monday = new Date(today.setDate(diff));
     monday.setHours(9, 0, 0, 0);
@@ -412,7 +412,7 @@ export function Reiting({ users }: UserTableProps = { users: [] }) {
                 className="border-[#4C97F1] text-[#4C97F1] hover:bg-[#4C97F1] hover:text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
               >
                 <Info className="h-3 w-3 shrink-0" />
-                <span className="hidden sm:inline">
+                <span className="hidden sm:inline truncate ">
                   {t("rating.calculator.info_button")}
                 </span>
                 <span className="sm:hidden">

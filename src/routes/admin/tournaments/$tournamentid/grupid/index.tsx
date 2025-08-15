@@ -3,7 +3,7 @@ import { TournamentTables } from './-components/tables'
 import { UseGetTournamentTables } from '@/queries/tables'
 import { ErrorResponse } from '@/types/errors'
 import ErrorPage from '@/components/error'
-import { UseGetTournamentAdmin } from '@/queries/tournaments'
+import { useTournament } from '@/routes/voistlused/$tournamentid/-components/tournament-provider'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/',
@@ -22,25 +22,49 @@ export const Route = createFileRoute(
         throw error
       }
     }
-    const tournament = await queryClient.ensureQueryData(
-      UseGetTournamentAdmin(Number(params.tournamentid)),
-    )
-    return { tournament, tournament_tables }
+    return { tournament_tables }
   },
 })
 
 function RouteComponent() {
-  const { tournament_tables, tournament } = Route.useLoaderData()
+  const { tournament_tables } = Route.useLoaderData()
+  const tournament = useTournament()
 
-  if (!tournament || !tournament.data) {
-    return <div></div>
-  }
+  // const calcRatingMutation = UseCalcTournamentRating(tournament.id)
+  // const handleRatingCalculation = () => {
+  //   try {
+  //     calcRatingMutation.mutate()
+  //     toast.success('Ratings calculated successfully!')
+  //   } catch (error) {
+  //     toast.error('Failed to calculate ratings.')
+  //   }
+  // }
 
   return (
     <div className="p-4">
+      {/* <div>
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-green-800 mb-2">
+              Tournament Complete
+            </h3>
+            <p className="text-green-700 text-sm mb-4">
+              All matches have been finished. Click below to finalize the tournament and calculate final ratings for all participants.
+            </p>
+            <Button
+              variant="default"
+              size="lg"
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={handleRatingCalculation}
+            >
+              Finish Tournament & Calculate Ratings
+            </Button>
+          </div>
+        </div>
+      </div> */}
       <TournamentTables
         tables={tournament_tables?.data}
-        tournament={tournament.data}
+        tournament={tournament}
       />
     </div>
   )

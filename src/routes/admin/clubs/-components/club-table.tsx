@@ -20,6 +20,7 @@ interface ClubTableProps {
 }
 
 export function ClubTable({ clubs, variant, onEditClub, onManagePlayers }: ClubTableProps) {
+
   const { t } = useTranslation();
 
   const isMyClubs = variant === "my-clubs";
