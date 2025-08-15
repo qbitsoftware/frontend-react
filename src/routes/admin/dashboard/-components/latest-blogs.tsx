@@ -68,13 +68,18 @@ export default function AdminDashBoardBlogs() {
                 )}
 
                 {!isLoading && !error && blogData?.data && blogData.data.length > 0 && (
-                    <>
+                    <div className="flex flex-col gap-4">
                         {blogData.data.map((blog) => (
                             <Link key={blog.id} href={`/admin/blog/${blog.id}`}>
                                 <div className="p-2 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center">
                                     <div className="">
                                         <h4 className="font-medium text-sm sm:text-base truncate">{blog.title}</h4>
-                                        <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2">{blog.description}</p>
+                                        <p className="text-xs sm:text-sm text-gray-600 mb-2">
+                                            {blog.description.length > 30
+                                                ? `${blog.description.substring(0, 30)}...`
+                                                : blog.description
+                                            }
+                                        </p>
                                         <div className="flex items-center justify-between text-xs text-gray-500">
                                             <span>{formatDateString(blog.created_at)}</span>
                                         </div>
@@ -87,7 +92,7 @@ export default function AdminDashBoardBlogs() {
                                 </div>
                             </Link>
                         ))}
-                    </>
+                    </div>
                 )}
 
                 {!isLoading && !error && (!blogData?.data || blogData.data.length === 0) && (
