@@ -59,11 +59,9 @@ export function FeedbackFormComponent() {
         setTimeout(() => {
           setIsSubmitted(false)
         }, 5000)
-      } else {
-        console.error('Error submitting feedback:', result.error)
       }
     } catch (error) {
-      console.error('Error submitting feedback:', error)
+      void error
     }
   }
 

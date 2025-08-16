@@ -87,7 +87,7 @@ export function PlayersManagementDialog({
       });
       setClubPlayers(data.data || []);
     } catch (error) {
-      console.error("Error fetching club players:", error);
+      void error
       setClubPlayers([]);
     } finally {
       setIsLoadingPlayers(false);
@@ -227,7 +227,6 @@ export function PlayersManagementDialog({
         }
       }, 100);
     } catch (error) {
-      console.error('Failed to add player to club:', error);
       const errorMessage = handleApiError(error, t, t("admin.clubs.toast.failed_to_add_player"));
       toast.error(errorMessage);
     } finally {
@@ -279,7 +278,6 @@ export function PlayersManagementDialog({
         }
       }, 100);
     } catch (error) {
-      console.error('Failed to add player to club:', error);
       const errorMessage = handleApiError(error, t, t("admin.clubs.toast.failed_to_add_player"));
       toast.error(errorMessage);
     } finally {

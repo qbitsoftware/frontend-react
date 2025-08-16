@@ -160,7 +160,6 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
             toast.success(t("admin.tournaments.matches.score_updated_success"))
         } catch (error) {
-            console.error('Failed to update score:', error)
             toast.error(t("admin.tournaments.matches.score_update_error"))
         } finally {
             setLoadingUpdates(prev => {

@@ -215,7 +215,7 @@ export const fetchUserByName = async (name: string): Promise<User | null> => {
     });
     return data.data[0] || null;
   } catch (error) {
-    console.error("Error fetching user by name:", error);
+    void error;
     return null;
   }
 };
@@ -259,7 +259,7 @@ export const sendUserFeedback = async (feedback: FeedbackForm) => {
     await axiosInstance.post("/api/v1/feedback", feedback);
     return { success: true };
   } catch (error) {
-    console.error("Failed to send feedback:", error);
+    void error
     return { success: false, error };
   }
 };

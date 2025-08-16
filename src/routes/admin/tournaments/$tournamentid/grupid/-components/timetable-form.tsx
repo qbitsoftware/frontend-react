@@ -83,7 +83,7 @@ export default function TimetableForm({ tournament_table }: Props) {
             }
             await timetableMutation.mutateAsync(formattedValues)
         } catch (error) {
-            console.error("Error generating timetable:", error)
+            void error
         }
         setIsGenerating(false)
     }

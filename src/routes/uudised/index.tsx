@@ -76,7 +76,7 @@ export const Route = createFileRoute('/uudised/')({
         error: null,
       }
     } catch (error) {
-      console.error('Error loading blogs:', error)
+      void error
       return {
         blogs: [],
         totalPages: 0,

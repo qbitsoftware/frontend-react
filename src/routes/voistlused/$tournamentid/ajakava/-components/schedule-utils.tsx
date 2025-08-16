@@ -108,7 +108,6 @@ export function getFormattedDate(dateString: string): string {
     });
   } catch (error) {
     void error;
-    console.error('Invalid date format:', dateString);
     return 'Invalid date';
   }
 }

@@ -132,7 +132,7 @@ export function formatDateStringYearMonthDay(dateStr: string): string {
 
     return '';
   } catch (error) {
-    console.error("Error formatting date:", error);
+    void error
     return '';
   }
 }
