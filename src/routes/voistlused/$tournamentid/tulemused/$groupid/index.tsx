@@ -13,7 +13,7 @@ import StandingsProtocol from "./-components/standings-protocol";
 import Loader from "@/components/loader";
 import Protocol from "./-components/protocol";
 import { EliminationBrackets } from "@/components/elimination-brackets";
-import { ClassFilters } from "./-components/class-filters";
+import { ResponsiveClassSelector } from "@/components/responsive-class-selector";
 
 export const Route = createFileRoute(
   "/voistlused/$tournamentid/tulemused/$groupid/"
@@ -116,11 +116,12 @@ function RouteComponent() {
   const availableTables = tablesQuery.data.data || [];
 
   return (
-    <div className="min-h-screen px-0 sm:px-4 lg:px-6">
+    <div className="min-h-screen">
       {/* Consolidated Navigation */}
-      <div className="space-y-3 mb-6 px-2 sm:px-0">
+      <div className="space-y-3 mb-6">
         {/* Primary Class Navigation */}
-        <ClassFilters
+        <ResponsiveClassSelector
+          variant="tables"
           availableTables={availableTables}
           activeGroupId={groupId}
           onGroupChange={handleGroupChange}
@@ -163,7 +164,7 @@ function RouteComponent() {
           className="w-full"
           defaultValue={activeTab}
         >
-          <div className="flex flex-col items-start px-2 sm:px-0">
+          <div className="flex flex-col items-start">
             {/* Reduced visual weight of tab navigation */}
             <TabsList className="h-9 space-x-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
               {isMeistrikad && (

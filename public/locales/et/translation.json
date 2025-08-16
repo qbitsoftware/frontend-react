@@ -509,7 +509,7 @@
     "bracket": "Tabelid",
     "play_off": "Kohamängud",
     "participants": {
-      "search": "Otsi",
+      "search": "Otsi nime",
       "title": "Mängijad",
       "no_players_found_search": "Mängijaid ei leitud - ",
       "no_players": "Mängijaid pole",

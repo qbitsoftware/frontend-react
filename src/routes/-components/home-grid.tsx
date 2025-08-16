@@ -19,9 +19,8 @@ const HomePageGrid = () => {
     <div className="w-full min-h-screen mx-auto px-2 sm:px-4 md:px-6 lg:px-4 relative max-w-[95%]">
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-grey-500 backdrop-blur-lg"></div>
-        {/* Mobile: Use old grid.svg */}
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat opacity-30 sm:hidden"></div>
-        <div className="absolute inset-0 bg-[url('/flat-mountains.svg')] bg-repeat opacity-30 hidden sm:block"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat opacity-30 lg:hidden"></div>
+        <div className="absolute inset-0 bg-[url('/flat-mountains.svg')] bg-no-repeat bg-cover opacity-30 hidden lg:block"></div>
       </div>
       <div className="relative z-10">
         {/* Top Section: News and Calendar - Mobile Stacked, Desktop Side by Side */}
