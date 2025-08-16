@@ -4,26 +4,10 @@ import NewsWidget from "./news-widget";
 import CalendarWidget from "./calendar-widget";
 import RatingWidget from "./rating-widget";
 import Adboard from "./adboard";
-import { User } from "@/types/users";
-import { Blog } from "@/types/blogs";
 import { useTranslation } from "react-i18next";
 import VideoBoard from "./videos";
-import { TournamentEvent } from "@/queries/tournaments";
 
-interface DataStatus {
-  tournamentsEmpty: boolean;
-  usersEmpty: boolean;
-  articlesEmpty: boolean;
-}
-
-interface Props {
-  tournaments: TournamentEvent[] | null;
-  users: User[] | null;
-  articles: Blog[] | null;
-  dataStatus: DataStatus;
-}
-
-const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
+const HomePageGrid = () => {
   const { t } = useTranslation();
   const newsRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -49,10 +33,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
               icon="news"
             >
               <div className="py-2 px-2 sm:px-4 flex-grow" ref={newsRef}>
-                <NewsWidget
-                  blogs={articles}
-                  isEmpty={dataStatus.articlesEmpty}
-                />
+                <NewsWidget />
               </div>
             </WidgetWrapper>
           </div>
@@ -64,8 +45,6 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
             >
               <div className="py-2 px-2 sm:px-4 flex-grow" ref={calendarRef}>
                 <CalendarWidget
-                  events={tournaments || []}
-                  isEmpty={false}
                 />
               </div>
             </WidgetWrapper>
@@ -91,7 +70,7 @@ const HomePageGrid = ({ tournaments, users, articles, dataStatus }: Props) => {
               icon="ranking"
             >
               <div className="py-2 px-1 sm:px-2 flex-grow" ref={ratingRef}>
-                <RatingWidget users={users} isEmpty={dataStatus.usersEmpty} />
+                <RatingWidget />
               </div>
             </WidgetWrapper>
           </div>

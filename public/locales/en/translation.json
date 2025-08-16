@@ -157,6 +157,7 @@
     "search_content": "Search posts...",
     "no_image": "No image available",
     "no_news": "No blog posts created",
+    "no_news_description": "Check back later for updates",
     "no_news_subtitle": "There are currently no blog posts created.",
     "read_more": "Read more",
     "categories": {

@@ -5,7 +5,7 @@ import { Blog } from "@/types/blogs";
 export interface BlogsResponse {
     data: Blog[]
     message: string
-    error: string | null   
+    error: string | null
 }
 
 export interface BlogsResponseUser {
@@ -48,6 +48,33 @@ export function UseGetBlogsQuery(page?: number, category?: string, search?: stri
 
 export function UseGetBlogsOption(page?: number, category?: string, search?: string) {
     return queryOptions<BlogsResponseUser>({
+        queryKey: ["blogs", { page, category, search }],
+        queryFn: async () => {
+            const queryParams = new URLSearchParams();
+
+            if (page !== undefined) {
+                queryParams.append("page", page.toString());
+            }
+
+            if (category !== undefined && category !== '') {
+                queryParams.append("category", category);
+            }
+
+            if (search !== undefined && search !== '') {
+                queryParams.append("search", search);
+            }
+
+            const queryString = queryParams.toString();
+            const url = queryString ? `/api/v1/blogs?${queryString}` : "/api/v1/blogs";
+
+            const { data } = await axiosInstance.get(url);
+            return data;
+        }
+    });
+}
+
+export function UseGetBlogsQueryPublic(page?: number, category?: string, search?: string) {
+    return useQuery<BlogsResponseUser>({
         queryKey: ["blogs", { page, category, search }],
         queryFn: async () => {
             const queryParams = new URLSearchParams();
