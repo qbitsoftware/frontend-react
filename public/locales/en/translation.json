@@ -1009,6 +1009,15 @@
       "add_new": "New Tournament",
       "search_placeholder": "Search tournaments...",
       "delete": "Delete a tournament",
+      "no_tournaments": "No tournaments found",
+      "no_tournaments_criteria": "Try adjusting your search criteria",
+      "state": {
+        "created": "Created",
+        "ongoing": "Ongoing",
+        "finished": "Finished"
+      },
+      "day": "Day",
+      "day_plural_ending": "s",
       "setup": {
         "step1": {
           "title": "1. Add Participants",
@@ -1511,7 +1520,7 @@
         "status": "Status",
         "dates": "Dates",
         "location": "Location",
-        "duratiion": "Duration",
+        "duration": "Duration",
         "tables": "Total tables"
       },
       "matches": {
@@ -1586,12 +1595,31 @@
       "delete": "Delete post",
       "text": "Start writing a blog",
       "search": "Search for blogs...",
+      "choose_category": "Choose a category",
+      "save_draft": "Save Draft",
+      "save_public": "Publish",
       "status_published": "Published",
       "status_draft": "Draft",
       "edit": "Edit",
       "delete_title": "Are you sure?",
       "delete_description": "This action cannot be undone. This will permanently delete the data.",
       "delete_cancel": "Cancel",
+      "no_date": "No date",
+      "search_no_results": "No blogs match your search",
+      "no_results": "No blogs found",
+      "search_criteria": "Try adjusting your search criteria",
+      "toasts": {
+        "deleted": "Blog post deleted successfully",
+        "deleted_failed": "Failed to delete blog post",
+        "empty_content": "You must add content to the blog post",
+        "missing_title": "You must add a heading to the blog post",
+        "saving": "Saving...",
+        "save_success": "Blog post saved successfully",
+        "failed_to_save": "Failed to save blog post",
+        "load_failed": "Couldn't load blog data. Please try again.",
+        "not_found": "Blog not found",
+        "refresh": "Refresh the page to try again"
+      },
       "table": {
         "title": "Title",
         "date": "Date",

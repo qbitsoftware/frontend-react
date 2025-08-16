@@ -13,6 +13,7 @@ import { User } from "@/types/users";
 import { YooptaContentValue } from "@yoopta/editor";
 import { type ClassValue, clsx } from "clsx";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -41,12 +42,15 @@ export const formatTournamentType = (type: string) => {
     .join(" ");
 };
 
-export const categories = [
-  { id: "competitions", label: "Competitions" },
-  { id: "news", label: "News" },
-  { id: "good_read", label: "Good Read" },
-  { id: "results", label: "Results" },
-];
+export const createCategories = () => {
+  const { t } = useTranslation()
+  return [
+    { id: "competitions", label: t('navbar.menu.news.competitions') },
+    { id: "news", label: t('navbar.menu.news.name') },
+    { id: "good_read", label: t('navbar.menu.news.good_read') },
+    { id: "results", label: t('navbar.menu.news.results') },
+  ]
+};
 
 export function parsePlaces(s: string): number | null {
   const parts = s.split(" ");
@@ -58,19 +62,6 @@ export function parsePlaces(s: string): number | null {
 
   return Number(startingPlace);
 }
-
-// export function sortBrackets(data: any[]): any[] {
-//   return data.sort((a, b) => {
-//     const placeA = parsePlaces(a.tables[0].name);
-//     const placeB = parsePlaces(b.tables[0].name);
-
-//     if (placeA === null || placeB === null) {
-//       return 0;
-//     }
-
-//     return placeA - placeB;
-//   });
-// }
 
 export const formatDateRange = (startDate: Date, endDate: Date) => {
   const options: Intl.DateTimeFormatOptions = {

@@ -2,15 +2,14 @@ import type React from "react"
 import { useState, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "@tanstack/react-router"
-import { MapPin, Calendar, Search, PlusCircle } from "lucide-react"
+import { Calendar, Search } from "lucide-react"
 import { formatDateString } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tournament } from "@/types/tournaments"
-import { Link } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
+import AdminHeader from "../../-components/admin-header"
+import { TournamentState } from "@/types/matches"
 
 interface TournamentTableProps {
   tournaments: Tournament[]
@@ -46,53 +45,28 @@ export const TournamentTable: React.FC<TournamentTableProps> = ({ tournaments })
 
   const getStatusVariant = (state: string) => {
     switch (state) {
-      case "started":
-        return { variant: "default" as const, className: "bg-green-100 text-green-800 border-green-200 hover:bg-green-200" }
-      case "not_started":
+      case "ongoing":
         return { variant: "secondary" as const, className: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200" }
       case "created":
         return { variant: "outline" as const, className: "bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200" }
       case "finished":
-        return { variant: "outline" as const, className: "bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200" }
+        return { variant: "outline" as const, className: "bg-green-100 text-green-800 border-green-200 hover:bg-green-200" }
       default:
         return { variant: "destructive" as const, className: "bg-red-100 text-red-800 border-red-200 hover:bg-red-200" }
     }
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
-            {t("admin.tournaments.title")}
-          </h1>
-          <p className="text-sm text-gray-600">
-            {t("admin.tournaments.description")}
-          </p>
-        </div>
-
-        <div className="flex sm:items-center gap-3 flex-col sm:flex-row">
-          <div className="relative min-w-[280px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder={t("admin.tournaments.search_placeholder") || "Search tournaments..."}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white rounded-lg shadow-sm"
-            />
-          </div>
-
-          <div>
-            <Link to="/admin/tournaments/new" className="inline-flex">
-              <Button className="bg-[#4C97F1] hover:bg-[#3B7DD8] text-white shadow-sm border-0 px-4 py-2 font-medium transition-all duration-200 hover:shadow-md whitespace-nowrap">
-                <PlusCircle className="w-4 h-4 mr-2" />
-                {t('admin.tournaments.add_new') || 'Add Tournament'}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+    <div className="">
+      <AdminHeader
+        href={"/admin/tournaments/new"}
+        title={t("admin.tournaments.title")}
+        description={t("admin.tournaments.description")}
+        input_placeholder={t("admin.tournaments.search_placeholder")}
+        add_new={t('admin.tournaments.add_new')}
+        searchTerm={searchQuery}
+        setSearchTerm={setSearchQuery}
+      />
 
       <Card className="border-gray-200 shadow-sm">
         <CardContent className="p-0">
@@ -103,22 +77,19 @@ export const TournamentTable: React.FC<TournamentTableProps> = ({ tournaments })
                   <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700">
                     {t("admin.tournaments.table.name")}
                   </TableHead>
-                  <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700 hidden sm:table-cell">
-                    {t("admin.tournaments.table.category")}
-                  </TableHead>
-                  <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700">
+                  <TableHead className="text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700">
                     {t("admin.tournaments.table.status")}
                   </TableHead>
-                  <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700">
+                  <TableHead className="text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700">
                     {t("admin.tournaments.table.dates")}
                   </TableHead>
-                  <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700 hidden md:table-cell">
+                  <TableHead className="text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700 hidden md:table-cell">
                     {t("admin.tournaments.table.location")}
                   </TableHead>
-                  <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700 hidden lg:table-cell">
+                  <TableHead className="text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700 hidden lg:table-cell">
                     {t("admin.tournaments.table.duration")}
                   </TableHead>
-                  <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700 hidden lg:table-cell">
+                  <TableHead className="text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700 hidden lg:table-cell">
                     {t("admin.tournaments.table.tables")}
                   </TableHead>
                 </TableRow>
@@ -132,8 +103,8 @@ export const TournamentTable: React.FC<TournamentTableProps> = ({ tournaments })
                           <Search className="w-5 h-5 text-gray-400" />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">No tournaments found</p>
-                          <p className="text-sm text-gray-500">Try adjusting your search criteria</p>
+                          <p className="font-medium text-gray-900">{t('admin.tournaments.no_tournaments')}</p>
+                          <p className="text-sm text-gray-500">{t('admin.tournaments.no_tournaments_criteria')}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -150,35 +121,31 @@ export const TournamentTable: React.FC<TournamentTableProps> = ({ tournaments })
                       >
                         <TableCell className="px-3 py-3 font-medium text-gray-900">
                           <div className="flex items-center gap-2">
-                            {/* <div className="w-1.5 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div> */}
                             <span className="truncate max-w-[180px]" title={tournament.name}>
                               {tournament.name}
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell className="px-3 py-3 text-gray-600 hidden sm:table-cell">
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                            {tournament.category}
-                          </span>
-                        </TableCell>
-                        <TableCell className="px-3 py-3">
+                        <TableCell className="px-3 py-3 text-center">
                           <Badge className={`text-xs px-2 py-1 font-medium ${statusConfig.className}`}>
-                            {tournament.state.replace('_', ' ').toUpperCase()}
+                            {tournament.state === TournamentState.CREATED ? t('admin.tournaments.state.created').toUpperCase() :
+                              tournament.state === TournamentState.ONGOING ? t('admin.tournaments.state.ongoing').toUpperCase() :
+                                t('admin.tournaments.state.finished').toUpperCase()}
                           </Badge>
                         </TableCell>
                         <TableCell className="px-3 py-3 text-gray-600 min-w-[140px]">
                           {isSameDay ? (
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center justify-center gap-2 text-sm">
                               <Calendar className="w-3 h-3 text-gray-400" />
                               <span>{formatDateString(tournament.start_date)}</span>
                             </div>
                           ) : (
                             <div className="flex flex-col gap-1">
-                              <div className="flex items-center gap-2 text-sm">
+                              <div className="flex items-center gap-2 text-sm justify-center">
                                 <Calendar className="w-3 h-3 text-gray-400" />
                                 <span>{formatDateString(tournament.start_date)}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <div className="flex items-center gap-2 text-sm text-gray-500 justify-center">
                                 <span className="w-3 h-3"></span>
                                 <span>{formatDateString(tournament.end_date)}</span>
                               </div>
@@ -186,23 +153,21 @@ export const TournamentTable: React.FC<TournamentTableProps> = ({ tournaments })
                           )}
                         </TableCell>
                         <TableCell className="px-3 py-3 text-gray-600 hidden md:table-cell max-w-[150px]">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-3 h-3 text-red-500 flex-shrink-0" />
+                          <div className="flex items-center gap-2 justify-center">
                             <span className="truncate text-sm" title={tournament.location}>
                               {tournament.location}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell className="px-3 py-3 text-gray-600 hidden lg:table-cell">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                          <div className="flex items-center gap-2 justify-center">
                             <span className="text-sm font-medium">
-                              {getDurationDays(tournament.start_date, tournament.end_date)} day{getDurationDays(tournament.start_date, tournament.end_date) !== 1 ? 's' : ''}
+                              {getDurationDays(tournament.start_date, tournament.end_date)} {t('admin.tournaments.day')}{getDurationDays(tournament.start_date, tournament.end_date) !== 1 ? t('admin.tournaments.day_plural_ending') : ''}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell className="px-3 py-3 text-gray-600 hidden lg:table-cell">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 justify-center">
                             <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
                               <span className="text-xs font-bold text-blue-600">{tournament.total_tables}</span>
                             </div>

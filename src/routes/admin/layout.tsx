@@ -76,10 +76,8 @@ function RouteComponent() {
   return (
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
-        {/* <OnboardingProvider> */}
         <SidebarProvider defaultOpen={defaultOpen}>
           <AdminSidebar />
-          {/* Main Content */}
           <div className="w-full overflow-x-auto pb-20 lg:pb-0">
             <Outlet />
           </div>
@@ -88,8 +86,6 @@ function RouteComponent() {
           )}
         </SidebarProvider>
         <AdminBottomNav />
-        {/* <GlobalOnboarding /> */}
-        {/* </OnboardingProvider> */}
       </div>
     </div>
   );

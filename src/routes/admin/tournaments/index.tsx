@@ -25,7 +25,7 @@ function RouteComponent() {
     const { tournaments_data } = Route.useLoaderData()
 
     return (
-        <div className='py-4 px-3 sm:py-6 sm:px-4 md:p-8'>
+        <div className='p-2 py-8 md:p-8'>
             {tournaments_data?.data && (
                 <TournamentTable tournaments={tournaments_data.data} />
             )

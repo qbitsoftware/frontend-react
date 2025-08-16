@@ -1,13 +1,13 @@
 import { useUsersCount } from '@/queries/users';
-import { PersonStanding, Trophy, Clock } from 'lucide-react';
+import { PersonStanding, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { StatsCard } from './statistics-card';
-import { formatDateString } from '@/lib/utils';
 import { UserLogin } from '@/types/users';
 import AdminDashBoardQuickActions from './quick-actions';
 import AdminDashBoardBlogs from './latest-blogs';
 import AdminDashBoardFeedback from './feedback';
 import AdminDashboardLatestTournaments from './latest-tournaments';
+import AdminHeader from '../../-components/admin-header';
 
 interface Props {
     user: UserLogin | null
@@ -28,10 +28,6 @@ export default function AdminDashboard({ user }: Props) {
         }
     };
 
-    const getLastRatingCalculation = () => {
-        return new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
-    };
-
     const quickActions = [
         {
             title: t("admin.dashboard.quick_actions.new_tournament"),
@@ -47,7 +43,7 @@ export default function AdminDashboard({ user }: Props) {
             href: "/admin/blog/new",
             color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
         },
-                {
+        {
             title: t("admin.dashboard.quick_actions.manage_clubs"),
             description: t("admin.dashboard.quick_actions.manage_clubs_desc"),
             iconSrc: "/icons/clubs.png",
@@ -56,31 +52,16 @@ export default function AdminDashboard({ user }: Props) {
         },
     ];
 
-    // const stats = getStats(tournaments);
-    const lastRatingCalculation = getLastRatingCalculation();
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-            <div className="mx-auto space-y-6 p-4 sm:p-6">
-                {/* Header */}
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg p-6 sm:p-8">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                            <h1 className="text-2xl sm:text-2xl font-bold bg-[#4C97F1] bg-clip-text text-transparent">
-                                {getTimeBasedGreeting()}, {user?.username || 'Admin'}!
-                            </h1>
-                            <p className="text-slate-600 mt-2 text-base sm:text-base font-medium">
-                                {t("admin.dashboard.welcome_subtitle")}
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-slate-600 bg-white/60 backdrop-blur-sm p-3 sm:p-4 rounded-xl border border-white/30 shadow-sm">
-                            <Clock className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500" />
-                            <span className="truncate font-medium">
-                                {t("admin.dashboard.last_rating_calculation")}: {formatDateString(lastRatingCalculation.toISOString())}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+            <div className="p-2 py-8 md:p-8 flex flex-col gap-2">
+                <AdminHeader
+                    title={`${getTimeBasedGreeting()}, ${user?.username || 'Admin'}`}
+                    description={t("admin.dashboard.welcome_subtitle")}
+                    add_new={t("admin.dashboard.add_new")}
+                    href={""}
+                    feedback={true}
+                />
 
                 {/* Quick Actions */}
                 <AdminDashBoardQuickActions quickActions={quickActions} />

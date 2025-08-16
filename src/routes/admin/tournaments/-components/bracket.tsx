@@ -47,9 +47,9 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
 
   useEffect(() => {
     if (!bracket.data || !tournament_table) return;
-    
+
     const hasEliminations = !!bracket.data.eliminations && bracket.data.eliminations.length > 0;
-    
+
     const defaultTab = hasEliminations ? "eliminations" : "round_robins";
     setActiveTab(defaultTab);
   }, [bracket.data, tournament_table]);
@@ -67,17 +67,18 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
     tournament_table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
     tournament_table.type === GroupType.DYNAMIC;
 
+
   const handleSelectMatch = (match: MatchWrapper) => {
     if ((match.match.p1_id === "" || match.match.p1_id === "empty") && (match.match.p2_id === "" || match.match.p2_id === "empty")) {
       return
     }
-    
-    if (match.match.p1_id === "empty" || match.match.p2_id === "empty" || 
-        match.match.p1_id === "" || match.match.p2_id === "" ||
-        match.p1?.name?.includes("(Bye)") || match.p2?.name?.includes("(Bye)")) {
+
+    if (match.match.p1_id === "empty" || match.match.p2_id === "empty" ||
+      match.match.p1_id === "" || match.match.p2_id === "" ||
+      match.p1?.name?.includes("(Bye)") || match.p2?.name?.includes("(Bye)")) {
       return
     }
-    
+
     setSelectedMatch(match);
     setIsOpen(true);
   };

@@ -6,7 +6,7 @@ import { PlayerSwitch } from "@/types/brackets";
 
 export function UseGetBracket(tournament_id: number, table_id: number) {
     return queryOptions<BracketReponse>({
-        queryKey: ["bracket", tournament_id],
+        queryKey: ["bracket", tournament_id, table_id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/brackets`, {
                 withCredentials: true
@@ -18,7 +18,7 @@ export function UseGetBracket(tournament_id: number, table_id: number) {
 
 export function UseGetBracketQuery(tournament_id: number, table_id: number) {
     return useQuery<BracketReponse>({
-        queryKey: ["bracket", tournament_id],
+        queryKey: ["bracket", tournament_id, table_id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/brackets`, {
                 withCredentials: true
@@ -67,7 +67,7 @@ export function UsePostPlayerSwitch(tournament_id: number, table_id: number) {
             return data
         },
         onSuccess: (new_data: BracketReponse) => {
-            queryClient.setQueryData(["bracket", tournament_id],
+            queryClient.setQueryData(["bracket", tournament_id, table_id],
                 (oldData: BracketReponse) => {
                     if (!oldData) return { data: [new_data.data], message: new_data.message, error: null };
                     return new_data

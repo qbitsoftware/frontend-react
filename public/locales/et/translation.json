@@ -1018,6 +1018,15 @@
       "search_placeholder": "Otsi võistlust...",
       "add_new": "Uus Võistlus",
       "delete": "Kustuta Võistlus",
+      "day": "Päev",
+      "day_plural_ending": "a",
+      "no_tournaments": "Võistlusi pole",
+      "no_tournaments_criteria": "Proovige kohendada otsingukriteeriume või luua uus võistlus.",
+      "state": {
+        "created": "Loodud",
+        "ongoing": "Käimas",
+        "finished": "Lõppenud"
+      },
       "setup": {
         "step1": {
           "title": "1. Lisa osalejad",
@@ -1601,7 +1610,7 @@
       "add_new": "Uus postitus",
       "delete": "Kustuta",
       "choose_category": "Vali kategooria",
-      "save_draft": "Salvesta mustandina",
+      "save_draft": "Salvesta",
       "save_public": "Avalikusta",
       "back": "Tagasi",
       "text": "Alusta esimese blogipostitusega",
@@ -1612,6 +1621,22 @@
       "delete_title": "Oled kindel?",
       "delete_description": "Peale toimingut on blogi kustutatud ja seda ei saa tagasi võtta.",
       "delete_cancel": "Katkesta",
+      "no_date": "Kuupäev puudub",
+      "search_no_results": "Blogipostitusi ei leitud otsingu järgi",
+      "search_criteria": "Proovige oma otsingukriteeriume kohandada",
+      "no_results": "Blogipostitusi ei leitud",
+      "toasts": {
+        "deleted": "Uudis kustutatud edukalt",
+        "deleted_failed": "Uudise kustutamine nurjus",
+        "empty_content": "Sa pead lisama sisu blogipostitusele",
+        "missing_title": "Sa pead lisama pealkirja blogipostitusele",
+        "saving": "Salvestamine...",
+        "save_success": "Blogipostitus salvestatud edukalt",
+        "failed_to_save": "Blogipostituse salvestamine nurjus",
+        "load_failed": "Blogi andmete laadimine ebaõnnestus. Palun proovi uuesti.",
+        "not_found": "Blogipostitusi ei leitud",
+        "refresh": "Uuenda lehte, et proovida uuesti"
+      },
       "table": {
         "title": "Pealkiri",
         "date": "Kuupäev",

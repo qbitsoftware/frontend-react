@@ -80,7 +80,7 @@ export const EliminationBrackets = ({
                 </div>
               </Tabs>
             </div>
-            
+
             <Button
               variant="outline"
               className="hidden sm:flex flex-shrink-0 order-1 sm:order-2 self-end sm:self-auto"
