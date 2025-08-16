@@ -1,6 +1,13 @@
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TournamentTable } from "@/types/groups";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ClassFiltersProps {
   availableTables: TournamentTable[];
@@ -25,10 +32,31 @@ export const ClassFilters = ({
 
   return (
     <div className="bg-white border border-gray-200 shadow-sm mb-4 sm:mb-6 rounded-lg">
-      {/* Main Table Filters */}
-      <div className="px-2 sm:px-4">
+      <div className="px-4">
         <div className="flex items-center justify-between">
-          <div className="flex overflow-x-auto scrollbar-hide flex-1">
+          {/* Mobile Dropdown (hidden on md and up) */}
+          <div className="flex-1 md:hidden py-3">
+            <Select
+              value={activeGroupId.toString()}
+              onValueChange={(value) => onGroupChange(parseInt(value))}
+            >
+              <SelectTrigger className="w-full h-9 text-sm">
+                <SelectValue>
+                  {activeTable ? activeTable.class : "Select class"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {availableTables.map((table) => (
+                  <SelectItem key={table.id} value={table.id.toString()}>
+                    {table.class}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Desktop Horizontal Scroll (hidden on mobile) */}
+          <div className="hidden md:flex overflow-x-auto scrollbar-hide flex-1">
             <div className="flex space-x-1 sm:space-x-2 py-3">
               {availableTables.map((table) => {
                 const isActive =
@@ -58,7 +86,7 @@ export const ClassFilters = ({
             </div>
           </div>
 
-          {/* Participant Count - Moved to the right side */}
+          {/* Participant Count */}
           <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-md ml-4">
             <User className="h-3 w-3" />
             <span className="font-medium">

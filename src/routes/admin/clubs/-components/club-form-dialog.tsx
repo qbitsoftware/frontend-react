@@ -40,7 +40,7 @@ export function ClubFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-w-[90vw] sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {isEdit ? t("admin.clubs.edit") : t("admin.clubs.add_new")}

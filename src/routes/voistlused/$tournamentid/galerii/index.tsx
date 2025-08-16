@@ -68,7 +68,6 @@ function RouteComponent() {
 
   return (
     <div className="">
-      <h4 className="font-bold text-gray-700 mb-4 md:mb-8 text-center md:text-left">{t('gallery.title')}</h4>
       <div className='pb-8 '>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">

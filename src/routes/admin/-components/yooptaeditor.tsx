@@ -62,7 +62,7 @@ export default function Editor({ value, setValue, readOnly }: Props) {
         height: result.data.height || 600
       };
     } catch (error) {
-      console.error("Error uploading image:", error);
+      void error;
       // Fallback to local URL for testing or when upload fails
       return {
         secure_url: URL.createObjectURL(file),
@@ -86,7 +86,7 @@ export default function Editor({ value, setValue, readOnly }: Props) {
         format: file.type
       };
     } catch (error) {
-      console.error("Error uploading file:", error);
+      void error;
       return {
         url: URL.createObjectURL(file),
         name: file.name,

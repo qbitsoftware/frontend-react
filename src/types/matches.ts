@@ -49,6 +49,12 @@ export enum TTState {
   TT_STATE_FINISHED, // 4 - all the matches have winner id
 }
 
+export enum TournamentState {
+  CREATED = "created",
+  ONGOING = "ongoing",
+  FINISHED = "finished",
+}
+
 export type TableTennisExtraData = {
   table: string;
   score?: Score[];

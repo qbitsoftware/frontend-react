@@ -11,7 +11,7 @@ import { MatchState, MatchWrapper } from "@/types/matches";
 import { TableNumberForm } from "@/routes/admin/tournaments/$tournamentid/-components/table-number-form";
 import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
-import { useState } from "react";
+import { useState} from "react";
 import { createPortal } from "react-dom";
 import MatchHoverTooltip from "./match-hover-tooltip";
 
@@ -39,6 +39,7 @@ const EliminationMatch = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isTransformed, setIsTransformed] = useState(false);
+
 
 
   const handlePlayerHover = (playerId: string | null) => {
@@ -156,7 +157,7 @@ const EliminationMatch = ({
                 }
                 showLabel={true}
               />
-              {matchDate && !isEmptyDate(matchDate) && (
+              {matchDate && match.match.extra_data.table != "" && !isEmptyDate(matchDate) && (
                 <div className="flex items-center gap-1 ml-3 whitespace-nowrap">
                   <Clock className="h-3 w-3" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>

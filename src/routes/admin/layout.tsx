@@ -4,6 +4,7 @@ import {
   redirect,
   useLocation,
   useRouter,
+  useRouterState,
 } from "@tanstack/react-router";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebar from "./-components/admin-sidebar";
@@ -14,6 +15,7 @@ import { UseGetCurrentUser } from "@/queries/users";
 import { ErrorResponse } from "@/types/errors";
 import { useUser } from "@/providers/userProvider";
 import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
+import TableStatusSidebarSkeleton from "./tournaments/$tournamentid/-components/table-status-skeleton";
 
 // Helper function to get cookie value
 function getCookie(name: string) {
@@ -46,7 +48,6 @@ function RouteComponent() {
   const location = useLocation();
   const { user } = useUser();
 
-  // Get the default state from the cookie
   const defaultOpen = getCookie("sidebar:state") !== "false";
 
   if (!user?.role.includes('admin')) {
@@ -61,6 +62,13 @@ function RouteComponent() {
     }
   }, [location.pathname, router]);
 
+  const { status } = useRouterState()
+  const isLoading = status === "pending"
+
+  const isTournamentRoute = location.pathname.includes('/tournaments/') &&
+    location.pathname.split('/tournaments/')[1]?.split('/')[0];
+
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -68,18 +76,16 @@ function RouteComponent() {
   return (
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
-        {/* <OnboardingProvider> */}
         <SidebarProvider defaultOpen={defaultOpen}>
           <AdminSidebar />
-          {/* Main Content */}
           <div className="w-full overflow-x-auto pb-20 lg:pb-0">
             <Outlet />
           </div>
-          <TableStatusSidebar />
+          {isTournamentRoute && (
+            !isLoading ? <TableStatusSidebar /> : <TableStatusSidebarSkeleton />
+          )}
         </SidebarProvider>
         <AdminBottomNav />
-        {/* <GlobalOnboarding /> */}
-        {/* </OnboardingProvider> */}
       </div>
     </div>
   );

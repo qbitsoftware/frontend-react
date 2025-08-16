@@ -6,7 +6,7 @@ import Editor from "@/routes/admin/-components/yooptaeditor";
 import { useState, useMemo, useEffect } from "react";
 import { YooptaContentValue } from "@yoopta/editor";
 import { useTranslation } from "react-i18next";
-import { Calendar, Grid3X3, MapPin, Users, ExternalLink, Navigation, RotateCcw, Building, FileText, FileSpreadsheet, Mail } from 'lucide-react';
+import { MapPin, ExternalLink, Navigation, RotateCcw } from 'lucide-react';
 import { ShareSection } from './-components/share-tournament';
 
 interface YooptaEditorNode {
@@ -15,7 +15,7 @@ interface YooptaEditorNode {
   text?: string;
   children?: YooptaEditorNode[];
   value?: YooptaEditorNode[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const Route = createFileRoute("/voistlused/$tournamentid/")({
@@ -31,9 +31,9 @@ function RouteComponent() {
   const [value, setValue] = useState<YooptaContentValue | undefined>(
     tournament.information ? JSON.parse(tournament.information) : undefined
   );
-  const [coordinates, setCoordinates] = useState<{lat: number, lng: number} | null>(null);
+  const [coordinates, setCoordinates] = useState<{ lat: number, lng: number } | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null);
   const [showDirections, setShowDirections] = useState(false);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ function RouteComponent() {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=ee`
         );
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data && data.length > 0) {
@@ -56,7 +56,6 @@ function RouteComponent() {
           }
         }
       } catch (error) {
-        console.error('Geocoding failed:', error);
       } finally {
         setIsLoadingLocation(false);
       }
@@ -82,7 +81,7 @@ function RouteComponent() {
         setIsLoadingLocation(false);
       },
       (error) => {
-        console.error('Error getting location:', error);
+        void (error)
         alert(t('competitions.location_error'));
         setIsLoadingLocation(false);
       },
@@ -173,11 +172,11 @@ function RouteComponent() {
 
   const getRegistrationInfo = () => {
     const type = tournament.registration_type;
-    
+
     switch (type) {
       case 'google_forms':
         return {
-          icon: FileText,
+          icon: '/icons/google_forms_icon.png',
           color: 'text-purple-600',
           bgColor: 'bg-purple-500 hover:bg-purple-700',
           text: t('competitions.registration_google_forms_description', 'Registration to this tournament is through Google Forms'),
@@ -187,7 +186,7 @@ function RouteComponent() {
         };
       case 'excel':
         return {
-          icon: FileSpreadsheet,
+          icon: '/icons/google_sheets_icon.png',
           color: 'text-green-600',
           bgColor: 'bg-green-500 hover:bg-green-700',
           text: t('competitions.registration_excel_description', 'Registration to this tournament is through Excel'),
@@ -197,7 +196,7 @@ function RouteComponent() {
         };
       case 'email':
         return {
-          icon: Mail,
+          icon: '/icons/email_icon.png',
           color: 'text-blue-600',
           bgColor: 'bg-[#4C97F1] hover:bg-blue-300',
           text: t('competitions.registration_email_description', 'Registration to this tournament is by email'),
@@ -208,7 +207,7 @@ function RouteComponent() {
       case 'onsite':
       default:
         return {
-          icon: Building,
+          icon: '/icons/venue_icon.png',
           color: 'text-gray-600',
           bgColor: 'bg-gray-400',
           text: t('competitions.registration_onsite_description', 'Registration to this tournament is on-site'),
@@ -232,222 +231,242 @@ function RouteComponent() {
   })();
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-8">
-          <div className="lg:col-span-3 space-y-4 sm:space-y-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
+    <div className="min-h-screen py-6 sm:py-8 lg:py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
+        <div className="lg:col-span-2 xl:col-span-3 space-y-6 sm:space-y-8 lg:space-y-10">
+          <div>
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <div
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${status.bgColor} ${status.color}`}
+              >
                 <div
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${status.bgColor} ${status.color}`}
-                >
-                  <div
-                    className={`w-2 h-2 rounded-full ${status.dotColor} ${status.text === t('competitions.status.upcoming') ? 'animate-pulse' : ''}`}
-                  />
-                  {status.text}
-                </div>
-              </div>
-
-              <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4 sm:mb-8">
-                {tournament.name}
-              </h1>
-
-              <div className="space-y-4 text-gray-700">
-                <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="font-medium">
-                      {formatDateString(tournament.start_date)} -{' '}
-                      {formatDateString(tournament.end_date)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="font-medium">{tournament.location}</p>
-                  </div>
-                </div>
+                  className={`w-2 h-2 rounded-full ${status.dotColor} ${status.text === t('competitions.status.upcoming') ? 'animate-pulse' : ''}`}
+                />
+                {status.text}
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-4 sm:p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('competitions.registration')}
-              </h3>
-              <div className="flex items-start gap-3 mb-4 sm:mb-6">
-                <registrationInfo.icon className={`w-5 h-5 ${registrationInfo.color} mt-0.5 flex-shrink-0`} />
-                <p className="text-gray-600 text-sm sm:text-base">
-                  {registrationInfo.text}
-                </p>
-              </div>
-              {registrationInfo.link ? (
-                <a
-                  href={registrationInfo.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 sm:py-3 px-4 sm:px-4 font-medium transition-colors inline-flex items-center justify-center gap-2 min-h-[48px]`}
-                >
-                  <registrationInfo.icon className="w-4 h-4" />
-                  {registrationInfo.buttonText}
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 sm:py-3 px-4 sm:px-4 font-medium cursor-not-allowed inline-flex items-center justify-center gap-2 min-h-[48px]`}
-                  disabled={registrationInfo.disabled}
-                >
-                  <registrationInfo.icon className="w-4 h-4" />
-                  {registrationInfo.buttonText}
-                </button>
-              )}
-            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-6 lg:mb-8 leading-tight">
+              {tournament.name}
+            </h1>
 
-            {tournament.registered_players_link && (
-              <div className="bg-blue-50 rounded-lg p-3 sm:p-4 border border-blue-200">
-                <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-3 sm:gap-0">
-                  <div className="flex items-center gap-3">
-                    <Users className="w-4 h-4 text-blue-600" />
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-900">
-                        {t('competitions.registered_players_list', 'Registered Players List')}
-                      </h3>
-                      <p className="text-xs text-gray-600">
-                        {t('competitions.registered_players_description', 'View the current list of registered participants')}
-                      </p>
-                    </div>
+            <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
+              <div className="space-y-4 lg:space-y-6 text-gray-700">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center w-10 h-10">
+                    <img src="/icons/calendar.png" alt="Calendar" className="w-9 h-9" />
                   </div>
-                  <a
-                    href={tournament.registered_players_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-[#4C97F1] hover:bg-blue-700 text-white rounded-md py-2 px-3 text-sm font-medium transition-colors inline-flex items-center gap-2 min-h-[40px] w-full sm:w-auto justify-center"
-                  >
-                    {t('competitions.view_registered_players', 'View List')}
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
-              </div>
-            )}
-
-            {tournament.information && hasContent && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  {t('competitions.about_event')}
-                </h2>
-                <div className="prose prose-gray max-w-none bg-white border border-gray-200 rounded-xl">
-                  <Editor value={value} setValue={setValue} readOnly />
-                </div>
-              </div>
-            )}
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {t('competitions.details')}
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Grid3X3 className="w-5 h-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-500">
-                      {t('competitions.tables')}
+                    <p className="text-sm text-gray-500 font-medium mb-1">
+                      {tournament.start_date === tournament.end_date ? t('competitions.dates') : t('competitions.dates')}
                     </p>
-                    <p className="font-medium text-gray-900">
-                      {tournament.total_tables}
+                    <p className="font-semibold text-base lg:text-lg text-gray-900">
+                      {tournament.start_date === tournament.end_date
+                        ? formatDateString(tournament.start_date)
+                        : `${formatDateString(tournament.start_date)} - ${formatDateString(tournament.end_date)}`
+                      }
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-gray-400" />
+
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center w-10 h-10">
+                    <img src="/icons/pin.png" alt="Location" className="w-9 h-9" />
+                  </div>
                   <div>
-                    <p className="text-sm text-gray-500">
-                      {t('competitions.organizer')}
-                    </p>
-                    <p className="font-medium text-gray-900">
-                      {tournament.organizer || 'ELTL'}
-                    </p>
+                    <p className="text-sm text-gray-500 font-medium mb-1">{t('competitions.location')}</p>
+                    <p className="font-semibold text-base lg:text-lg text-gray-900">{tournament.location}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            <div className="bg-gradient-to-br from-[#4C97F1]/10 to-blue-50/50 border border-[#4C97F1]/20 rounded-2xl p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
-                <h2 className="text-xl font-bold text-gray-900">{t("competitions.location")}</h2>
+          <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3 mb-6 lg:mb-8">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl">
+                <img src={registrationInfo.icon} alt="Registration" className="w-9 h-9" />
               </div>
-              
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-4 relative">
-                {isLoadingLocation && (
-                  <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
-                    <div className="text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4C97F1] mx-auto mb-2"></div>
-                      <p className="text-sm text-gray-600">{t('competitions.loading_location')}</p>
-                    </div>
-                  </div>
-                )}
-                <iframe
-                  src={mapsEmbedUrl}
-                  width="100%"
-                  height="300"
-                  style={{ border: 0 }}
-                  allowFullScreen={true}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={`${tournament.name} location map`}
-                ></iframe>
+              <div>
+                <h3 className="text-lg lg:text-xl font-bold text-gray-900">
+                  {t('competitions.registration')}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {registrationInfo.text}
+                </p>
               </div>
-              
-              <div className="bg-white rounded-lg border border-gray-200 p-3 space-y-3">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-[#4C97F1]" />
+            </div>
+            {registrationInfo.link ? (
+              <a
+                href={registrationInfo.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 px-4 font-medium transition-colors inline-flex items-center justify-center gap-2 min-h-[48px] text-sm sm:text-base`}
+              >
+                <span className="truncate">{registrationInfo.buttonText}</span>
+                <ExternalLink className="w-4 h-4 flex-shrink-0" />
+              </a>
+            ) : (
+              <button
+                type="button"
+                className={`w-full ${registrationInfo.bgColor} text-white rounded-lg py-3 px-4 font-medium cursor-not-allowed inline-flex items-center justify-center gap-2 min-h-[48px] text-sm sm:text-base`}
+                disabled={registrationInfo.disabled}
+              >
+                <span className="truncate">{registrationInfo.buttonText}</span>
+              </button>
+            )}
+          </div>
+
+          {tournament.registered_players_link && (
+            <div className="bg-blue-50 rounded-lg p-4 sm:p-4 border border-blue-200">
+              <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-4 sm:gap-3">
+                <div className="flex items-start gap-3 flex-1">
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{tournament.location}</p>
-                    <a 
-                      href={coordinates 
-                        ? `https://maps.google.com/?q=${coordinates.lat},${coordinates.lng}` 
-                        : `https://maps.google.com/?q=${encodeURIComponent(tournament.location)}`
-                      }
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-[#4C97F1] hover:text-blue-700 text-sm font-medium transition-colors flex items-center gap-1"
-                    >
-                      {t("competitions.view_in_maps")} <ExternalLink className="h-3 w-3" />
-                    </a>
+                    <h3 className="text-sm font-medium text-gray-900 leading-tight">
+                      {t('competitions.registered_players_list', 'Registered Players List')}
+                    </h3>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                      {t('competitions.registered_players_description', 'View the current list of registered participants')}
+                    </p>
                   </div>
                 </div>
-                
-                <div className="flex gap-2">
-                  {!showDirections ? (
-                    <button
-                      onClick={getUserLocation}
-                      disabled={isLoadingLocation}
-                      className="flex-1 flex items-center justify-center gap-2 bg-[#4C97F1] hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg py-3 px-3 text-sm font-medium transition-colors min-h-[44px]"
-                    >
-                      <Navigation className="h-4 w-4" />
-                      {isLoadingLocation ? t('competitions.getting_location') : t('competitions.get_directions')}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setShowDirections(false)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg py-3 px-3 text-sm font-medium transition-colors min-h-[44px]"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                      {t('competitions.show_location_only')}
-                    </button>
-                  )}
+                <a
+                  href={tournament.registered_players_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#4C97F1] hover:bg-blue-700 text-white rounded-md py-2.5 px-4 text-sm font-medium transition-colors inline-flex items-center gap-2 min-h-[40px] w-full sm:w-auto justify-center flex-shrink-0"
+                >
+                  <span className="truncate">{t('competitions.view_registered_players', 'View List')}</span>
+                  <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                </a>
+              </div>
+            </div>
+          )}
+
+          {tournament.information && hasContent && (
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+                {t('competitions.about_event')}
+              </h2>
+              <div className="prose prose-gray max-w-none bg-white border border-gray-200 rounded-xl">
+                <Editor value={value} setValue={setValue} readOnly />
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
+            <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-6 lg:mb-8">
+              {t('competitions.details')}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center w-12 h-12">
+                  <img src="/icons/tt_table.png" alt="Table Tennis Table" className="w-10 h-10" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 font-medium mb-1">
+                    {t('competitions.tables')}
+                  </p>
+                  <p className="font-semibold text-base lg:text-lg text-gray-900">
+                    {tournament.total_tables}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center w-10 h-10">
+                  <img src="/icons/person.png" alt="Organizer" className="w-8 h-8" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 font-medium mb-1">
+                    {t('competitions.organizer')}
+                  </p>
+                  <p className="font-semibold text-base lg:text-lg text-gray-900">
+                    {tournament.organizer || 'ELTL'}
+                  </p>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <ShareSection tournamentId={tournament.id.toString()} />
-            
-            <div className="border-t pt-6">
-              <div className="space-y-2">
+        <div className="lg:col-span-1 xl:col-span-2 space-y-6 lg:space-y-8">
+          <div className="bg-gradient-to-br from-[#4C97F1]/10 to-blue-50/50 border border-[#4C97F1]/20 rounded-3xl p-6 lg:p-8">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <div className="w-1 h-5 sm:h-6 bg-[#4C97F1] rounded-full"></div>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t("competitions.location")}</h2>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-4 relative">
+              {isLoadingLocation && (
+                <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-[#4C97F1] mx-auto mb-2"></div>
+                    <p className="text-xs sm:text-sm text-gray-600">{t('competitions.loading_location')}</p>
+                  </div>
+                </div>
+              )}
+              <iframe
+                src={mapsEmbedUrl}
+                width="100%"
+                height="250"
+                style={{ border: 0 }}
+                allowFullScreen={true}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`${tournament.name} location map`}
+                className="sm:h-[300px]"
+              ></iframe>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 space-y-3 sm:space-y-4">
+              <div className="flex items-start gap-3">
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-[#4C97F1] flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-gray-900 text-sm sm:text-base leading-tight">{tournament.location}</p>
+                  <a
+                    href={coordinates
+                      ? `https://maps.google.com/?q=${coordinates.lat},${coordinates.lng}`
+                      : `https://maps.google.com/?q=${encodeURIComponent(tournament.location)}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#4C97F1] hover:text-blue-700 text-xs sm:text-sm font-medium transition-colors flex items-center gap-1 mt-1"
+                  >
+                    <span>{t("competitions.view_in_maps")}</span>
+                    <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                {!showDirections ? (
+                  <button
+                    onClick={getUserLocation}
+                    disabled={isLoadingLocation}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#4C97F1] hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg py-2.5 sm:py-3 px-3 text-xs sm:text-sm font-medium transition-colors min-h-[40px] sm:min-h-[44px]"
+                  >
+                    <Navigation className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="truncate">
+                      {isLoadingLocation ? t('competitions.getting_location') : t('competitions.get_directions')}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowDirections(false)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg py-2.5 sm:py-3 px-3 text-xs sm:text-sm font-medium transition-colors min-h-[40px] sm:min-h-[44px]"
+                  >
+                    <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="truncate">{t('competitions.show_location_only')}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <ShareSection tournamentId={tournament.id.toString()} />
+
+          <div className="border-t pt-6">
+            {/* <div className="space-y-2">
                 <button
                   type="button"
                   className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
@@ -461,8 +480,7 @@ function RouteComponent() {
                 >
                   {t('competitions.report_issue')}
                 </button>
-              </div>
-            </div>
+              </div> */}
           </div>
         </div>
       </div>

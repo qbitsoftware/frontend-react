@@ -14,6 +14,7 @@ import {
   getUniqueMatches,
 } from "./-components/schedule-utils";
 import { Filters } from "./-components/filters";
+import { ResponsiveClassSelector } from "@/components/responsive-class-selector";
 
 export const Route = createFileRoute("/voistlused/$tournamentid/ajakava/")({
   errorComponent: () => <ErrorPage />,
@@ -111,7 +112,7 @@ function RouteComponent() {
   );
 
   // Memoize filtered and sorted matches
-  const { displayMatches, displayMatchCount } = useMemo(() => {
+  const { displayMatches } = useMemo(() => {
     // Filter by date/gameday
     let matches = classFilteredMatches;
 
@@ -169,9 +170,6 @@ function RouteComponent() {
       return (a.match.order || 0) - (b.match.order || 0);
     });
 
-    // Store count before search filter
-    const matchesBeforeSearch = matches.length;
-
     // Apply search filter if needed
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -184,7 +182,6 @@ function RouteComponent() {
 
     return {
       displayMatches: matches,
-      displayMatchCount: searchTerm ? matches.length : matchesBeforeSearch,
     };
   }, [
     classFilteredMatches,
@@ -274,24 +271,23 @@ function RouteComponent() {
   }
 
   return (
-    <div className="px-2 sm:px-4 lg:px-6">
-      <h4 className="font-bold mb-3 sm:mb-4 md:mb-8 text-center md:text-left text-gray-700 text-lg sm:text-xl">
-        {t("competitions.timetable.matches")}
-      </h4>
+    <div>
+      <ResponsiveClassSelector
+        variant="classes"
+        classes={uniqueClasses}
+        activeClass={activeClass}
+        onClassChange={setActiveClass}
+      />
 
       <Filters
         gamedays={uniqueGamedays}
-        activeClass={activeClass}
         activeDay={activeDay}
         setActiveDay={setActiveDay}
         totalDays={uniqueGamedays.length || 1}
-        classes={uniqueClasses}
-        setActiveClass={setActiveClass}
         activeStatus={activeStatus}
         setActiveStatus={setActiveStatus}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        filteredMatchCount={displayMatchCount}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 my-4 sm:my-6">

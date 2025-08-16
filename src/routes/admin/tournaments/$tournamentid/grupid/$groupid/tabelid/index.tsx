@@ -46,8 +46,6 @@ function RouteComponent() {
     groupId
   );
 
-  // const tt = useTournamentTable()
-
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId);
 
   const handleGroupChange = (newGroupId: number) => {
@@ -122,7 +120,7 @@ function RouteComponent() {
                         tournamentid: params.tournamentid,
                         groupid: stage.id.toString()
                       },
-                      search: { selectedGroup: undefined }
+                      search: { selectedGroup: undefined },
                     })}
                     className={`py-2 px-1 border-b-2 font-medium text-sm ${groupId === stage.id
                       ? 'border-blue-500 text-blue-600'

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UseGetBlogsOption } from '@/queries/blogs'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
@@ -76,7 +76,7 @@ export const Route = createFileRoute('/uudised/')({
         error: null,
       }
     } catch (error) {
-      console.error('Error loading blogs:', error)
+      void error
       return {
         blogs: [],
         totalPages: 0,
@@ -94,6 +94,9 @@ function BlogPage(): JSX.Element {
   const page = searchParams.page || 1
   const { category, search } = searchParams
   const navigate = Route.useNavigate()
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState(search || '')
 
@@ -172,7 +175,7 @@ function BlogPage(): JSX.Element {
           'Try different search terms or filters to find what you\'re looking for.',
         )}
       </p>
-      <Button 
+      <Button
         onClick={clearFilters}
         className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
       >
@@ -203,7 +206,7 @@ function BlogPage(): JSX.Element {
                 'Failed to load blog posts. Please try again later.',
               )}
             </p>
-            <Button 
+            <Button
               onClick={clearFilters}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
             >
@@ -325,11 +328,11 @@ function BlogPage(): JSX.Element {
                           </h3>
                           <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0 mt-0.5" />
                         </div>
-                        
+
                         <p className="text-gray-600 text-sm mt-1.5 line-clamp-2 leading-relaxed">
                           {truncateText(post.description, 100)}
                         </p>
-                        
+
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center text-gray-500 text-xs">
                             <Clock className="w-3 h-3 mr-1.5" />
@@ -337,7 +340,7 @@ function BlogPage(): JSX.Element {
                               {formatDate(post.created_at)}
                             </time>
                           </div>
-                          
+
                           {post.category && (
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600">
                               {availableCategories.find((c) => c.id === post.category)?.label || post.category}
@@ -376,7 +379,7 @@ function BlogPage(): JSX.Element {
                           <FileText size={40} className="text-gray-400" />
                         </div>
                       )}
-                      
+
                       {/* Category Badge */}
                       {post.category && (
                         <div className="absolute top-4 left-4">
@@ -457,11 +460,10 @@ function BlogPage(): JSX.Element {
                         variant="ghost"
                         size="sm"
                         onClick={() => handlePageChange(pageNumber)}
-                        className={`h-10 w-10 rounded-xl font-medium transition-all ${
-                          page === pageNumber 
-                            ? 'bg-blue-500 text-white shadow-md hover:bg-blue-600' 
-                            : 'hover:bg-gray-100 text-gray-700'
-                        }`}
+                        className={`h-10 w-10 rounded-xl font-medium transition-all ${page === pageNumber
+                          ? 'bg-blue-500 text-white shadow-md hover:bg-blue-600'
+                          : 'hover:bg-gray-100 text-gray-700'
+                          }`}
                       >
                         {pageNumber}
                       </Button>

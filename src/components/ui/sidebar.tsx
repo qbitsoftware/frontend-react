@@ -295,14 +295,14 @@ const MobileMenuSidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn(className, "h-9 w-9 inline-flex items-center justify-center border border-input bg-gray-100 text-gray-500 rounded-md p-2 shadow-sm outline-2 outline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#BDCFEA]")}
+      className={cn(className, "h-9 w-9 inline-flex items-center justify-center text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors")}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
       {...props}
     >
-      <Menu className="!w-7 !h-7 p-1"/>
+      <Menu className="!w-6 !h-6" strokeWidth={2.5}/>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

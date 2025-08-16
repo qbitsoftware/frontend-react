@@ -17,6 +17,7 @@ import { CheckCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import AdminHeader from '../-components/admin-header'
 
 export const Route = createFileRoute('/admin/feedback/')({
   component: FeedbackFormComponent,
@@ -58,22 +59,20 @@ export function FeedbackFormComponent() {
         setTimeout(() => {
           setIsSubmitted(false)
         }, 5000)
-      } else {
-        console.error('Error submitting feedback:', result.error)
       }
     } catch (error) {
-      console.error('Error submitting feedback:', error)
+      void error
     }
   }
 
   return (
     <div className="container p-8">
-      <h3 className="text-center md:text-left text-stone-800 font-bold">
-        {t('feedback.title')}
-      </h3>
-      <p className="text-center md:text-left text-gray-500 mb-8 mt-1">
-        {t('feedback.subtitle')}
-      </p>
+      <AdminHeader
+        title={t('feedback.title')}
+        description={t('feedback.subtitle')}
+        href={""}
+        feedback={true}
+      />
 
       {isSubmitted ? (
         <div className="bg-green-50 p-6 rounded-lg border border-green-200 max-w-lg">

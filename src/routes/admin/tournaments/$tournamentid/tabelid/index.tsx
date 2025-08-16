@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import ErrorPage from '@/components/error'
 import { UseGetTournamentTablesQuery } from '@/queries/tables'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useTranslation } from 'react-i18next'
 import Loader from '@/components/loader'
+import NoGroupsError from '../-components/no-groups-error'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/tabelid/',
@@ -23,7 +23,6 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { params } = Route.useLoaderData()
   const { selectedGroup } = Route.useSearch()
-  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const tournamentId = Number(params.tournamentid)
@@ -63,17 +62,15 @@ function RouteComponent() {
 
   if (tablesQuery.isLoading) {
     return (
-      <div className='min-h-screen flex items-center justify-center'><Loader /></div>
+      <Loader />
     )
   }
 
   if (tablesQuery.isError || !tablesQuery.data?.data) {
-    return <div>{t('errors.general.description')}</div>
+    return (
+      <NoGroupsError />
+    )
   }
 
-  // This component will quickly redirect, so we just show a loader
-  // return <Loader />
-  return (
-    <div className='min-h-screen flex items-center justify-center'><Loader /></div>
-  )
+  return <Loader />
 }

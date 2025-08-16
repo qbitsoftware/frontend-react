@@ -126,7 +126,6 @@ export const useTournamentEvents = (
         const tournamentTablePromises = tournaments.map(tournament =>
           queryClient.ensureQueryData(UseGetTournamentTables(Number(tournament.id)))
             .catch(error => {
-              console.error(`Error fetching tables for tournament ${tournament.id}:`, error);
               return { data: [], error };
             })
         );
@@ -149,7 +148,6 @@ export const useTournamentEvents = (
         const matchesPromises = meistrikad.map(tournament =>
           queryClient.ensureQueryData(UseGetTournamentMatches(Number(tournament.id)))
             .catch(error => {
-              console.error(`Error fetching matches for tournament ${tournament.id}:`, error);
               return { data: [], error };
             })
         );
@@ -227,7 +225,6 @@ export const useTournamentEvents = (
 
         setProcessedEvents(events);
       } catch (error) {
-        console.error("Error processing tournament events:", error);
         setProcessedEvents([]);
       }
     };

@@ -1,35 +1,39 @@
-import React, { useMemo } from "react";
-import { Link } from "@tanstack/react-router";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  formatDateRange,
-  getAbbreviatedMonth,
-} from "../voistlused/-components/calendar-utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TournamentEvent } from "@/queries/tournaments";
+import { TournamentEvent, UseGetHomePageTournamentsQuery } from "@/queries/tournaments";
+import EventCard from "./event-card";
 
-interface Props {
-  events: TournamentEvent[];
-  isEmpty: boolean;
-  isLoading?: boolean;
-}
-
-const CalendarWidget = ({ events, isEmpty, isLoading = false }: Props) => {
+const CalendarWidget = () => {
   const { t } = useTranslation();
+  const { data, isLoading, error } = UseGetHomePageTournamentsQuery(true)
+  const [events, setEvents] = useState<TournamentEvent[]>([]);
+
+  useEffect(() => {
+    if (data && data.data) {
+      setEvents(data.data);
+    }
+  }, [data])
 
   const { upcomingEvents, pastEvents } = useMemo(() => {
     if (isLoading || !events.length) {
       return { upcomingEvents: [], pastEvents: [] };
     }
 
-    const now = new Date();
     const getStartDate = (event: TournamentEvent) =>
       (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.start_date);
     const getEndDate = (event: TournamentEvent) =>
       (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.end_date);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+
     const upcoming = events
-      .filter((event) => getEndDate(event) >= now)
+      .filter((event) => {
+        const endDate = getEndDate(event);
+        endDate.setHours(23, 59, 59, 999); 
+        return endDate >= today;
+      })
       .sort(
         (a, b) =>
           getStartDate(a).getTime() - getStartDate(b).getTime()
@@ -37,7 +41,11 @@ const CalendarWidget = ({ events, isEmpty, isLoading = false }: Props) => {
       .slice(0, 3);
 
     const past = events
-      .filter((event) => getEndDate(event) < now)
+      .filter((event) => {
+        const endDate = getEndDate(event);
+        endDate.setHours(23, 59, 59, 999); 
+        return endDate < today;
+      })
       .sort(
         (a, b) =>
           getStartDate(b).getTime() - getStartDate(a).getTime()
@@ -45,149 +53,27 @@ const CalendarWidget = ({ events, isEmpty, isLoading = false }: Props) => {
       .slice(0, 3);
 
     return { upcomingEvents: upcoming, pastEvents: past };
-  }, [events]);
+  }, [events, isLoading]);
 
-  const EventCard = ({
-    event,
-    isUpcoming,
-  }: {
-    event: TournamentEvent;
-    isUpcoming: boolean;
-  }) => {
-    const linkPath = event.is_gameday
-      ? `/voistlused/${event.parent_tournament_id}`
-      : `/voistlused/${event.tournament.id}`;
-
-    return (
-      <Link to={linkPath} key={event.tournament.id}>
-        <div className="group mb-2 sm:mb-3 relative">
-          <div className={`
-            flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border transition-all duration-300
-            ${isUpcoming
-              ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20 hover:border-[#4C97F1]/40 hover:shadow-lg hover:shadow-[#4C97F1]/10'
-              : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
-            }
-          `}>
-            {/* Date Display */}
-            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-              {event.is_gameday ? (
-                <div className={`
-                  px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
-                  ${isUpcoming
-                    ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
-                    : 'bg-gray-100 text-gray-700 border-gray-200'
-                  }
-                `}>
-                  <div className="text-xs font-medium opacity-90">
-                    {getAbbreviatedMonth(event.gameday_date)}
-                  </div>
-                  <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
-                    {new Date(event.gameday_date).getDate()}
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className={`
-                    px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
-                    ${isUpcoming
-                      ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
-                      : 'bg-gray-100 text-gray-700 border-gray-200'
-                    }
-                  `}>
-                    <div className="text-xs font-medium opacity-90">
-                      {getAbbreviatedMonth(event.tournament.start_date)}
-                    </div>
-                    <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
-                      {formatDateRange(event.tournament.start_date, event.tournament.end_date).split(" - ")[0]}
-                    </div>
-                  </div>
-
-                  {event.tournament.end_date !== event.tournament.start_date && (
-                    <>
-                      <div className="w-2 sm:w-3 h-px bg-gray-300"></div>
-                      <div className={`
-                        px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
-                        ${isUpcoming
-                          ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
-                          : 'bg-gray-100 text-gray-700 border-gray-200'
-                        }
-                      `}>
-                        <div className="text-xs font-medium opacity-90">
-                          {new Date(event.tournament.start_date).getMonth() !==
-                            new Date(event.tournament.end_date).getMonth()
-                            ? getAbbreviatedMonth(event.tournament.end_date)
-                            : getAbbreviatedMonth(event.tournament.start_date)}
-                        </div>
-                        <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
-                          {formatDateRange(event.tournament.start_date, event.tournament.end_date).split(" - ")[1]}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Event Content */}
-            <div className="flex-1 min-w-0">
-              <h6 className={`
-                font-semibold text-sm sm:text-base mb-0.5 sm:mb-1 truncate group-hover:text-[#4C97F1] transition-colors duration-200
-                ${isUpcoming ? 'text-gray-900' : 'text-gray-800'}
-              `} title={event.tournament.name}>
-                {event.tournament.name}
-              </h6>
-
-              <div className="flex items-center gap-1 sm:gap-2">
-                {event.is_finals ? (
-                  <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                    {t("calendar.play_off")}
-                  </span>
-                ) : event.is_gameday && event.order ? (
-                  <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
-                    {t("calendar.game_day")} {event.order}
-                  </span>
-                ) : (
-                  <span className={`
-                    text-xs sm:text-sm truncate
-                    ${isUpcoming ? 'text-gray-600' : 'text-gray-500'}
-                  `}>
-                    {event.tournament.category}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Status Indicator */}
-            <div className="flex-shrink-0">
-              <div className={`
-                w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full
-                ${isUpcoming ? 'bg-green-400' : 'bg-gray-400'}
-              `}></div>
-            </div>
-          </div>
-        </div>
-      </Link>
-    );
-  };
 
   const EventCardSkeleton = ({ isUpcoming }: { isUpcoming: boolean }) => (
-    <div className="mb-3 relative">
+    <div className="mb-2 sm:mb-3 relative">
       <div className={`
-        flex items-center gap-4 p-4 rounded-xl border
+        flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border
         ${isUpcoming
           ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20'
           : 'bg-white border-gray-200'
         }
       `}>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <Skeleton className="h-16 w-14 rounded-lg" />
-          <Skeleton className="h-16 w-14 rounded-lg" />
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <Skeleton className="h-10 sm:h-12 lg:h-16 w-8 sm:w-10 lg:w-14 rounded-md sm:rounded-lg" />
+          <Skeleton className="h-10 sm:h-12 lg:h-16 w-8 sm:w-10 lg:w-14 rounded-md sm:rounded-lg" />
         </div>
-        <div className="flex-1 min-w-0 space-y-2">
-          <Skeleton className="h-5 w-4/5" />
-          <Skeleton className="h-4 w-2/3" />
+        <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
+          <Skeleton className="h-4 sm:h-5 w-4/5" />
+          <Skeleton className="h-3 sm:h-4 w-2/3" />
         </div>
-        <Skeleton className="h-3 w-3 rounded-full" />
+        <Skeleton className="h-2.5 sm:h-3 w-2.5 sm:w-3 rounded-full" />
       </div>
     </div>
   );
@@ -231,7 +117,7 @@ const CalendarWidget = ({ events, isEmpty, isLoading = false }: Props) => {
     );
   }
 
-  if (!isLoading && isEmpty) {
+  if (error) {
     return (
       <div className="border-2 border-dashed border-gray-300 rounded-xl py-16 px-8 text-center bg-gray-50/50">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 flex items-center justify-center">
@@ -252,12 +138,6 @@ const CalendarWidget = ({ events, isEmpty, isLoading = false }: Props) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
       <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-1.5 sm:w-2 h-4 sm:h-6 bg-[#4C97F1] rounded-full"></div>
-          <h6 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
-            {t("calendar.upcoming")}
-          </h6>
-        </div>
 
         <div className="space-y-2 sm:space-y-3">
           {upcomingEvents.length > 0
@@ -271,12 +151,6 @@ const CalendarWidget = ({ events, isEmpty, isLoading = false }: Props) => {
       </div>
 
       <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-1.5 sm:w-2 h-4 sm:h-6 bg-gray-400 rounded-full"></div>
-          <h6 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
-            {t("calendar.finished")}
-          </h6>
-        </div>
         <div className="space-y-2 sm:space-y-3">
           {pastEvents.length > 0
             ? pastEvents.map((event, index) => (

@@ -132,9 +132,16 @@ h6 {
   @apply text-[16px];
 }
 
-/* ::-webkit-scrollbar {
+/* Hide scrollbars for webkit browsers */
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
-} */
+}
+
+/* Hide scrollbars for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
 .blog-content p {
   margin-top: 32px;

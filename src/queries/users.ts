@@ -190,6 +190,24 @@ export const UseGetUsers = (searchTerm?: string) => {
   });
 };
 
+export const UseGetUsersQuery = (searchTerm?: string) => {
+  if (searchTerm === undefined) {
+    searchTerm = "";
+  }
+  return useQuery<UsersResponse>({
+    queryKey: ["users", searchTerm],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(
+        `/api/v1/users?search=${searchTerm}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return data;
+    },
+  });
+};
+
 export const fetchUserByName = async (name: string): Promise<User | null> => {
   try {
     const { data } = await axiosInstance.get(`/api/v1/users?search=${name}`, {
@@ -197,7 +215,7 @@ export const fetchUserByName = async (name: string): Promise<User | null> => {
     });
     return data.data[0] || null;
   } catch (error) {
-    console.error("Error fetching user by name:", error);
+    void error;
     return null;
   }
 };
@@ -241,7 +259,7 @@ export const sendUserFeedback = async (feedback: FeedbackForm) => {
     await axiosInstance.post("/api/v1/feedback", feedback);
     return { success: true };
   } catch (error) {
-    console.error("Failed to send feedback:", error);
+    void error
     return { success: false, error };
   }
 };

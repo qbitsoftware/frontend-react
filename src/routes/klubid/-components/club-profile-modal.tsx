@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { Club } from "@/types/clubs";
 import { UseGetClubPlayers } from "@/queries/clubs";
 import { formatDateToNumber } from "@/lib/utils";
+import ClubProfileSkeleton from "./club-profile-skeleton";
 
 interface ClubProfileModal {
   isOpen: boolean;
@@ -31,13 +32,8 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
   if (isOpen && (isLoading || !playerData)) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl"> tournament_tables 
-          <div className="flex justify-center items-center h-40">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p>{t("clubs.loading_club_data")}</p>
-            </div>
-          </div>
+        <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl focus:outline-none focus:ring-0 border-0">
+          <ClubProfileSkeleton />
         </DialogContent>
       </Dialog>
     );
@@ -49,9 +45,9 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-scroll">
+      <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-scroll focus:outline-none focus:ring-0 border-0">
         <div className="flex flex-col items-center space-y-4 mb-6">
-          <DialogTitle className="text-3xl font-bold text-gray-900">
+          <DialogTitle className="text-3xl font-bold text-gray-900 focus:outline-none">
             {club.name}
           </DialogTitle>
         </div>
@@ -178,7 +174,11 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
                     {t("admin.clubs.table.website")}
                   </p>
                   <a
-                    href={club.website.startsWith('http') ? club.website : `https://${club.website}`}
+                    href={
+                      club.website.startsWith("http")
+                        ? club.website
+                        : `https://${club.website}`
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-medium text-blue-600 hover:underline"

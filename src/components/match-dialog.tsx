@@ -192,7 +192,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         order: match.match.order,
         sport_type: match.match.sport_type,
         location: match.match.location,
-        start_date: new Date().toISOString(),
+        start_date: match.match.start_date,
         bracket: match.match.bracket,
         forfeit: false,
         forfeit_type: "",

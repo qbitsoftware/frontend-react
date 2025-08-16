@@ -154,6 +154,7 @@
     "no_image": "Pilt pole saadaval",
     "no_news": "Blogi postitused puuduvad",
     "no_news_subtitle": "Hetkel ei ole ühtegi blogi postitust.",
+    "no_news_description": "Proovi hiljem uuesti",
     "read_more": "Loe edasi",
     "categories": {
       "all": "Kõik",
@@ -508,7 +509,7 @@
     "bracket": "Tabelid",
     "play_off": "Kohamängud",
     "participants": {
-      "search": "Otsi",
+      "search": "Otsi nime",
       "title": "Mängijad",
       "no_players_found_search": "Mängijaid ei leitud - ",
       "no_players": "Mängijaid pole",
@@ -590,7 +591,7 @@
     },
     "navbar": {
       "info": "Info",
-      "matches": "Ajakava",
+      "matches": "Mängud",
       "standings": "Kohad",
       "results": "Tabelid",
       "participants": "Osalejad",
@@ -648,6 +649,7 @@
     "play_off": "Kohamängud",
     "full_year": "Aasta lõikes",
     "multiple_tournaments_placeholder": "Rohkem kui 1 turniir",
+    "error_loading_tournaments": "Turniiride laadimine nurjus",
     "months": {
       "january": "Jaanuar",
       "february": "Veebruar",
@@ -754,6 +756,7 @@
       "result_title": "Reitingu muutus",
       "points": "punkti",
       "fill_all_fields": "Palun täitke kõik väljad",
+      "players_same_sex": "Mängijad peavad olema erineva sooga",
       "players_not_found": "Valitud mängijaid ei leitud",
       "info_button": "Arvutamise metoodika",
       "info_button_short": "Info",
@@ -1012,8 +1015,18 @@
     "tournaments": {
       "title": "Minu võistlused",
       "description": "Võistluste loomine ja haldamine",
+      "search_placeholder": "Otsi võistlust...",
       "add_new": "Uus Võistlus",
       "delete": "Kustuta Võistlus",
+      "day": "Päev",
+      "day_plural_ending": "a",
+      "no_tournaments": "Võistlusi pole",
+      "no_tournaments_criteria": "Proovige kohendada otsingukriteeriume või luua uus võistlus.",
+      "state": {
+        "created": "Loodud",
+        "ongoing": "Käimas",
+        "finished": "Lõppenud"
+      },
       "setup": {
         "step1": {
           "title": "1. Lisa osalejad",
@@ -1197,6 +1210,9 @@
           "view_all_description": "Halda kõiki turniiri klasse",
           "games_title": "klassis"
         },
+        "no_groups": "Ühtegi võistlusklassi pole",
+        "no_groups_description": "Loo uus võistlusklass, et alustada turniiri korraldamist",
+        "no_groups_create": "Loo uus võistlusklass",
         "images": {
           "title": "Pildigrupid",
           "new": "Uus pildigrupp",
@@ -1594,7 +1610,7 @@
       "add_new": "Uus postitus",
       "delete": "Kustuta",
       "choose_category": "Vali kategooria",
-      "save_draft": "Salvesta mustandina",
+      "save_draft": "Salvesta",
       "save_public": "Avalikusta",
       "back": "Tagasi",
       "text": "Alusta esimese blogipostitusega",
@@ -1605,6 +1621,22 @@
       "delete_title": "Oled kindel?",
       "delete_description": "Peale toimingut on blogi kustutatud ja seda ei saa tagasi võtta.",
       "delete_cancel": "Katkesta",
+      "no_date": "Kuupäev puudub",
+      "search_no_results": "Blogipostitusi ei leitud otsingu järgi",
+      "search_criteria": "Proovige oma otsingukriteeriume kohandada",
+      "no_results": "Blogipostitusi ei leitud",
+      "toasts": {
+        "deleted": "Uudis kustutatud edukalt",
+        "deleted_failed": "Uudise kustutamine nurjus",
+        "empty_content": "Sa pead lisama sisu blogipostitusele",
+        "missing_title": "Sa pead lisama pealkirja blogipostitusele",
+        "saving": "Salvestamine...",
+        "save_success": "Blogipostitus salvestatud edukalt",
+        "failed_to_save": "Blogipostituse salvestamine nurjus",
+        "load_failed": "Blogi andmete laadimine ebaõnnestus. Palun proovi uuesti.",
+        "not_found": "Blogipostitusi ei leitud",
+        "refresh": "Uuenda lehte, et proovida uuesti"
+      },
       "table": {
         "title": "Pealkiri",
         "date": "Kuupäev",
@@ -1697,6 +1729,7 @@
             "add_button": "Lisa Mängija"
           }
         },
+        "load_error": "Klubide laadimine nurjus",
         "list": {
           "title": "Klubi Mängijad",
           "loading": "Laadimine...",

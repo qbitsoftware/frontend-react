@@ -11,13 +11,13 @@ import {
   useDeleteClub,
   CreateClubInput,
 } from "@/queries/clubs";
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Club } from "@/types/clubs";
 import { useTranslation } from "react-i18next";
 import { toast } from 'sonner'
+import AdminHeader from "../-components/admin-header";
 
 export const Route = createFileRoute("/admin/clubs/")({
   component: RouteComponent,
@@ -30,7 +30,7 @@ function RouteComponent() {
   const updateClubMutation = useUpdateClub();
   const deleteClubMutation = useDeleteClub();
   const { t } = useTranslation();
-  const { myClubs, isLoadingMyClubs, fetchMyClubs } = useMyClubs();
+  const { myClubs, fetchMyClubs, isLoadingMyClubs } = useMyClubs();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -133,23 +133,43 @@ function RouteComponent() {
     }
   };
 
-  if (isLoading) return <div>{t("admin.clubs.loading")}</div>;
-  if (!clubsData || !clubsData.data) return <div>{t("admin.clubs.error")}</div>;
+  if (!clubsData || !clubsData.data) {
+    return (
+      <div className="px-2 py-8 md:p-8 overflow-hidden">
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("admin.clubs.error")}</h3>
+          <p className="text-gray-500">Unable to load clubs data</p>
+        </div>
+      </div>
+    );
+  }
 
   const clubs = clubsData.data;
+  const openCreateDialog = () => {
+    setIsCreateDialogOpen(true);
+  }
 
   return (
     <div className="px-2 py-8 md:p-8 overflow-hidden">
       <div className="mb-12">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <div className="text-center md:text-left mb-4 md:mb-0">
-            <h3 className="font-bold">{t("admin.clubs.my_clubs.title")}</h3>
-            <p className="text-gray-600 mt-1">{t("admin.clubs.my_clubs.subtitle")}</p>
-          </div>
-        </div>
+        <AdminHeader
+          title={t("admin.clubs.my_clubs.title")}
+          description={t("admin.clubs.my_clubs.subtitle")}
+          add_new={t("admin.clubs.add_new")}
+          href={openCreateDialog}
+          club={true}
+        />
 
         {isLoadingMyClubs ? (
-          <div className="text-center py-8">{t("admin.clubs.my_clubs.loading")}</div>
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-blue-500 mr-3" />
+            <span className="text-gray-600">{t("admin.clubs.my_clubs.loading")}</span>
+          </div>
         ) : myClubs.length > 0 ? (
           <>
             <span className="font-medium text-sm px-1 mb-4 block">
@@ -178,14 +198,8 @@ function RouteComponent() {
           <h3 className="font-bold">{t("admin.clubs.title")}</h3>
           <p className="text-gray-600 mt-1">{t("admin.clubs.subtitle")}</p>
         </div>
-        <Button
-          onClick={() => setIsCreateDialogOpen(true)}
-          className="flex items-center gap-2"
-        >
-          <PlusCircle className="h-4 w-4" />
-          {t("admin.clubs.add_new")}
-        </Button>
       </div>
+
       <span className="font-medium text-sm px-1">
         {clubs.length} {t("admin.clubs.clubs")}
       </span>
@@ -193,6 +207,7 @@ function RouteComponent() {
       <ClubTable
         clubs={clubs}
         variant="all-clubs"
+        isLoading={isLoading}
       />
 
       <ClubFormDialog

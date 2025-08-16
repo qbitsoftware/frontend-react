@@ -334,11 +334,25 @@ export type TournamentsHomepageResponse = {
   error: string | null;
 };
 
-export const UseGetHomePageTournaments = () => {
+export const UseGetHomePageTournaments = (forHomepage: boolean) => {
   return queryOptions<TournamentsHomepageResponse>({
     queryKey: ["home_tournaments"],
     queryFn: async () => {
       const { data } = await axiosInstance.get(`/api/v1/homepage/tournaments`, {
+        params: { homepage: forHomepage },
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
+}
+
+export const UseGetHomePageTournamentsQuery = (forHomepage: boolean) => {
+  return useQuery<TournamentsHomepageResponse>({
+    queryKey: ["home_tournaments"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/v1/homepage/tournaments`, {
+        params: { homepage: forHomepage },
         withCredentials: true,
       });
       return data;

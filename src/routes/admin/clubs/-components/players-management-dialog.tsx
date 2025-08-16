@@ -87,7 +87,7 @@ export function PlayersManagementDialog({
       });
       setClubPlayers(data.data || []);
     } catch (error) {
-      console.error("Error fetching club players:", error);
+      void error
       setClubPlayers([]);
     } finally {
       setIsLoadingPlayers(false);
@@ -186,7 +186,7 @@ export function PlayersManagementDialog({
       setIsVerifyingId(false);
 
       await axiosInstance.post('/api/v1/clubs/players', {
-        player_id: null, 
+        player_id: null,
         club_id: selectedClub?.id,
         first_name: newPlayer.first_name,
         last_name: newPlayer.last_name,
@@ -201,9 +201,9 @@ export function PlayersManagementDialog({
       // Use specific success message for new player creation
       const playerName = `${capitalizeWords(newPlayer.first_name)} ${capitalizeWords(newPlayer.last_name)}`;
       const clubName = selectedClub.name;
-      toast.message(t("admin.clubs.toast.new_player_created_and_added", { 
-        playerName, 
-        clubName 
+      toast.message(t("admin.clubs.toast.new_player_created_and_added", {
+        playerName,
+        clubName
       }));
 
       setNewPlayer({
@@ -227,7 +227,6 @@ export function PlayersManagementDialog({
         }
       }, 100);
     } catch (error) {
-      console.error('Failed to add player to club:', error);
       const errorMessage = handleApiError(error, t, t("admin.clubs.toast.failed_to_add_player"));
       toast.error(errorMessage);
     } finally {
@@ -265,9 +264,9 @@ export function PlayersManagementDialog({
 
       const playerName = `${capitalizeWords(user.first_name)} ${capitalizeWords(user.last_name)}`;
       const clubName = selectedClub?.name;
-      toast.message(t("admin.clubs.toast.player_added_to_club", { 
-        playerName, 
-        clubName 
+      toast.message(t("admin.clubs.toast.player_added_to_club", {
+        playerName,
+        clubName
       }));
 
       setSearchTerm("");
@@ -279,7 +278,6 @@ export function PlayersManagementDialog({
         }
       }, 100);
     } catch (error) {
-      console.error('Failed to add player to club:', error);
       const errorMessage = handleApiError(error, t, t("admin.clubs.toast.failed_to_add_player"));
       toast.error(errorMessage);
     } finally {
@@ -308,9 +306,9 @@ export function PlayersManagementDialog({
 
       const playerName = `${capitalizeWords(playerToRemove.first_name)} ${capitalizeWords(playerToRemove.last_name)}`;
       const clubName = selectedClub.name;
-      toast.success(t("admin.clubs.toast.player_removed_from_club", { 
-        playerName, 
-        clubName 
+      toast.success(t("admin.clubs.toast.player_removed_from_club", {
+        playerName,
+        clubName
       }));
       fetchClubPlayers(selectedClub.name);
       onPlayersUpdate();
@@ -351,7 +349,7 @@ export function PlayersManagementDialog({
     if (!open && (isRemovePlayerDialogOpen || isAddPlayerDialogOpen || isAddNewPlayerDialogOpen)) {
       return;
     }
-    
+
     if (open && selectedClub) {
       fetchClubPlayers(selectedClub.name);
     } else if (!open) {
@@ -370,9 +368,9 @@ export function PlayersManagementDialog({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-w-[90vw] sm:max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader className="pb-4 border-b">
-            <DialogTitle className="flex items-center gap-2 text-xl">
+            <DialogTitle className="flex items-center gap-2 text-xl justify-center sm:justify-start">
               <Users className="w-5 h-5" />
               {t("admin.clubs.players_modal.title", { clubName: selectedClub.name })}
             </DialogTitle>
@@ -434,7 +432,7 @@ export function PlayersManagementDialog({
                                 e.preventDefault();
                               }}
                             >
-                              <div 
+                              <div
                                 className="p-1 space-y-1 overflow-y-auto max-h-[400px]"
                                 onWheel={(e) => {
                                   e.stopPropagation();
@@ -447,19 +445,19 @@ export function PlayersManagementDialog({
                                       className={`px-3 py-2 cursor-pointer hover:bg-[#4C97F1]/10 hover:text-[#4C97F1] transition-colors rounded-md ${isAddingPlayer ? 'opacity-50 pointer-events-none' : ''}`}
                                       onClick={() => !isAddingPlayer && handlePlayerSelectClick(user)}
                                     >
-                                    <div className="font-medium flex items-center gap-2">
-                                      <span>
-                                        {capitalizeWords(user.first_name)}{" "}
-                                        {capitalizeWords(user.last_name)}
-                                      </span>
-                                      {isAddingPlayer && (
-                                        <div className="w-3 h-3 animate-spin rounded-full border border-[#4C97F1] border-t-transparent" />
+                                      <div className="font-medium flex items-center gap-2">
+                                        <span>
+                                          {capitalizeWords(user.first_name)}{" "}
+                                          {capitalizeWords(user.last_name)}
+                                        </span>
+                                        {isAddingPlayer && (
+                                          <div className="w-3 h-3 animate-spin rounded-full border border-[#4C97F1] border-t-transparent" />
+                                        )}
+                                      </div>
+                                      {user.eltl_id && (
+                                        <div className="text-xs text-gray-500">ELTL ID: {user.eltl_id}</div>
                                       )}
                                     </div>
-                                    {user.eltl_id && (
-                                      <div className="text-xs text-gray-500">ELTL ID: {user.eltl_id}</div>
-                                    )}
-                                  </div>
                                   ))
                                 ) : (
                                   <div className="px-4 py-6 text-sm text-gray-500 text-center">
@@ -472,7 +470,7 @@ export function PlayersManagementDialog({
                           )}
                         </Popover>
                       </div>
-                      <div className="text-center pt-4">
+                      <div className="text-center pt-4 ">
                         <div className="flex items-center justify-center gap-4">
                           <div className="flex-1 border-t border-gray-200"></div>
                           <span className="text-sm text-gray-500 font-medium">{t("admin.clubs.players_modal.or")}</span>
@@ -481,7 +479,7 @@ export function PlayersManagementDialog({
                         <Button
                           variant="outline"
                           onClick={() => setShowManualEntry(true)}
-                          className="mt-4 flex items-center gap-2 bg-white hover:bg-gray-50 border-2 border-[#4C97F1] text-[#4C97F1] hover:text-[#4C97F1] font-semibold"
+                          className="mt-4 flex mx-auto items-center gap-2 bg-white hover:bg-gray-50 border-2 border-[#4C97F1] text-[#4C97F1] hover:text-[#4C97F1] font-semibold"
                         >
                           <UserPlus className="w-4 h-4" />
                           {t("admin.clubs.players_modal.create_new_button")}
@@ -491,12 +489,12 @@ export function PlayersManagementDialog({
                   </div>
                 ) : (
                   <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between mb-6 flex-col sm:flex-row gap-4 sm:gap-0">
+                      <div className="flex order-2 sm:order-1 items-center gap-2">
                         <div className="w-2 h-6 bg-green-600 rounded-full"></div>
                         <h4 className="font-semibold text-gray-900 text-lg">{t("admin.clubs.players_modal.create_new.title")}</h4>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 order-1 sm:order-2 w-full justify-between sm:justify-end sm:w-[100px]">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -696,7 +694,7 @@ export function PlayersManagementDialog({
                                 <div className="w-8 h-8 bg-[#4C97F1] rounded-full flex items-center justify-center text-white font-bold text-sm">
                                   {player.first_name.charAt(0)}{player.last_name.charAt(0)}
                                 </div>
-                                <span>{player.first_name} {player.last_name}</span>
+                                <span className="">{player.first_name} {player.last_name}</span>
                               </div>
                             </TableCell>
                             <TableCell>

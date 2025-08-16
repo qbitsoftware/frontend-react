@@ -161,7 +161,7 @@ function RouteComponent() {
             }
           })
           .catch((error) => {
-            console.error("Payment status check failed:", error);
+            void error;
             toast.error(t("licenses.payment.status.check_failed"));
           });
       } else if (status === "success") {
@@ -513,7 +513,6 @@ function RouteComponent() {
           : t("licenses.verification.name_id_mismatch"),
       };
     } catch (error) {
-      console.error("ID verification error:", error);
       return {
         isValid: true, // Don't block user if verification service is down
         message: t("licenses.verification.verification_unavailable"),

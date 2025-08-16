@@ -24,7 +24,6 @@ import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as LitsentsIndexImport } from './routes/litsents/index'
 import { Route as KontaktIndexImport } from './routes/kontakt/index'
 import { Route as KlubidIndexImport } from './routes/klubid/index'
-import { Route as KalenderIndexImport } from './routes/kalender/index'
 import { Route as UudisedBlogidImport } from './routes/uudised/$blogid'
 import { Route as LitsentsSuccessImport } from './routes/litsents/success'
 import { Route as LitsentsCancelImport } from './routes/litsents/cancel'
@@ -59,7 +58,6 @@ import { Route as VoistlusedTournamentidTulemusedGroupidIndexImport } from './ro
 import { Route as AdminTournamentsTournamentidTabelidIndexImport } from './routes/admin/tournaments/$tournamentid/tabelid/index'
 import { Route as AdminTournamentsTournamentidOsalejadIndexImport } from './routes/admin/tournaments/$tournamentid/osalejad/index'
 import { Route as AdminTournamentsTournamentidMangudIndexImport } from './routes/admin/tournaments/$tournamentid/mangud/index'
-import { Route as AdminTournamentsTournamentidLauadIndexImport } from './routes/admin/tournaments/$tournamentid/lauad/index'
 import { Route as AdminTournamentsTournamentidGrupidIndexImport } from './routes/admin/tournaments/$tournamentid/grupid/index'
 import { Route as AdminTournamentsTournamentidAjakavaIndexImport } from './routes/admin/tournaments/$tournamentid/ajakava/index'
 import { Route as AdminTournamentsTournamentidGrupidGroupidLayoutImport } from './routes/admin/tournaments/$tournamentid/grupid/$groupid/layout'
@@ -147,12 +145,6 @@ const KontaktIndexRoute = KontaktIndexImport.update({
 const KlubidIndexRoute = KlubidIndexImport.update({
   id: '/klubid/',
   path: '/klubid/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const KalenderIndexRoute = KalenderIndexImport.update({
-  id: '/kalender/',
-  path: '/kalender/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -377,13 +369,6 @@ const AdminTournamentsTournamentidMangudIndexRoute =
     getParentRoute: () => AdminTournamentsTournamentidLayoutRoute,
   } as any)
 
-const AdminTournamentsTournamentidLauadIndexRoute =
-  AdminTournamentsTournamentidLauadIndexImport.update({
-    id: '/lauad/',
-    path: '/lauad/',
-    getParentRoute: () => AdminTournamentsTournamentidLayoutRoute,
-  } as any)
-
 const AdminTournamentsTournamentidGrupidIndexRoute =
   AdminTournamentsTournamentidGrupidIndexImport.update({
     id: '/grupid/',
@@ -526,13 +511,6 @@ declare module '@tanstack/react-router' {
       path: '/uudised/$blogid'
       fullPath: '/uudised/$blogid'
       preLoaderRoute: typeof UudisedBlogidImport
-      parentRoute: typeof rootRoute
-    }
-    '/kalender/': {
-      id: '/kalender/'
-      path: '/kalender'
-      fullPath: '/kalender'
-      preLoaderRoute: typeof KalenderIndexImport
       parentRoute: typeof rootRoute
     }
     '/klubid/': {
@@ -780,13 +758,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTournamentsTournamentidGrupidIndexImport
       parentRoute: typeof AdminTournamentsTournamentidLayoutImport
     }
-    '/admin/tournaments/$tournamentid/lauad/': {
-      id: '/admin/tournaments/$tournamentid/lauad/'
-      path: '/lauad'
-      fullPath: '/admin/tournaments/$tournamentid/lauad'
-      preLoaderRoute: typeof AdminTournamentsTournamentidLauadIndexImport
-      parentRoute: typeof AdminTournamentsTournamentidLayoutImport
-    }
     '/admin/tournaments/$tournamentid/mangud/': {
       id: '/admin/tournaments/$tournamentid/mangud/'
       path: '/mangud'
@@ -947,7 +918,6 @@ interface AdminTournamentsTournamentidLayoutRouteChildren {
   AdminTournamentsTournamentidIndexRoute: typeof AdminTournamentsTournamentidIndexRoute
   AdminTournamentsTournamentidGrupidGroupidLayoutRoute: typeof AdminTournamentsTournamentidGrupidGroupidLayoutRouteWithChildren
   AdminTournamentsTournamentidGrupidIndexRoute: typeof AdminTournamentsTournamentidGrupidIndexRoute
-  AdminTournamentsTournamentidLauadIndexRoute: typeof AdminTournamentsTournamentidLauadIndexRoute
   AdminTournamentsTournamentidMangudIndexRoute: typeof AdminTournamentsTournamentidMangudIndexRoute
   AdminTournamentsTournamentidOsalejadIndexRoute: typeof AdminTournamentsTournamentidOsalejadIndexRoute
   AdminTournamentsTournamentidTabelidIndexRoute: typeof AdminTournamentsTournamentidTabelidIndexRoute
@@ -964,8 +934,6 @@ const AdminTournamentsTournamentidLayoutRouteChildren: AdminTournamentsTournamen
       AdminTournamentsTournamentidGrupidGroupidLayoutRouteWithChildren,
     AdminTournamentsTournamentidGrupidIndexRoute:
       AdminTournamentsTournamentidGrupidIndexRoute,
-    AdminTournamentsTournamentidLauadIndexRoute:
-      AdminTournamentsTournamentidLauadIndexRoute,
     AdminTournamentsTournamentidMangudIndexRoute:
       AdminTournamentsTournamentidMangudIndexRoute,
     AdminTournamentsTournamentidOsalejadIndexRoute:
@@ -1089,7 +1057,6 @@ export interface FileRoutesByFullPath {
   '/litsents/cancel': typeof LitsentsCancelRoute
   '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
-  '/kalender': typeof KalenderIndexRoute
   '/klubid': typeof KlubidIndexRoute
   '/kontakt': typeof KontaktIndexRoute
   '/litsents': typeof LitsentsIndexRoute
@@ -1125,7 +1092,6 @@ export interface FileRoutesByFullPath {
   '/admin/tournaments/$tournamentid/grupid/$groupid': typeof AdminTournamentsTournamentidGrupidGroupidLayoutRouteWithChildren
   '/admin/tournaments/$tournamentid/ajakava/': typeof AdminTournamentsTournamentidAjakavaIndexRoute
   '/admin/tournaments/$tournamentid/grupid': typeof AdminTournamentsTournamentidGrupidIndexRoute
-  '/admin/tournaments/$tournamentid/lauad': typeof AdminTournamentsTournamentidLauadIndexRoute
   '/admin/tournaments/$tournamentid/mangud': typeof AdminTournamentsTournamentidMangudIndexRoute
   '/admin/tournaments/$tournamentid/osalejad': typeof AdminTournamentsTournamentidOsalejadIndexRoute
   '/admin/tournaments/$tournamentid/tabelid': typeof AdminTournamentsTournamentidTabelidIndexRoute
@@ -1144,7 +1110,6 @@ export interface FileRoutesByTo {
   '/litsents/cancel': typeof LitsentsCancelRoute
   '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
-  '/kalender': typeof KalenderIndexRoute
   '/klubid': typeof KlubidIndexRoute
   '/kontakt': typeof KontaktIndexRoute
   '/litsents': typeof LitsentsIndexRoute
@@ -1177,7 +1142,6 @@ export interface FileRoutesByTo {
   '/voistlused/$tournamentid/tulemused': typeof VoistlusedTournamentidTulemusedIndexRoute
   '/admin/tournaments/$tournamentid/ajakava': typeof AdminTournamentsTournamentidAjakavaIndexRoute
   '/admin/tournaments/$tournamentid/grupid': typeof AdminTournamentsTournamentidGrupidIndexRoute
-  '/admin/tournaments/$tournamentid/lauad': typeof AdminTournamentsTournamentidLauadIndexRoute
   '/admin/tournaments/$tournamentid/mangud': typeof AdminTournamentsTournamentidMangudIndexRoute
   '/admin/tournaments/$tournamentid/osalejad': typeof AdminTournamentsTournamentidOsalejadIndexRoute
   '/admin/tournaments/$tournamentid/tabelid': typeof AdminTournamentsTournamentidTabelidIndexRoute
@@ -1203,7 +1167,6 @@ export interface FileRoutesById {
   '/litsents/cancel': typeof LitsentsCancelRoute
   '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
-  '/kalender/': typeof KalenderIndexRoute
   '/klubid/': typeof KlubidIndexRoute
   '/kontakt/': typeof KontaktIndexRoute
   '/litsents/': typeof LitsentsIndexRoute
@@ -1239,7 +1202,6 @@ export interface FileRoutesById {
   '/admin/tournaments/$tournamentid/grupid/$groupid': typeof AdminTournamentsTournamentidGrupidGroupidLayoutRouteWithChildren
   '/admin/tournaments/$tournamentid/ajakava/': typeof AdminTournamentsTournamentidAjakavaIndexRoute
   '/admin/tournaments/$tournamentid/grupid/': typeof AdminTournamentsTournamentidGrupidIndexRoute
-  '/admin/tournaments/$tournamentid/lauad/': typeof AdminTournamentsTournamentidLauadIndexRoute
   '/admin/tournaments/$tournamentid/mangud/': typeof AdminTournamentsTournamentidMangudIndexRoute
   '/admin/tournaments/$tournamentid/osalejad/': typeof AdminTournamentsTournamentidOsalejadIndexRoute
   '/admin/tournaments/$tournamentid/tabelid/': typeof AdminTournamentsTournamentidTabelidIndexRoute
@@ -1266,7 +1228,6 @@ export interface FileRouteTypes {
     | '/litsents/cancel'
     | '/litsents/success'
     | '/uudised/$blogid'
-    | '/kalender'
     | '/klubid'
     | '/kontakt'
     | '/litsents'
@@ -1302,7 +1263,6 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid/grupid/$groupid'
     | '/admin/tournaments/$tournamentid/ajakava/'
     | '/admin/tournaments/$tournamentid/grupid'
-    | '/admin/tournaments/$tournamentid/lauad'
     | '/admin/tournaments/$tournamentid/mangud'
     | '/admin/tournaments/$tournamentid/osalejad'
     | '/admin/tournaments/$tournamentid/tabelid'
@@ -1320,7 +1280,6 @@ export interface FileRouteTypes {
     | '/litsents/cancel'
     | '/litsents/success'
     | '/uudised/$blogid'
-    | '/kalender'
     | '/klubid'
     | '/kontakt'
     | '/litsents'
@@ -1353,7 +1312,6 @@ export interface FileRouteTypes {
     | '/voistlused/$tournamentid/tulemused'
     | '/admin/tournaments/$tournamentid/ajakava'
     | '/admin/tournaments/$tournamentid/grupid'
-    | '/admin/tournaments/$tournamentid/lauad'
     | '/admin/tournaments/$tournamentid/mangud'
     | '/admin/tournaments/$tournamentid/osalejad'
     | '/admin/tournaments/$tournamentid/tabelid'
@@ -1377,7 +1335,6 @@ export interface FileRouteTypes {
     | '/litsents/cancel'
     | '/litsents/success'
     | '/uudised/$blogid'
-    | '/kalender/'
     | '/klubid/'
     | '/kontakt/'
     | '/litsents/'
@@ -1413,7 +1370,6 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid/grupid/$groupid'
     | '/admin/tournaments/$tournamentid/ajakava/'
     | '/admin/tournaments/$tournamentid/grupid/'
-    | '/admin/tournaments/$tournamentid/lauad/'
     | '/admin/tournaments/$tournamentid/mangud/'
     | '/admin/tournaments/$tournamentid/osalejad/'
     | '/admin/tournaments/$tournamentid/tabelid/'
@@ -1435,7 +1391,6 @@ export interface RootRouteChildren {
   LitsentsCancelRoute: typeof LitsentsCancelRoute
   LitsentsSuccessRoute: typeof LitsentsSuccessRoute
   UudisedBlogidRoute: typeof UudisedBlogidRoute
-  KalenderIndexRoute: typeof KalenderIndexRoute
   KlubidIndexRoute: typeof KlubidIndexRoute
   KontaktIndexRoute: typeof KontaktIndexRoute
   LitsentsIndexRoute: typeof LitsentsIndexRoute
@@ -1456,7 +1411,6 @@ const rootRouteChildren: RootRouteChildren = {
   LitsentsCancelRoute: LitsentsCancelRoute,
   LitsentsSuccessRoute: LitsentsSuccessRoute,
   UudisedBlogidRoute: UudisedBlogidRoute,
-  KalenderIndexRoute: KalenderIndexRoute,
   KlubidIndexRoute: KlubidIndexRoute,
   KontaktIndexRoute: KontaktIndexRoute,
   LitsentsIndexRoute: LitsentsIndexRoute,
@@ -1485,7 +1439,6 @@ export const routeTree = rootRoute
         "/litsents/cancel",
         "/litsents/success",
         "/uudised/$blogid",
-        "/kalender/",
         "/klubid/",
         "/kontakt/",
         "/litsents/",
@@ -1574,9 +1527,6 @@ export const routeTree = rootRoute
     "/uudised/$blogid": {
       "filePath": "uudised/$blogid.tsx"
     },
-    "/kalender/": {
-      "filePath": "kalender/index.tsx"
-    },
     "/klubid/": {
       "filePath": "klubid/index.tsx"
     },
@@ -1616,7 +1566,6 @@ export const routeTree = rootRoute
         "/admin/tournaments/$tournamentid/",
         "/admin/tournaments/$tournamentid/grupid/$groupid",
         "/admin/tournaments/$tournamentid/grupid/",
-        "/admin/tournaments/$tournamentid/lauad/",
         "/admin/tournaments/$tournamentid/mangud/",
         "/admin/tournaments/$tournamentid/osalejad/",
         "/admin/tournaments/$tournamentid/tabelid/",
@@ -1727,10 +1676,6 @@ export const routeTree = rootRoute
     },
     "/admin/tournaments/$tournamentid/grupid/": {
       "filePath": "admin/tournaments/$tournamentid/grupid/index.tsx",
-      "parent": "/admin/tournaments/$tournamentid"
-    },
-    "/admin/tournaments/$tournamentid/lauad/": {
-      "filePath": "admin/tournaments/$tournamentid/lauad/index.tsx",
       "parent": "/admin/tournaments/$tournamentid"
     },
     "/admin/tournaments/$tournamentid/mangud/": {

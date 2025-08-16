@@ -34,9 +34,9 @@ export const EliminationBrackets = ({
   };
 
   return (
-    <div className='border-grey-200 border-x border-b'>
+    <div className='border-grey-200 border-x border-b rounded-t-lg'>
       <div className="z-40 top-0 w-full hide-in-pdf">
-        <div className="px-0 w-full bg-[#F8F9FA] rounded-t pdf-background">
+        <div className="px-0 w-full bg-[#F8F9FA] rounded-t-lg pdf-background">
           <div className="flex flex-col sm:flex-row sm:items-center px-2 py-3 gap-3 sm:gap-4">
             <div className="flex-1 min-w-0 order-2 sm:order-1">
               <Tabs
@@ -44,12 +44,12 @@ export const EliminationBrackets = ({
                 className="z-10 w-full"
               >
                 <div className="w-full overflow-x-auto">
-                  <TabsList className="flex justify-start gap-1 sm:gap-2 lg:gap-4 px-2 text-black bg-transparent min-w-max">
+                  <TabsList className="flex justify-start gap-2 px-0 bg-transparent min-w-max h-auto">
                     {data.eliminations.map((item, index) => (
                       <TabsTrigger
                         key={index}
                         value={item.elimination[0].name}
-                        className="flex-shrink-0 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:bg-stone-600 data-[state=active]:text-white data-[state=active]:shadow-sm bg-[#4C97F1] text-white min-w-[60px] sm:min-w-[80px] text-center"
+                        className="flex-shrink-0 px-3 sm:px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-md bg-gray-100 text-gray-700 hover:bg-gray-200 border-0 min-w-[70px] text-center"
                         onClick={() => {
                           const container = scrollContainerRef.current;
                           const targetElement = document.getElementById(
@@ -80,7 +80,7 @@ export const EliminationBrackets = ({
                 </div>
               </Tabs>
             </div>
-            
+
             <Button
               variant="outline"
               className="hidden sm:flex flex-shrink-0 order-1 sm:order-2 self-end sm:self-auto"

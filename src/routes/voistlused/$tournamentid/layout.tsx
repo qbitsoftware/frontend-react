@@ -28,7 +28,6 @@ export const Route = createFileRoute('/voistlused/$tournamentid')({
         )
       } catch (error) {
         const err = error as ErrorResponse
-        console.error('Error loading tournament tables:', error)
         if (err.response?.status === 404) {
           tournament_tables = null
         } else {
@@ -42,7 +41,6 @@ export const Route = createFileRoute('/voistlused/$tournamentid')({
         )
       } catch (error) {
         const err = error as ErrorResponse
-        console.error('Error loading tournament matches:', error)
         if (err.response?.status === 404) {
           tournament_matches = null
         } else {
@@ -52,7 +50,6 @@ export const Route = createFileRoute('/voistlused/$tournamentid')({
 
       return { tournament_tables, tournamentData, tournament_matches }
     } catch (error) {
-      console.error('Error in tournament loader:', error)
       throw error
     }
   },
@@ -77,7 +74,6 @@ function RouteComponent() {
       </TournamentProvider>
     )
   } else {
-    console.error('No tournament data available')
     return <ErrorPage />
   }
 }

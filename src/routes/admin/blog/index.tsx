@@ -2,16 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import {
-  PlusCircle,
-  Search,
   Edit,
   Trash2,
   AlertCircle,
   FolderX,
+  MoreHorizontal,
 } from "lucide-react";
 import { UseDeleteBlog, UseGetBlogsQuery } from "@/queries/blogs";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -35,6 +33,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from "react-i18next";
 import { toast } from 'sonner'
+import AdminHeader from "../-components/admin-header";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/admin/blog/")({
   component: RouteComponent,
@@ -43,12 +44,17 @@ export const Route = createFileRoute("/admin/blog/")({
 function RouteComponent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [blogIdToDelete, setBlogIdToDelete] = useState<number | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
   const deleteMutation = UseDeleteBlog();
   const { data: blogData, isLoading, error } = UseGetBlogsQuery();
   const { t } = useTranslation();
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const handleDeleteClick = (blogId: number) => {
+    setOpenDropdownId(null);
     setBlogIdToDelete(blogId);
+    setIsDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
@@ -56,79 +62,27 @@ function RouteComponent() {
 
     try {
       await deleteMutation.mutateAsync(blogIdToDelete);
-      toast.message("Blog deleted");
+      toast.message(t('admin.blogs.toasts.deleted'));
       setBlogIdToDelete(null);
     } catch (err) {
-      toast.error("Failed to delete");
+      toast.error(t('admin.blogs.toasts.deleted_failed'));
     }
+    setIsDialogOpen(false);
   };
 
   const handleDeleteCancel = () => {
     setBlogIdToDelete(null);
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="w-full p-4">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <Skeleton className="h-8 w-40 mb-2" />
-            <Skeleton className="h-4 w-60" />
-          </div>
-          <Skeleton className="h-10 w-32" />
-        </div>
-
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-          <Skeleton className="h-10 w-40" />
-          <Skeleton className="h-10 w-full sm:w-1/3" />
-        </div>
-
-        <Card className="overflow-y-auto h-[600px]">
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[300px]">
-                    <Skeleton className="h-4 w-20" />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-4 w-20" />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-4 w-20" />
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Skeleton className="h-4 w-20 ml-auto" />
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[...Array(5)].map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className="h-4 w-[250px]" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-24" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-6 w-16 rounded-full" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Skeleton className="h-8 w-20" />
-                        <Skeleton className="h-8 w-20" />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  const getStatusVariant = (state: string) => {
+    switch (state) {
+      case "published":
+        return { variant: "default" as const, className: "bg-green-100 text-green-800 border-green-200 hover:bg-green-200" }
+      case "draft":
+        return { variant: "secondary" as const, className: "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200" }
+      default:
+        return { variant: "destructive" as const, className: "bg-red-100 text-red-800 border-red-200 hover:bg-red-200" }
+    }
   }
 
   if (error) {
@@ -190,112 +144,137 @@ function RouteComponent() {
   return (
     <div className="w-full">
       <div className="p-2 py-8 md:p-8">
-        <div className="flex flex-col md:flex-row md:justify-between items-center mb-8">
-          <div className="mb-4 md:mb-0 text-center md:text-left">
-            <h3 className="font-bold text-gray-900">
-              {t("admin.blogs.title")}
-            </h3>
-            <p className="text-gray-600 mt-1">{t("admin.blogs.description")}</p>
-          </div>
-          <Link href="/admin/blog/new">
-            <Button className="flex items-center text-white w-full sm:w-auto">
-              <PlusCircle className="w-4 h-4 mr-1" />
-              {t("admin.blogs.add_new")}
-            </Button>
-          </Link>
-        </div>
+        <AdminHeader
+          title={t("admin.blogs.title")}
+          description={t("admin.blogs.description")}
+          add_new={t("admin.blogs.add_new")}
+          href={"/admin/blog/new"}
+          searchTerm={searchTerm}
+          input_placeholder={t("admin.blogs.search")}
+          setSearchTerm={setSearchTerm}
+        />
 
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 ">
-          <div className="relative w-full sm:w-1/3">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={t("admin.blogs.search")}
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <Card className="">
+        <Card className="border-gray-200 shadow-sm">
           <CardContent className="p-0">
-            <Table className="">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[300px]">
-                    {t("admin.blogs.table.title")}
-                  </TableHead>
-                  <TableHead>{t("admin.blogs.table.date")}</TableHead>
-                  <TableHead>{t("admin.blogs.table.status")}</TableHead>
-                  <TableHead className="text-right">
-                    {t("admin.blogs.table.actions")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredBlogs.length > 0 ? (
-                  filteredBlogs.map((blog) => (
-                    <TableRow key={blog.id}>
-                      <TableCell className="font-medium">
-                        {blog.title}
-                      </TableCell>
-                      <TableCell>
-                        {blog.created_at
-                          ? format(new Date(blog.created_at), "MMM dd, yyyy")
-                          : "No date"}
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${blog.status === "published"
-                            ? "bg-green-100 text-green-800"
-                            : blog.status === "draft"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-gray-100 text-gray-800"
-                            }`}
-                        >
-                          {blog.status || "Draft"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Link to={`/admin/blog/${blog.id}`}>
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4 mr-1" />
-                              {t("admin.blogs.edit")}
-                            </Button>
-                          </Link>
-                          <Button
-                            variant="outline"
-                            className="text-red-600"
-                            size="sm"
-                            onClick={() => handleDeleteClick(blog.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            {t("admin.blogs.delete")}
-                          </Button>
+            <div className="overflow-x-auto">
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow className="border-gray-200 bg-gray-50/50">
+                    <TableHead className="text-xs sm:text-sm px-3 py-3 font-semibold text-gray-700 w-[300px]">
+                      {t("admin.blogs.table.title")}
+                    </TableHead>
+                    <TableHead className="text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700">{t("admin.blogs.table.date")}</TableHead>
+                    <TableHead className="hidden sm:block text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700">{t("admin.blogs.table.status")}</TableHead>
+                    <TableHead className="text-xs sm:text-sm px-3 py-3 text-center font-semibold text-gray-700">
+                      {t("admin.blogs.table.actions")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    [...Array(5)].map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="px-3 py-3">
+                          <Skeleton className="h-4 w-[250px]" />
+                        </TableCell>
+                        <TableCell className="px-3 py-3">
+                          <Skeleton className="h-4 w-24" />
+                        </TableCell>
+                        <TableCell className="px-3 py-3">
+                          <Skeleton className="h-6 w-16 rounded-full" />
+                        </TableCell>
+                        <TableCell className="px-3 py-3 text-right">
+                          <div className="flex justify-end gap-2">
+                            <Skeleton className="h-8 w-20" />
+                            <Skeleton className="h-8 w-20" />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : filteredBlogs && filteredBlogs.length > 0 ? (
+                    filteredBlogs.map((blog) => (
+                      <TableRow key={blog.id} className="cursor-pointer hover:bg-gray-50/75 border-gray-100 transition-colors duration-150">
+                        <TableCell className="px-3 py-3 font-medium text-gray-900">
+                          <div className="flex items-center gap-2">
+                            <span className="truncate max-w-[130px] sm:max-w-[300px] md:max-w-[400px]" title={blog.title}>
+                              {blog.title}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-3 py-3 text-gray-600 text-center truncate">
+                          {blog.created_at
+                            ? format(new Date(blog.created_at), "MMM dd, yyyy")
+                            : t("admin.blogs.no_date")}
+                        </TableCell>
+                        <TableCell className="px-3 py-3 text-center hidden sm:table-cell">
+                          <Badge className={`text-xs px-2 py-1 font-medium ${getStatusVariant(blog.status).className}`}>
+                            {blog.status.replace('_', ' ').toUpperCase() === "DRAFT" ? t('admin.blogs.status_draft').toUpperCase() : t('admin.blogs.status_published').toUpperCase()}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="px-3 py-3">
+                          <div className="flex justify-center">
+                            <DropdownMenu
+                              open={openDropdownId === blog.id}
+                              onOpenChange={(open) => {
+                                setOpenDropdownId(open ? blog.id : null);
+                              }}
+                            >
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                  <Link to={`/admin/blog/${blog.id}`} className="flex items-center">
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    {t("admin.blogs.edit")}
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteClick(blog.id)}
+                                  className="text-red-600 focus:text-red-600"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  {t("admin.blogs.delete")}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-8">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <FolderX className="w-5 h-5 text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {searchTerm
+                                ? t("admin.blogs.search_no_results")
+                                : t("admin.blogs.no_results")}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {searchTerm
+                                ? t('admin.blogs.search_criteria')
+                                : t("admin.blogs.not_found_subtitle")}
+                            </p>
+                          </div>
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      className="text-center py-6 text-gray-500"
-                    >
-                      {searchTerm
-                        ? "No blogs match your search"
-                        : "No blogs found"}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <AlertDialog open={blogIdToDelete !== null}>
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("admin.blogs.delete_title")}</AlertDialogTitle>

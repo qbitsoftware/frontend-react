@@ -2,29 +2,22 @@ import { QueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   createRootRouteWithContext,
-  useRouterState,
   useLocation
 } from "@tanstack/react-router";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "./-components/footer";
 import Navbar from "@/components/navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import NotFoundPage from "./-components/notfound";
-import LoadingScreen from "./-components/loading-screen";
 import { Toaster } from "sonner";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
   component: () => {
-    const { status } = useRouterState();
-
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
-
-
-    const isLoading = status === "pending";
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -46,13 +39,11 @@ export const Route = createRootRouteWithContext<{
       <>
         <SidebarProvider defaultOpen={false}>
           <div className="flex flex-col w-full relative">
-            {showNavbar  && <Navbar />}
+            {showNavbar && <Navbar />}
             <main className="flex-grow">
-              <Suspense fallback={<LoadingScreen />}>
-                {isLoading ? <LoadingScreen /> : <Outlet />}
-              </Suspense>
+              <Outlet />
             </main>
-            {!isLoading && <Footer />}
+            <Footer />
             <Toaster />
           </div>
           <AppSidebar />
