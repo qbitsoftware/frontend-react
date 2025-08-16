@@ -1,5 +1,5 @@
 import { useUsersCount } from '@/queries/users';
-import { PersonStanding, Trophy, FileText, Users, Clock } from 'lucide-react';
+import { PersonStanding, Trophy, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { StatsCard } from './statistics-card';
 import { formatDateString } from '@/lib/utils';
@@ -34,55 +34,48 @@ export default function AdminDashboard({ user }: Props) {
 
     const quickActions = [
         {
-            title: t("admin.dashboard.quick_actions.new_blog"),
-            description: t("admin.dashboard.quick_actions.new_blog_desc"),
-            icon: FileText,
-            href: "/admin/blog/new",
-            color: "bg-green-50 hover:bg-green-100 border-green-200"
-        },
-        {
             title: t("admin.dashboard.quick_actions.new_tournament"),
             description: t("admin.dashboard.quick_actions.new_tournament_desc"),
-            icon: Trophy,
+            iconSrc: "/icons/tournament.png",
             href: "/admin/tournaments/new",
-            color: "bg-red-50 hover:bg-red-100 border-red-200"
-        },
-        {
-            title: t("admin.dashboard.quick_actions.manage_clubs"),
-            description: t("admin.dashboard.quick_actions.manage_clubs_desc"),
-            icon: Users,
-            href: "/admin/clubs",
             color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
         },
         {
-            title: t("admin.dashboard.quick_actions.manage_tournaments"),
-            description: t("admin.dashboard.quick_actions.manage_tournaments_desc"),
-            icon: Users,
-            href: "/admin/tournaments",
-            color: "bg-orange-50 hover:bg-orange-100 border-orange-200"
-        }
+            title: t("admin.dashboard.quick_actions.new_blog"),
+            description: t("admin.dashboard.quick_actions.new_blog_desc"),
+            iconSrc: "/icons/write-news.png",
+            href: "/admin/blog/new",
+            color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
+        },
+                {
+            title: t("admin.dashboard.quick_actions.manage_clubs"),
+            description: t("admin.dashboard.quick_actions.manage_clubs_desc"),
+            iconSrc: "/icons/clubs.png",
+            href: "/admin/clubs",
+            color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
+        },
     ];
 
     // const stats = getStats(tournaments);
     const lastRatingCalculation = getLastRatingCalculation();
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="mx-auto space-y-4 sm:space-y-6 p-4 sm:p-6">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+            <div className="mx-auto space-y-6 p-4 sm:p-6">
                 {/* Header */}
-                <div className="p-4 sm:p-6">
+                <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg p-6 sm:p-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                            <h1 className="text-2xl sm:text-2xl font-bold bg-[#4C97F1] bg-clip-text text-transparent">
                                 {getTimeBasedGreeting()}, {user?.username || 'Admin'}!
                             </h1>
-                            <p className="text-gray-600 mt-1 text-sm sm:text-base">
+                            <p className="text-slate-600 mt-2 text-base sm:text-base font-medium">
                                 {t("admin.dashboard.welcome_subtitle")}
                             </p>
                         </div>
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 bg-gray-50 p-2 sm:p-3 rounded-lg">
-                            <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                            <span className="truncate">
+                        <div className="flex items-center gap-3 text-sm text-slate-600 bg-white/60 backdrop-blur-sm p-3 sm:p-4 rounded-xl border border-white/30 shadow-sm">
+                            <Clock className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500" />
+                            <span className="truncate font-medium">
                                 {t("admin.dashboard.last_rating_calculation")}: {formatDateString(lastRatingCalculation.toISOString())}
                             </span>
                         </div>
@@ -92,36 +85,28 @@ export default function AdminDashboard({ user }: Props) {
                 {/* Quick Actions */}
                 <AdminDashBoardQuickActions quickActions={quickActions} />
 
-                {/* User Club Management & Feedback Cards */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                    <AdminDashboardLatestTournaments />
-
-                    <AdminDashBoardBlogs />
-
+                {/* Stats Cards - Moved Up for Better Hierarchy */}
+                <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                    <StatsCard
+                        Icon={Trophy}
+                        iconColor="text-blue-600"
+                        bgColor="bg-gradient-to-br from-blue-50 to-blue-100"
+                        title={4}
+                        description={t("admin.dashboard.total_tournaments")}
+                    />
+                    <StatsCard
+                        Icon={PersonStanding}
+                        iconColor="text-emerald-600"
+                        bgColor="bg-gradient-to-br from-emerald-50 to-emerald-100"
+                        title={count}
+                        description={t("admin.dashboard.users_in_db")}
+                    />
                 </div>
 
-                {/* Main Content Grid */}
-                <div className="grid grid-cols-1 gap-4 sm:gap-6">
-
-                    {/* <AdminDashBoardClubWrapper /> */}
-
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-2 gap-4 sm:gap-6">
-                        <StatsCard
-                            Icon={Trophy}
-                            iconColor="text-blue-600"
-                            bgColor="bg-blue-100"
-                            title={4}
-                            description={t("admin.dashboard.total_tournaments")}
-                        />
-                        <StatsCard
-                            Icon={PersonStanding}
-                            iconColor="text-green-600"
-                            bgColor="bg-green-100"
-                            title={count}
-                            description={t("admin.dashboard.users_in_db")}
-                        />
-                    </div>
+                {/* Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <AdminDashboardLatestTournaments />
+                    <AdminDashBoardBlogs />
                 </div>
 
                 <AdminDashBoardFeedback />

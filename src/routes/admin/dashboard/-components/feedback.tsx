@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 export default function AdminDashBoardFeedback() {
     const { t } = useTranslation()
     return (
-        <Card className="shadow-sm bg-gradient-to-br from-blue-50 to-gray-50 border-blue-200">
+        <Card className="shadow-sm bg-gradient-to-br from-blue-50 to-gray-50 border-blue-200 mt-5">
             <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-lg text-gray-800">
                     <Heart className="w-5 h-5 text-[#4C97F1]" />

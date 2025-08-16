@@ -11,7 +11,7 @@ type QuickAction = {
     title: string;
     description: string;
     color: string;
-    icon: React.ComponentType<{ className?: string }>;
+    iconSrc: string;
     href: string;
 }
 
@@ -29,14 +29,14 @@ export default function AdminDashBoardQuickActions({ quickActions }: Props) {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
                     {quickActions.map((action, index) => (
                         <Link key={index} href={action.href}>
                             <Card className={`cursor-pointer transition-all duration-200 ${action.color} h-full`}>
-                                <CardContent className="p-3 sm:p-4">
+                                <CardContent className="p-2 sm:p-4">
                                     <div className="flex items-start gap-3">
-                                        <div className="p-2 rounded-lg bg-white/80 flex-shrink-0">
-                                            <action.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                                        <div className="p-2 rounded-lg flex-shrink-0">
+                                            <img src={action.iconSrc} alt="" className="w-6 h-6 sm:w-8 sm:h-8" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h4 className="font-medium text-xs sm:text-sm mb-1 truncate">
