@@ -156,7 +156,7 @@ const EliminationMatch = ({
                 }
                 showLabel={true}
               />
-              {matchDate && !isEmptyDate(matchDate) && (
+              {matchDate && match.match.extra_data.table != "" && !isEmptyDate(matchDate) && (
                 <div className="flex items-center gap-1 ml-3 whitespace-nowrap">
                   <Clock className="h-3 w-3" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>
