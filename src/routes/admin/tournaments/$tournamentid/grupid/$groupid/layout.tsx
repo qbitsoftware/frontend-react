@@ -1,10 +1,11 @@
 import {
   createFileRoute,
   Outlet,
+  redirect,
 } from '@tanstack/react-router'
 import { UseGetTournamentTable } from '@/queries/tables'
 import ErrorPage from '@/components/error'
-import { ErrorResponse } from '@/types/errors'
+import { TournamentTableProvider } from '@/routes/voistlused/$tournamentid/-components/tt-provider'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid',
@@ -22,10 +23,7 @@ export const Route = createFileRoute(
         ),
       )
     } catch (error) {
-      const err = error as ErrorResponse
-      if (err.response.status !== 404) {
-        throw error
-      }
+      throw redirect({ to: `/admin/tournaments/${params.tournamentid}/grupid` })
     }
     return { table_data }
   },
@@ -39,8 +37,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="pb-8">
-      <Outlet />
-    </div>
+    <TournamentTableProvider tournament_table_data={table_data.data}>
+      <div className="pb-8">
+        <Outlet />
+      </div>
+    </TournamentTableProvider>
   )
 }

@@ -46,6 +46,19 @@ export function UseGetTournamentsAdmin() {
   });
 }
 
+export function UseGetTournamentsAdminQuery() {
+  return useQuery<TournamentsResponse>({
+    queryKey: ["tournaments_admin_query"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/v1/tournaments`, {
+        params: { public: false },
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
+}
+
 export function UseGetTournamentsPublic() {
   return queryOptions<TournamentsResponse>({
     queryKey: ["tournaments_public"],
@@ -331,4 +344,24 @@ export const UseGetHomePageTournaments = () => {
       return data;
     },
   });
+}
+
+export const UseCalcTournamentRating = (tournament_id: number) => {
+  // const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.post(
+        `/api/v1/tournaments/${tournament_id}/calc_rating`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+      return data;
+    },
+    // onSuccess: () => {
+    //   queryClient.resetQueries({ queryKey: ["tournaments_admin"] });
+    // },
+  });
+
 }

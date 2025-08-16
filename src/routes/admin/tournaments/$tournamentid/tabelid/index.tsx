@@ -62,7 +62,9 @@ function RouteComponent() {
   }, [tablesQuery.data?.data, navigate, params.tournamentid, selectedGroup])
 
   if (tablesQuery.isLoading) {
-    return <Loader />
+    return (
+      <div className='min-h-screen flex items-center justify-center'><Loader /></div>
+    )
   }
 
   if (tablesQuery.isError || !tablesQuery.data?.data) {
@@ -70,5 +72,8 @@ function RouteComponent() {
   }
 
   // This component will quickly redirect, so we just show a loader
-  return <Loader />
+  // return <Loader />
+  return (
+    <div className='min-h-screen flex items-center justify-center'><Loader /></div>
+  )
 }

@@ -46,6 +46,8 @@ function RouteComponent() {
     groupId
   );
 
+  // const tt = useTournamentTable()
+
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId);
 
   const handleGroupChange = (newGroupId: number) => {

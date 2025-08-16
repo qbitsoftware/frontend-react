@@ -957,6 +957,32 @@
         "good_day": "Good day",
         "good_evening": "Good evening"
       },
+      "quick_actions": {
+        "new_blog": "New Blog Post",
+        "new_blog_desc": "Create a new blog post to share news and updates",
+        "new_tournament": "New Tournament",
+        "new_tournament_desc": "Create a new tournament or competition",
+        "manage_tournaments": "Manage Tournaments",
+        "manage_tournaments_desc": "View and manage existing tournaments",
+        "manage_feedback": "Manage Feedback",
+        "manage_feedback_desc": "Give feedback to developers and report issues",
+        "manage_clubs": "Manage Clubs",
+        "manage_clubs_desc": "Manage clubs and their players",
+        "view_blogs": "View Blogs",
+        "view_blogs_desc": "View and manage blog posts",
+        "title": "Quick Actions",
+        "description": "Quickly access common tasks and actions"
+      },
+      "last_rating_calculation": "Last rating calculation",
+      "welcome_subtitle": "Enjoy your time here!",
+      "feedback_welcome": "Feedback is always welcome!",
+      "feedback_subtitle": "If you have any suggestions or issues, please let us know.",
+      "view_feedback": "View Feedback",
+      "latest_blogs": "Latest Blog Posts",
+      "latest_blogs_description": "Latest blog posts and news",
+      "view_all": "View All",
+      "error_loading_blogs": "Error loading blogs",
+      "no_blogs_yet": "No blog posts created yet",
       "missing": "Dashboard unavailable",
       "missing_subtitle": "Dashboard unavailable. Create and manage tournaments to view the dashboard.",
       "total_tournaments": "Total tournaments",
@@ -1691,6 +1717,18 @@
           "note": "This action will remove the player from the club but will not delete their account.",
           "cancel": "Cancel",
           "confirm": "Remove Player"
+        },
+        "add_confirmation": {
+          "title": "Add Player to Club",
+          "description": "Are you sure you want to add {{playerName}} to {{clubName}}?",
+          "cancel": "Cancel",
+          "confirm": "Add Player"
+        },
+        "add_new_confirmation": {
+          "title": "Create and Add Player",
+          "description": "Are you sure you want to create and add {{playerName}} to {{clubName}}?",
+          "cancel": "Cancel",
+          "confirm": "Create Player"
         }
       },
       "validation": {
@@ -1706,11 +1744,25 @@
         "failed_to_load_my_clubs": "Failed to load your clubs",
         "id_verification_success": "ID verification successful",
         "player_added": "Player added to club successfully",
-        "player_added_to_club": "{{playerName}} added to club successfully",
-        "player_removed_from_club": "{{playerName}} removed from club successfully",
+        "player_added_to_club": "{{playerName}} added to {{clubName}} successfully",
+        "player_removed_from_club": "{{playerName}} removed from {{clubName}} successfully",
+        "new_player_created_and_added": "{{playerName}} created and added to {{clubName}} successfully",
         "failed_to_add_player": "Failed to add player to club",
         "failed_to_remove_player": "Failed to remove player from club",
         "missing_required_fields": "Please fill in all required fields: {{fields}}"
+      },
+      "api_errors": {
+        "player_not_found": "Player with ID {{player_id}} not found",
+        "club_not_found": "Club with ID {{club_id}} not found",
+        "player_already_in_club": "{{player_name}} is already a member of {{current_club_name}}",
+        "player_not_in_club": "{{player_name}} is not a member of {{club_name}}",
+        "validation_failed": "{{field}} is invalid: {{issue}}",
+        "required_field_missing": "{{field}} is required",
+        "invalid_format": "{{field}} has invalid format",
+        "unauthorized": "Authentication required",
+        "forbidden": "You don't have permission to perform this action",
+        "player_added_successfully": "Successfully added {{player_name}} to {{club_name}}",
+        "player_removed_successfully": "Successfully removed {{player_name}} from {{club_name}}"
       }
     },
     "media": {

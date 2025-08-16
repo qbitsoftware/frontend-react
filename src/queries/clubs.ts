@@ -9,6 +9,17 @@ export interface ClubsResponse {
     error: string | null
 }
 
+export interface ClubsMeResponse {
+    data: {
+        club_count: number;
+        clubs: Club[];
+        internal_user_id: number;
+        user_id: string;
+    }
+    error: string | null
+    message: string
+}
+
 export interface ClubResponse {
     data: Club
     message: string
@@ -38,6 +49,20 @@ export const UseGetClubsQuery = () => {
         }
     })
 }
+
+export const UseGetMyClub = () => {
+    return useQuery<ClubsMeResponse>({
+        queryKey: ["clubs_me"],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get('/api/v1/clubs/admin/me', {
+                withCredentials: true
+            });
+            return data
+        }
+    })
+}
+
+
 
 export const UseGetClubPlayers = (club_name: string) => {
     return useQuery<UsersResponse>({

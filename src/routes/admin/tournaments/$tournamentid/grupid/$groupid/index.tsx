@@ -1,54 +1,35 @@
 import { createFileRoute } from '@tanstack/react-router'
 import TournamentTableForm from '../-components/table-form'
-import { UseGetTournamentTable } from '@/queries/tables'
 import ErrorPage from '@/components/error'
-import { ErrorResponse } from '@/types/errors'
 import TimetableForm from '../-components/timetable-form'
 import { useState } from 'react'
+import { useTournamentTable } from '@/routes/voistlused/$tournamentid/-components/tt-provider'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/',
 )({
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    let table_data
-
-    try {
-      table_data = await queryClient.ensureQueryData(
-        UseGetTournamentTable(
-          Number(params.tournamentid),
-          Number(params.groupid),
-        ),
-      )
-    } catch (error) {
-      const err = error as ErrorResponse
-      if (err.response.status !== 404) {
-        throw error
-      }
-    }
-    return { table_data }
-  },
 })
 
 function RouteComponent() {
-  const { table_data } = Route.useLoaderData()
+  const tt = useTournamentTable()
   const [showTimetable, setShowTimetable] = useState<boolean>(
-    table_data?.data?.group?.time_table|| false
+    tt.group?.time_table || false
   )
 
-  if (!table_data || !table_data.data || !table_data.data.group) {
+  if (!tt || !tt.group) {
     return <></>
   }
-  
+
   return (
     <div>
-      <TournamentTableForm 
-        initial_data={table_data.data.group} 
+      <TournamentTableForm
+        initial_data={tt.group}
         onTimetableToggle={setShowTimetable}
       />
       {showTimetable && (
-        <TimetableForm tournament_table={table_data.data.group} />
+        <TimetableForm tournament_table={tt.group} />
       )}
     </div>
   )

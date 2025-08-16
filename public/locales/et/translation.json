@@ -966,6 +966,32 @@
         "good_day": "Tere päevast",
         "good_evening": "Tere õhtust"
       },
+      "quick_actions": {
+        "new_blog": "Avalda Uudis",
+        "new_blog_desc": "Loo uus blogi postitus või uudis",
+        "new_tournament": "Uus Võistlus",
+        "new_tournament_desc": "Loo uus võistlus",
+        "manage_tournaments": "Halda Võistlusi",
+        "manage_tournaments_desc": "Vaata ja halda olemasolevaid võistlusi",
+        "manage_feedback": "Halda Tagasisidet",
+        "manage_feedback_desc": "Anna teada probleemidest või tagasisidest",
+        "manage_clubs": "Halda Klubisid",
+        "manage_clubs_desc": "Lisa või muuda klubide andmeid",
+        "view_blogs": "Vaata Uudiseid",
+        "view_blogs_desc": "Vaata ja halda uudiseid",
+        "title": "Kiired toimingud",
+        "description": "Kiire juurdepääs tavalistele ülesannetele ja toimingutele"
+      },
+      "last_rating_calculation": "Viimane reitingu arvutus",
+      "welcome_subtitle": "Naudi oma aega siin!",
+      "feedback_welcome": "Tagasiside on teretulnud!",
+      "feedback_subtitle": "Meie tagasiside süsteem on loodud selleks, et aidata teil jagada oma mõtteid ja ettepanekuid. Teie tagasiside aitab meil teenust parandada.",
+      "view_feedback": "Anna Tagasisidet",
+      "latest_blogs": "Viimased blogipostitused",
+      "latest_blogs_description": "Viimased blogipostitused ja uudised",
+      "view_all": "Vaata kõiki",
+      "error_loading_blogs": "Viga blogide laadimisel",
+      "no_blogs_yet": "Blogipostitusi pole veel loodud",
       "missing": "Töölaud puudub",
       "missing_subtitle": "Töölauda pole. Loo ja vii läbi turniire, et töölauda näha.",
       "total_tournaments": "Minu võistlusi kokku",
@@ -1703,6 +1729,18 @@
           "note": "See toiming eemaldab mängija klubist, kuid ei kustuta tema kontot.",
           "cancel": "Tühista",
           "confirm": "Eemalda Mängija"
+        },
+        "add_confirmation": {
+          "title": "Lisa Mängija Klubisse",
+          "description": "Kas oled kindel, et soovid {{playerName}} lisada klubisse {{clubName}}?",
+          "cancel": "Tühista",
+          "confirm": "Lisa Mängija"
+        },
+        "add_new_confirmation": {
+          "title": "Loo ja Lisa Mängija",
+          "description": "Kas oled kindel, et soovid luua ja lisada {{playerName}} klubisse {{clubName}}?",
+          "cancel": "Tühista",
+          "confirm": "Loo Mängija"
         }
       },
       "validation": {
@@ -1724,11 +1762,25 @@
         "failed_to_load_my_clubs": "Sinu klubide laadimine ebaõnnestus",
         "id_verification_success": "ID kontrollimine õnnestus",
         "player_added": "Mängija lisamine klubi edukas",
-        "player_added_to_club": "{{playerName}} lisamine klubi edukas",
-        "player_removed_from_club": "{{playerName}} eemaldamine klubist edukas",
+        "player_added_to_club": "{{playerName}} lisatud edukalt klubisse {{clubName}}",
+        "player_removed_from_club": "{{playerName}} eemaldatud edukalt klubist {{clubName}}",
+        "new_player_created_and_added": "{{playerName}} loodud ja lisatud edukalt klubisse {{clubName}}",
         "failed_to_add_player": "Mängija lisamine klubi ebaõnnestus",
         "failed_to_remove_player": "Mängija eemaldamine klubist ebaõnnestus",
         "missing_required_fields": "Palun täida kõik nõutavad väljad: {{fields}}"
+      },
+      "api_errors": {
+        "player_not_found": "Mängijat ID {{player_id}} ei leitud",
+        "club_not_found": "Klubi ID {{club_id}} ei leitud",
+        "player_already_in_club": "{{player_name}} on juba {{current_club_name}} liige",
+        "player_not_in_club": "{{player_name}} ei ole {{club_name}} liige",
+        "validation_failed": "Väli {{field}} on vigane: {{issue}}",
+        "required_field_missing": "{{field}} on kohustuslik",
+        "invalid_format": "{{field}} on vales vormingus",
+        "unauthorized": "Sisselogimine on nõutav",
+        "forbidden": "Teil pole selle toimingu sooritamiseks õigusi",
+        "player_added_successfully": "{{player_name}} lisatud edukalt klubisse {{club_name}}",
+        "player_removed_successfully": "{{player_name}} eemaldatud edukalt klubist {{club_name}}"
       }
     },
     "media": {

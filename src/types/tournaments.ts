@@ -15,6 +15,7 @@ export type Tournament = {
   sport: string;
   state: string;
   private: boolean;
+  calc_rating: boolean;
   total_tables: number;
   information: string;
   media: string;
@@ -23,6 +24,7 @@ export type Tournament = {
   registration_type: string;
   registration_link?: string;
   registered_players_link?: string;
+  rating_calculated_at: string | null;
 };
 
 export type TournamentInformation = {

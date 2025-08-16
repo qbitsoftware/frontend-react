@@ -21,6 +21,7 @@ export const TournamentTables: React.FC<TournamentTablesProps> = ({ tables }) =>
   const { tournamentid } = useParams({ strict: false })
   const navigate = useNavigate()
   const { t } = useTranslation()
+
   return (
     <Card className="w-full border-none shadow-none bg-transparent">
       <CardHeader className="px-0 flex-col gap-3 sm:gap-4 md:gap-0 md:flex-row md:justify-between items-start md:items-center space-y-0">
@@ -47,40 +48,40 @@ export const TournamentTables: React.FC<TournamentTablesProps> = ({ tables }) =>
 
               </TableRow>
             </TableHeader>
-          <TableBody>
-            {tables ? tables.map((table) => {
-              let participants = table.participants.length
-              if (table.type === GroupType.ROUND_ROBIN || table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
-                participants = table.participants.filter((participant) => participant.type === "round_robin").length
+            <TableBody>
+              {tables ? tables.map((table) => {
+                let participants = table.participants.length
+                if (table.type === GroupType.ROUND_ROBIN || table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+                  participants = table.participants.filter((participant) => participant.type === "round_robin").length
 
-              }
-              return (
-                <TableRow key={table.id} onClick={() => (navigate({ to: `${table.id}` }))} className="cursor-pointer">
-                  <TableCell className="font-medium text-xs sm:text-sm px-1 sm:px-4 max-w-[80px] sm:max-w-none truncate">
-                    {table.class}
-                  </TableCell>
-                  <TableCell className="text-xs sm:text-sm px-1 sm:px-4 text-center">
-                    <span className="font-semibold">{participants}</span>/{table.size}
-                  </TableCell>
-                  <TableCell className="text-xs sm:text-sm px-1 sm:px-4 truncate max-w-[90px] sm:max-w-none">
-                    {parseTableType(table.type)}
-                  </TableCell>
-                  <TableCell className="text-xs sm:text-sm px-1 sm:px-4 text-center">
-                    {table.solo ? t('admin.tournaments.groups.solo') : t('admin.tournaments.groups.team')}
-                  </TableCell>
+                }
+                return (
+                  <TableRow key={table.id} onClick={() => (navigate({ to: `${table.id}` }))} className="cursor-pointer">
+                    <TableCell className="font-medium text-xs sm:text-sm px-1 sm:px-4 max-w-[80px] sm:max-w-none truncate">
+                      {table.class}
+                    </TableCell>
+                    <TableCell className="text-xs sm:text-sm px-1 sm:px-4 text-center">
+                      <span className="font-semibold">{participants}</span>/{table.size}
+                    </TableCell>
+                    <TableCell className="text-xs sm:text-sm px-1 sm:px-4 truncate max-w-[90px] sm:max-w-none">
+                      {parseTableType(table.type)}
+                    </TableCell>
+                    <TableCell className="text-xs sm:text-sm px-1 sm:px-4 text-center">
+                      {table.solo ? t('admin.tournaments.groups.solo') : t('admin.tournaments.groups.team')}
+                    </TableCell>
 
+                  </TableRow>
+                )
+              })
+                :
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-6 text-sm text-gray-500">
+                    {t("admin.tournaments.groups.no_tables")}
+                  </TableCell>
                 </TableRow>
-              )
-            })
-              :
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-6 text-sm text-gray-500">
-                  {t("admin.tournaments.groups.no_tables")}
-                </TableCell>
-              </TableRow>
-            }
-          </TableBody>
-        </Table>
+              }
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>
