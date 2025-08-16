@@ -62,7 +62,6 @@ export const Filters = ({
         month: "short",
       });
     } catch (error) {
-      console.error("Date formatting error:", error, "for date:", dateString);
       const parts = dateString.split("-");
       if (parts.length === 3) {
         const [, month, day] = parts;

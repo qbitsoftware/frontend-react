@@ -42,7 +42,7 @@ export const PlayerProfileData = ({ profile }: PlayerProfileDataProps) => {
             {t("rating.player_modal.sections.recent_match_history")}
           </h3>
 
-          <div className="space-y-2">
+          <div className="space-y-1 sm:space-y-2 max-h-60 overflow-y-auto pr-1">
             {profile.matches && profile.matches.map((game, index) => (
               <LastMatch key={index} last_game={game} />
             ))}

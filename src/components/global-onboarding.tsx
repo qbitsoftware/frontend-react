@@ -41,10 +41,10 @@ export function GlobalOnboarding() {
                 try {
                     targetRoute = currentStep.routeResolver()
                 } catch (error) {
-                    console.error('Error resolving route:', error)
+
                     // Fall back to original route or handle gracefully
                     if (currentStep.route.includes('[id]')) {
-                        console.error('Cannot resolve dynamic route, tutorial may not work correctly')
+                        void error
                         return
                     }
                 }

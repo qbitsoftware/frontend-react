@@ -21,7 +21,7 @@ export const PlayerProfileModal = ({ isOpen, onClose, user }: PlayerProfileModal
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[90vw] h-[90vh] md:max-w-6xl md:h-[550px] overflow-hidden py-0 px-0 bg-white rounded-2xl shadow-2xl border-0 sm:max-h-[90vh]">
+      <DialogContent className="w-[90vw] h-[80vh] md:max-w-6xl md:h-[550px] overflow-hidden py-0 px-0 bg-white rounded-2xl shadow-2xl border-0 sm:max-h-[90vh] overflow-y-auto">
         <DialogClose className="absolute left-4 top-4 sm:left-6 sm:top-6 p-2 sm:p-3 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#4C97F1]/20 transition-all duration-300 z-10">
           <X className="h-5 w-5 text-gray-600 hover:text-gray-800" />
           <span className="sr-only">Close</span>

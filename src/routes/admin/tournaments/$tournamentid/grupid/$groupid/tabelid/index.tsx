@@ -46,8 +46,6 @@ function RouteComponent() {
     groupId
   );
 
-  console.log('bracketsdata', bracketsData);
-
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId);
 
   const handleGroupChange = (newGroupId: number) => {

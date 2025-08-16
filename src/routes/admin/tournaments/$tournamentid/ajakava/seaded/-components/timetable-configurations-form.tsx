@@ -24,7 +24,7 @@ interface TableConfigProps {
 
 function TableConfiguration({ table, tournament }: TableConfigProps) {
   const { t } = useTranslation();
-  
+
   const tableQuery = useQuery(UseGetTournamentTable(tournament.id, table.id));
 
   const getTournamentDateRange = () => {
@@ -56,7 +56,7 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
   const getInitialDateTime = () => {
     console.log("detailedTable data:", detailedTable);
     console.log("detailedTable.start_date:", detailedTable.start_date);
-    
+
     const hasStartDate = detailedTable.start_date && detailedTable.start_date !== "";
     let formattedDate = tournamentStartDate;
     let formattedTime = "12:00";
@@ -75,7 +75,7 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
           console.log("Formatted date/time:", formattedDate, formattedTime);
         }
       } catch (error) {
-        console.error("Error parsing date:", error);
+        void error
       }
     } else {
       console.log("No start_date found, using defaults");
@@ -115,15 +115,14 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
         avg_match_duration: avgMatchDuration,
         break_duration: breakDuration,
       };
-      
+
       await timetableMutation.mutateAsync(values);
-      
-      const successMessage = isUpdate 
+
+      const successMessage = isUpdate
         ? t("admin.tournaments.timetable.updated_successfully")
         : t("admin.tournaments.timetable.generated_successfully");
       toast.success(successMessage);
     } catch (error) {
-      console.error("Error generating timetable:", error);
       const errorMessage = isUpdate
         ? t("admin.tournaments.timetable.update_error")
         : t("admin.tournaments.timetable.generation_error");
@@ -139,7 +138,7 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
       setEnabled(newTable.time_table || false);
       setAvgMatchDuration(newTable.avg_match_duration || 20);
       setBreakDuration(newTable.break_duration || 5);
-      
+
       if (newTable.start_date) {
         try {
           console.log("useEffect - Parsing start_date:", newTable.start_date);
@@ -156,7 +155,7 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
             setStartTime(newFormattedTime);
           }
         } catch (error) {
-          console.error("Error parsing date:", error);
+          void error;
         }
       } else {
         console.log("useEffect - No start_date in newTable:", newTable);
@@ -309,7 +308,7 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
               {isGenerating ? (
                 <>
                   <Pause className="h-4 w-4 animate-spin" />
-                  {hasGeneratedTimetable() 
+                  {hasGeneratedTimetable()
                     ? t("admin.tournaments.timetable.updating")
                     : t("admin.tournaments.timetable.generating")
                   }
@@ -317,7 +316,7 @@ function TableConfiguration({ table, tournament }: TableConfigProps) {
               ) : (
                 <>
                   <Play className="h-4 w-4" />
-                  {hasGeneratedTimetable() 
+                  {hasGeneratedTimetable()
                     ? t("admin.tournaments.timetable.update")
                     : t("admin.tournaments.timetable.generate")
                   }

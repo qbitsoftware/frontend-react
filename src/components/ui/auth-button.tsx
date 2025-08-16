@@ -28,7 +28,7 @@ export const AuthButton: React.FC<AuthButtonProps> = ({ className }) => {
       });
       await logout.mutateAsync();
     } catch (error) {
-      console.error(error);
+      void error
     }
   };
 
