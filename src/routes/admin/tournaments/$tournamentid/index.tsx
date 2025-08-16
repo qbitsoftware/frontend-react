@@ -39,12 +39,6 @@ function RouteComponent() {
       type: "svg" as const,
     },
     {
-      id: "media" as const,
-      label: "media",
-      icon: "/icons/write.svg",
-      type: "svg" as const,
-    },
-    {
       id: "images" as const,
       label: "images",
       icon: "/icons/videos.svg",
