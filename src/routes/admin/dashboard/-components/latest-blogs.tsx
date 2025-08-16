@@ -69,11 +69,16 @@ export default function AdminDashBoardBlogs() {
 
                 {!isLoading && !error && blogData?.data && blogData.data.length > 0 && (
                     <div className="flex flex-col gap-4">
-                        {blogData.data.map((blog) => (
+                        {blogData.data.slice(0, 3).map((blog) => (
                             <Link key={blog.id} href={`/admin/blog/${blog.id}`}>
-                                <div className="p-2 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center">
+                                <div className="p-2 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center overflow-hidden">
                                     <div className="">
-                                        <h4 className="font-medium text-sm sm:text-base truncate">{blog.title}</h4>
+                                        <h4 className="font-medium text-sm sm:text-base truncate">
+                                            {blog.title.length > 50 
+                                                ? `${blog.title.substring(0, 50)}...`
+                                                : blog.title
+                                            }
+                                        </h4>
                                         <p className="text-xs sm:text-sm text-gray-600 mb-2">
                                             {blog.description.length > 30
                                                 ? `${blog.description.substring(0, 30)}...`
