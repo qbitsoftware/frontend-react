@@ -82,12 +82,6 @@ const CalendarWidget = () => {
     return (
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-6 bg-[#4C97F1] rounded-full"></div>
-            <h6 className="text-lg font-semibold text-gray-900">
-              {t("calendar.upcoming")}
-            </h6>
-          </div>
           <div className="space-y-3">
             {[...Array(3)].map((_, index) => (
               <EventCardSkeleton
@@ -98,12 +92,6 @@ const CalendarWidget = () => {
           </div>
         </div>
         <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-6 bg-gray-400 rounded-full"></div>
-            <h6 className="text-lg font-semibold text-gray-900">
-              {t("calendar.finished")}
-            </h6>
-          </div>
           <div className="space-y-3">
             {[...Array(3)].map((_, index) => (
               <EventCardSkeleton
