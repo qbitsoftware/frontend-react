@@ -30,16 +30,6 @@ function RouteComponent() {
   const { tournament_tables } = Route.useLoaderData()
   const tournament = useTournament()
 
-  // const calcRatingMutation = UseCalcTournamentRating(tournament.id)
-  // const handleRatingCalculation = () => {
-  //   try {
-  //     calcRatingMutation.mutate()
-  //     toast.success('Ratings calculated successfully!')
-  //   } catch (error) {
-  //     toast.error('Failed to calculate ratings.')
-  //   }
-  // }
-
   return (
     <div className="p-4">
       {/* <div>

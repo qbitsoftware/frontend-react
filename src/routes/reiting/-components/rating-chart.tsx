@@ -111,7 +111,7 @@ export function PlayerRankingChangeGraph({ stats, user }: Props) {
               data={chartData}
               margin={{
                 top: 20,
-                right: 50,
+                right: 20,
                 left: 10,
                 bottom: 30,
               }}
@@ -134,7 +134,7 @@ export function PlayerRankingChangeGraph({ stats, user }: Props) {
                 tickLine={false}
                 axisLine={false}
                 tick={{ fill: "#64748b", fontSize: 11 }}
-                width={40}
+                width={30}
                 tickFormatter={(value) => Math.round(value).toString()}
                 domain={[0, 'dataMax + 10']}
               />
@@ -145,7 +145,7 @@ export function PlayerRankingChangeGraph({ stats, user }: Props) {
                 tickLine={false}
                 axisLine={false}
                 tick={{ fill: "#7c3aed", fontSize: 11 }}
-                width={40}
+                width={30}
                 tickFormatter={(value) => Math.round(value).toString()}
                 domain={[0, 'dataMax + 20']}
               />

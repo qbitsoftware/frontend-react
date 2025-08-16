@@ -1,9 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import VenueComp from '../lauad/-components/table';
 import { useParams } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { UseGetFreeVenues } from '@/queries/venues';
-import { UseGetTournamentTablesQuery } from '@/queries/tables';
 
 
 export default function TournamentTableModal() {
@@ -13,9 +11,9 @@ export default function TournamentTableModal() {
         Number(tournamentid),
         true
     );
-    const { data: tournamentGroups } = UseGetTournamentTablesQuery(
-        Number(tournamentid)
-    );
+    // const { data: tournamentGroups } = UseGetTournamentTablesQuery(
+    //     Number(tournamentid)
+    // );
 
     if (isLoading) {
         return (
@@ -42,9 +40,9 @@ export default function TournamentTableModal() {
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {tournamentTables.data.map((table, key) => (
-                        <VenueComp key={key} table={table} tables_data={tournamentGroups?.data} />
-                    ))}
+                    {/* {tournamentTables.data.map((table, key) => ( */}
+                    {/* // <VenueComp key={key} table={table} tables_data={tournamentGroups?.data} /> */}
+                    {/* ))} */}
                 </div>
             </CardContent>
         </Card>

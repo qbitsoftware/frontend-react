@@ -8,8 +8,7 @@ import { UseGetHomePageTournaments } from "@/queries/tournaments";
 export const Route = createFileRoute("/")({
   component: Index,
   loader: async ({ context: { queryClient } }) => {
-    // const tournamentsPromise = queryClient.ensureQueryData(UseGetTournamentsPublic());
-    const tournamentsPromise = queryClient.ensureQueryData(UseGetHomePageTournaments());
+    const tournamentsPromise = queryClient.ensureQueryData(UseGetHomePageTournaments(true));
     const usersPromise = queryClient.ensureQueryData(UseGetUsers());
     const blogsPromise = queryClient.ensureQueryData(UseGetBlogsOption());
 

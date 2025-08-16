@@ -590,7 +590,7 @@
     },
     "navbar": {
       "info": "Info",
-      "matches": "Ajakava",
+      "matches": "Mängud",
       "standings": "Kohad",
       "results": "Tabelid",
       "participants": "Osalejad",
@@ -648,6 +648,7 @@
     "play_off": "Kohamängud",
     "full_year": "Aasta lõikes",
     "multiple_tournaments_placeholder": "Rohkem kui 1 turniir",
+    "error_loading_tournaments": "Turniiride laadimine nurjus",
     "months": {
       "january": "Jaanuar",
       "february": "Veebruar",
@@ -754,6 +755,7 @@
       "result_title": "Reitingu muutus",
       "points": "punkti",
       "fill_all_fields": "Palun täitke kõik väljad",
+      "players_same_sex": "Mängijad peavad olema erineva sooga",
       "players_not_found": "Valitud mängijaid ei leitud",
       "info_button": "Arvutamise metoodika",
       "info_button_short": "Info",
@@ -1012,6 +1014,7 @@
     "tournaments": {
       "title": "Minu võistlused",
       "description": "Võistluste loomine ja haldamine",
+      "search_placeholder": "Otsi võistlust...",
       "add_new": "Uus Võistlus",
       "delete": "Kustuta Võistlus",
       "setup": {
@@ -1197,6 +1200,9 @@
           "view_all_description": "Halda kõiki turniiri klasse",
           "games_title": "klassis"
         },
+        "no_groups": "Ühtegi võistlusklassi pole",
+        "no_groups_description": "Loo uus võistlusklass, et alustada turniiri korraldamist",
+        "no_groups_create": "Loo uus võistlusklass",
         "images": {
           "title": "Pildigrupid",
           "new": "Uus pildigrupp",
@@ -1697,6 +1703,7 @@
             "add_button": "Lisa Mängija"
           }
         },
+        "load_error": "Klubide laadimine nurjus",
         "list": {
           "title": "Klubi Mängijad",
           "loading": "Laadimine...",

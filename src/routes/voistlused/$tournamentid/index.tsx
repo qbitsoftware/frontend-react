@@ -31,9 +31,9 @@ function RouteComponent() {
   const [value, setValue] = useState<YooptaContentValue | undefined>(
     tournament.information ? JSON.parse(tournament.information) : undefined
   );
-  const [coordinates, setCoordinates] = useState<{lat: number, lng: number} | null>(null);
+  const [coordinates, setCoordinates] = useState<{ lat: number, lng: number } | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null);
   const [showDirections, setShowDirections] = useState(false);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ function RouteComponent() {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=ee`
         );
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data && data.length > 0) {
@@ -173,7 +173,7 @@ function RouteComponent() {
 
   const getRegistrationInfo = () => {
     const type = tournament.registration_type;
-    
+
     switch (type) {
       case 'google_forms':
         return {
@@ -380,7 +380,7 @@ function RouteComponent() {
                 <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
                 <h2 className="text-xl font-bold text-gray-900">{t("competitions.location")}</h2>
               </div>
-              
+
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-4 relative">
                 {isLoadingLocation && (
                   <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
@@ -401,18 +401,18 @@ function RouteComponent() {
                   title={`${tournament.name} location map`}
                 ></iframe>
               </div>
-              
+
               <div className="bg-white rounded-lg border border-gray-200 p-3 space-y-3">
                 <div className="flex items-center gap-3">
                   <MapPin className="h-5 w-5 text-[#4C97F1]" />
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">{tournament.location}</p>
-                    <a 
-                      href={coordinates 
-                        ? `https://maps.google.com/?q=${coordinates.lat},${coordinates.lng}` 
+                    <a
+                      href={coordinates
+                        ? `https://maps.google.com/?q=${coordinates.lat},${coordinates.lng}`
                         : `https://maps.google.com/?q=${encodeURIComponent(tournament.location)}`
                       }
-                      target="_blank" 
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#4C97F1] hover:text-blue-700 text-sm font-medium transition-colors flex items-center gap-1"
                     >
@@ -420,7 +420,7 @@ function RouteComponent() {
                     </a>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2">
                   {!showDirections ? (
                     <button
@@ -445,9 +445,9 @@ function RouteComponent() {
             </div>
 
             <ShareSection tournamentId={tournament.id.toString()} />
-            
+
             <div className="border-t pt-6">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <button
                   type="button"
                   className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
@@ -461,7 +461,7 @@ function RouteComponent() {
                 >
                   {t('competitions.report_issue')}
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

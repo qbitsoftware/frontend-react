@@ -190,6 +190,24 @@ export const UseGetUsers = (searchTerm?: string) => {
   });
 };
 
+export const UseGetUsersQuery = (searchTerm?: string) => {
+  if (searchTerm === undefined) {
+    searchTerm = "";
+  }
+  return useQuery<UsersResponse>({
+    queryKey: ["users", searchTerm],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(
+        `/api/v1/users?search=${searchTerm}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return data;
+    },
+  });
+};
+
 export const fetchUserByName = async (name: string): Promise<User | null> => {
   try {
     const { data } = await axiosInstance.get(`/api/v1/users?search=${name}`, {

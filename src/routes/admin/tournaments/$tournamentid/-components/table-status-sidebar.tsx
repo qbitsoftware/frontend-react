@@ -82,9 +82,7 @@ const TableStatusSidebar = () => {
   const { tournamentid } = useParams({ strict: false });
   const router = useRouter();
 
-  if (!tournamentid) {
-    return null;
-  }
+
   const { data: tournamentTables } = UseGetFreeVenues(
     Number(tournamentid),
     true,
@@ -92,6 +90,8 @@ const TableStatusSidebar = () => {
   const { data: tournamentGroups } = UseGetTournamentTablesQuery(
     Number(tournamentid),
   );
+
+
 
   const tableStatuses = useMemo((): TableStatus[] => {
     if (!tournamentTables?.data) return [];

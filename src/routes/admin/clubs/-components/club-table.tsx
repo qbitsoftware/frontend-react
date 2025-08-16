@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Settings, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Club } from "@/types/clubs";
 import { useTranslation } from "react-i18next";
 
@@ -17,13 +18,74 @@ interface ClubTableProps {
   variant: "my-clubs" | "all-clubs";
   onEditClub?: (club: Club) => void;
   onManagePlayers?: (club: Club) => void;
+  isLoading?: boolean;
 }
 
-export function ClubTable({ clubs, variant, onEditClub, onManagePlayers }: ClubTableProps) {
-
+export function ClubTable({ clubs, variant, onEditClub, onManagePlayers, isLoading = false }: ClubTableProps) {
   const { t } = useTranslation();
-
   const isMyClubs = variant === "my-clubs";
+
+  if (isLoading) {
+    return (
+      <Table className={isMyClubs ? "mb-8" : ""}>
+        <TableHeader>
+          <TableRow>
+            {isMyClubs && <TableHead>{t("admin.clubs.table.actions")}</TableHead>}
+            <TableHead>{t("admin.clubs.table.image")}</TableHead>
+            <TableHead>{t("admin.clubs.table.name")}</TableHead>
+            <TableHead>{t("admin.clubs.table.contact_person")}</TableHead>
+            <TableHead>{t("admin.clubs.table.email")}</TableHead>
+            <TableHead>{t("admin.clubs.table.phone")}</TableHead>
+            {!isMyClubs && (
+              <>
+                <TableHead>{t("admin.clubs.table.address")}</TableHead>
+                <TableHead>{t("admin.clubs.table.website")}</TableHead>
+              </>
+            )}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 3 }).map((_, index) => (
+            <TableRow key={index}>
+              {isMyClubs && (
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-20" />
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                </TableCell>
+              )}
+              <TableCell>
+                <Skeleton className="h-10 w-10 rounded-full" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-32" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-28" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-36" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+              {!isMyClubs && (
+                <>
+                  <TableCell>
+                    <Skeleton className="h-4 w-40" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                </>
+              )}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  }
 
   return (
     <Table className={isMyClubs ? "mb-8" : ""}>

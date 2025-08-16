@@ -558,7 +558,7 @@
     },
     "navbar": {
       "info": "Info",
-      "matches": "Schedule",
+      "matches": "Matches",
       "standings": "Standings",
       "results": "Brackets",
       "participants": "Participants",
@@ -617,6 +617,7 @@
     "game_day": "Gameday",
     "play_off": "Play-off",
     "multiple_tournaments_placeholder": "More than 1 tournament",
+    "error_loading_tournaments": "Error loading tournaments",
     "months": {
       "january": "January",
       "february": "February",
@@ -723,6 +724,7 @@
       "result_title": "Rating Change Results",
       "points": "points",
       "fill_all_fields": "Please fill in all fields",
+      "players_same_sex": "Players must be of different sexes",
       "players_not_found": "Selected players not found",
       "info_button": "Calculation methodology",
       "info_button_short": "Info",
@@ -1004,6 +1006,7 @@
       "title": "Tournaments",
       "description": "Manage and organize tournaments",
       "add_new": "New Tournament",
+      "search_placeholder": "Search tournaments...",
       "delete": "Delete a tournament",
       "setup": {
         "step1": {
@@ -1181,6 +1184,9 @@
           "view_all": "View all groups",
           "view_all_description": "Manage all tournament groups"
         },
+        "no_groups": "No Groups Found",
+        "no_groups_description": "Create a new group to organize event",
+        "no_groups_create": "Create a new group",
         "images": {
           "title": "Image groups",
           "new": "New image group",
@@ -1685,6 +1691,7 @@
             "add_button": "Add Player"
           }
         },
+        "load_error": "Failed to load clubs",
         "list": {
           "title": "Club Players",
           "loading": "Loading...",
