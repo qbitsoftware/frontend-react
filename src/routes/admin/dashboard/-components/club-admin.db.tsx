@@ -39,14 +39,14 @@ export default function ClubAdminDashboard({ user }: Props) {
         {
             title: t("admin.dashboard.quick_actions.new_blog"),
             description: t("admin.dashboard.quick_actions.new_blog_desc"),
-            iconSrc: "/icons/write-news.png",
+            iconSrc: "/icons/news.png",
             href: "/admin/blog/new",
             color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
         },
         {
             title: t("admin.dashboard.quick_actions.view_blogs"),
             description: t("admin.dashboard.quick_actions.view_blogs_desc"),
-            iconSrc: "/icons/news.png",
+            iconSrc: "/icons/all-news.png",
             href: "/admin/blog",
             color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
         }

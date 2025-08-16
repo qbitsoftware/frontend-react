@@ -73,7 +73,7 @@ export default function Navbar() {
               </Link>
             </div>
             <NavigationMenu className="hidden lg:flex z-50 items-center">
-              <NavigationMenuList className="flex space-x-4 z-50">
+              <NavigationMenuList className="flex space-x-2 xl:space-x-4 z-50">
                 {menuItems.map((item) => (
                   <NavigationMenuItem key={item.name}>
                     {item.dropdownItems ? (
@@ -128,7 +128,7 @@ export default function Navbar() {
                     <NavigationMenuLink
                       href={"/admin/dashboard"}
                       className={
-                        "text-sm font-medium px-3 py-2 transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg border border-blue-200"
+                        "text-sm font-medium px-2 xl:px-3 py-2 transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg border border-blue-200 whitespace-nowrap"
                       }
                     >
                       {t('navbar.menu.admin')}

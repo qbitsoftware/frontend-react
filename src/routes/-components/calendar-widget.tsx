@@ -20,14 +20,20 @@ const CalendarWidget = () => {
       return { upcomingEvents: [], pastEvents: [] };
     }
 
-    const now = new Date();
     const getStartDate = (event: TournamentEvent) =>
       (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.start_date);
     const getEndDate = (event: TournamentEvent) =>
       (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.end_date);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+
     const upcoming = events
-      .filter((event) => getEndDate(event) >= now)
+      .filter((event) => {
+        const endDate = getEndDate(event);
+        endDate.setHours(23, 59, 59, 999); 
+        return endDate >= today;
+      })
       .sort(
         (a, b) =>
           getStartDate(a).getTime() - getStartDate(b).getTime()
@@ -35,7 +41,11 @@ const CalendarWidget = () => {
       .slice(0, 3);
 
     const past = events
-      .filter((event) => getEndDate(event) < now)
+      .filter((event) => {
+        const endDate = getEndDate(event);
+        endDate.setHours(23, 59, 59, 999); 
+        return endDate < today;
+      })
       .sort(
         (a, b) =>
           getStartDate(b).getTime() - getStartDate(a).getTime()
@@ -128,12 +138,6 @@ const CalendarWidget = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
       <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-1.5 sm:w-2 h-4 sm:h-6 bg-[#4C97F1] rounded-full"></div>
-          <h6 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
-            {t("calendar.upcoming")}
-          </h6>
-        </div>
 
         <div className="space-y-2 sm:space-y-3">
           {upcomingEvents.length > 0
@@ -147,12 +151,6 @@ const CalendarWidget = () => {
       </div>
 
       <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-1.5 sm:w-2 h-4 sm:h-6 bg-gray-400 rounded-full"></div>
-          <h6 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
-            {t("calendar.finished")}
-          </h6>
-        </div>
         <div className="space-y-2 sm:space-y-3">
           {pastEvents.length > 0
             ? pastEvents.map((event, index) => (

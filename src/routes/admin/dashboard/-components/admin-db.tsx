@@ -43,7 +43,7 @@ export default function AdminDashboard({ user }: Props) {
         {
             title: t("admin.dashboard.quick_actions.new_blog"),
             description: t("admin.dashboard.quick_actions.new_blog_desc"),
-            iconSrc: "/icons/write-news.png",
+            iconSrc: "/icons/news.png",
             href: "/admin/blog/new",
             color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
         },

@@ -39,8 +39,8 @@ const VideoBoard = () => {
   };
 
   return (
-    <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col border rounded-lg sm:rounded-xl bg-white overflow-hidden">
-      <div className="h-full overflow-y-auto space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-0">
+    <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="h-full overflow-y-auto scrollbar-hide space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-0">
         {videos.map((video, index) => {
           const videoId = getVideoId(video.url);
           if (!videoId) return null;

@@ -89,8 +89,8 @@ const Navbar = ({ tournament_tables }: Props) => {
       <div className="bg-white border-b border-gray-200 shadow-sm mt-5 rounded-xl">
         <div className="px-2 md:px-4">
           <Tabs value={activeTab} className="w-full">
-            <div className="overflow-x-auto scrollbar-hide md:overflow-visible">
-              <TabsList className="bg-transparent p-0 h-auto flex gap-0 border-b-0 min-w-full w-max md:w-auto md:justify-start">
+            <div className="overflow-x-auto scrollbar-hide xl:overflow-visible">
+              <TabsList className="bg-transparent p-0 h-auto flex gap-0 border-b-0 min-w-full w-max xl:w-auto xl:justify-start">
                 {filteredNavLinks.map((link) => (
                   <Link
                     className="flex-shrink-0"
@@ -100,7 +100,7 @@ const Navbar = ({ tournament_tables }: Props) => {
                     <TabsTrigger
                       value={link.href}
                       className={cn(
-                        "text-xs sm:text-sm lg:text-base px-2 sm:px-4 lg:px-6 py-2.5 sm:py-3 rounded-none border-b-4 border-transparent bg-white transition-all duration-200",
+                        "text-xs sm:text-sm lg:text-base px-2 sm:px-3 lg:px-4 xl:px-6 py-2.5 sm:py-3 rounded-none border-b-4 border-transparent bg-white transition-all duration-200",
                         "whitespace-nowrap min-w-fit",
                         "hover:bg-gray-50",
                         "data-[state=active]:bg-white data-[state=active]:text-gray-600 data-[state=active]:border-[#4C97F1] data-[state=active]:font-semibold data-[state=active]:shadow-none",

@@ -51,18 +51,17 @@ const HomePageGrid = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 my-4 sm:my-6 lg:my-8">
-          <div className="flex flex-col order-4 sm:order-1 lg:order-1">
+          <div className="flex flex-col order-3 sm:order-3 lg:order-1">
             <div className="h-full">
-              <div className="mt-[3.5rem] sm:mt-[4rem] lg:mt-[4.0rem]">
-                <div className="p-1 sm:p-2 flex-grow" ref={adboardRef}>
+              <div className="mt-[70px] lg:mt-[calc(4.0rem+10px)]">
+                <div className="p-1 sm:p-2 flex-grow scrollbar-hide overflow-hidden" ref={adboardRef}>
                   <Adboard />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Rating Widget - Full width on mobile, 2 cols on tablet, 2 cols on desktop */}
-          <div className="sm:col-span-2 lg:col-span-2 flex flex-col order-1 sm:order-2 lg:order-2">
+          <div className="sm:col-span-2 lg:col-span-2 flex flex-col order-1 sm:order-1 lg:order-2">
             <WidgetWrapper
               heading={t("homepage.ranking.name")}
               addr="reiting"
@@ -74,14 +73,14 @@ const HomePageGrid = () => {
             </WidgetWrapper>
           </div>
 
-          {/* Videos Widget */}
-          <div className="flex flex-col order-3 sm:order-3 lg:order-3">
+          {/* Videos Widget - Full width on mobile, half width on tablet, quarter width on desktop */}
+          <div className="flex flex-col order-2 sm:order-2 lg:order-3">
             <WidgetWrapper
               heading={t("homepage.videoboard.name")}
               addr="#"
               icon="videos"
             >
-              <div className="py-2 px-1 sm:px-2 flex-grow" ref={videosRef}>
+              <div className="py-2 px-1 sm:px-2 flex-grow scrollbar-hide overflow-hidden" ref={videosRef}>
                 <VideoBoard />
               </div>
             </WidgetWrapper>
