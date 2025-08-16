@@ -66,7 +66,7 @@ export default function Navbar() {
                   className="h-10 lg:h-8 xl:h-8 w-auto object-contain"
                   src="/RLogo.png"
                   alt="ELTL Logo"
-                  width="180"
+                  width="190"
                   height="50"
                   loading="eager"
                 />
