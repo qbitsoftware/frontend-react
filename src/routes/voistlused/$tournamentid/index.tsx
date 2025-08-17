@@ -142,13 +142,14 @@ function RouteComponent() {
   const now = new Date();
   const startDate = new Date(tournament.start_date);
   const endDate = new Date(tournament.end_date);
+  endDate.setHours(23, 59, 59, 999);
 
   const getStatusInfo = () => {
     const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
     
-    if (endDate < tomorrow) {
+    if (endDate < now) {
       return {
         text: t('competitions.status.ended'),
         color: 'text-gray-600',
@@ -156,7 +157,7 @@ function RouteComponent() {
         dotColor: 'bg-gray-400',
       };
     } else if (startDate <= now && endDate >= now) {
-      return {
+            return {
         text: t('competitions.status.ongoing'),
         color: 'text-yellow-700',
         bgColor: 'bg-yellow-50',

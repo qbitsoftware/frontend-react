@@ -62,7 +62,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }
 
     const isParticipantTaken = (participantId: string, currentMatchState: MatchState) => {
-        return active_participant.includes(participantId) && currentMatchState !== MatchState.ONGOING
+        return active_participant.includes(participantId) && currentMatchState !== MatchState.ONGOING && currentMatchState != MatchState.FINISHED
     }
 
     const renderPlayer = (match: MatchWrapper, player: ParticipantType) => {
