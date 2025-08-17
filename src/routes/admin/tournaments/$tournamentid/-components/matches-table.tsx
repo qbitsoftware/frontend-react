@@ -17,6 +17,7 @@ interface MatchesTableProps {
     tournament_id: number
     tournament_table: TournamentTable
     group_id: number
+    active_participant: string[]
 }
 
 export const MatchesTable: React.FC<MatchesTableProps> = ({
@@ -25,6 +26,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     tournament_id,
     group_id,
     tournament_table,
+    active_participant,
 }: MatchesTableProps) => {
     const { t } = useTranslation()
     const queryClient = useQueryClient()
@@ -59,13 +61,29 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         return ''
     }
 
+    const isParticipantTaken = (participantId: string, currentMatchState: MatchState) => {
+        return active_participant.includes(participantId) && currentMatchState !== MatchState.ONGOING && currentMatchState != MatchState.FINISHED
+    }
+
     const renderPlayer = (match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
 
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
-        return <>{playerName}</>
+        const isPlayerTaken = isParticipantTaken(playerId, match.match.state)
+
+        return (
+            <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-600 font-medium' : ''}`}>
+                {isPlayerTaken && (
+                    <div
+                        className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"
+                        title="Player is currently in another ongoing match"
+                    />
+                )}
+                <span>{playerName}</span>
+            </div>
+        )
     }
 
     const getPendingScore = (matchId: string, player: ParticipantType) => {
@@ -244,6 +262,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                         </Button>
                                     </TableCell>
                                     <TableCell>
+                                        {/* {match.p1.group_id} */}
                                         {match.match.round}
                                     </TableCell>
                                     <TableCell>

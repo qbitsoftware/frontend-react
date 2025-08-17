@@ -41,11 +41,29 @@ export const Matches: React.FC<MatchesProps> = ({
   const [isTimeEditingModalOpen, setIsTimeEditingModalOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<MatchWrapper | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeParticipant, setActiveParticipant] = useState<string[]>([]);
   const [filterValue, setFilterValue] = useState<FilterOptions>("all");
   const [initialTab, setInitialTab] = useState<"regrouping" | "finals">(
     "regrouping"
   );
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const activeParticipantIds: string[] = [];
+
+    data.forEach((match) => {
+      if (match.match.state === MatchState.ONGOING) {
+        if (match.p1.id !== "") {
+          activeParticipantIds.push(match.p1.id);
+        }
+        if (match.p2.id !== "") {
+          activeParticipantIds.push(match.p2.id);
+        }
+      }
+    });
+
+    setActiveParticipant(activeParticipantIds);
+  }, [data]);
 
   useEffect(() => {
     if (selectedMatch) {
@@ -67,6 +85,45 @@ export const Matches: React.FC<MatchesProps> = ({
       }
     }
   }, [openMatchId, data]);
+
+  // const filteredData = useMemo(() => {
+  //   let filtered;
+
+  //   switch (filterValue) {
+  //     case MatchState.FINISHED:
+  //       filtered = data.filter(
+  //         (match) => match.match.state === MatchState.FINISHED
+  //       );
+  //       break;
+  //     case MatchState.ONGOING:
+  //       filtered = data.filter(
+  //         (match) => match.match.state === MatchState.ONGOING
+  //       );
+  //       break;
+  //     case MatchState.CREATED:
+  //       filtered = data.filter(
+  //         (match) => match.match.state === MatchState.CREATED
+  //       );
+  //       break;
+  //     case "all":
+  //     default:
+  //       filtered = data;
+  //   }
+
+  //   const validMatches = filtered.filter(
+  //     (match) => match.p1.id !== "" && match.p2.id !== ""
+  //   );
+
+  //   return validMatches.sort((a, b) => {
+  //     const stateOrder = {
+  //       [MatchState.ONGOING]: 0,
+  //       [MatchState.CREATED]: 1,
+  //       [MatchState.FINISHED]: 2,
+  //     };
+
+  //     return stateOrder[a.match.state] - stateOrder[b.match.state];
+  //   });
+  // }, [data, filterValue]);
 
   const filteredData = useMemo(() => {
     let filtered;
@@ -96,16 +153,100 @@ export const Matches: React.FC<MatchesProps> = ({
       (match) => match.p1.id !== "" && match.p2.id !== ""
     );
 
-    return validMatches.sort((a, b) => {
+    // Sort by state order first
+    const sortedByState = validMatches.sort((a, b) => {
       const stateOrder = {
         [MatchState.ONGOING]: 0,
         [MatchState.CREATED]: 1,
         [MatchState.FINISHED]: 2,
       };
-
       return stateOrder[a.match.state] - stateOrder[b.match.state];
     });
-  }, [data, filterValue]);
+
+    // If round-robin, apply additional sorting for participant spacing and group alternation
+    if (tournament_table.type === GroupType.DYNAMIC || tournament_table.type === GroupType.ROUND_ROBIN) {
+      const grouped = sortedByState.reduce((acc, match) => {
+        const state = match.match.state;
+        if (!acc[state]) acc[state] = [];
+        acc[state].push(match);
+        return acc;
+      }, {} as Record<MatchState, MatchWrapper[]>);
+
+      const sortRoundRobinMatches = (matches: MatchWrapper[]) => {
+        if (matches.length <= 1) return matches;
+
+        const result: MatchWrapper[] = [];
+        const remaining = [...matches];
+        const usedGroups = new Set<string>();
+
+        while (remaining.length > 0) {
+          let bestMatch: MatchWrapper | null = null;
+          let bestIndex = -1;
+
+          for (let i = 0; i < remaining.length; i++) {
+            const match = remaining[i];
+            const lastMatch = result[result.length - 1];
+
+            // Check if this match can be placed next
+            const canPlace = !lastMatch || (
+              // No participant overlap with previous match
+              match.p1.id !== lastMatch.p1.id &&
+              match.p1.id !== lastMatch.p2.id &&
+              match.p2.id !== lastMatch.p1.id &&
+              match.p2.id !== lastMatch.p2.id &&
+              // Different group from previous match (if groups exist)
+              (!match.p1.group_id || !lastMatch.p1.group_id ||
+                match.p1.group_id !== lastMatch.p1.group_id)
+            );
+
+            if (canPlace) {
+              // Prefer matches from groups we haven't used recently
+              if (!match.p1.group_id || !usedGroups.has(match.p1.group_id)) {
+                bestMatch = match;
+                bestIndex = i;
+                break;
+              } else if (!bestMatch) {
+                bestMatch = match;
+                bestIndex = i;
+              }
+            }
+          }
+
+          // If no ideal match found, take the first available
+          if (!bestMatch) {
+            bestMatch = remaining[0];
+            bestIndex = 0;
+          }
+
+          result.push(bestMatch);
+          remaining.splice(bestIndex, 1);
+
+          // Track used group
+          if (bestMatch.p1.group_id) {
+            usedGroups.add(bestMatch.p1.group_id);
+            // Clear used groups periodically to allow alternation
+            if (usedGroups.size > 3) {
+              usedGroups.clear();
+            }
+          }
+        }
+
+        return result;
+      };
+
+      // Apply round-robin sorting to each state group
+      const finalResult: MatchWrapper[] = [];
+      [MatchState.ONGOING, MatchState.CREATED, MatchState.FINISHED].forEach(state => {
+        if (grouped[state]) {
+          finalResult.push(...sortRoundRobinMatches(grouped[state]));
+        }
+      });
+
+      return finalResult;
+    }
+
+    return sortedByState;
+  }, [data, filterValue, tournament_table.type]);
 
   const handleCardClick = (match: MatchWrapper) => {
     setSelectedMatch(match);
@@ -207,6 +348,7 @@ export const Matches: React.FC<MatchesProps> = ({
             tournament_id={tournament_id}
             tournament_table={tournament_table}
             group_id={tournament_table.id}
+            active_participant={activeParticipant}
           />
           {selectedMatch &&
             (tournament_table.solo ||
