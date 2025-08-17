@@ -205,9 +205,12 @@ export function Reiting() {
     <div className="py-2 sm:py-4">
       <div className="lg:rounded-lg px-2 sm:px-4 lg:px-12 py-4 sm:py-6">
         <div className="space-y-3 sm:space-y-4">
-          <h2 className="font-bold text-lg sm:text-xl lg:text-2xl">
-            {modifyTitleDependingOnFilter(t, showCombined, sex, ageClass)}
-          </h2>
+          <div className="flex items-center gap-4 pb-6 border-b border-gray-200/50">
+            <div className="w-1 h-8 bg-[#4C97F1] rounded-full"></div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {modifyTitleDependingOnFilter(t, showCombined, sex, ageClass)}
+            </h2>
+          </div>
           <p className="font-medium pb-1 text-sm sm:text-base">
             {t("rating.last_updated")}:{" "}
             <span className="bg-[#FBFBFB] px-2 sm:px-3 py-1 rounded-full border border-[#EAEAEA] text-xs sm:text-sm">
@@ -218,7 +221,7 @@ export function Reiting() {
             {t("rating.abbreviations")}
           </p>
 
-          <div className="mb-6 sm:mb-12 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 sm:mb-12 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden sm:block">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-sm font-bold">i</span>
@@ -251,7 +254,7 @@ export function Reiting() {
 
         <div className="mt-5 border rounded-t-[12px]">
           <div className="border-b border-stone-200 bg-[#EBEFF5] rounded-t-[12px] flex flex-col gap-3 sm:gap-4 lg:grid lg:grid-cols-12 lg:gap-4 items-stretch lg:items-center w-full p-3 sm:p-4 lg:p-1 mb-1">
-            <div className="w-full lg:col-span-3 flex flex-col sm:flex-row gap-2">
+            <div className="w-full lg:col-span-3 flex flex-row gap-2">
               <Button
                 onClick={() => setIsRatingCalculatorOpen(true)}
                 className="bg-[#4C97F1] hover:bg-[#4C97F1]/90 text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
@@ -288,40 +291,62 @@ export function Reiting() {
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
             </div>
 
-            <div className="w-full lg:col-span-3">
-              <Select value={ageClass} onValueChange={handleAgeClassChange}>
-                <SelectTrigger className="w-full h-10 sm:h-12 flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm bg-[#F7F6F7]">
-                  <SelectValue
-                    placeholder={t("rating.filtering.select.options.all")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {t("rating.filtering.select.options.all")}
-                  </SelectItem>
-                  <SelectItem value="cadet_boys">
-                    {t("rating.filtering.select.options.cadets_boys")}
-                  </SelectItem>
-                  <SelectItem value="cadet_girls">
-                    {t("rating.filtering.select.options.cadets_girls")}
-                  </SelectItem>
-                  <SelectItem value="junior_boys">
-                    {t("rating.filtering.select.options.juniors_boys")}
-                  </SelectItem>
-                  <SelectItem value="junior_girls">
-                    {t("rating.filtering.select.options.juniors_girls")}
-                  </SelectItem>
-                  <SelectItem value="senior_men">
-                    {t("rating.filtering.select.options.seniors_men")}
-                  </SelectItem>
-                  <SelectItem value="senior_women">
-                    {t("rating.filtering.select.options.seniors_women")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="w-full lg:col-span-3 flex gap-2">
+              <div className="flex-1">
+                <Select value={ageClass} onValueChange={handleAgeClassChange}>
+                  <SelectTrigger className="w-full h-10 sm:h-12 flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm bg-[#F7F6F7]">
+                    <SelectValue
+                      placeholder={t("rating.filtering.select.options.all")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">
+                      {t("rating.filtering.select.options.all")}
+                    </SelectItem>
+                    <SelectItem value="cadet_boys">
+                      {t("rating.filtering.select.options.cadets_boys")}
+                    </SelectItem>
+                    <SelectItem value="cadet_girls">
+                      {t("rating.filtering.select.options.cadets_girls")}
+                    </SelectItem>
+                    <SelectItem value="junior_boys">
+                      {t("rating.filtering.select.options.juniors_boys")}
+                    </SelectItem>
+                    <SelectItem value="junior_girls">
+                      {t("rating.filtering.select.options.juniors_girls")}
+                    </SelectItem>
+                    <SelectItem value="senior_men">
+                      {t("rating.filtering.select.options.seniors_men")}
+                    </SelectItem>
+                    <SelectItem value="senior_women">
+                      {t("rating.filtering.select.options.seniors_women")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Gender filter - dropdown on mobile, tabs on larger screens */}
+              <div className="flex-1 sm:hidden">
+                <Select value={activeTab} onValueChange={handleTabChange}>
+                  <SelectTrigger className="w-full h-10 flex items-center space-x-2 px-3 py-2 rounded-lg border text-xs bg-[#F7F6F7]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="women">
+                      {t("rating.filtering.buttons.women")}
+                    </SelectItem>
+                    <SelectItem value="men">
+                      {t("rating.filtering.buttons.men")}
+                    </SelectItem>
+                    <SelectItem value="combined">
+                      {t("rating.filtering.buttons.combined")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div className="w-full lg:col-span-4">
+            <div className="w-full lg:col-span-4 hidden sm:block">
               <Tabs
                 defaultValue="men"
                 value={activeTab}
@@ -421,7 +446,7 @@ export function Reiting() {
 
 
         <Dialog open={isRatingInfoOpen} onOpenChange={setIsRatingInfoOpen}>
-          <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200">
+          <DialogContent className="w-[85vw] max-w-lg mx-auto max-h-[85vh] overflow-y-auto rounded-xl animate-in fade-in-0 zoom-in-95 duration-200">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-[#4C97F1]">
                 <Info className="h-5 w-5" />

@@ -18,9 +18,8 @@ const HomePageGrid = () => {
   return (
     <div className="w-full min-h-screen mx-auto px-2 sm:px-4 md:px-6 lg:px-4 relative max-w-[95%]">
       <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-grey-500 backdrop-blur-lg"></div>
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat opacity-30 lg:hidden"></div>
-        <div className="absolute inset-0 bg-[url('/flat-mountains.svg')] bg-no-repeat bg-cover opacity-30 hidden lg:block"></div>
+        <div className="absolute inset-0 bg-white drop-blur-lg"></div>
+        <div className="absolute inset-0 bg-[url('/sun-tornado.svg')] bg-no-repeat bg-cover opacity-20 block"></div>
       </div>
       <div className="relative z-10">
         {/* Top Section: News and Calendar - Mobile Stacked, Desktop Side by Side */}
@@ -53,7 +52,7 @@ const HomePageGrid = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 my-4 sm:my-6 lg:my-8">
           <div className="flex flex-col order-3 sm:order-3 lg:order-1">
             <div className="h-full">
-              <div className="mt-[70px] lg:mt-[calc(4.0rem+10px)]">
+              <div className="lg:mt-[calc(3.5rem+1px)]">
                 <div className="p-1 sm:p-2 flex-grow scrollbar-hide overflow-hidden" ref={adboardRef}>
                   <Adboard />
                 </div>

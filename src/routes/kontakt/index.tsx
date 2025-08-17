@@ -15,13 +15,14 @@ function RouteComponent() {
   }, [])
 
   return (
-    <div className="w-full mx-auto lg:px-4 max-w-[85%]">
-      <div className='py-6'>
-        <div className="bg-white border border-gray-200/50 shadow-lg rounded-2xl px-6 sm:px-8 md:px-12 py-8 space-y-8">
-          <div className="flex items-center gap-4 pb-6 border-b border-gray-200/50">
-            <div className="w-1 h-8 bg-[#4C97F1] rounded-full"></div>
-            <h1 className="text-2xl font-bold text-gray-900">{t("contact.page_title")}</h1>
-          </div>
+    <div className="w-full mx-auto lg:px-4 max-w-[98%]">
+      <div className="py-2 sm:py-4">
+        <div className="lg:rounded-lg px-2 sm:px-4 lg:px-12 py-4 sm:py-6">
+          <div className="space-y-6 sm:space-y-8">
+            <div className="flex items-center gap-4 pb-6 border-b border-gray-200/50">
+              <div className="w-1 h-8 bg-[#4C97F1] rounded-full"></div>
+              <h1 className="text-2xl font-bold text-gray-900">{t("contact.page_title")}</h1>
+            </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6">
@@ -148,6 +149,7 @@ function RouteComponent() {
                   <p className="text-sm text-gray-500">• {t("contact.quick_contact.general")}</p>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>

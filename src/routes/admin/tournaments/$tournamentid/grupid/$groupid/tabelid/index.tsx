@@ -63,8 +63,10 @@ function RouteComponent() {
 
   if (isLoading || tablesQuery.isLoading) {
     return (
-      <div className="h-[50vh] flex items-center justify-center">
-        <Loader />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="h-[50vh] flex items-center justify-center">
+          <Loader />
+        </div>
       </div>
     );
   } else if (
@@ -75,25 +77,27 @@ function RouteComponent() {
     !tournamentTableData.data.group
   ) {
     return (
-      <div className="flex items-center justify-center">
-        <Card className="">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold text-center text-red-600">
-              <AlertCircle className="h-12 w-12 mx-auto mb-4" />
-              {t("admin.tournaments.brackets.not_found")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-md text-center text-gray-700 mb-6">
-              {t("admin.tournaments.brackets.not_found_description")}
-            </p>
-          </CardContent>
-          <CardFooter className="flex justify-center">
-            <Button size="lg" onClick={() => refetch()}>
-              {t("admin.tournaments.brackets.refresh")}
-            </Button>
-          </CardFooter>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex items-center justify-center">
+          <Card className="">
+            <CardHeader>
+              <CardTitle className="text-xl font-bold text-center text-red-600">
+                <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+                {t("admin.tournaments.brackets.not_found")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-md text-center text-gray-700 mb-6">
+                {t("admin.tournaments.brackets.not_found_description")}
+              </p>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button size="lg" onClick={() => refetch()}>
+                {t("admin.tournaments.brackets.refresh")}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     );
   } else {
@@ -101,7 +105,7 @@ function RouteComponent() {
     const groupIds = tournamentTableData.data.stages?.map((stage) => stage.id) || [groupId];
 
     return (
-      <div className="min-h-screen px-2">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 px-2">
         <CompactClassFilters
           availableTables={availableTables}
           activeGroupId={groupIds}

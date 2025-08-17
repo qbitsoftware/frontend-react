@@ -34,7 +34,7 @@ export const EliminationBrackets = ({
   };
 
   return (
-    <div className='border-grey-200 border-x border-b rounded-t-lg'>
+    <div className='border-grey-200 border rounded-t-lg'>
       <div className="z-40 top-0 w-full hide-in-pdf">
         <div className="px-0 w-full bg-[#F8F9FA] rounded-t-lg pdf-background">
           <div className="flex flex-col sm:flex-row sm:items-center px-2 py-3 gap-3 sm:gap-4">

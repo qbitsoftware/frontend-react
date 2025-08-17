@@ -23,14 +23,16 @@ function RouteComponent() {
   }
 
   return (
-    <div>
-      <TournamentTableForm
-        initial_data={tt.group}
-        onTimetableToggle={setShowTimetable}
-      />
-      {showTimetable && (
-        <TimetableForm tournament_table={tt.group} />
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+      <div className="p-2">
+        <TournamentTableForm
+          initial_data={tt.group}
+          onTimetableToggle={setShowTimetable}
+        />
+        {showTimetable && (
+          <TimetableForm tournament_table={tt.group} />
+        )}
+      </div>
     </div>
   )
 }

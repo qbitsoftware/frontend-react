@@ -9,7 +9,7 @@ import {
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebar from "./-components/admin-sidebar";
 import AdminBottomNav from "./-components/admin-bottom-nav";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import ErrorPage from "@/components/error";
 import { UseGetCurrentUser } from "@/queries/users";
 import { ErrorResponse } from "@/types/errors";
@@ -49,6 +49,9 @@ function RouteComponent() {
   const { user } = useUser();
 
   const defaultOpen = getCookie("sidebar:state") !== "false";
+  
+  const [hasSidebarLoaded, setHasSidebarLoaded] = useState(false);
+  const previousTournamentId = useRef<string | null>(null);
 
   if (!user?.role.includes('admin')) {
     router.navigate({ to: "/" });
@@ -68,6 +71,21 @@ function RouteComponent() {
   const isTournamentRoute = location.pathname.includes('/tournaments/') &&
     location.pathname.split('/tournaments/')[1]?.split('/')[0];
 
+  const currentTournamentId = isTournamentRoute ? 
+    location.pathname.split('/tournaments/')[1]?.split('/')[0] : null;
+
+  useEffect(() => {
+    if (currentTournamentId && currentTournamentId !== previousTournamentId.current) {
+      setHasSidebarLoaded(false);
+      previousTournamentId.current = currentTournamentId;
+    }
+  }, [currentTournamentId]);
+
+  useEffect(() => {
+    if (isTournamentRoute && !isLoading && !hasSidebarLoaded) {
+      setHasSidebarLoaded(true);
+    }
+  }, [isTournamentRoute, isLoading, hasSidebarLoaded]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -82,7 +100,7 @@ function RouteComponent() {
             <Outlet />
           </div>
           {isTournamentRoute && (
-            !isLoading ? <TableStatusSidebar /> : <TableStatusSidebarSkeleton />
+            (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
           )}
         </SidebarProvider>
         <AdminBottomNav />

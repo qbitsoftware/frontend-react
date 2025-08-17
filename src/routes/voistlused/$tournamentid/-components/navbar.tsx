@@ -61,9 +61,9 @@ const Navbar = ({ tournament_tables }: Props) => {
     <div className="self-start w-full">
       <div className="relative overflow-hidden bg-[#4C97F1] text-white shadow-lg rounded-bl-3xl rounded-br-3xl">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative pt-4 sm:pt-6 pb-3 sm:pb-4 px-4 sm:px-6 md:px-12">
-          <div className="flex flex-col space-y-2 sm:space-y-3">
-            <h1 className="text-xl sm:text-2xl md:text-3xl text-center md:text-left font-bold tracking-tight leading-tight">
+        <div className="relative pt-4 sm:pt-4 pb-3 sm:pb-4 px-4 sm:px-6 md:px-12">
+          <div className="flex flex-col space-y-1 sm:space-y-1">
+            <h1 className="text-xl sm:text-2xl md:text-2xl text-center md:text-left font-bold tracking-tight leading-tight">
               {tournament.name}
             </h1>
             <div className="text-center md:text-left space-y-1 sm:space-y-2">

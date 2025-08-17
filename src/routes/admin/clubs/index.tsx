@@ -135,7 +135,8 @@ function RouteComponent() {
 
   if (!clubsData || !clubsData.data) {
     return (
-      <div className="px-2 py-8 md:p-8 overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="px-2 py-8 md:p-8 overflow-hidden">
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
             <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,6 +145,7 @@ function RouteComponent() {
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("admin.clubs.error")}</h3>
           <p className="text-gray-500">Unable to load clubs data</p>
+        </div>
         </div>
       </div>
     );
@@ -155,7 +157,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="px-2 py-8 md:p-8 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+      <div className="px-2 py-8 md:p-8 overflow-hidden">
       <div className="mb-12">
         <AdminHeader
           title={t("admin.clubs.my_clubs.title")}
@@ -247,6 +250,7 @@ function RouteComponent() {
         selectedClub={selectedClubForPlayers}
         onPlayersUpdate={() => fetchMyClubs()}
       />
+      </div>
     </div>
   );
 }

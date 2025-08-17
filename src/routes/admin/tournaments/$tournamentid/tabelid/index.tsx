@@ -62,15 +62,23 @@ function RouteComponent() {
 
   if (tablesQuery.isLoading) {
     return (
-      <Loader />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <Loader />
+      </div>
     )
   }
 
   if (tablesQuery.isError || !tablesQuery.data?.data) {
     return (
-      <NoGroupsError />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <NoGroupsError />
+      </div>
     )
   }
 
-  return <Loader />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+      <Loader />
+    </div>
+  )
 }

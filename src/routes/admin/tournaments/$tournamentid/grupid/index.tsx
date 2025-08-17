@@ -31,7 +31,8 @@ function RouteComponent() {
   const tournament = useTournament()
 
   return (
-    <div className="p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+      <div className="p-4">
       {/* <div>
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
           <div className="text-center">
@@ -56,6 +57,7 @@ function RouteComponent() {
         tables={tournament_tables?.data}
         tournament={tournament}
       />
+      </div>
     </div>
   )
 }
