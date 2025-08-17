@@ -218,14 +218,14 @@ export default function Calendar3MonthView({ selectedYear, isLoading, error, tou
                         );
 
                         return (
-                            <div key={monthInfo.index} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                                <div className="bg-[#4C97F1] px-6 py-4">
-                                    <h2 className="text-xl font-bold text-white">
+                            <div key={monthInfo.index} className="bg-white rounded-lg border border-gray-200/50 overflow-hidden">
+                                <div className="bg-gray-100 border-b border-gray-200/50 px-4 py-2">
+                                    <h2 className="text-lg font-semibold text-gray-800">
                                         {t('calendar.months.' + monthInfo.name.toLowerCase())}
                                     </h2>
                                 </div>
 
-                                <div className="p-6">
+                                <div className="p-4">
                                     {monthEvents.length > 0 ? (
                                         <div className="space-y-4">
                                             {monthEvents.map((event, index) => (

@@ -65,12 +65,12 @@ export default function Cal1YearView({ selectedYear, isLoading, error, tournamen
     if (error) return <YearViewError />;
 
     return (
-        <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="space-y-4">
+            <div className="bg-white rounded-lg border border-gray-200/50 overflow-hidden">
                 <div className="overflow-x-auto">
                     <div className="min-w-[1100px]">
                         {/* Month headers */}
-                        <div className="grid grid-cols-12 gap-2 p-4 bg-gradient-to-r from-gray-50 to-gray-100">
+                        <div className="grid grid-cols-12 gap-2 p-3 bg-gray-50">
                             {months.map((month, monthIndex) => {
                                 const daysInMonth = daysInMonthArray[monthIndex];
                                 return (

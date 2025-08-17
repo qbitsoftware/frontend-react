@@ -146,7 +146,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
     postMutation = UsePatchTournamentTable(Number(tournamentid), initial_data.id)
   }
 
-  // Automatically set solo to true when dynamic type is selected
   const watchedType = form.watch("type");
   useEffect(() => {
     if (watchedType === GroupType.DYNAMIC) {

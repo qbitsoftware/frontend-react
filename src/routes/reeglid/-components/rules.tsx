@@ -1,7 +1,9 @@
 export default function LauatenniseReeglid() {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="grid gap-6 md:gap-8">
+      <div className="w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          {/* Left Column */}
+          <div className="space-y-6">
           <section className="bg-gray-50/50 border border-gray-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
@@ -81,7 +83,10 @@ export default function LauatenniseReeglid() {
               </li>
             </ul>
           </section>
-  
+          </div>
+          
+          {/* Right Column */}
+          <div className="space-y-6">
           <section className="bg-green-50/50 border border-green-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-green-600 rounded-full"></div>
@@ -164,6 +169,7 @@ export default function LauatenniseReeglid() {
               </li>
             </ul>
           </section>
+          </div>
         </div>
       </div>
     )

@@ -91,7 +91,7 @@
       }
     },
     "calendar": {
-      "name": "Calendar",
+      "name": "Tournaments",
       "view_all": "View all",
       "no_tournaments": "No tournaments scheduled"
     },
@@ -316,7 +316,9 @@
       "title": "Add Player",
       "search_placeholder": "Search for existing player...",
       "add_new_player": "Add New Player",
+      "add_player_short": "Add New",
       "help_text": "Search for existing players in the database or use \"Add New Player\" for someone not in the system.",
+      "no_results": "No players found",
       "no_players_found": "No players found. Use \"Add New Player\" to add someone not in the database.",
       "manual_entry_title": "Adding New Player (Not in Database)",
       "back_to_search": "Back to search",
@@ -607,6 +609,7 @@
   },
   "calendar": {
     "title": "Calendar",
+    "filters_title": "Filters",
     "all_categories": "All categories",
     "no_tournaments": "No tournaments scheduled",
     "no_tournaments_subtitle": "There are currently no tournaments scheduled in the calendar.",

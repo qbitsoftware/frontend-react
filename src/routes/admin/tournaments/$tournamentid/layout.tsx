@@ -105,11 +105,9 @@ function RouteComponent() {
           ? "schedule"
           : location.pathname.includes("/grupid")
             ? "groups"
-            : location.pathname.includes("/meedia")
-              ? "media"
-              : location.pathname.includes("/pildid")
-                ? "images"
-                : "info";
+            : location.pathname.includes("/pildid")
+              ? "images"
+              : "info";
 
   return (
     <>
@@ -193,6 +191,14 @@ function RouteComponent() {
                           className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
                         >
                           {t("admin.layout.schedule")}
+                        </TabsTrigger>
+                      </Link>
+                      <Link to={`/admin/tournaments/${tournamentid}/pildid`}>
+                        <TabsTrigger
+                          value="images"
+                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                        >
+                          {t("admin.layout.images")}
                         </TabsTrigger>
                       </Link>
                     </TabsList>

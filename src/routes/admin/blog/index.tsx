@@ -142,7 +142,7 @@ function RouteComponent() {
   );
 
   return (
-    <div className="w-full">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       <div className="p-2 py-8 md:p-8">
         <AdminHeader
           title={t("admin.blogs.title")}
@@ -295,6 +295,6 @@ function RouteComponent() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
   );
 }

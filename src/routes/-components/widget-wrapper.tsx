@@ -12,7 +12,7 @@ interface WidgetProps {
 const WidgetWrapper = ({ heading, addr, icon, children }: WidgetProps) => {
   return (
     <div className="h-full flex-grow">
-      <div className="pb-3 sm:pb-4 lg:pb-6 px-2 sm:px-4 flex justify-start items-center gap-2">
+      <div className="pb-1 sm:pb-2 lg:pb-2 px-2 sm:px-4 flex justify-start items-center gap-2">
         <a
           href={`/${addr}`}
           className="flex items-center justify-center gap-2 sm:gap-3 rounded-sm p-1"
@@ -22,7 +22,7 @@ const WidgetWrapper = ({ heading, addr, icon, children }: WidgetProps) => {
             alt={`${icon} icon`}
             className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 flex-shrink-0"
           />
-          <h3 className="font-bold text-foreground/80 text-base lg:text-2xl truncate"> {heading}</h3>
+          <h3 className="font-bold text-foreground/80 text-base lg:text-2xl truncate">{heading}</h3>
           <ChevronRight className="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
         </a>
       </div>

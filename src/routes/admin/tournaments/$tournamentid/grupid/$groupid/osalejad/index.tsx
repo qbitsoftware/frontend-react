@@ -112,7 +112,7 @@ function RouteComponent() {
     const groupIds = table_data.data.stages?.map((stage) => stage.id) || [groupId];
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
         <div className="px-2">
           <CompactClassFilters
             availableTables={availableTables}
@@ -222,8 +222,10 @@ function RouteComponent() {
     )
   } else {
     return (
-      <div className="flex justify-center items-center h-[50vh]">
-        <Loader />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex justify-center items-center h-[50vh]">
+          <Loader />
+        </div>
       </div>
     )
   }

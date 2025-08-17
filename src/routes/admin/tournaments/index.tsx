@@ -25,11 +25,13 @@ function RouteComponent() {
     const { tournaments_data } = Route.useLoaderData()
 
     return (
-        <div className='p-2 py-8 md:p-8'>
-            {tournaments_data?.data && (
-                <TournamentTable tournaments={tournaments_data.data} />
-            )
-            }
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+            <div className='p-2 py-8 md:p-8'>
+                {tournaments_data?.data && (
+                    <TournamentTable tournaments={tournaments_data.data} />
+                )
+                }
+            </div>
         </div>
     )
 

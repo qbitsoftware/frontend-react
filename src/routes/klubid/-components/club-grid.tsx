@@ -32,7 +32,7 @@ export function ClubGrid() {
     .reverse();
 
   return (
-    <div className="rounded-t-lg p-6 space-y-6">
+    <div className="rounded-t-lg space-y-6">
       <div className="relative md:w-1/4 md:col-span-3">
         <Input
           type="text"

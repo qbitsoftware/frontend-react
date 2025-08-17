@@ -145,14 +145,14 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
             open={isRatingCalculatorOpen}
             onOpenChange={setIsRatingCalculatorOpen}
         >
-            <DialogContent className="sm:max-w-md animate-in fade-in-0 zoom-in-95 duration-200">
+            <DialogContent className="w-[85vw] max-w-sm mx-auto max-h-[85vh] overflow-y-auto rounded-xl animate-in fade-in-0 zoom-in-95 duration-200">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-[#4C97F1]">
                         <Calculator className="h-5 w-5" />
                         {t("rating.calculator.title")}
                     </DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
+                <div className="space-y-3 py-3">
                     <div className="space-y-2">
                         <Label htmlFor="winner">{t("rating.calculator.winner")}</Label>
                         <Popover open={openWinner} onOpenChange={setOpenWinner}>
@@ -168,7 +168,7 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-full p-0">
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[90vw] p-0">
                                 <Command>
                                     <CommandInput
                                         placeholder={t("rating.calculator.search_player")}
@@ -189,16 +189,18 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                                                         }));
                                                         setOpenWinner(false);
                                                     }}
+                                                    className="px-2 py-2 text-sm"
                                                 >
                                                     <Check
-                                                        className={`mr-2 h-4 w-4 ${calculatorForm.winner ===
+                                                        className={`mr-2 h-3 w-3 sm:h-4 sm:w-4 ${calculatorForm.winner ===
                                                             `${user.first_name} ${user.last_name}`
                                                             ? "opacity-100"
                                                             : "opacity-0"
                                                             }`}
                                                     />
-                                                    {user.first_name} {user.last_name} (
-                                                    {user.rate_points} RP)
+                                                    <span className="text-xs sm:text-sm">
+                                                        {user.first_name} {user.last_name} ({user.rate_points} RP)
+                                                    </span>
                                                 </CommandItem>
                                             ))}
                                         </CommandGroup>
@@ -223,7 +225,7 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-full p-0">
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[90vw] p-0">
                                 <Command>
                                     <CommandInput
                                         placeholder={t("rating.calculator.search_player")}
@@ -244,16 +246,18 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                                                         }));
                                                         setOpenLoser(false);
                                                     }}
+                                                    className="px-2 py-2 text-sm"
                                                 >
                                                     <Check
-                                                        className={`mr-2 h-4 w-4 ${calculatorForm.loser ===
+                                                        className={`mr-2 h-3 w-3 sm:h-4 sm:w-4 ${calculatorForm.loser ===
                                                             `${user.first_name} ${user.last_name}`
                                                             ? "opacity-100"
                                                             : "opacity-0"
                                                             }`}
                                                     />
-                                                    {user.first_name} {user.last_name} (
-                                                    {user.rate_points} RP)
+                                                    <span className="text-xs sm:text-sm">
+                                                        {user.first_name} {user.last_name} ({user.rate_points} RP)
+                                                    </span>
                                                 </CommandItem>
                                             ))}
                                         </CommandGroup>
@@ -280,24 +284,24 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                     </div>
 
                     {calculatorResult && (
-                        <div className="mt-6 p-4 bg-[#4C97F1]/5 border border-[#4C97F1]/20 rounded-lg animate-in slide-in-from-top-2 fade-in-0 duration-300">
-                            <h3 className="text-lg font-semibold text-[#4C97F1] mb-4 flex items-center gap-2">
-                                <Calculator className="h-5 w-5" />
-                                {t("rating.calculator.result_title")} (Full Formula)
+                        <div className="mt-4 p-3 bg-[#4C97F1]/5 border border-[#4C97F1]/20 rounded-lg animate-in slide-in-from-top-2 fade-in-0 duration-300">
+                            <h3 className="text-base sm:text-lg font-semibold text-[#4C97F1] mb-2 sm:mb-3 flex items-center gap-2">
+                                <Calculator className="h-4 w-4 sm:h-5 sm:w-5" />
+                                <span className="text-sm sm:text-base">{t("rating.calculator.result_title")}</span>
                             </h3>
-                            <div className="space-y-4">
-                                <div className="p-3 bg-white rounded-md border">
-                                    <div className="flex items-center justify-between mb-2">
+                            <div className="space-y-2 sm:space-y-3">
+                                <div className="p-2 sm:p-3 bg-white rounded-md border">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-gray-900">
+                                            <span className="font-medium text-gray-900 text-sm sm:text-base">
                                                 {calculatorResult.winner.name} (Võitja)
                                             </span>
-                                            <span className="text-sm text-gray-600">
+                                            <span className="text-xs sm:text-sm text-gray-600">
                                                 {calculatorResult.winner.rating} RP
                                             </span>
                                         </div>
                                         <div
-                                            className={`px-3 py-1 rounded-full text-sm font-medium ${calculatorResult.winner.change >= 0
+                                            className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium self-start sm:self-auto ${calculatorResult.winner.change >= 0
                                                 ? "bg-green-100 text-green-800"
                                                 : "bg-red-100 text-red-800"
                                                 }`}
@@ -308,32 +312,32 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                                         </div>
                                     </div>
                                     <div className="text-xs text-gray-600 space-y-1">
-                                        <div className="flex justify-between">
-                                            <span>Hv (võidupunktid):</span>
-                                            <span className="font-mono">{calculatorResult.winner.hv}</span>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs">Hv (võidupunktid):</span>
+                                            <span className="font-mono text-xs">{calculatorResult.winner.hv}</span>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span>Punktid enne kaalude arvestust:</span>
-                                            <span className="font-mono">+{calculatorResult.winner.rawChange}</span>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs">Enne kaalude arvestust:</span>
+                                            <span className="font-mono text-xs">+{calculatorResult.winner.rawChange}</span>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span>Punktid pärast kaalude arvestust:</span>
-                                            <span className="font-mono">{calculatorResult.winner.change >= 0 ? "+" : ""}{calculatorResult.winner.change}</span>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs">Pärast kaalude arvestust:</span>
+                                            <span className="font-mono text-xs">{calculatorResult.winner.change >= 0 ? "+" : ""}{calculatorResult.winner.change}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-3 bg-white rounded-md border">
-                                    <div className="flex items-center justify-between mb-2">
+                                <div className="p-2 sm:p-3 bg-white rounded-md border">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-gray-900">
+                                            <span className="font-medium text-gray-900 text-sm sm:text-base">
                                                 {calculatorResult.loser.name} (Kaotaja)
                                             </span>
-                                            <span className="text-sm text-gray-600">
+                                            <span className="text-xs sm:text-sm text-gray-600">
                                                 {calculatorResult.loser.rating} RP
                                             </span>
                                         </div>
                                         <div
-                                            className={`px-3 py-1 rounded-full text-sm font-medium ${calculatorResult.loser.change >= 0
+                                            className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium self-start sm:self-auto ${calculatorResult.loser.change >= 0
                                                 ? "bg-green-100 text-green-800"
                                                 : "bg-red-100 text-red-800"
                                                 }`}
@@ -344,17 +348,17 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                                         </div>
                                     </div>
                                     <div className="text-xs text-gray-600 space-y-1">
-                                        <div className="flex justify-between">
-                                            <span>Hk (kaotuspunktid):</span>
-                                            <span className="font-mono">{calculatorResult.loser.hk}</span>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs">Hk (kaotuspunktid):</span>
+                                            <span className="font-mono text-xs">{calculatorResult.loser.hk}</span>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span>Punktid enne kaalude arvestust:</span>
-                                            <span className="font-mono">{calculatorResult.loser.rawChange}</span>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs">Enne kaalude arvestust:</span>
+                                            <span className="font-mono text-xs">{calculatorResult.loser.rawChange}</span>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span>Punktid pärast kaalude arvestust:</span>
-                                            <span className="font-mono">{calculatorResult.loser.change >= 0 ? "+" : ""}{calculatorResult.loser.change}</span>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs">Pärast kaalude arvestust:</span>
+                                            <span className="font-mono text-xs">{calculatorResult.loser.change >= 0 ? "+" : ""}{calculatorResult.loser.change}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -362,7 +366,7 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                         </div>
                     )}
 
-                    <div className="flex justify-between gap-2 pt-4">
+                    <div className="flex flex-col sm:flex-row justify-between gap-2 pt-3">
                         <Button
                             type="button"
                             variant="outline"
@@ -370,13 +374,14 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
                                 resetCalculatorForm();
                                 setIsRatingCalculatorOpen(false);
                             }}
+                            className="w-full sm:w-auto"
                         >
                             {t("rating.calculator.cancel")}
                         </Button>
                         <Button
                             type="button"
                             onClick={handleCalculatorSubmit}
-                            className="bg-[#4C97F1] hover:bg-[#4C97F1]/90"
+                            className="w-full sm:w-auto bg-[#4C97F1] hover:bg-[#4C97F1]/90"
                         >
                             {t("rating.calculator.calculate")}
                         </Button>

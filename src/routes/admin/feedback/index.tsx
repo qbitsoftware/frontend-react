@@ -66,7 +66,8 @@ export function FeedbackFormComponent() {
   }
 
   return (
-    <div className="container p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+      <div className="container p-8">
       <AdminHeader
         title={t('feedback.title')}
         description={t('feedback.subtitle')}
@@ -142,6 +143,7 @@ export function FeedbackFormComponent() {
           </form>
         </Form>
       )}
+      </div>
     </div>
   )
 }

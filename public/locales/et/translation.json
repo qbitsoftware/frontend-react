@@ -91,7 +91,7 @@
       "read_more": "Loe lähemalt"
     },
     "calendar": {
-      "name": "Võistluskalender",
+      "name": "Võistlused",
       "view_all": "Vaata kõiki",
       "no_tournaments": "Ühtegi võistlust tulemas ei ole"
     },
@@ -367,7 +367,24 @@
       "no_estonian_id": "Mul pole Eesti isikukoodi",
       "search_club": "Otsi klubi...",
       "no_clubs_found": "Klube ei leitud",
-      "auto_generated": "Automaatselt genereeritud isikukoodist"
+      "auto_generated": "Automaatselt genereeritud isikukoodist",
+      "add_player_short": "Lisa uus",
+      "no_results": "Mängijaid ei leitud",
+      "title": "Uue mängija lisamine (pole andmebaasis)",
+      "back_button": "Tagasi otsingusse",
+      "cancel_button": "Katkesta",
+      "first_name": "Eesnimi",
+      "last_name": "Perekonnanimi",
+      "birth_date": "Sünnipäev",
+      "estonian_id": "Eesti isikukood",
+      "no_estonian_id": "Mul pole Eesti isikukoodi",
+      "gender": {
+        "placeholder": "Vali sugu",
+        "male": "Mees",
+        "female": "Naine"
+      },
+      "verifying_id": "Kontrollin Eesti isikukoodi...",
+      "submit_button": "Lisa mängija"
     },
     "payment": {
       "email_label": "E-posti aadress",
@@ -638,8 +655,9 @@
   },
   "calendar": {
     "title": "Kalender",
+    "filters_title": "Filtrid",
     "all_categories": "Kõik kategooriad",
-    "no_tournaments": "Võistlused puuduvad",
+    "no_tournaments": "Võistlusi pole veel lisatud",
     "no_tournaments_subtitle": "Hetkel ei ole kalendris ühtki turniiri.",
     "search_placeholder": "Otsi turniiri...",
     "upcoming": "Tulemas",
@@ -743,7 +761,7 @@
     },
     "calculator": {
       "button": "Kalkulaator",
-      "button_short": "Kalk",
+      "button_short": "Kalkulaator",
       "title": "Reitingu kalkulaator",
       "winner": "Matši võitja",
       "loser": "Matši kaotaja",
@@ -972,7 +990,7 @@
       "quick_actions": {
         "new_blog": "Avalda Uudis",
         "new_blog_desc": "Loo uus blogi postitus või uudis",
-        "new_tournament": "Uus Võistlus",
+        "new_tournament": "Uus võistlus",
         "new_tournament_desc": "Loo uus võistlus",
         "manage_tournaments": "Halda Võistlusi",
         "manage_tournaments_desc": "Vaata ja halda olemasolevaid võistlusi",
@@ -1016,7 +1034,7 @@
       "title": "Minu võistlused",
       "description": "Võistluste loomine ja haldamine",
       "search_placeholder": "Otsi võistlust...",
-      "add_new": "Uus Võistlus",
+      "add_new": "Uus võistlus",
       "delete": "Kustuta Võistlus",
       "day": "Päev",
       "day_plural_ending": "a",
