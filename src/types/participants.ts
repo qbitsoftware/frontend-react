@@ -25,6 +25,7 @@ export type Participant = {
   players: Player[];
   tournament_table_id: number;
   extra_data: PartipantExtraData;
+  is_active?: boolean;
 };
 
 interface Deleted_at {
