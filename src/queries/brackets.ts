@@ -47,7 +47,7 @@ export function UseDeleteBrackets(tournament_id: number, table_id: number) {
 
 export function UseGetPlacements(tournament_id: number, table_id: number) {
     return useQuery<ParticipantsResponse>({
-        queryKey: ["leaderboard", tournament_id],
+        queryKey: ["leaderboard", tournament_id, table_id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/leaderboard`, {
                 withCredentials: true
