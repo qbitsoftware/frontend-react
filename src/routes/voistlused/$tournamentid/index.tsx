@@ -144,7 +144,11 @@ function RouteComponent() {
   const endDate = new Date(tournament.end_date);
 
   const getStatusInfo = () => {
-    if (endDate < now) {
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    
+    if (endDate < tomorrow) {
       return {
         text: t('competitions.status.ended'),
         color: 'text-gray-600',
