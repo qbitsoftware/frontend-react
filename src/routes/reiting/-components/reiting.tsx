@@ -159,24 +159,10 @@ export function Reiting() {
           )
         );
 
-      return matchesSex && matchesAgeClass && matchesSearchQuery && hasELTLId;
+      return matchesSex && matchesAgeClass && matchesSearchQuery && hasELTLId && user.rate_order > 0;
     })
     .sort((a, b) => {
-      // Players with rate_order > 0 come first, sorted by rate_order
-      if (a.rate_order > 0 && b.rate_order === 0) return -1;
-      if (a.rate_order === 0 && b.rate_order > 0) return 1;
-
-      // Both have rate_order > 0, sort by rate_order
-      if (a.rate_order > 0 && b.rate_order > 0) {
-        return a.rate_order - b.rate_order;
-      }
-
-      // Both have rate_order = 0, sort by rating_points descending
-      if (a.rate_order === 0 && b.rate_order === 0) {
-        return b.rate_points - a.rate_points;
-      }
-
-      return 0;
+      return a.rate_order - b.rate_order;
     });
 
   const selectedPlayer = users.find((user) => user.id === SelectedPlayerId);
