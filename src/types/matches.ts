@@ -102,6 +102,8 @@ export type Match = {
   readable_id: number;
   previous_match_readable_id_1: number;
   previous_match_readable_id_2: number;
+  next_winner_match_id?: string;
+  next_loser_match_id?: string;
   use_sets?: boolean;
 };
 

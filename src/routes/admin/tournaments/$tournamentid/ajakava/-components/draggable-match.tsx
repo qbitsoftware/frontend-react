@@ -6,13 +6,14 @@ import { memo } from "react"
 
 interface Props {
     match: MatchWrapper,
+    activeMatch: MatchWrapper | null,
     tournamentClassesData: TournamentTable[] | null | undefined,
     isPlacementMatch: (match: MatchWrapper) => boolean,
     getPlacementLabel: (match: MatchWrapper) => string,
     getGroupColor: (groupId: string) => string,
 }
 
-export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor }: Props) => {
+export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor, activeMatch }: Props) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable(
         {
             id: `match-${match.match.id}`,
@@ -27,6 +28,10 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
         opacity: isDragging ? 0.5 : 1,
     }
 
+    const isNextMatch = activeMatch &&
+        (activeMatch.match.id === match.match.next_loser_match_id ||
+            activeMatch.match.id === match.match.next_winner_match_id)
+
     return (
         <div
             ref={setNodeRef}
@@ -38,7 +43,7 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
                 : match.match.state === "finished"
                     ? "border-l-blue-500"
                     : "border-l-yellow-500"
-                } ${isPlacementMatch(match) ? 'border-red-200' : ""}`}
+                } ${isPlacementMatch(match) ? 'border-red-200' : ""} ${isNextMatch ? 'outline outline-2 outline-red-500' : ''}`}
         >
             <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
                 {match.match.readable_id}

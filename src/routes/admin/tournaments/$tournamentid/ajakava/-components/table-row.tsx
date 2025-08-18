@@ -3,6 +3,7 @@ import { Venue } from "@/types/venues";
 import { useDroppable } from "@dnd-kit/core";
 import { memo } from "react";
 import { DraggableMatch } from "./draggable-match";
+import { MatchWrapper } from "@/types/matches";
 
 interface Props {
     table: Venue;
@@ -11,12 +12,13 @@ interface Props {
     getRoundForTimeSlot: (timeSlot: string) => any;
     getGroupColor: (groupId: string) => string;
     isPlacementMatch: (match: any) => boolean;
+    activeMatch: MatchWrapper | null;
     getPlacementLabel: (match: any) => string;
     tournamentClassesData: TournamentTable[] | null | undefined;
     hoveredCell: string | null;
     setHoveredCell: (cellKey: string | null) => void;
 }
-export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell }: Props) {
+export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell, activeMatch }: Props) {
 
     return (
         <div className="flex border-b hover:bg-gray-50/50 min-h-12">
@@ -48,6 +50,7 @@ export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTi
                                 isPlacementMatch={isPlacementMatch}
                                 getPlacementLabel={getPlacementLabel}
                                 getGroupColor={getGroupColor}
+                                activeMatch={activeMatch}
                             />
                         ) : (
                             <div className="text-[10px] text-gray-400">
