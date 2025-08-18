@@ -114,7 +114,7 @@ function RouteComponent() {
       <TournamentProvider tournamentData={tournament_data.data!}>
         <div className="mx-auto min-h-[95vh] h-full">
           <div className="w-full relative">
-            <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-between items-start lg:items-center w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20 overflow-visible">
+            <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col xl:flex-row gap-3 lg:gap-4 justify-between items-start w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20 overflow-visible">
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link to="/admin/tournaments">
                   <Button
@@ -129,14 +129,14 @@ function RouteComponent() {
                   {tournament_data.data?.name}
                 </h5>
               </div>
-              <div className="relative w-full lg:w-auto overflow-visible">
+              <div className="relative w-full lg:w-auto overflow-visible overflow-x-auto">
                 <Tabs value={currentTab} className="w-full lg:w-auto">
                   <div className="w-full overflow-x-auto overflow-y-visible">
                     <TabsList className="p-1 md:p-0 flex flex-row justify-start items-center gap-1 px-1 min-w-max">
                       <Link to={`/admin/tournaments/${tournamentid}`}>
                         <TabsTrigger
                           value="info"
-                          className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.layout.info")}
                         </TabsTrigger>
@@ -149,7 +149,7 @@ function RouteComponent() {
                         <Link to={`/admin/tournaments/${tournamentid}/grupid`}>
                           <TabsTrigger
                             value="groups"
-                            className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                            className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                           >
                             {t("admin.layout.groups")}
                           </TabsTrigger>
@@ -159,7 +159,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/osalejad`} search={{ selectedGroup: currentGroupId }}>
                         <TabsTrigger
                           value="participants"
-                          className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t(
                             "admin.tournaments.groups.layout.participants",
@@ -171,7 +171,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/mangud`} search={{ selectedGroup: currentGroupId }}>
                         <TabsTrigger
                           value="matches"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.tournaments.groups.layout.games", "Mängud")}
                         </TabsTrigger>
@@ -180,7 +180,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/tabelid`} search={{ selectedGroup: currentGroupId }}>
                         <TabsTrigger
                           value="brackets"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.tournaments.groups.layout.tables", "Tabelid")}
                         </TabsTrigger>
@@ -188,7 +188,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
                         <TabsTrigger
                           value="schedule"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.layout.schedule")}
                         </TabsTrigger>
@@ -196,7 +196,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/pildid`}>
                         <TabsTrigger
                           value="images"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.layout.images")}
                         </TabsTrigger>

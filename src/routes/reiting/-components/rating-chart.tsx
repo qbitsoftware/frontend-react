@@ -46,7 +46,7 @@ export function PlayerRankingChangeGraph({ stats, user }: Props) {
 
 
   // Enhanced sample data function that adjusts based on selection size
-  const sampleData = (data: typeof fullChartData, maxPoints: number = 25) => {
+  const sampleData = (data: typeof fullChartData, maxPoints: number = 100) => {
     if (data.length <= maxPoints) return data;
 
     const step = Math.floor(data.length / maxPoints);
