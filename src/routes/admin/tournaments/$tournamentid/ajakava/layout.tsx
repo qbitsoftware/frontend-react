@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid/ajakava")({
@@ -20,20 +19,24 @@ function RouteComponent() {
     <div className="mx-auto min-h-[95vh] h-full">
       <div className="w-full">
         <div className="bg-white border-b px-4 py-2">
-          <Tabs value={currentTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-md">
-              <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
-                <TabsTrigger value="schedule" className="w-full">
-                  {t("admin.tournaments.timetable.schedule")}
-                </TabsTrigger>
-              </Link>
-              <Link to={`/admin/tournaments/${tournamentid}/ajakava/seaded`}>
-                <TabsTrigger value="configurations" className="w-full">
-                  {t("admin.tournaments.timetable.configurations")}
-                </TabsTrigger>
-              </Link>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center gap-6 max-w-md">
+            <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
+              <div className={`pl-2 text-sm font-medium transition-colors border-l-2 ${currentTab === "schedule"
+                ? "text-[#03326B] border-[#03326B]"
+                : "text-gray-500 border-transparent hover:text-[#03326B]"
+                }`}>
+                {t("admin.tournaments.timetable.schedule")}
+              </div>
+            </Link>
+            <Link to={`/admin/tournaments/${tournamentid}/ajakava/seaded`}>
+              <div className={`pl-2 text-sm font-medium transition-colors border-l-2 ${currentTab === "configurations"
+                ? "text-[#03326B] border-[#03326B]"
+                : "text-gray-500 border-transparent hover:text-[#03326B]"
+                }`}>
+                {t("admin.tournaments.timetable.configurations")}
+              </div>
+            </Link>
+          </div>
         </div>
 
         <div className="px-0 md:px-0">

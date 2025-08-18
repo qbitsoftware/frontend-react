@@ -364,111 +364,111 @@ export default function GroupStageBracket({
         </div>
         <div className="overflow-x-auto">
           <Table className="table-auto min-w-max sm:min-w-full rounded-lg border-separate border-spacing-0">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[140px] min-w-[140px] text-center bg-gray-100 text-gray-900 font-bold text-sm border-r border-gray-400 border-b border-gray-400 px-3">
-                {tournament_table.solo
-                  ? t("competitions.results.solo_team")
-                  : t("competitions.results.teams")}
-              </TableHead>
-              {roundRobinBracket.map((team, index) => {
-                if (team.participant.group_id === "") return null;
-                return (
-                  <TableHead
-                    key={index}
-                    className="text-center bg-gray-100 text-gray-900 font-bold text-sm w-[100px] min-w-[100px] px-3 border-r border-gray-400 border-b border-gray-400"
-                  >
-                    <div className="whitespace-nowrap" title={team.participant.name}>
-                      {team.participant.name || (
-                        <Skeleton className="h-4 w-16 mx-auto bg-white/20" />
-                      )}
-                    </div>
-                  </TableHead>
-                );
-              })}
-              <TableHead className="text-center bg-gray-100 text-gray-900 font-bold text-sm w-[90px] min-w-[90px] px-3 border-b border-gray-400">
-                {t("competitions.results.total_points")}
-              </TableHead>
-
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(() => {
-              //if we have a tie
-
-              // 1. check all the matches and if you have forfeit lose, and other team doesn't then you automatically lose
-              // 2. check the game between the two teams and determine winner that way. with 3 and more teams its again their matches and sets and if sets are equal then check points
-              // 3. if all else fails then check red or yellow cards, if those are also equal then we are fcked
-
-              const sortedTeams = resolveTies(
-                roundRobinBracket.filter((t) => t.participant.group_id !== "")
-              );
-
-              const rankMap: Record<string, number> = {};
-              sortedTeams.forEach((team, index) => {
-                if (team.participant.id) {
-                  rankMap[team.participant.id] = index + 1;
-                }
-              });
-
-              return roundRobinBracket.map((team, rowIndex) => {
-                if (team.participant.group_id === "") return null;
-                return (
-                  <TableRow
-                    key={rowIndex}
-                    className={cn(
-                      "hover:bg-gray-50 transition-colors",
-                      rowIndex % 2 === 0 ? "bg-gray-50/50" : "bg-white"
-                    )}
-                  >
-                    <TableCell className="font-semibold text-center py-2 px-3 border-r border-gray-300 border-b border-gray-200 w-[160px] min-w-[160px]">
-                      <div className="whitespace-nowrap text-sm" title={team.participant.name}>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[140px] min-w-[140px] text-center bg-gray-100 text-gray-900 font-bold text-sm border-r border-gray-400 border-b px-3">
+                  {tournament_table.solo
+                    ? t("competitions.results.solo_team")
+                    : t("competitions.results.teams")}
+                </TableHead>
+                {roundRobinBracket.map((team, index) => {
+                  if (team.participant.group_id === "") return null;
+                  return (
+                    <TableHead
+                      key={index}
+                      className="text-center bg-gray-100 text-gray-900 font-bold text-sm w-[100px] min-w-[100px] px-3 border-r border-gray-400 border-b"
+                    >
+                      <div className="whitespace-nowrap" title={team.participant.name}>
                         {team.participant.name || (
-                          <Skeleton className="h-4 w-20 mx-auto" />
+                          <Skeleton className="h-4 w-16 mx-auto bg-white/20" />
                         )}
                       </div>
-                    </TableCell>
-                    {roundRobinBracket.map((colTeam, colIndex) => {
-                      if (colTeam.participant.group_id === "") return null;
-                      return (
-                        <TableCell
-                          key={colIndex}
-                          className={cn(
-                            "text-center py-2 px-3 border-r border-gray-300 border-b border-gray-200 w-[100px] min-w-[100px]",
-                            rowIndex === colIndex ? "bg-gray-50 border border-gray-300" : "hover:bg-gray-50"
-                          )}
-                        >
-                          {rowIndex === colIndex ? (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <img 
-                                src="/ELTL_icon.png" 
-                                alt="ELTL" 
-                                className="w-12 h-8 opacity-100"
-                              />
-                            </div>
-                          ) : (
-                            renderMatchCell(
-                              roundRobinBracket,
-                              team.participant.id,
-                              colTeam.participant.id
-                            )
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                    <TableCell className="font-bold text-center py-2 px-3 border-b border-gray-200 bg-gray-50 text-gray-900 w-[90px] min-w-[90px]">
-                      {team?.total_points !== undefined ? (
-                        <span className="text-base">{team.total_points}</span>
-                      ) : (
-                        <Skeleton className="h-4 w-8 mx-auto" />
-                      )}
-                    </TableCell>
-                  </TableRow>
+                    </TableHead>
+                  );
+                })}
+                <TableHead className="text-center bg-gray-100 text-gray-900 font-bold text-sm w-[90px] min-w-[90px] px-3 border-b border-gray-400">
+                  {t("competitions.results.total_points")}
+                </TableHead>
+
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(() => {
+                //if we have a tie
+
+                // 1. check all the matches and if you have forfeit lose, and other team doesn't then you automatically lose
+                // 2. check the game between the two teams and determine winner that way. with 3 and more teams its again their matches and sets and if sets are equal then check points
+                // 3. if all else fails then check red or yellow cards, if those are also equal then we are fcked
+
+                const sortedTeams = resolveTies(
+                  roundRobinBracket.filter((t) => t.participant.group_id !== "")
                 );
-              });
-            })()}
-          </TableBody>
-        </Table>
+
+                const rankMap: Record<string, number> = {};
+                sortedTeams.forEach((team, index) => {
+                  if (team.participant.id) {
+                    rankMap[team.participant.id] = index + 1;
+                  }
+                });
+
+                return roundRobinBracket.map((team, rowIndex) => {
+                  if (team.participant.group_id === "") return null;
+                  return (
+                    <TableRow
+                      key={rowIndex}
+                      className={cn(
+                        "hover:bg-gray-50 transition-colors",
+                        rowIndex % 2 === 0 ? "bg-gray-50/50" : "bg-white"
+                      )}
+                    >
+                      <TableCell className="font-semibold text-center py-2 px-3 border-r border-b border-gray-200 w-[160px] min-w-[160px]">
+                        <div className="whitespace-nowrap text-sm" title={team.participant.name}>
+                          {team.participant.name || (
+                            <Skeleton className="h-4 w-20 mx-auto" />
+                          )}
+                        </div>
+                      </TableCell>
+                      {roundRobinBracket.map((colTeam, colIndex) => {
+                        if (colTeam.participant.group_id === "") return null;
+                        return (
+                          <TableCell
+                            key={colIndex}
+                            className={cn(
+                              "text-center py-2 px-3 border-r  border-b border-gray-200 w-[100px] min-w-[100px]",
+                              rowIndex === colIndex ? "bg-gray-50 border border-gray-300" : "hover:bg-gray-50"
+                            )}
+                          >
+                            {rowIndex === colIndex ? (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <img
+                                  src="/ELTL_icon.png"
+                                  alt="ELTL"
+                                  className="w-12 h-8 opacity-100"
+                                />
+                              </div>
+                            ) : (
+                              renderMatchCell(
+                                roundRobinBracket,
+                                team.participant.id,
+                                colTeam.participant.id
+                              )
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                      <TableCell className="font-bold text-center py-2 px-3 border-b border-gray-200 bg-gray-50 text-gray-900 w-[90px] min-w-[90px]">
+                        {team?.total_points !== undefined ? (
+                          <span className="text-base">{team.total_points}</span>
+                        ) : (
+                          <Skeleton className="h-4 w-8 mx-auto" />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                });
+              })()}
+            </TableBody>
+          </Table>
         </div>
 
       </div>

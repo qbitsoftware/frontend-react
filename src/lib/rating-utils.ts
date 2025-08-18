@@ -3,23 +3,38 @@ import { TFunction } from "i18next";
 
 // tabelipõhised asjad
 
+export const calculateAgeFromBirthDate = (birthDateString: string): number => {
+  const birthDate = new Date(birthDateString);
+  const today = new Date();
+  
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
 export const filterByAgeClass = (user: User, ageClass: string) => {
-  const year = new Date(user.birth_date).getFullYear();
+  const age = calculateAgeFromBirthDate(user.birth_date);
+  console.log(user.first_name, user.last_name, age)
   const sex = user.sex;
 
   switch (ageClass) {
     case "cadet_boys":
-      return year >= 2007 && sex === "M";
+      return age <= 15 && sex === "M";
     case "cadet_girls":
-      return year >= 2007 && sex === "N";
+      return age <= 15 && sex === "N";
     case "junior_boys":
-      return year >= 2003 && year <= 2006 && sex === "M";
+      return age <= 18 && sex === "M";
     case "junior_girls":
-      return year >= 2003 && year <= 2006 && sex === "N";
+      return age <= 18 && sex === "N";
     case "senior_men":
-      return year <= 1995 && sex === "M";
+      return age >= 30 && sex === "M";
     case "senior_women":
-      return year <= 1995 && sex === "N";
+      return age >= 30 && sex === "N";
     default:
       return true;
   }

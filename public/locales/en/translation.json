@@ -1560,6 +1560,10 @@
         "refresh": "Refresh brackets"
       },
       "timetable": {
+        "concurrency_priority": "Importance of non-concurrent player matches",
+        "concurrency_priority_desc": "This setting determines how important it is to avoid scheduling matches for the same player at the same time across different tables.",
+        "select_tables": "Select Groups",
+        "global_configuration": "Global Configuration",
         "settings": "Timetable Settings",
         "start_date": "Tournament class start date",
         "start_time": "Tournament class start time",
@@ -1567,7 +1571,7 @@
         "match_duration_desc": "Expected time per match (5-120 minutes)",
         "break_duration": "Break between matches",
         "break_duration_desc": "Buffer time between matches (0-60 minutes)",
-        "generate": "Generate Timetable",
+        "generate": "Update Timetable",
         "reset": "Reset",
         "generating": "Generating...",
         "timetabled_tournament": "Timetabled Class",

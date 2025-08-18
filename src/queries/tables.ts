@@ -2,7 +2,7 @@ import { TournamentTable } from "@/types/groups";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "./axiosconf";
 import TournamentTableForm from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
-import { TimetableFormValues } from "@/routes/admin/tournaments/$tournamentid/grupid/-components/timetable-form";
+import { TimeTableFormValues } from "@/routes/admin/tournaments/$tournamentid/ajakava/seaded/-components/timetable-configurations-form";
 
 export interface TournamentTableResponse {
     data: TournamentTable | null
@@ -141,19 +141,36 @@ export const UseDeleteTournamentTable = (tournament_id: number, tournament_table
     })
 }
 
-export const UseGenerateTimeTable = (tournament_id: number, tournament_table_id: number) => {
-    // const queryClient = useQueryClient()
+export const UseGenerateTimeTable = (tournament_id: number) => {
+    const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (formdata: TimetableFormValues) => {
-            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}/timetable`, formdata, {
+        mutationFn: async (formdata: TimeTableFormValues[]) => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/timetable`, formdata, {
                 withCredentials: true
             })
             return data;
         },
-        // onSuccess: () => {
-        //     queryClient.invalidateQueries({ queryKey: ['tournament_table', tournament_table_id] })
-        //     queryClient.invalidateQueries({ queryKey: ['tournament_tables', tournament_id] })
-        // }
+        onSuccess: () => {
+            // queryClient.invalidateQueries({ queryKey: ['tournament_table', tournament_table_id] })
+            queryClient.invalidateQueries({ queryKey: ['tournament_tables', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
+        }
     })
 }
 
+export interface TimeTableEditMatch {
+    match_id: string;
+    table: string;
+    time: string;
+}
+
+export const UseEditTimeTable = (tournament_id: number) => {
+    return useMutation({
+        mutationFn: async (formdata: TimeTableEditMatch[]) => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/timetable/edit`, formdata, {
+                withCredentials: true
+            })
+            return data;
+        },
+    })
+}
