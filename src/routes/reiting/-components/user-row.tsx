@@ -104,7 +104,7 @@ export default function UserRow({ user, clubs, index, handleModalOpen }: Props) 
                 {user.rate_points}
             </TableCell>
             <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
-                {user.rate_weigth}
+                {Math.round(user.rate_weigth)}
             </TableCell>
             <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
                 {user.eltl_id}
