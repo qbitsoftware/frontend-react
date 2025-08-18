@@ -451,6 +451,7 @@ function RouteComponent() {
                                             key={table.id}
                                             table={table}
                                             timeSlots={timeSlots}
+                                            activeMatch={activeMatch}
                                             getMatchForCell={getMatchForCell}
                                             getRoundForTimeSlot={getRoundForTimeSlot}
                                             getGroupColor={getGroupColor}
@@ -471,6 +472,7 @@ function RouteComponent() {
                     {activeMatch ? (
                         <div className="w-24 h-12 border-r flex items-center justify-center p-0.5 bg-white shadow-lg rounded border-2 border-blue-300">
                             <DraggableMatch
+                                activeMatch={activeMatch}
                                 match={activeMatch}
                                 tournamentClassesData={tournamentClassesData?.data}
                                 isPlacementMatch={isPlacementMatch}
