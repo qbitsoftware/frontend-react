@@ -136,7 +136,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}`}>
                         <TabsTrigger
                           value="info"
-                          className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                          className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.layout.info")}
                         </TabsTrigger>
@@ -149,7 +149,7 @@ function RouteComponent() {
                         <Link to={`/admin/tournaments/${tournamentid}/grupid`}>
                           <TabsTrigger
                             value="groups"
-                            className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                            className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                           >
                             {t("admin.layout.groups")}
                           </TabsTrigger>
@@ -159,7 +159,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/osalejad`} search={{ selectedGroup: currentGroupId }}>
                         <TabsTrigger
                           value="participants"
-                          className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                          className="w-[5.5rem] sm:w-[7rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t(
                             "admin.tournaments.groups.layout.participants",
@@ -171,7 +171,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/mangud`} search={{ selectedGroup: currentGroupId }}>
                         <TabsTrigger
                           value="matches"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.tournaments.groups.layout.games", "Mängud")}
                         </TabsTrigger>
@@ -180,7 +180,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/tabelid`} search={{ selectedGroup: currentGroupId }}>
                         <TabsTrigger
                           value="brackets"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.tournaments.groups.layout.tables", "Tabelid")}
                         </TabsTrigger>
@@ -188,7 +188,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
                         <TabsTrigger
                           value="schedule"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.layout.schedule")}
                         </TabsTrigger>
@@ -196,7 +196,7 @@ function RouteComponent() {
                       <Link to={`/admin/tournaments/${tournamentid}/pildid`}>
                         <TabsTrigger
                           value="images"
-                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm"
+                          className="w-[5rem] sm:w-[6rem] py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                         >
                           {t("admin.layout.images")}
                         </TabsTrigger>

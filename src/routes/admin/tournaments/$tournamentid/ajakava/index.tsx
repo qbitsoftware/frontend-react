@@ -1,10 +1,28 @@
 import { UseGetTournamentMatchesQuery } from '@/queries/match'
 import { UseGetFreeVenues } from '@/queries/venues'
-import { UseGetTournamentTablesQuery } from '@/queries/tables'
+import { TimeTableEditMatch, UseEditTimeTable, UseGetTournamentTablesQuery } from '@/queries/tables'
 import { createFileRoute, useParams } from '@tanstack/react-router'
-import { useMemo, useState, useCallback, memo } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { MatchWrapper } from '@/types/matches'
 import { useTranslation } from 'react-i18next'
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+    DragOverlay,
+    DragStartEvent,
+} from '@dnd-kit/core'
+import {
+    sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable'
+import { colorPalette } from './-components/color-palette'
+import TTRow from './-components/table-row'
+import { DraggableMatch } from './-components/draggable-match'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute(
     '/admin/tournaments/$tournamentid/ajakava/',
@@ -12,84 +30,30 @@ export const Route = createFileRoute(
     component: RouteComponent,
 })
 
-// Memoized table row component to prevent unnecessary re-renders
-const TableRow = memo(({
-    table,
-    timeSlots,
-    getMatchForCell,
-    getRoundForTimeSlot,
-    getGroupColor,
-    isPlacementMatch,
-    getPlacementLabel,
-    tournamentClassesData,
-    hoveredCell,
-    setHoveredCell
-}: any) => (
-    <div className="flex border-b hover:bg-gray-50/50 min-h-12">
-        <div className="w-16 bg-gray-50 border-r flex flex-col items-center justify-center p-0.5 min-h-12">
-            <div className="text-[10px] font-medium">{table.name}</div>
-        </div>
-
-        {timeSlots.map((timeSlot: string) => {
-            const match = getMatchForCell(table.name, timeSlot)
-            const cellKey = `${table.id}-${timeSlot}`
-            const isHovered = hoveredCell === cellKey
-            const round = getRoundForTimeSlot(timeSlot)
-
-            return (
-                <div
-                    key={timeSlot}
-                    className={`w-24 h-12 border-r flex items-center justify-center p-0.5 cursor-pointer transition-colors ${match
-                        ? `${isPlacementMatch(match) ? 'border-red-200' : ""} hover:opacity-80 border-l-2 ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
-                            ? "border-l-green-500"
-                            : match.match.state === "finished"
-                                ? "border-l-blue-500"
-                                : "border-l-yellow-500"
-                        }`
-                        : round
-                            ? `${round.color} hover:opacity-80`
-                            : "hover:bg-gray-50"
-                        } ${isHovered ? "ring-2 ring-blue-300" : ""}`}
-                    onMouseEnter={() => setHoveredCell(cellKey)}
-                    onMouseLeave={() => setHoveredCell(null)}
-                >
-                    {match ? (
-                        <div className="relative text-center w-full h-full flex flex-col justify-center">
-                            <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
-                                {match.match.readable_id}
-                            </div>
-                            <div className="text-[10px] font-medium text-gray-600 leading-tight">
-                                {tournamentClassesData?.data?.find((t: any) => t.id === match.match.tournament_table_id)?.class || 'Class'}
-                            </div>
-                            {isPlacementMatch(match) && (
-                                <div className="text-[8px] text-red-600 font-bold mt-0.5">{getPlacementLabel(match)}</div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="text-[10px] text-gray-400">
-                            {isHovered && table.match_id === "" ? "+" : ""}
-                        </div>
-                    )}
-                </div>
-            )
-        })}
-    </div>
-))
-
 function RouteComponent() {
     const { tournamentid } = useParams({ from: "/admin/tournaments/$tournamentid/ajakava/" })
     const { t } = useTranslation()
-    // const [_, setSelectedMatch] = useState<any>(null)
     const [hoveredCell, setHoveredCell] = useState<string | null>(null)
     const [selectedDay, setSelectedDay] = useState<string>('')
+    const [activeMatch, setActiveMatch] = useState<MatchWrapper | null>(null)
 
-    const { data: tournamentTables } = UseGetFreeVenues(
-        Number(tournamentid),
-        true
-    );
+    const [matchPositions, setMatchPositions] = useState<Map<string, { table: string, timeSlot: string }>>(new Map())
 
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
+
+    const { data: tournamentTables } = UseGetFreeVenues(Number(tournamentid), true);
     const { data: tournamentMatches } = UseGetTournamentMatchesQuery(Number(tournamentid))
     const { data: tournamentClassesData } = UseGetTournamentTablesQuery(Number(tournamentid))
+    const editTimeTableMutation = UseEditTimeTable(Number(tournamentid))
 
     // Extract unique days from tournament matches
     const tournamentDays = useMemo(() => {
@@ -114,7 +78,7 @@ function RouteComponent() {
         return sortedDays
     }, [tournamentMatches, selectedDay])
 
-    // Filter matches for the selected day
+    // Filter matches for the selected day with position updates
     const dayMatches = useMemo(() => {
         if (!tournamentMatches?.data || !selectedDay) return []
 
@@ -122,8 +86,33 @@ function RouteComponent() {
             if (!match.match.start_date) return false
             const matchDay = new Date(match.match.start_date).toISOString().split('T')[0]
             return matchDay === selectedDay
+        }).map(match => {
+            // Check if this match has been moved
+            const updatedPosition = matchPositions.get(match.match.id)
+            if (updatedPosition) {
+                // Create a new match object with updated position
+                const updatedMatch = {
+                    ...match,
+                    match: {
+                        ...match.match,
+                        extra_data: {
+                            ...match.match.extra_data,
+                            table: updatedPosition.table
+                        },
+                        start_date: (() => {
+                            const originalDate = new Date(match.match.start_date!)
+                            const [hours, minutes] = updatedPosition.timeSlot.split(':').map(Number)
+                            const newDate = new Date(originalDate)
+                            newDate.setUTCHours(hours, minutes, 0, 0)
+                            return newDate.toISOString()
+                        })()
+                    }
+                }
+                return updatedMatch
+            }
+            return match
         })
-    }, [tournamentMatches, selectedDay])
+    }, [tournamentMatches, selectedDay, matchPositions])
 
     const timeSlots = useMemo(() => {
         if (dayMatches.length === 0) return []
@@ -159,66 +148,6 @@ function RouteComponent() {
     const tournamentClasses = useMemo(() => {
         if (!dayMatches.length || !tournamentClassesData?.data) return []
 
-        const colorPalette = [
-            // Primary vibrant colors
-            { bg: 'bg-gradient-to-br from-cyan-100 to-blue-200', border: 'border-cyan-400' },
-            { bg: 'bg-gradient-to-br from-emerald-100 to-green-200', border: 'border-emerald-400' },
-            { bg: 'bg-gradient-to-br from-violet-100 to-purple-200', border: 'border-violet-400' },
-            { bg: 'bg-gradient-to-br from-rose-100 to-pink-200', border: 'border-rose-400' },
-            { bg: 'bg-gradient-to-br from-amber-100 to-yellow-200', border: 'border-amber-400' },
-            { bg: 'bg-gradient-to-br from-orange-100 to-red-200', border: 'border-orange-400' },
-            
-            { bg: 'bg-gradient-to-br from-teal-100 to-cyan-200', border: 'border-teal-400' },
-            { bg: 'bg-gradient-to-br from-indigo-100 to-blue-200', border: 'border-indigo-400' },
-            { bg: 'bg-gradient-to-br from-purple-100 to-indigo-200', border: 'border-purple-400' },
-            { bg: 'bg-gradient-to-br from-fuchsia-100 to-pink-200', border: 'border-fuchsia-400' },
-            { bg: 'bg-gradient-to-br from-pink-100 to-rose-200', border: 'border-pink-400' },
-            { bg: 'bg-gradient-to-br from-lime-100 to-green-200', border: 'border-lime-400' },
-            
-            { bg: 'bg-gradient-to-br from-sky-100 to-cyan-200', border: 'border-sky-400' },
-            { bg: 'bg-gradient-to-br from-blue-100 to-indigo-200', border: 'border-blue-400' },
-            { bg: 'bg-gradient-to-br from-green-100 to-emerald-200', border: 'border-green-400' },
-            { bg: 'bg-gradient-to-br from-red-100 to-rose-200', border: 'border-red-400' },
-            { bg: 'bg-gradient-to-br from-yellow-100 to-amber-200', border: 'border-yellow-400' },
-            { bg: 'bg-gradient-to-br from-slate-100 to-gray-200', border: 'border-slate-400' },
-            
-            { bg: 'bg-gradient-to-br from-cyan-50 to-teal-150', border: 'border-cyan-300' },
-            { bg: 'bg-gradient-to-br from-emerald-50 to-lime-150', border: 'border-emerald-300' },
-            { bg: 'bg-gradient-to-br from-violet-50 to-purple-150', border: 'border-violet-300' },
-            { bg: 'bg-gradient-to-br from-rose-50 to-pink-150', border: 'border-rose-300' },
-            { bg: 'bg-gradient-to-br from-amber-50 to-orange-150', border: 'border-amber-300' },
-            { bg: 'bg-gradient-to-br from-sky-50 to-blue-150', border: 'border-sky-300' },
-            
-            { bg: 'bg-gradient-to-br from-teal-200 to-cyan-300', border: 'border-teal-500' },
-            { bg: 'bg-gradient-to-br from-indigo-200 to-purple-300', border: 'border-indigo-500' },
-            { bg: 'bg-gradient-to-br from-emerald-200 to-green-300', border: 'border-emerald-500' },
-            { bg: 'bg-gradient-to-br from-rose-200 to-red-300', border: 'border-rose-500' },
-            { bg: 'bg-gradient-to-br from-amber-200 to-yellow-300', border: 'border-amber-500' },
-            { bg: 'bg-gradient-to-br from-purple-200 to-fuchsia-300', border: 'border-purple-500' },
-            
-            { bg: 'bg-gradient-to-br from-gray-100 to-slate-200', border: 'border-gray-400' },
-            { bg: 'bg-gradient-to-br from-zinc-100 to-gray-200', border: 'border-zinc-400' },
-            { bg: 'bg-gradient-to-br from-neutral-100 to-stone-200', border: 'border-neutral-400' },
-            { bg: 'bg-gradient-to-br from-stone-100 to-amber-200', border: 'border-stone-400' },
-            
-            { bg: 'bg-gradient-to-br from-lime-200 to-green-300', border: 'border-lime-500' },
-            { bg: 'bg-gradient-to-br from-cyan-200 to-blue-300', border: 'border-cyan-500' },
-            { bg: 'bg-gradient-to-br from-pink-200 to-fuchsia-300', border: 'border-pink-500' },
-            { bg: 'bg-gradient-to-br from-orange-200 to-red-300', border: 'border-orange-500' },
-            
-            { bg: 'bg-gradient-to-br from-blue-50 to-indigo-100', border: 'border-blue-300' },
-            { bg: 'bg-gradient-to-br from-green-50 to-teal-100', border: 'border-green-300' },
-            { bg: 'bg-gradient-to-br from-purple-50 to-violet-100', border: 'border-purple-300' },
-            { bg: 'bg-gradient-to-br from-red-50 to-rose-100', border: 'border-red-300' },
-            { bg: 'bg-gradient-to-br from-yellow-50 to-amber-100', border: 'border-yellow-300' },
-            { bg: 'bg-gradient-to-br from-pink-50 to-fuchsia-100', border: 'border-pink-300' },
-            
-            { bg: 'bg-gradient-to-br from-violet-50 to-indigo-100', border: 'border-violet-300' },
-            { bg: 'bg-gradient-to-br from-rose-50 to-orange-100', border: 'border-rose-300' },
-            { bg: 'bg-gradient-to-br from-sky-50 to-teal-100', border: 'border-sky-300' },
-            { bg: 'bg-gradient-to-br from-lime-50 to-emerald-100', border: 'border-lime-300' },
-            { bg: 'bg-gradient-to-br from-fuchsia-50 to-pink-100', border: 'border-fuchsia-300' }
-        ]
 
         const classMap = new Map<number, string>()
         tournamentClassesData.data.forEach(table => {
@@ -354,98 +283,204 @@ function RouteComponent() {
         })
     }
 
+    // Handle drag start
+    const handleDragStart = useCallback((event: DragStartEvent) => {
+        const { active } = event
+        if (active.data.current?.type === 'match') {
+            setActiveMatch(active.data.current.match)
+        }
+    }, [])
+
+    // Handle drag end
+    const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+        const { active, over } = event
+
+        setActiveMatch(null)
+
+        if (!over || !active.data.current?.match) {
+            return
+        }
+
+        const match = active.data.current.match as MatchWrapper
+        const targetCell = over.data.current
+
+        if (targetCell?.type === 'cell') {
+            const targetTable = targetCell.table
+            const targetTimeSlot = targetCell.timeSlot
+
+            // Check if target cell is already occupied
+            const targetKey = `${targetTable}-${targetTimeSlot}`
+            const existingMatch = dayMatchesMap.get(targetKey)
+            let edited_match_array: TimeTableEditMatch[] = []
+
+            if (existingMatch && existingMatch.match.id !== match.match.id) {
+                const originalDate = new Date(match.match.start_date!)
+                const originalTable = match.match.extra_data.table
+
+                const editData: TimeTableEditMatch = {
+                    match_id: existingMatch.match.id,
+                    table: originalTable,
+                    time: originalDate.toISOString(),
+                }
+                edited_match_array.push(editData)
+            }
+
+            const [hours, minutes] = targetTimeSlot.split(':').map(Number)
+            const fullDateTimeString = `${selectedDay}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`
+
+            const previousPositions = new Map(matchPositions)
+            try {
+                console.log('Moved match', match.match.id, 'to table', targetTable, 'at time', fullDateTimeString)
+                const editData: TimeTableEditMatch = {
+                    match_id: match.match.id,
+                    table: targetTable,
+                    time: fullDateTimeString
+                }
+                edited_match_array.push(editData)
+
+                setMatchPositions(prev => {
+                    const newPositions = new Map(prev)
+
+                    edited_match_array.forEach(editItem => {
+                        const timeDate = new Date(editItem.time)
+                        const hours = String(timeDate.getUTCHours()).padStart(2, '0')
+                        const minutes = String(timeDate.getUTCMinutes()).padStart(2, '0')
+                        const timeSlot = `${hours}:${minutes}`
+
+                        newPositions.set(editItem.match_id, {
+                            table: editItem.table,
+                            timeSlot: timeSlot
+                        })
+                    })
+
+                    return newPositions
+                })
+
+                await editTimeTableMutation.mutateAsync(edited_match_array)
+                toast.success('moved match successfully')
+            } catch (error) {
+                setMatchPositions(previousPositions)
+                toast.error('Failed to move match')
+            }
+        }
+    }, [dayMatchesMap, selectedDay])
+
     return (
-        <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col">
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+        >
+            <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col">
 
-            {/* Day Tabs */}
-            {tournamentDays.length > 1 && (
-                <div className="bg-white border-b px-4 py-2">
-                    <div className="flex gap-1">
-                        {tournamentDays.map((day) => (
-                            <button
-                                key={day}
-                                onClick={() => setSelectedDay(day)}
-                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${selectedDay === day
-                                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                    : 'text-gray-600 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {formatDayLabel(day)}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Color Legend */}
-            <div className="bg-gray-50 border-b p-3">
-                <div className="flex flex-wrap gap-3">
-                    {tournamentClasses.map((classData, index) => (
-                        <div key={index} className="flex items-center gap-1">
-                            <div className={`w-4 h-4 border-2 ${classData.bg} ${classData.border} rounded`}></div>
-                            <span className="text-xs font-medium">{classData.name}</span>
-                        </div>
-                    ))}
-                </div>
-                <div className="flex items-center gap-4 mt-3 text-xs">
-                    <div className="text-xs text-gray-600 font-medium">{t('competitions.timetable.view.match_status')}:</div>
-                    <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 border-l-4 border-yellow-500 bg-gray-100"></div>
-                        <span>{t('competitions.timetable.view.scheduled')}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 border-l-4 border-green-500 bg-gray-100"></div>
-                        <span>{t('competitions.timetable.view.ongoing')}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 border-l-4 border-blue-500 bg-gray-100"></div>
-                        <span>{t('competitions.timetable.view.finished')}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="flex-1 overflow-auto" onScroll={handleScroll}>
-                <div className="min-w-max">
-                    {/* Time Header Row */}
-                    <div className="sticky top-0 bg-white border-b flex z-10">
-                        <div className="w-16 bg-gray-50 border-r flex items-center justify-center text-xs font-medium p-1">
-                            {t('competitions.timetable.view.tables')}
-                        </div>
-                        {timeSlots.map((timeSlot) => {
-                            const round = getRoundForTimeSlot(timeSlot)
-                            return (
-                                <div
-                                    key={timeSlot}
-                                    className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100"
+                {/* Day Tabs */}
+                {tournamentDays.length > 1 && (
+                    <div className="bg-white border-b px-4 py-2">
+                        <div className="flex gap-1">
+                            {tournamentDays.map((day) => (
+                                <button
+                                    key={day}
+                                    onClick={() => setSelectedDay(day)}
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${selectedDay === day
+                                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                        }`}
                                 >
-                                    <div className="font-medium">{timeSlot}</div>
-                                    {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
-                                </div>
-                            )
-                        })}
-                    </div>
-
-                    {/* Virtual scrolling container */}
-                    <div style={{ height: totalHeight, position: 'relative' }}>
-                        <div style={{ transform: `translateY(${offsetY}px)` }}>
-                            {visibleTables.map((table) => (
-                                <TableRow
-                                    key={table.id}
-                                    table={table}
-                                    timeSlots={timeSlots}
-                                    getMatchForCell={getMatchForCell}
-                                    getRoundForTimeSlot={getRoundForTimeSlot}
-                                    getGroupColor={getGroupColor}
-                                    isPlacementMatch={isPlacementMatch}
-                                    getPlacementLabel={getPlacementLabel}
-                                    tournamentClassesData={tournamentClassesData}
-                                    hoveredCell={hoveredCell}
-                                    setHoveredCell={setHoveredCell}
-                                />
+                                    {formatDayLabel(day)}
+                                </button>
                             ))}
                         </div>
+
+                    </div>
+                )}
+
+                {/* Color Legend */}
+                <div className="bg-gray-50 border-b p-3">
+                    <div className="flex flex-wrap gap-3">
+                        {tournamentClasses.map((classData, index) => (
+                            <div key={index} className="flex items-center gap-1">
+                                <div className={`w-4 h-4 border-2 ${classData.bg} ${classData.border} rounded`}></div>
+                                <span className="text-xs font-medium">{classData.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex items-center gap-4 mt-3 text-xs">
+                        <div className="text-xs text-gray-600 font-medium">{t('competitions.timetable.view.match_status')}:</div>
+                        <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 border-l-4 border-yellow-500 bg-gray-100"></div>
+                            <span>{t('competitions.timetable.view.scheduled')}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 border-l-4 border-green-500 bg-gray-100"></div>
+                            <span>{t('competitions.timetable.view.ongoing')}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 border-l-4 border-blue-500 bg-gray-100"></div>
+                            <span>{t('competitions.timetable.view.finished')}</span>
+                        </div>
                     </div>
                 </div>
+                <div className="flex-1 overflow-auto" onScroll={handleScroll}>
+                    <div className="min-w-max">
+                        {/* Time Header Row */}
+                        <div className="sticky top-0 bg-white border-b flex z-10">
+                            <div className="w-16 bg-gray-50 border-r flex items-center justify-center text-xs font-medium p-1 sticky left-0 z-10">
+                                {t('competitions.timetable.view.tables')}
+                            </div>
+                            {timeSlots.map((timeSlot) => {
+                                const round = getRoundForTimeSlot(timeSlot)
+                                return (
+                                    <div
+                                        key={timeSlot}
+                                        className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100"
+                                    >
+                                        <div className="font-medium">{timeSlot}</div>
+                                        {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
+                                    </div>
+                                )
+                            })}
+                        </div>
+
+                        {/* Virtual scrolling container */}
+                        <div style={{ height: totalHeight, position: 'relative' }}>
+                            <div style={{ transform: `translateY(${offsetY}px)` }}>
+                                {visibleTables.map((table) => {
+                                    return (
+                                        <TTRow
+                                            key={table.id}
+                                            table={table}
+                                            timeSlots={timeSlots}
+                                            getMatchForCell={getMatchForCell}
+                                            getRoundForTimeSlot={getRoundForTimeSlot}
+                                            getGroupColor={getGroupColor}
+                                            isPlacementMatch={isPlacementMatch}
+                                            getPlacementLabel={getPlacementLabel}
+                                            tournamentClassesData={tournamentClassesData?.data}
+                                            hoveredCell={hoveredCell}
+                                            setHoveredCell={setHoveredCell}
+                                        />
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <DragOverlay>
+                    {activeMatch ? (
+                        <div className="w-24 h-12 border-r flex items-center justify-center p-0.5 bg-white shadow-lg rounded border-2 border-blue-300">
+                            <DraggableMatch
+                                match={activeMatch}
+                                tournamentClassesData={tournamentClassesData?.data}
+                                isPlacementMatch={isPlacementMatch}
+                                getPlacementLabel={getPlacementLabel}
+                                getGroupColor={getGroupColor}
+                            />
+                        </div>
+                    ) : null}
+                </DragOverlay>
             </div>
-        </div>
+        </DndContext>
     )
 }
