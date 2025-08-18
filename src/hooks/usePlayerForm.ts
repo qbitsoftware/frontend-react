@@ -127,7 +127,6 @@ export const usePlayerForm = (options: UsePlayerFormOptions = {}): UsePlayerForm
   };
 
   const handleSubmit = async (): Promise<void> => {
-    // Ensure Estonian ID data is extracted before validation
     if (!noEstonianId && playerData.isikukood && (!playerData.birth_date || !playerData.sex)) {
       const extractedDate = extractBirthDateFromIsikukood(playerData.isikukood);
       const extractedGender = extractGenderFromIsikukood(playerData.isikukood);
@@ -140,20 +139,17 @@ export const usePlayerForm = (options: UsePlayerFormOptions = {}): UsePlayerForm
         };
         setPlayerData(updatedPlayer);
         
-        // Validate with the updated data
         if (!isPlayerFormValid(updatedPlayer, noEstonianId)) {
           const missingFields = getRequiredFields(updatedPlayer, noEstonianId, t);
           onValidationError?.(missingFields);
           return;
         }
       } else {
-        // Invalid Estonian ID
         if (!validateForm()) {
           return;
         }
       }
     } else {
-      // Normal validation
       if (!validateForm()) {
         return;
       }
