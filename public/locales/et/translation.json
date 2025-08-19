@@ -776,6 +776,7 @@
       "fill_all_fields": "Palun täitke kõik väljad",
       "players_same_sex": "Mängijad peavad olema erineva sooga",
       "players_not_found": "Valitud mängijaid ei leitud",
+      "players_same": "Mängijad ei saa olla samad",
       "info_button": "Arvutamise metoodika",
       "info_button_short": "Info",
       "info_title": "Reitingu arvutamise metoodika",
