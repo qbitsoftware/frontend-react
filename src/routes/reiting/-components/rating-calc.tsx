@@ -59,6 +59,11 @@ export default function RatingCalculator({ isRatingCalculatorOpen, setIsRatingCa
             return;
         }
 
+        if (winnerPlayer.id === loserPlayer.id) {
+            toast.error(t("rating.calculator.players_same"));
+            return;
+        }
+
         const ratingChange = calculateRatingGain(
             winnerPlayer.rate_points,
             loserPlayer.rate_points,

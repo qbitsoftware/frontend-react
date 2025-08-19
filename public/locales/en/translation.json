@@ -730,6 +730,7 @@
       "fill_all_fields": "Please fill in all fields",
       "players_same_sex": "Players must be of different sexes",
       "players_not_found": "Selected players not found",
+      "players_same": "Selected players cannot be the same",
       "info_button": "Calculation methodology",
       "info_button_short": "Info",
       "info_title": "Estonian Table Tennis Rating System",
