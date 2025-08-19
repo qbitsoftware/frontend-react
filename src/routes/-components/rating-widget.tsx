@@ -31,9 +31,9 @@ const RatingWidget = () => {
   if (users) {
     const filteredUsers = users
       .filter((user) => {
-        if (activeTab === "combined") return user.eltl_id != 0 && true;
-        if (activeTab === "men") return user.sex === "M";
-        if (activeTab === "women") return user.sex === "N";
+        if (activeTab === "combined") return user.eltl_id != 0 && true && user.foreigner == 0;
+        if (activeTab === "men") return user.sex === "M" && user.foreigner == 0;
+        if (activeTab === "women") return user.sex === "N" && user.foreigner == 0;
         return true;
       })
       .sort((a, b) => a.rate_order - b.rate_order);
