@@ -129,9 +129,9 @@ function RouteComponent() {
                   {tournament_data.data?.name}
                 </h5>
               </div>
-              <div className="relative w-full lg:w-auto overflow-visible overflow-x-auto">
+              <div className={`relative w-full lg:w-auto ${showGroupsDropdown ? 'overflow-visible' : 'overflow-visible overflow-x-auto'}`}>
                 <Tabs value={currentTab} className="w-full lg:w-auto">
-                  <div className="w-full overflow-x-auto overflow-y-visible">
+                  <div className={`w-full ${showGroupsDropdown ? 'overflow-visible' : 'overflow-x-auto overflow-y-visible'}`}>
                     <TabsList className="p-1 md:p-0 flex flex-row justify-start items-center gap-1 px-1 min-w-max">
                       <Link to={`/admin/tournaments/${tournamentid}`}>
                         <TabsTrigger
