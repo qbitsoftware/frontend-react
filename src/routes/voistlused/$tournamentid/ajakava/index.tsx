@@ -70,7 +70,6 @@ function RouteComponent() {
     return map;
   }, [tournamentTables?.data]);
 
-  // Memoize unique matches to avoid recalculation
   const safeMatches = useMemo(() => {
     if (!matchesData?.data || !Array.isArray(matchesData.data)) return [];
     return getUniqueMatches(matchesData.data);
@@ -79,7 +78,6 @@ function RouteComponent() {
   const classFilteredMatches = useMemo(() => {
     if (activeClass === "all") return safeMatches;
 
-    // Find all table and stage IDs that match the activeClass
     const relevantTableIds = new Set<string | number>();
     if (tournamentTables?.data) {
       tournamentTables.data.forEach((table) => {
@@ -94,13 +92,11 @@ function RouteComponent() {
       });
     }
 
-    // Filter matches whose tournament_table_id is in relevantTableIds
     return safeMatches.filter(
       (match) => relevantTableIds.has(match.match.tournament_table_id)
     );
   }, [safeMatches, activeClass, tournamentTables?.data]);
 
-  // Memoize unique gamedays and classes
   const uniqueGamedays = useMemo(
     () => getUniqueGamedays(classFilteredMatches),
     [classFilteredMatches],
@@ -111,18 +107,14 @@ function RouteComponent() {
     [],
   );
 
-  // Memoize filtered and sorted matches
   const { displayMatches } = useMemo(() => {
-    // Filter by date/gameday
     let matches = classFilteredMatches;
 
     if (activeDay !== "all") {
-      // If activeDay is a number, filter by that specific date
       if (typeof activeDay === "number" && activeDay >= 0 && activeDay < uniqueGamedays.length) {
         matches = filterMatchesByGameday(matches, uniqueGamedays[activeDay]);
       }
     }
-    // If activeDay is "all", don't filter by date - show all matches
 
     matches = matches.filter((match) => {
       const hasPlayer1 = match.p1 && match.p1.id && match.p1.id !== "";
@@ -139,7 +131,6 @@ function RouteComponent() {
     });
 
 
-    // Filter by status
     if (activeStatus !== "all") {
       matches = matches.filter((match) => {
         const hasWinner = match.match.winner_id && match.match.winner_id !== "";

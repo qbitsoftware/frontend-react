@@ -1593,7 +1593,8 @@
         "update": "Update Timetable",
         "updating": "Updating...",
         "updated_successfully": "Timetable updated successfully",
-        "update_error": "Failed to update timetable"
+        "update_error": "Failed to update timetable",
+        "move_conflict_error": "Cannot move match to this time slot - it conflicts with parent or successor match scheduling"
       }
     },
     "blogs": {

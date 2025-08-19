@@ -283,7 +283,6 @@ function RouteComponent() {
         })
     }
 
-    // Handle drag start
     const handleDragStart = useCallback((event: DragStartEvent) => {
         const { active } = event
         if (active.data.current?.type === 'match') {
@@ -291,29 +290,24 @@ function RouteComponent() {
         }
     }, [])
 
-    // Shared validation function to check if a match would be invalid at a given time
     const isMatchTimeInvalid = useCallback((activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]): boolean => {
         if (!activeMatch || !allMatches) return false
 
-        // Find all parent matches (that feed into activeMatch)
         const parentMatches = allMatches.filter(m => 
             m.match.next_winner_match_id === activeMatch.match.id ||
             m.match.next_loser_match_id === activeMatch.match.id
         )
 
-        // Find all successor matches (that activeMatch feeds into)
         const successorMatches = allMatches.filter(m => 
             activeMatch.match.next_winner_match_id === m.match.id ||
             activeMatch.match.next_loser_match_id === m.match.id
         )
 
-        // Get parent start dates
         const parentStartDates = parentMatches
             .map(m => m.match.start_date)
             .filter(date => date && new Date(date).getTime() > 0)
             .map(date => new Date(date))
 
-        // Get successor start dates  
         const successorStartDates = successorMatches
             .map(m => m.match.start_date)
             .filter(date => date && new Date(date).getTime() > 0)
@@ -325,21 +319,18 @@ function RouteComponent() {
 
         if (!currentMatchDate) return false
 
-        // Check if current match time is invalid based on dependencies
         const latestParent = parentStartDates.length > 0 ? new Date(Math.max(...parentStartDates.map(d => d.getTime()))) : null
         const earliestSuccessor = successorStartDates.length > 0 ? new Date(Math.min(...successorStartDates.map(d => d.getTime()))) : null
 
         const isBeforeParents = latestParent && currentMatchDate <= latestParent
         const isAfterSuccessors = earliestSuccessor && currentMatchDate >= earliestSuccessor
 
-        return isBeforeParents || isAfterSuccessors
+        return Boolean(isBeforeParents || isAfterSuccessors)
     }, [])
 
-    // Validation function to check if target time slot is valid for drag and drop
     const isValidTimeSlot = useCallback((match: MatchWrapper, targetTimeSlot: string) => {
         if (!dayMatches) return true
 
-        // Create a temporary match with the target time to validate
         const [hours, minutes] = targetTimeSlot.split(':').map(Number)
         const targetDate = new Date(`${selectedDay}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`)
         
@@ -354,7 +345,6 @@ function RouteComponent() {
         return !isMatchTimeInvalid(match, tempMatch, dayMatches)
     }, [dayMatches, selectedDay, isMatchTimeInvalid])
 
-    // Handle drag end
     const handleDragEnd = useCallback(async (event: DragEndEvent) => {
         const { active, over } = event
 
@@ -371,16 +361,14 @@ function RouteComponent() {
             const targetTable = targetCell.table
             const targetTimeSlot = targetCell.timeSlot
 
-            // Validate if target time slot is valid based on match dependencies
             if (!isValidTimeSlot(match, targetTimeSlot)) {
-                toast.error('Cannot move match to this time slot - it conflicts with parent or successor match scheduling')
+                toast.error(t('admin.tournaments.timetable.move_conflict_error'))
                 return
             }
 
-            // Check if target cell is already occupied
             const targetKey = `${targetTable}-${targetTimeSlot}`
             const existingMatch = dayMatchesMap.get(targetKey)
-            let edited_match_array: TimeTableEditMatch[] = []
+            const edited_match_array: TimeTableEditMatch[] = []
 
             if (existingMatch && existingMatch.match.id !== match.match.id) {
                 const originalDate = new Date(match.match.start_date!)
