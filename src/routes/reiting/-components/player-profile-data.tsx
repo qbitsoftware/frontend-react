@@ -50,6 +50,7 @@ export const PlayerProfileData = ({ profile, isLoading }: PlayerProfileDataProps
               ))
             ) : (
               profile.matches && profile.matches
+                .filter(game => !(game.match.table_type === "champions_league" && game.match.type !== "vs"))
                 .map((game, index) => (
                   <LastMatch key={index} last_game={game} selectedUser={profile.user} />
                 ))
