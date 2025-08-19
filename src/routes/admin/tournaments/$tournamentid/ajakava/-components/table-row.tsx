@@ -17,8 +17,10 @@ interface Props {
     tournamentClassesData: TournamentTable[] | null | undefined;
     hoveredCell: string | null;
     setHoveredCell: (cellKey: string | null) => void;
+    allMatches: MatchWrapper[] | null | undefined;
+    isMatchTimeInvalid: (activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]) => boolean;
 }
-export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell, activeMatch }: Props) {
+export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell, activeMatch, allMatches, isMatchTimeInvalid }: Props) {
 
     return (
         <div className="flex border-b hover:bg-gray-50/50 min-h-12">
@@ -51,6 +53,8 @@ export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTi
                                 getPlacementLabel={getPlacementLabel}
                                 getGroupColor={getGroupColor}
                                 activeMatch={activeMatch}
+                                allMatches={allMatches}
+                                isMatchTimeInvalid={isMatchTimeInvalid}
                             />
                         ) : (
                             <div className="text-[10px] text-gray-400">

@@ -63,7 +63,7 @@ export default function Navbar() {
             <div className="flex-shrink-0 flex items-center">
               <Link href="/">
                 <img
-                  className="h-10 lg:h-8 xl:h-8 w-auto object-contain"
+                  className="h-10 w-auto object-contain"
                   src="/RLogo.png"
                   alt="ELTL Logo"
                   width="193"

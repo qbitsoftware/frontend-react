@@ -112,19 +112,21 @@ export default function UserRow({ user, clubs, index, handleModalOpen }: Props) 
             <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden sm:table-cell">
                 {getYear(user.birth_date)}
             </TableCell>
-            <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-1 sm:space-x-2">
-                <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
-                    <AvatarImage
-                        src={getClubImage(user)}
-                        alt={`${getClubName(user)} logo`}
-                    />
-                    <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-gray-100">
-                        {getClubName(user).substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
-                <span className="text-xs sm:text-sm truncate min-w-0">
-                    {getClubName(user)}
-                </span>
+            <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3">
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                    <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
+                        <AvatarImage
+                            src={getClubImage(user)}
+                            alt={`${getClubName(user)} logo`}
+                        />
+                        <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-gray-100 p-0 flex items-center justify-center">
+                            {getClubName(user).substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs sm:text-sm truncate min-w-0">
+                        {getClubName(user)}
+                    </span>
+                </div>
             </TableCell>
             <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden lg:table-cell">
                 {(() => {

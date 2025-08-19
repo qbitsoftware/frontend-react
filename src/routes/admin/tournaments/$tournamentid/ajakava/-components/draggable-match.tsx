@@ -11,9 +11,11 @@ interface Props {
     isPlacementMatch: (match: MatchWrapper) => boolean,
     getPlacementLabel: (match: MatchWrapper) => string,
     getGroupColor: (groupId: string) => string,
+    allMatches: MatchWrapper[] | null | undefined,
+    isMatchTimeInvalid: (activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]) => boolean,
 }
 
-export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor, activeMatch }: Props) => {
+export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor, activeMatch, allMatches, isMatchTimeInvalid }: Props) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable(
         {
             id: `match-${match.match.id}`,
@@ -28,9 +30,17 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
         opacity: isDragging ? 0.5 : 1,
     }
 
-    const isNextMatch = activeMatch &&
+    const isNextMatch = activeMatch && !isDragging &&
         (activeMatch.match.id === match.match.next_loser_match_id ||
             activeMatch.match.id === match.match.next_winner_match_id)
+
+    const isPreviousMatch = activeMatch && !isDragging &&
+        (activeMatch.match.next_winner_match_id === match.match.id ||
+            match.match.id === activeMatch.match.next_loser_match_id)
+
+    const shouldGreyOut = activeMatch && !isDragging && allMatches 
+        ? isMatchTimeInvalid(activeMatch, match, allMatches) 
+        : false
 
     return (
         <div
@@ -38,12 +48,24 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
             style={style}
             {...listeners}
             {...attributes}
-            className={`relative text-center w-full h-full flex flex-col justify-center cursor-grab active:cursor-grabbing border-l-2 ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
+            className={`relative text-center w-full h-full flex flex-col justify-center cursor-grab active:cursor-grabbing border-l-2 ${!isDragging ? 'transition-all' : ''} ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
                 ? "border-l-green-500"
                 : match.match.state === "finished"
                     ? "border-l-blue-500"
                     : "border-l-yellow-500"
-                } ${isPlacementMatch(match) ? 'border-red-200' : ""} ${isNextMatch ? 'outline outline-2 outline-red-500' : ''}`}
+                } ${isPlacementMatch(match) ? 'border-red-200' : ""} ${
+                    isNextMatch 
+                        ? 'ring-2 ring-black ring-opacity-80 shadow-md shadow-red-200/50' 
+                        : ''
+                } ${
+                    isPreviousMatch 
+                        ? 'ring-2 ring-black ring-opacity-80 shadow-md shadow-blue-200/50' 
+                        : ''
+                } ${
+                    shouldGreyOut 
+                        ? 'opacity-30 grayscale cursor-not-allowed' 
+                        : ''
+                }`}
         >
             <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
                 {match.match.readable_id}

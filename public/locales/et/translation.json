@@ -862,7 +862,7 @@
           "title": "Mängija Profiil"
         },
         "rating_change_graph": {
-          "title": "Vorm"
+          "title": "Graafik"
         }
       },
       "sections": {
@@ -1624,7 +1624,8 @@
         "update": "Uuenda Ajakava",
         "updating": "Uuendatakse...",
         "updated_successfully": "Ajakava uuendatud edukalt",
-        "update_error": "Ajakava uuendamine nurjus"
+        "update_error": "Ajakava uuendamine nurjus",
+        "move_conflict_error": "Mängu ei saa sellele ajale liigutada - see on vastuolus eelneva või järgneva mänguga"
       }
     },
     "blogs": {

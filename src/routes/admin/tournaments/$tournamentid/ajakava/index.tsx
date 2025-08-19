@@ -283,7 +283,6 @@ function RouteComponent() {
         })
     }
 
-    // Handle drag start
     const handleDragStart = useCallback((event: DragStartEvent) => {
         const { active } = event
         if (active.data.current?.type === 'match') {
@@ -291,7 +290,61 @@ function RouteComponent() {
         }
     }, [])
 
-    // Handle drag end
+    const isMatchTimeInvalid = useCallback((activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]): boolean => {
+        if (!activeMatch || !allMatches) return false
+
+        const parentMatches = allMatches.filter(m => 
+            m.match.next_winner_match_id === activeMatch.match.id ||
+            m.match.next_loser_match_id === activeMatch.match.id
+        )
+
+        const successorMatches = allMatches.filter(m => 
+            activeMatch.match.next_winner_match_id === m.match.id ||
+            activeMatch.match.next_loser_match_id === m.match.id
+        )
+
+        const parentStartDates = parentMatches
+            .map(m => m.match.start_date)
+            .filter(date => date && new Date(date).getTime() > 0)
+            .map(date => new Date(date))
+
+        const successorStartDates = successorMatches
+            .map(m => m.match.start_date)
+            .filter(date => date && new Date(date).getTime() > 0)
+            .map(date => new Date(date))
+
+        const currentMatchDate = currentMatch.match.start_date && new Date(currentMatch.match.start_date).getTime() > 0 
+            ? new Date(currentMatch.match.start_date) 
+            : null
+
+        if (!currentMatchDate) return false
+
+        const latestParent = parentStartDates.length > 0 ? new Date(Math.max(...parentStartDates.map(d => d.getTime()))) : null
+        const earliestSuccessor = successorStartDates.length > 0 ? new Date(Math.min(...successorStartDates.map(d => d.getTime()))) : null
+
+        const isBeforeParents = latestParent && currentMatchDate <= latestParent
+        const isAfterSuccessors = earliestSuccessor && currentMatchDate >= earliestSuccessor
+
+        return Boolean(isBeforeParents || isAfterSuccessors)
+    }, [])
+
+    const isValidTimeSlot = useCallback((match: MatchWrapper, targetTimeSlot: string) => {
+        if (!dayMatches) return true
+
+        const [hours, minutes] = targetTimeSlot.split(':').map(Number)
+        const targetDate = new Date(`${selectedDay}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`)
+        
+        const tempMatch: MatchWrapper = {
+            ...match,
+            match: {
+                ...match.match,
+                start_date: targetDate.toISOString()
+            }
+        }
+
+        return !isMatchTimeInvalid(match, tempMatch, dayMatches)
+    }, [dayMatches, selectedDay, isMatchTimeInvalid])
+
     const handleDragEnd = useCallback(async (event: DragEndEvent) => {
         const { active, over } = event
 
@@ -308,10 +361,14 @@ function RouteComponent() {
             const targetTable = targetCell.table
             const targetTimeSlot = targetCell.timeSlot
 
-            // Check if target cell is already occupied
+            if (!isValidTimeSlot(match, targetTimeSlot)) {
+                toast.error(t('admin.tournaments.timetable.move_conflict_error'))
+                return
+            }
+
             const targetKey = `${targetTable}-${targetTimeSlot}`
             const existingMatch = dayMatchesMap.get(targetKey)
-            let edited_match_array: TimeTableEditMatch[] = []
+            const edited_match_array: TimeTableEditMatch[] = []
 
             if (existingMatch && existingMatch.match.id !== match.match.id) {
                 const originalDate = new Date(match.match.start_date!)
@@ -460,6 +517,8 @@ function RouteComponent() {
                                             tournamentClassesData={tournamentClassesData?.data}
                                             hoveredCell={hoveredCell}
                                             setHoveredCell={setHoveredCell}
+                                            allMatches={dayMatches}
+                                            isMatchTimeInvalid={isMatchTimeInvalid}
                                         />
                                     )
                                 })}
@@ -478,6 +537,8 @@ function RouteComponent() {
                                 isPlacementMatch={isPlacementMatch}
                                 getPlacementLabel={getPlacementLabel}
                                 getGroupColor={getGroupColor}
+                                allMatches={dayMatches}
+                                isMatchTimeInvalid={isMatchTimeInvalid}
                             />
                         </div>
                     ) : null}
