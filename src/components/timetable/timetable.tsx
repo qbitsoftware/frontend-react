@@ -23,6 +23,7 @@ import TTRow from '@/routes/admin/tournaments/$tournamentid/ajakava/-components/
 import { DraggableMatch } from '@/routes/admin/tournaments/$tournamentid/ajakava/-components/draggable-match'
 import { toast } from 'sonner'
 import { FaPencilAlt } from 'react-icons/fa'
+import { TournamentTable } from '@/types/groups'
 
 interface TimetableProps {
     tournamentId: number
@@ -61,7 +62,6 @@ export function Timetable({
     const { data: tournamentTables } = UseGetFreeVenues(tournamentId, isAdmin);
     const { data: tournamentMatches } = UseGetTournamentMatchesQuery(tournamentId)
     const { data: tournamentClassesData } = UseGetTournamentTablesQuery(tournamentId)
-    console.log('tournamentclassesData', tournamentClassesData)
     const editTimeTableMutation = isAdmin ? UseEditTimeTable(tournamentId) : null
     const editTimeSlotsMutation = isAdmin ? UseChangeTimeSlotTime(tournamentId) : null
 
@@ -88,8 +88,16 @@ export function Timetable({
 
     const dayMatches = useMemo(() => {
         if (!tournamentMatches?.data || !selectedDay) return []
+        const classMap = new Map<number, TournamentTable>()
+        tournamentClassesData?.data?.forEach(table => {
+            classMap.set(table.id, table)
+        })
 
         return tournamentMatches.data.filter(match => {
+            const tt = classMap.get(match.match.tournament_table_id)
+            if (tt && !tt.time_table) {
+                return false
+            }
             if (!match.match.start_date) return false
             const matchDay = new Date(match.match.start_date).toISOString().split('T')[0]
             return matchDay === selectedDay
@@ -118,6 +126,7 @@ export function Timetable({
             return match
         })
     }, [tournamentMatches, selectedDay, matchPositions])
+
 
     const timeSlots = useMemo(() => {
         if (dayMatches.length === 0) return []
@@ -154,9 +163,9 @@ export function Timetable({
         if (!dayMatches.length || !tournamentClassesData?.data) return []
 
 
-        const classMap = new Map<number, string>()
+        const classMap = new Map<number, TournamentTable>()
         tournamentClassesData.data.forEach(table => {
-            classMap.set(table.id, table.class)
+            classMap.set(table.id, table)
         })
 
         const usedClasses = new Set<string>()
@@ -165,11 +174,11 @@ export function Timetable({
 
         dayMatches.forEach(match => {
             const tableId = match.match.tournament_table_id
-            const className = classMap.get(tableId)
-            if (className && !usedClasses.has(className)) {
-                usedClasses.add(className)
+            const tt = classMap.get(tableId)
+            if (tt && !usedClasses.has(tt.class)) {
+                usedClasses.add(tt.class)
                 // Assign colors sequentially to ensure uniqueness
-                classColorMap.set(className, {
+                classColorMap.set(tt.class, {
                     ...colorPalette[colorIndex % colorPalette.length],
                     tableId
                 })
