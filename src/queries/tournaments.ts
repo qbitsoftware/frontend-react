@@ -377,5 +377,37 @@ export const UseCalcTournamentRating = (tournament_id: number) => {
     //   queryClient.resetQueries({ queryKey: ["tournaments_admin"] });
     // },
   });
+};
 
+export interface TimetableVisibilityRequest {
+  visibility: boolean;
 }
+
+export interface TimetableVisibilityResponse {
+  data: { visibility: boolean } | null;
+  message: string;
+  error: string | null;
+}
+
+export const UseUpdateTimetableVisibility = (tournament_id: number) => {
+  const queryClient = useQueryClient();
+  return useMutation<TimetableVisibilityResponse, unknown, TimetableVisibilityRequest>({
+    mutationFn: async (payload: TimetableVisibilityRequest) => {
+      const { data } = await axiosInstance.post(
+        `/api/v1/tournaments/${tournament_id}/timetable/visibility`,
+        payload,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tournament_admin", tournament_id] });
+      queryClient.invalidateQueries({ queryKey: ["tournament_public", tournament_id] });
+    },
+  });
+};

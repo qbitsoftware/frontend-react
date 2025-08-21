@@ -21,8 +21,9 @@ interface Props {
     isMatchTimeInvalid: (activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]) => boolean;
     showParticipants: boolean;
     hasRoundRobinConflict: (timeSlot: string, draggedMatch: MatchWrapper) => boolean;
+    isAdmin?: boolean;
 }
-export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell, activeMatch, allMatches, isMatchTimeInvalid, showParticipants, hasRoundRobinConflict }: Props) {
+export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell, activeMatch, allMatches, isMatchTimeInvalid, showParticipants, hasRoundRobinConflict, isAdmin = true }: Props) {
 
     return (
         <div className="flex border-b hover:bg-gray-50/50 min-h-12">
@@ -48,6 +49,7 @@ export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTi
                         round={round}
                         activeMatch={activeMatch}
                         hasRoundRobinConflict={hasRoundRobinConflict}
+                        isAdmin={isAdmin}
                     >
                         {match ? (
                             <DraggableMatch
@@ -60,6 +62,7 @@ export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTi
                                 allMatches={allMatches}
                                 isMatchTimeInvalid={isMatchTimeInvalid}
                                 showParticipants={showParticipants}
+                                isAdmin={isAdmin}
                             />
                         ) : (
                             <div className="text-[10px] text-gray-400">
@@ -82,15 +85,18 @@ const DroppableCell = memo(({
     round,
     activeMatch,
     hasRoundRobinConflict,
+    isAdmin = true,
     children
 }: any) => {
+    const shouldSetupDroppable = isAdmin
     const { isOver, setNodeRef } = useDroppable({
         id: cellKey,
         data: {
             type: 'cell',
             table: table.name,
             timeSlot: timeSlot
-        }
+        },
+        disabled: !shouldSetupDroppable
     })
 
     // Check if this time slot has round robin conflicts with the dragged match

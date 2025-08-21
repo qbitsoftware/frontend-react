@@ -1626,7 +1626,13 @@
         "updating": "Uuendatakse...",
         "updated_successfully": "Ajakava uuendatud edukalt",
         "update_error": "Ajakava uuendamine nurjus",
-        "move_conflict_error": "Mängu ei saa sellele ajale liigutada - see on vastuolus eelneva või järgneva mänguga"
+        "move_conflict_error": "Mängu ei saa sellele ajale liigutada - see on vastuolus eelneva või järgneva mänguga",
+        "visibility": "Ajakava nähtavus",
+        "public_timetable": "Avalik ajakava",
+        "public_timetable_desc": "Luba avalikul vaatamisel turniiri ajakava",
+        "made_public": "Ajakava muudetud avalikuks edukalt",
+        "made_private": "Ajakava muudetud privaatseks edukalt",
+        "visibility_error": "Ajakava nähtavuse muutmine nurjus"
       }
     },
     "blogs": {

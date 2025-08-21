@@ -14,16 +14,19 @@ interface Props {
     allMatches: MatchWrapper[] | null | undefined,
     isMatchTimeInvalid: (activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]) => boolean,
     showParticipants: boolean,
+    isAdmin?: boolean,
 }
 
-export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor, activeMatch, allMatches, isMatchTimeInvalid, showParticipants }: Props) => {
+export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor, activeMatch, allMatches, isMatchTimeInvalid, showParticipants, isAdmin = true }: Props) => {
+    const shouldSetupDraggable = isAdmin
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable(
         {
             id: `match-${match.match.id}`,
             data: {
                 type: 'match',
                 match: match
-            }
+            },
+            disabled: !shouldSetupDraggable
         })
 
     const style = {
@@ -47,9 +50,9 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
         <div
             ref={setNodeRef}
             style={style}
-            {...listeners}
-            {...attributes}
-            className={`relative text-center w-full h-full flex flex-col justify-center cursor-grab active:cursor-grabbing border-l-2 ${!isDragging ? 'transition-all' : ''} ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
+            {...(isAdmin ? listeners : {})}
+            {...(isAdmin ? attributes : {})}
+            className={`relative text-center w-full h-full flex flex-col justify-center ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''} border-l-2 ${!isDragging ? 'transition-all' : ''} ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
                 ? "border-l-green-500"
                 : match.match.state === "finished"
                     ? "border-l-blue-500"

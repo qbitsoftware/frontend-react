@@ -10,6 +10,10 @@ import { TournamentTable } from "@/types/groups";
 import { Tournament } from "@/types/tournaments";
 import { toast } from "sonner";
 import { UseGenerateTimeTable } from "@/queries/tables";
+import { UseGetTournamentAdmin, UseUpdateTimetableVisibility } from "@/queries/tournaments";
+import { useQuery } from "@tanstack/react-query";
+import { Switch } from "@/components/ui/switch";
+import { Globe, Lock } from "lucide-react";
 
 export interface TimeTableFormValues {
   id: number;
@@ -41,6 +45,8 @@ export default function TimetableConfigurationsForm({
   const [isGenerating, setIsGenerating] = useState(false);
 
   const timetableMutation = UseGenerateTimeTable(tournament.id);
+  const { data: tournamentData } = useQuery(UseGetTournamentAdmin(tournament.id));
+  const timetableVisibilityMutation = UseUpdateTimetableVisibility(tournament.id);
 
   const getTournamentDateRange = () => {
     const parseDate = (dateString: string) => {
@@ -133,6 +139,19 @@ export default function TimetableConfigurationsForm({
     setTableStartTimes(newStartTimes);
   };
 
+  const handleTimetableVisibilityToggle = async (isPublic: boolean) => {
+    try {
+      await timetableVisibilityMutation.mutateAsync({
+        visibility: isPublic
+      });
+      toast.success(isPublic ? 
+        t('admin.tournaments.timetable.made_public') : 
+        t('admin.tournaments.timetable.made_private'));
+    } catch {
+      toast.error(t('admin.tournaments.timetable.visibility_error'));
+    }
+  };
+
   const handleGenerateTimetable = async () => {
     setIsGenerating(true);
     const tt_info: TimeTableFormValues[] = [];
@@ -158,7 +177,7 @@ export default function TimetableConfigurationsForm({
       await timetableMutation.mutateAsync(tt_info);
 
       toast.success(t("admin.tournaments.timetable.generated_successfully"));
-    } catch (error) {
+    } catch {
       toast.error(t("admin.tournaments.timetable.generation_error"));
     }
     setIsGenerating(false);
@@ -166,6 +185,36 @@ export default function TimetableConfigurationsForm({
 
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-base text-gray-700">
+            {tournamentData?.data && !tournamentData.data.private ? (
+              <Globe className="h-4 w-4" />
+            ) : (
+              <Lock className="h-4 w-4" />
+            )}
+            <span className="text-sm font-medium">{t("admin.tournaments.timetable.visibility")}</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">
+                {t("admin.tournaments.timetable.public_timetable")}
+              </p>
+              <p className="text-xs text-gray-500">
+                {t("admin.tournaments.timetable.public_timetable_desc")}
+              </p>
+            </div>
+            <Switch
+              checked={tournamentData?.data ? !tournamentData.data.private : false}
+              onCheckedChange={handleTimetableVisibilityToggle}
+              disabled={!tournamentData?.data || timetableVisibilityMutation.isPending}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Global Configuration */}
       <Card>
         <CardHeader className="pb-4">
@@ -175,7 +224,6 @@ export default function TimetableConfigurationsForm({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Duration and Concurrency Settings */}
           <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6">
             <div>
               <label className="text-sm font-medium mb-2 block">

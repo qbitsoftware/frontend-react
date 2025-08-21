@@ -1595,7 +1595,13 @@
         "updating": "Updating...",
         "updated_successfully": "Timetable updated successfully",
         "update_error": "Failed to update timetable",
-        "move_conflict_error": "Cannot move match to this time slot - it conflicts with parent or successor match scheduling"
+        "move_conflict_error": "Cannot move match to this time slot - it conflicts with parent or successor match scheduling",
+        "visibility": "Timetable Visibility",
+        "public_timetable": "Public Timetable",
+        "public_timetable_desc": "Allow public access to view the tournament timetable",
+        "made_public": "Timetable made public successfully",
+        "made_private": "Timetable made private successfully",
+        "visibility_error": "Failed to update timetable visibility"
       }
     },
     "blogs": {
