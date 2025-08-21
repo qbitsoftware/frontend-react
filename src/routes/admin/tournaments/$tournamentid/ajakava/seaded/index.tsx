@@ -42,15 +42,6 @@ function RouteComponent() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="mb-6">
-        {/* <h1 className="text-2xl font-bold text-gray-900">
-           {t("admin.tournaments.timetable.configurations")}
-         </h1> */}
-        {/* <p className="text-gray-800 mt-2">
-          {t("admin.tournaments.timetable.configurations_description")}
-        </p> */}
-      </div>
-
       <TimetableConfigurationsForm
         tournamentTables={tournamentTablesQuery.data.data}
         tournament={tournamentQuery.data.data}

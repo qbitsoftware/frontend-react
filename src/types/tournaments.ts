@@ -25,6 +25,7 @@ export type Tournament = {
   registration_link?: string;
   registered_players_link?: string;
   rating_calculated_at: string | null;
+  timetable_visibility: boolean;
 };
 
 export type TournamentInformation = {
