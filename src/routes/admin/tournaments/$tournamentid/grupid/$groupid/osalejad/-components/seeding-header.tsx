@@ -59,21 +59,21 @@ const SeedingHeader = ({
     return Math.pow(2, Math.ceil(Math.log2(num)));
   };
 
-  const checkPowerOf2Warning = (): boolean => {
-    let participantCount = participants?.length || 0;
-    const isStage = participants?.some(participant => participant.rr_order !== "")
-    if (isStage) {
-      return false
-    }
+  // const checkPowerOf2Warning = (): boolean => {
+  //   let participantCount = participants?.length || 0;
+  //   const isStage = participants?.some(participant => participant.rr_order !== "")
+  //   if (isStage) {
+  //     return false
+  //   }
 
-    if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-      const pairs = participants?.filter((participant) => participant.players.length == 2) || [];
-      participantCount = pairs.length;
-    }
+  //   if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+  //     const pairs = participants?.filter((participant) => participant.players.length == 2) || [];
+  //     participantCount = pairs.length;
+  //   }
 
-    const closestPowerOf2 = getClosestPowerOf2(participantCount);
-    return closestPowerOf2 !== table_data.size;
-  };
+  //   const closestPowerOf2 = getClosestPowerOf2(participantCount);
+  //   return closestPowerOf2 !== table_data.size;
+  // };
 
   const [disabled, setDisabled] = useState(false);
   const isDisabled = (data: MatchesResponse | undefined): boolean => {
@@ -124,12 +124,12 @@ const SeedingHeader = ({
     if (!order) {
       return;
     }
-    const showWarning = !(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT || table_data.type == GroupType.DYNAMIC) && checkPowerOf2Warning();
-    if (showWarning) {
-      setShowWarningModal(true);
-    } else {
-      await executeSeeding(order);
-    }
+    // const showWarning = !(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT || table_data.type == GroupType.DYNAMIC) && checkPowerOf2Warning();
+    // if (showWarning) {
+    //   setShowWarningModal(true);
+    // } else {
+    await executeSeeding(order);
+    // }
   };
 
   const handleWarningConfirm = async () => {
