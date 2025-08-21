@@ -416,9 +416,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                             </SelectItem>
                           )}
                           {tournament_sizes && tournament_sizes.data && tournament_sizes.data.map((size) => {
-                            // if (size.size == 24 && !(form.watch("type") == GroupType.DOUBLE_ELIM_TABLETENNIS || form.watch("type") == GroupType.DOUBLE_ELIM_TABLETENNIS_TOP_HEAVY)) {
-                            //   return null
-                            // }
                             return (
                               <SelectItem key={size.id} value={String(size.size)}>
                                 {size.size}
