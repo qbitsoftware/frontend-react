@@ -174,3 +174,19 @@ export const UseEditTimeTable = (tournament_id: number) => {
         },
     })
 }
+
+export const UseChangeTimeSlotTime = (tournament_id: number) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (formdata: { before: string; after: string }) => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/timetable/timeslots`, formdata, {
+                withCredentials: true
+            })
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
+        }
+    })
+}

@@ -1,7 +1,7 @@
 import { UseGetTournamentMatchesQuery } from '@/queries/match'
 import { UseGetFreeVenues } from '@/queries/venues'
-import { TimeTableEditMatch, UseEditTimeTable, UseGetTournamentTablesQuery } from '@/queries/tables'
-import { useMemo, useState, useCallback } from 'react'
+import { TimeTableEditMatch, UseChangeTimeSlotTime, UseEditTimeTable, UseGetTournamentTablesQuery } from '@/queries/tables'
+import { useMemo, useState, useCallback, useEffect } from 'react'
 import { MatchWrapper } from '@/types/matches'
 import { useTranslation } from 'react-i18next'
 import {
@@ -22,6 +22,7 @@ import { colorPalette } from '@/routes/admin/tournaments/$tournamentid/ajakava/-
 import TTRow from '@/routes/admin/tournaments/$tournamentid/ajakava/-components/table-row'
 import { DraggableMatch } from '@/routes/admin/tournaments/$tournamentid/ajakava/-components/draggable-match'
 import { toast } from 'sonner'
+import { FaPencilAlt } from 'react-icons/fa'
 
 interface TimetableProps {
     tournamentId: number
@@ -31,9 +32,9 @@ interface TimetableProps {
     height?: string
 }
 
-export function Timetable({ 
-    tournamentId, 
-    isAdmin = false, 
+export function Timetable({
+    tournamentId,
+    isAdmin = false,
     showDragAndDrop = false,
     showParticipantsDefault = false,
     height = "h-screen"
@@ -61,6 +62,7 @@ export function Timetable({
     const { data: tournamentMatches } = UseGetTournamentMatchesQuery(tournamentId)
     const { data: tournamentClassesData } = UseGetTournamentTablesQuery(tournamentId)
     const editTimeTableMutation = isAdmin ? UseEditTimeTable(tournamentId) : null
+    const editTimeSlotsMutation = isAdmin ? UseChangeTimeSlotTime(tournamentId) : null
 
     const tournamentDays = useMemo(() => {
         if (!tournamentMatches?.data) return []
@@ -222,9 +224,9 @@ export function Timetable({
             if (match.match.id === draggedMatch.match.id) return false // Ignore self
             const p1Id = match.p1?.id
             const p2Id = match.p2?.id
-            
+
             return (draggedP1Id && (p1Id === draggedP1Id || p2Id === draggedP1Id)) ||
-                   (draggedP2Id && (p1Id === draggedP2Id || p2Id === draggedP2Id))
+                (draggedP2Id && (p1Id === draggedP2Id || p2Id === draggedP2Id))
         })
     }, [dayMatches, isRoundRobinMatch])
 
@@ -236,7 +238,7 @@ export function Timetable({
     }, [t])
 
     const [visibleRange, setVisibleRange] = useState({ start: 0, end: 20 })
-    const ITEM_HEIGHT = 48 
+    const ITEM_HEIGHT = 48
     const BUFFER_SIZE = 5
 
     const dayMatchesMap = useMemo(() => {
@@ -317,12 +319,12 @@ export function Timetable({
     const isMatchTimeInvalid = useCallback((activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]): boolean => {
         if (!activeMatch || !allMatches) return false
 
-        const parentMatches = allMatches.filter(m => 
+        const parentMatches = allMatches.filter(m =>
             m.match.next_winner_match_id === activeMatch.match.id ||
             m.match.next_loser_match_id === activeMatch.match.id
         )
 
-        const successorMatches = allMatches.filter(m => 
+        const successorMatches = allMatches.filter(m =>
             activeMatch.match.next_winner_match_id === m.match.id ||
             activeMatch.match.next_loser_match_id === m.match.id
         )
@@ -337,8 +339,8 @@ export function Timetable({
             .filter(date => date && new Date(date).getTime() > 0)
             .map(date => new Date(date))
 
-        const currentMatchDate = currentMatch.match.start_date && new Date(currentMatch.match.start_date).getTime() > 0 
-            ? new Date(currentMatch.match.start_date) 
+        const currentMatchDate = currentMatch.match.start_date && new Date(currentMatch.match.start_date).getTime() > 0
+            ? new Date(currentMatch.match.start_date)
             : null
 
         if (!currentMatchDate) return false
@@ -357,7 +359,7 @@ export function Timetable({
 
         const [hours, minutes] = targetTimeSlot.split(':').map(Number)
         const targetDate = new Date(`${selectedDay}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`)
-        
+
         const tempMatch: MatchWrapper = {
             ...match,
             match: {
@@ -371,7 +373,7 @@ export function Timetable({
 
     const handleDragEnd = useCallback(async (event: DragEndEvent) => {
         if (!showDragAndDrop || !editTimeTableMutation) return
-        
+
         const { active, over } = event
 
         setActiveMatch(null)
@@ -418,7 +420,6 @@ export function Timetable({
 
             const previousPositions = new Map(matchPositions)
             try {
-                console.log('Moved match', match.match.id, 'to table', targetTable, 'at time', fullDateTimeString)
                 const editData: TimeTableEditMatch = {
                     match_id: match.match.id,
                     table: targetTable,
@@ -452,6 +453,77 @@ export function Timetable({
             }
         }
     }, [dayMatchesMap, selectedDay, showDragAndDrop, editTimeTableMutation, hasRoundRobinConflict, isValidTimeSlot, matchPositions, t])
+
+    // Replace isEditingTimeSlots and editableTimeSlots logic with per-slot editing
+    const [editingSlotIdx, setEditingSlotIdx] = useState<number | null>(null)
+    const [editableTimeSlots, setEditableTimeSlots] = useState<string[]>([])
+    const [originalTimeSlots, setOriginalTimeSlots] = useState<string[]>([])
+
+    useEffect(() => {
+        setEditableTimeSlots(timeSlots)
+        setOriginalTimeSlots(timeSlots)
+        setEditingSlotIdx(null)
+    }, [timeSlots])
+
+    // Helper to get full date string for a time slot
+    const getFullDateString = (day: string, time: string) => {
+        const [hours, minutes] = time.split(':').map(Number)
+        return `${day}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`
+    }
+
+    // Handler for editing
+    const handleEditSlot = (idx: number) => {
+        setEditingSlotIdx(idx)
+    }
+
+    const handleTimeSlotChange = (idx: number, value: string) => {
+        let digits = value.replace(/\D/g, '');
+
+        if (digits.length > 4) digits = digits.slice(0, 4);
+
+        let formatted = digits;
+        if (digits.length >= 3) {
+            formatted = `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
+        } else if (digits.length >= 1) {
+            formatted = digits;
+        }
+
+        setEditableTimeSlots(prev => {
+            const updated = [...prev];
+            updated[idx] = formatted;
+            return updated;
+        });
+    }
+
+    const handleSaveSlot = async (idx: number) => {
+        if (idx > 0) {
+            const prevTime = editableTimeSlots[idx - 1]
+            const newTime = editableTimeSlots[idx]
+
+            const [prevH, prevM] = prevTime.split(':').map(Number)
+            const [newH, newM] = newTime.split(':').map(Number)
+            const prevMinutes = prevH * 60 + prevM
+            const newMinutes = newH * 60 + newM
+            if (newMinutes <= prevMinutes) {
+                toast.error('Round time must be after previous round.')
+                return
+            }
+        }
+
+        const before = getFullDateString(selectedDay, originalTimeSlots[idx])
+        const after = getFullDateString(selectedDay, editableTimeSlots[idx])
+        const change = { before, after }
+        try {
+            if (isAdmin) {
+                await editTimeSlotsMutation?.mutateAsync(change)
+                console.log('Changed time slot:', change)
+                toast.success('Time slot updated')
+                setEditingSlotIdx(null)
+            }
+        } catch {
+            toast.error('Failed to update time slot')
+        }
+    }
 
     const timetableContent = (
         <div className={`${height} flex flex-col border rounded-lg overflow-hidden`}>
@@ -504,14 +576,42 @@ export function Timetable({
                         <div className="w-16 bg-gray-50 border-x flex items-center justify-center text-xs font-medium p-1 sticky left-0 z-10">
                             {t('competitions.timetable.view.tables')}
                         </div>
-                        {timeSlots.map((timeSlot) => {
+                        {/* Render time slots with pencil icon and per-slot editing */}
+                        {editableTimeSlots.map((timeSlot, idx) => {
                             const round = getRoundForTimeSlot(timeSlot)
                             return (
                                 <div
-                                    key={timeSlot}
-                                    className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100"
+                                    key={idx}
+                                    className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100 relative"
                                 >
-                                    <div className="font-medium">{timeSlot}</div>
+                                    {editingSlotIdx === idx ? (
+                                        <div className="flex items-center gap-1">
+                                            <input
+                                                type="text"
+                                                value={timeSlot}
+                                                onChange={e => handleTimeSlotChange(idx, e.target.value)}
+                                                className="w-16 px-1 py-0.5 border rounded text-xs"
+                                                placeholder="HH:MM"
+                                            />
+                                            <button
+                                                className="ml-1 text-green-600"
+                                                onClick={() => handleSaveSlot(idx)}
+                                            >
+                                                ✓
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-medium">{timeSlot}</span>
+                                            <button
+                                                className="ml-1 text-gray-500 hover:text-blue-600"
+                                                onClick={() => handleEditSlot(idx)}
+                                                aria-label="Edit time slot"
+                                            >
+                                                <FaPencilAlt size={12} />
+                                            </button>
+                                        </div>
+                                    )}
                                     {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
                                 </div>
                             )
@@ -585,3 +685,4 @@ export function Timetable({
 
     return timetableContent
 }
+
