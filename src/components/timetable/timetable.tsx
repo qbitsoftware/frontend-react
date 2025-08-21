@@ -67,10 +67,18 @@ export function Timetable({
 
     const tournamentDays = useMemo(() => {
         if (!tournamentMatches?.data) return []
+        const classMap = new Map<number, TournamentTable>()
+        tournamentClassesData?.data?.forEach(table => {
+            classMap.set(table.id, table)
+        })
 
         const daysSet = new Set<string>()
         tournamentMatches.data.forEach(match => {
             if (match.match.start_date && new Date(match.match.start_date).getTime() > 0) {
+                const tt = classMap.get(match.match.tournament_table_id)
+                if (tt && !tt.time_table) {
+                    return false
+                }
                 const date = new Date(match.match.start_date)
                 const dayString = date.toISOString().split('T')[0] // YYYY-MM-DD format
                 daysSet.add(dayString)
