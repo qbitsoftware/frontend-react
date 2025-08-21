@@ -1823,6 +1823,13 @@
     "players": "Participants",
     "winner": "Winner",
     "no_players": "No players available",
+    "match_outcome": {
+      "title": "Match Outcome",
+      "normal": "Normal",
+      "walkover_tooltip": "Walkover - when a player doesn't show up or withdraws before the match starts",
+      "retirement_tooltip": "Retirement - when a player gives up during the match due to injury or other reasons",
+      "disqualification_tooltip": "Disqualification - when a player is removed from the match due to rule violations or misconduct"
+    },
     "actions": {
       "title": "Actions",
       "add_set": "Add set",

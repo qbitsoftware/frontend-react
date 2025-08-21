@@ -1853,6 +1853,13 @@
     "players": "Mängijad",
     "winner": "Võitja",
     "no_players": "Mängijaid pole saadaval",
+    "match_outcome": {
+      "title": "Mängu tulemus",
+      "normal": "Tavaline",
+      "walkover_tooltip": "Walkover - kui üks mängija ei ilmu mängule või loobub mängust enne selle algust",
+      "retirement_tooltip": "Retirement - kui mängija loobub mängust vigastuse või muude põhjuste tõttu",
+      "disqualification_tooltip": "Disqualification - kui mängija eemaldatakse mängust reeglite rikkumise või vale käitumise tõttu"
+    },
     "actions": {
       "title": "Tegevused",
       "add_set": "Lisa set",

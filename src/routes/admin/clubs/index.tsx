@@ -133,25 +133,7 @@ function RouteComponent() {
     }
   };
 
-  if (!clubsData || !clubsData.data) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-        <div className="px-2 py-8 md:p-8 overflow-hidden">
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("admin.clubs.error")}</h3>
-          <p className="text-gray-500">Unable to load clubs data</p>
-        </div>
-        </div>
-      </div>
-    );
-  }
-
-  const clubs = clubsData.data;
+  const clubs = clubsData?.data;
   const openCreateDialog = () => {
     setIsCreateDialogOpen(true);
   }
@@ -159,97 +141,97 @@ function RouteComponent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       <div className="px-2 py-8 md:p-8 overflow-hidden">
-      <div className="mb-12">
-        <AdminHeader
-          title={t("admin.clubs.my_clubs.title")}
-          description={t("admin.clubs.my_clubs.subtitle")}
-          add_new={t("admin.clubs.add_new")}
-          href={openCreateDialog}
-          club={true}
-        />
+        <div className="mb-12">
+          <AdminHeader
+            title={t("admin.clubs.my_clubs.title")}
+            description={t("admin.clubs.my_clubs.subtitle")}
+            add_new={t("admin.clubs.add_new")}
+            href={openCreateDialog}
+            club={true}
+          />
 
-        {isLoadingMyClubs ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500 mr-3" />
-            <span className="text-gray-600">{t("admin.clubs.my_clubs.loading")}</span>
-          </div>
-        ) : myClubs.length > 0 ? (
-          <>
-            <span className="font-medium text-sm px-1 mb-4 block">
-              {myClubs.length} {myClubs.length === 1 ? t("admin.clubs.my_clubs.count.singular") : t("admin.clubs.my_clubs.count.plural")}
-            </span>
+          {isLoadingMyClubs ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-500 mr-3" />
+              <span className="text-gray-600">{t("admin.clubs.my_clubs.loading")}</span>
+            </div>
+          ) : myClubs.length > 0 ? (
+            <>
+              <span className="font-medium text-sm px-1 mb-4 block">
+                {myClubs.length} {myClubs.length === 1 ? t("admin.clubs.my_clubs.count.singular") : t("admin.clubs.my_clubs.count.plural")}
+              </span>
 
-            <ClubTable
-              clubs={myClubs}
-              variant="my-clubs"
-              onEditClub={(club) => {
-                setSelectedClub(club);
-                setIsEditDialogOpen(true);
-              }}
-              onManagePlayers={handleManagePlayers}
-            />
-          </>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            {t("admin.clubs.my_clubs.empty_state")}
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-        <div className="text-center md:text-left mb-4 md:mb-0">
-          <h3 className="font-bold">{t("admin.clubs.title")}</h3>
-          <p className="text-gray-600 mt-1">{t("admin.clubs.subtitle")}</p>
+              <ClubTable
+                clubs={myClubs}
+                variant="my-clubs"
+                onEditClub={(club) => {
+                  setSelectedClub(club);
+                  setIsEditDialogOpen(true);
+                }}
+                onManagePlayers={handleManagePlayers}
+              />
+            </>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              {t("admin.clubs.my_clubs.empty_state")}
+            </div>
+          )}
         </div>
-      </div>
 
-      <span className="font-medium text-sm px-1">
-        {clubs.length} {t("admin.clubs.clubs")}
-      </span>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+          <div className="text-center md:text-left mb-4 md:mb-0">
+            <h3 className="font-bold">{t("admin.clubs.title")}</h3>
+            <p className="text-gray-600 mt-1">{t("admin.clubs.subtitle")}</p>
+          </div>
+        </div>
 
-      <ClubTable
-        clubs={clubs}
-        variant="all-clubs"
-        isLoading={isLoading}
-      />
+        <span className="font-medium text-sm px-1">
+          {clubs?.length} {t("admin.clubs.clubs")}
+        </span>
 
-      <ClubFormDialog
-        isOpen={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
-        mode="create"
-        formData={newClub}
-        onFormChange={handleNewClubChange}
-        onSubmit={handleCreateClub}
-        isLoading={createClubMutation.isPending}
-      />
-
-      {selectedClub && (
-        <ClubFormDialog
-          isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
-          mode="edit"
-          club={selectedClub}
-          formData={selectedClub}
-          onFormChange={handleEditClubChange}
-          onSubmit={handleUpdateClub}
-          isLoading={updateClubMutation.isPending}
+        <ClubTable
+          clubs={clubs ?? []}
+          variant="all-clubs"
+          isLoading={isLoading}
         />
-      )}
 
-      <DeleteConfirmationDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        selectedClub={selectedClub}
-        onConfirm={handleDeleteClub}
-        isLoading={deleteClubMutation.isPending}
-      />
+        <ClubFormDialog
+          isOpen={isCreateDialogOpen}
+          onClose={() => setIsCreateDialogOpen(false)}
+          mode="create"
+          formData={newClub}
+          onFormChange={handleNewClubChange}
+          onSubmit={handleCreateClub}
+          isLoading={createClubMutation.isPending}
+        />
 
-      <PlayersManagementDialog
-        isOpen={isPlayersDialogOpen}
-        onClose={() => setIsPlayersDialogOpen(false)}
-        selectedClub={selectedClubForPlayers}
-        onPlayersUpdate={() => fetchMyClubs()}
-      />
+        {selectedClub && (
+          <ClubFormDialog
+            isOpen={isEditDialogOpen}
+            onClose={() => setIsEditDialogOpen(false)}
+            mode="edit"
+            club={selectedClub}
+            formData={selectedClub}
+            onFormChange={handleEditClubChange}
+            onSubmit={handleUpdateClub}
+            isLoading={updateClubMutation.isPending}
+          />
+        )}
+
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          selectedClub={selectedClub}
+          onConfirm={handleDeleteClub}
+          isLoading={deleteClubMutation.isPending}
+        />
+
+        <PlayersManagementDialog
+          isOpen={isPlayersDialogOpen}
+          onClose={() => setIsPlayersDialogOpen(false)}
+          selectedClub={selectedClubForPlayers}
+          onPlayersUpdate={() => fetchMyClubs()}
+        />
       </div>
     </div>
   );

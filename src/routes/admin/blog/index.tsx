@@ -118,7 +118,7 @@ function RouteComponent() {
     );
   }
 
-  if (!blogData || !blogData.data || blogData.data.length < 1) {
+  if ((!blogData || !blogData.data || blogData.data.length < 1) && !isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] m-8 space-y-2  rounded-lg border-2 border-dashed border-gray-200">
         <FolderX className="w-16 h-16 text-gray-300 mb-4" />
@@ -135,7 +135,7 @@ function RouteComponent() {
     );
   }
 
-  const filteredBlogs = blogData.data.filter(
+  const filteredBlogs = blogData && blogData.data.filter(
     (blog) =>
       blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       blog.description.toLowerCase().includes(searchTerm.toLowerCase())

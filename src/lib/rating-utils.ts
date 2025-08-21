@@ -6,20 +6,19 @@ import { TFunction } from "i18next";
 export const calculateAgeFromBirthDate = (birthDateString: string): number => {
   const birthDate = new Date(birthDateString);
   const today = new Date();
-  
+
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
-  
+
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
-  
+
   return age;
 }
 
 export const filterByAgeClass = (user: User, ageClass: string) => {
   const age = calculateAgeFromBirthDate(user.birth_date);
-  console.log(user.first_name, user.last_name, age)
   const sex = user.sex;
 
   switch (ageClass) {

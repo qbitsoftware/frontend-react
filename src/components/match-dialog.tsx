@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, HelpCircle } from "lucide-react";
 import { z } from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from "./ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
@@ -72,6 +72,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   const [matchOutcome, setMatchOutcome] = useState<ForFeitType>("");
   const [outcomeWinner, setOutcomeWinner] = useState<string>("");
   const [setsError, setSetsError] = useState<string>("");
+  const [hoveredOutcome, setHoveredOutcome] = useState<ForFeitType | null>(null);
 
   useEffect(() => {
     if (match && open) {
@@ -166,7 +167,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         head_referee: data.mainReferee,
         table_referee: data.tableReferee,
       };
-      if (matchOutcome === "RET") {
+      if (matchOutcome === "RET" || matchOutcome === "DSQ") {
         const scores: Score[] = data.scores.map((score, index) => ({
           number: index,
           p1_score: score.player1,
@@ -262,9 +263,22 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     form.setValue("scores", newScores);
   };
 
+  const getOutcomeDescription = (outcome: ForFeitType | null) => {
+    switch (outcome) {
+      case "WO":
+        return t("protocol.match_outcome.walkover_tooltip");
+      case "RET":
+        return t("protocol.match_outcome.retirement_tooltip");
+      case "DSQ":
+        return t("protocol.match_outcome.disqualification_tooltip");
+      default:
+        return "";
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-y-scroll bg-white dark:bg-gray-800 rounded-lg shadow-lg border-none">
+      <DialogContent className="max-w-4xl p-0 overflow-y-scroll bg-white dark:bg-gray-800 rounded-lg shadow-lg border-none">
         <DialogHeader className="py-10 pb-2 rounded-t-lg text-2xl font-bold text-center mx-auto">
           <DialogTitle>{t("protocol.title")}</DialogTitle>
         </DialogHeader>
@@ -310,31 +324,70 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                           setOutcomeWinner("");
                         }
                       }}
-                      className="grid grid-cols-4 gap-4"
+                      className="grid grid-cols-2 sm:grid-cols-4 gap-4"
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="" id="normal" />
-                        <label htmlFor="" className="text-sm font-medium">
+                        <label htmlFor="normal" className="text-sm font-medium">
                           {t("protocol.match_outcome.normal", "Normal")}
                         </label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 relative">
                         <RadioGroupItem value="WO" id="walkover" />
                         <label htmlFor="walkover" className="text-sm font-medium">
                           {t("protocol.match_outcome.walkover", "WO")}
                         </label>
+                        <div
+                          className="relative"
+                          onMouseEnter={() => setHoveredOutcome("WO")}
+                          onMouseLeave={() => setHoveredOutcome(null)}
+                        >
+                          <HelpCircle className="h-4 w-4 text-gray-400 dark:text-gray-500 cursor-help" />
+                          {hoveredOutcome === "WO" && (
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 w-48 bg-gray-900 text-white text-xs rounded py-1 px-2 z-50">
+                              {getOutcomeDescription("WO")}
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 relative">
                         <RadioGroupItem value="RET" id="retirement" />
                         <label htmlFor="retirement" className="text-sm font-medium">
                           {t("protocol.match_outcome.retirement", "RET")}
                         </label>
+                        <div
+                          className="relative"
+                          onMouseEnter={() => setHoveredOutcome("RET")}
+                          onMouseLeave={() => setHoveredOutcome(null)}
+                        >
+                          <HelpCircle className="h-4 w-4 text-gray-400 dark:text-gray-500 cursor-help" />
+                          {hoveredOutcome === "RET" && (
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 w-48 bg-gray-900 text-white text-xs rounded py-1 px-2 z-50">
+                              {getOutcomeDescription("RET")}
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 relative">
                         <RadioGroupItem value="DSQ" id="disqualification" />
                         <label htmlFor="disqualification" className="text-sm font-medium">
                           {t("protocol.match_outcome.disqualification", "DSQ")}
                         </label>
+                        <div
+                          className="relative"
+                          onMouseEnter={() => setHoveredOutcome("DSQ")}
+                          onMouseLeave={() => setHoveredOutcome(null)}
+                        >
+                          <HelpCircle className="h-4 w-4 text-gray-400 dark:text-gray-500 cursor-help" />
+                          {hoveredOutcome === "DSQ" && (
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 w-48 bg-gray-900 text-white text-xs rounded py-1 px-2 z-50">
+                              {getOutcomeDescription("DSQ")}
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </RadioGroup>
 
@@ -406,7 +459,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                 </Card>
 
                 {/* Scores Section - Hidden when match outcome is WO or DSQ */}
-                {(matchOutcome === "" || matchOutcome === "RET") && (
+                {(matchOutcome === "" || matchOutcome === "RET" || matchOutcome === "DSQ") && (
                   <Card className="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
                     <CardHeader className="bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                       <CardTitle className="text-lg text-gray-900 dark:text-white">
@@ -415,6 +468,11 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                           {matchOutcome === "RET" && (
                             <span className="text-sm text-orange-600 dark:text-orange-400">
                               {t("protocol.match_outcome.retirement_scores", "Scores before retirement")}
+                            </span>
+                          )}
+                          {matchOutcome === "DSQ" && (
+                            <span className="text-sm text-orange-600 dark:text-orange-400">
+                              {t("protocol.match_outcome.disqualification_scores", "Scores before disqualification")}
                             </span>
                           )}
                           <div className="flex items-center gap-2">
@@ -641,32 +699,32 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
                 </Card>
               </div>
             </ScrollArea>
-            <DialogFooter className="p-6 pt-2 bg-gray-50 dark:bg-gray-900 rounded-b-lg">
-              <div>
+            <DialogFooter className="flex flex-col sm:flex-row gap-4 p-6 pt-2 bg-gray-50 dark:bg-gray-900 rounded-b-lg">
+              <div className="flex sm:order-2 w-full sm:justify-end">
                 <Button
-                  type="button"
                   disabled={isSubmitting}
-                  className="bg-black/90"
-                  onClick={resetMatch}
+                  type="submit"
+                  className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 rounded-md w-full sm:w-1/2"
                 >
-                  {t("protocol.reset_game")}
+                  {t("protocol.actions.save")}
                 </Button>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => onClose(false)}
-                  className="bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-md"
+                  className="bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-md w-full"
                 >
                   {t("protocol.actions.cancel")}
                 </Button>
                 <Button
+                  type="button"
                   disabled={isSubmitting}
-                  type="submit"
-                  className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 rounded-md"
+                  className="bg-black/90 w-full sm:w-auto"
+                  onClick={resetMatch}
                 >
-                  {t("protocol.actions.save")}
+                  {t("protocol.reset_game")}
                 </Button>
               </div>
             </DialogFooter>
