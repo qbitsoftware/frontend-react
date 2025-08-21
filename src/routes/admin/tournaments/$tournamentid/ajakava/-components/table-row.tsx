@@ -19,8 +19,11 @@ interface Props {
     setHoveredCell: (cellKey: string | null) => void;
     allMatches: MatchWrapper[] | null | undefined;
     isMatchTimeInvalid: (activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]) => boolean;
+    showParticipants: boolean;
+    hasRoundRobinConflict: (timeSlot: string, draggedMatch: MatchWrapper) => boolean;
+    isAdmin?: boolean;
 }
-export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell, activeMatch, allMatches, isMatchTimeInvalid }: Props) {
+export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTimeSlot, getGroupColor, isPlacementMatch, getPlacementLabel, tournamentClassesData, hoveredCell, setHoveredCell, activeMatch, allMatches, isMatchTimeInvalid, showParticipants, hasRoundRobinConflict, isAdmin = true }: Props) {
 
     return (
         <div className="flex border-b hover:bg-gray-50/50 min-h-12">
@@ -44,6 +47,9 @@ export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTi
                         isHovered={isHovered}
                         setHoveredCell={setHoveredCell}
                         round={round}
+                        activeMatch={activeMatch}
+                        hasRoundRobinConflict={hasRoundRobinConflict}
+                        isAdmin={isAdmin}
                     >
                         {match ? (
                             <DraggableMatch
@@ -55,6 +61,8 @@ export default function TTRow({ table, timeSlots, getMatchForCell, getRoundForTi
                                 activeMatch={activeMatch}
                                 allMatches={allMatches}
                                 isMatchTimeInvalid={isMatchTimeInvalid}
+                                showParticipants={showParticipants}
+                                isAdmin={isAdmin}
                             />
                         ) : (
                             <div className="text-[10px] text-gray-400">
@@ -75,16 +83,24 @@ const DroppableCell = memo(({
     isHovered,
     setHoveredCell,
     round,
+    activeMatch,
+    hasRoundRobinConflict,
+    isAdmin = true,
     children
 }: any) => {
+    const shouldSetupDroppable = isAdmin
     const { isOver, setNodeRef } = useDroppable({
         id: cellKey,
         data: {
             type: 'cell',
             table: table.name,
             timeSlot: timeSlot
-        }
+        },
+        disabled: !shouldSetupDroppable
     })
+
+    // Check if this time slot has round robin conflicts with the dragged match
+    const hasConflict = activeMatch && hasRoundRobinConflict(timeSlot, activeMatch)
 
     return (
         <div
@@ -95,6 +111,7 @@ const DroppableCell = memo(({
                     ? `${round.color} hover:opacity-80`
                     : "hover:bg-gray-50"
                 } ${isHovered ? "ring-2 ring-blue-300" : ""} ${isOver ? "ring-2 ring-green-400 bg-green-50" : ""
+                } ${hasConflict ? "opacity-30 bg-red-100 cursor-not-allowed" : ""
                 }`}
             onMouseEnter={() => setHoveredCell(cellKey)}
             onMouseLeave={() => setHoveredCell(null)}

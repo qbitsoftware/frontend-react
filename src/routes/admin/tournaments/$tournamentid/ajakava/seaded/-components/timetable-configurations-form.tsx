@@ -10,6 +10,9 @@ import { TournamentTable } from "@/types/groups";
 import { Tournament } from "@/types/tournaments";
 import { toast } from "sonner";
 import { UseGenerateTimeTable } from "@/queries/tables";
+import { UseUpdateTimetableVisibility } from "@/queries/tournaments";
+import { Switch } from "@/components/ui/switch";
+import { Globe, Lock } from "lucide-react";
 
 export interface TimeTableFormValues {
   id: number;
@@ -18,7 +21,7 @@ export interface TimeTableFormValues {
   start_time: string | null;
   avg_match_duration: number | null;
   break_duration: number | null;
-  concurrency_priority: number | null;
+  concurrency_priority: boolean;
 }
 
 interface Props {
@@ -35,12 +38,13 @@ export default function TimetableConfigurationsForm({
   // Global configuration state
   const [avgMatchDuration, setAvgMatchDuration] = useState(20);
   const [breakDuration, setBreakDuration] = useState(5);
-  const [concurrencyPriority, setConcurrencyPriority] = useState(3);
+  const [concurrencyPriority, setConcurrencyPriority] = useState(false);
   const [selectedTables, setSelectedTables] = useState<Set<number>>(new Set());
   const [tableStartTimes, setTableStartTimes] = useState<Map<number, { date: string; time: string }>>(new Map());
   const [isGenerating, setIsGenerating] = useState(false);
 
   const timetableMutation = UseGenerateTimeTable(tournament.id);
+  const timetableVisibilityMutation = UseUpdateTimetableVisibility(tournament.id);
 
   const getTournamentDateRange = () => {
     const parseDate = (dateString: string) => {
@@ -73,7 +77,7 @@ export default function TimetableConfigurationsForm({
         if (table.start_date) {
           setAvgMatchDuration(table.avg_match_duration || 20);
           setBreakDuration(table.break_duration || 5);
-          setConcurrencyPriority(table.concurrency_priority || 3);
+          setConcurrencyPriority(table.concurrency_priority);
           try {
             const date = new Date(table.start_date);
             if (!isNaN(date.getTime())) {
@@ -133,6 +137,20 @@ export default function TimetableConfigurationsForm({
     setTableStartTimes(newStartTimes);
   };
 
+  const handleTimetableVisibilityToggle = async (isPublic: boolean) => {
+    try {
+      await timetableVisibilityMutation.mutateAsync({
+        visibility: isPublic
+      });
+      // setIsTTPublic(isPublic);
+      toast.success(isPublic ?
+        t('admin.tournaments.timetable.made_public') :
+        t('admin.tournaments.timetable.made_private'));
+    } catch {
+      toast.error(t('admin.tournaments.timetable.visibility_error'));
+    }
+  };
+
   const handleGenerateTimetable = async () => {
     setIsGenerating(true);
     const tt_info: TimeTableFormValues[] = [];
@@ -149,7 +167,7 @@ export default function TimetableConfigurationsForm({
           start_time: isSelected && tableStartTime ? new Date(`${tableStartTime.date}T${tableStartTime.time}:00`).toISOString() : null,
           avg_match_duration: isSelected ? avgMatchDuration : null,
           break_duration: isSelected ? breakDuration : null,
-          concurrency_priority: isSelected ? concurrencyPriority : null,
+          concurrency_priority: isSelected ? concurrencyPriority : false,
         };
         tt_info.push(values);
       }
@@ -158,7 +176,7 @@ export default function TimetableConfigurationsForm({
       await timetableMutation.mutateAsync(tt_info);
 
       toast.success(t("admin.tournaments.timetable.generated_successfully"));
-    } catch (error) {
+    } catch {
       toast.error(t("admin.tournaments.timetable.generation_error"));
     }
     setIsGenerating(false);
@@ -166,6 +184,36 @@ export default function TimetableConfigurationsForm({
 
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-base text-gray-700">
+            {tournament.timetable_visibility ? (
+              <Globe className="h-4 w-4" />
+            ) : (
+              <Lock className="h-4 w-4" />
+            )}
+            <span className="text-sm font-medium">{t("admin.tournaments.timetable.visibility")}</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">
+                {t("admin.tournaments.timetable.public_timetable")}
+              </p>
+              <p className="text-xs text-gray-500">
+                {t("admin.tournaments.timetable.public_timetable_desc")}
+              </p>
+            </div>
+            <Switch
+              checked={tournament.timetable_visibility}
+              onCheckedChange={handleTimetableVisibilityToggle}
+              disabled={timetableVisibilityMutation.isPending}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Global Configuration */}
       <Card>
         <CardHeader className="pb-4">
@@ -175,7 +223,6 @@ export default function TimetableConfigurationsForm({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Duration and Concurrency Settings */}
           <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6">
             <div>
               <label className="text-sm font-medium mb-2 block">
@@ -217,21 +264,14 @@ export default function TimetableConfigurationsForm({
               </p>
             </div>
 
-            <div>
+            <div className="flex flex-col w-full">
               <label className="text-sm font-medium mb-2 block">
                 {t("admin.tournaments.timetable.concurrency_priority")}
               </label>
-              <div className="flex items-center gap-3">
-                <Slider
-                  min={1}
-                  max={5}
-                  step={1}
-                  value={[concurrencyPriority]}
-                  onValueChange={(values) => setConcurrencyPriority(values[0])}
-                  className="flex-1"
-                />
-                <span className="text-sm font-medium w-12 text-right">{concurrencyPriority}/5</span>
-              </div>
+              <Switch
+                checked={concurrencyPriority}
+                onCheckedChange={setConcurrencyPriority}
+              />
               <p className="text-xs text-gray-500 mt-1">
                 {t("admin.tournaments.timetable.concurrency_priority_desc")}
               </p>

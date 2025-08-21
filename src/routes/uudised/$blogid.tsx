@@ -6,7 +6,7 @@ import Editor from '../admin/-components/yooptaeditor'
 import { useState, useEffect } from 'react'
 import { YooptaContentValue } from '@yoopta/editor'
 import { useTranslation } from 'react-i18next'
-import { getFormattedDate } from '../voistlused/$tournamentid/ajakava/-components/schedule-utils'
+import { getFormattedDate } from '../voistlused/$tournamentid/mangud/-components/schedule-utils'
 import { ArrowLeft, Calendar, Share2 } from 'lucide-react'
 
 export const Route = createFileRoute('/uudised/$blogid')({

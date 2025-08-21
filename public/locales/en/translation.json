@@ -547,7 +547,8 @@
         "finished": "Finished",
         "final_match": "Final",
         "bronze_match": "Bronze Match",
-        "round_prefix": "Round"
+        "round_prefix": "Round",
+        "show_participants": "Show participants"
       }
     },
     "errors": {
@@ -1594,7 +1595,13 @@
         "updating": "Updating...",
         "updated_successfully": "Timetable updated successfully",
         "update_error": "Failed to update timetable",
-        "move_conflict_error": "Cannot move match to this time slot - it conflicts with parent or successor match scheduling"
+        "move_conflict_error": "Cannot move match to this time slot - it conflicts with parent or successor match scheduling",
+        "visibility": "Timetable Visibility",
+        "public_timetable": "Public Timetable",
+        "public_timetable_desc": "Allow public access to view the tournament timetable",
+        "made_public": "Timetable made public successfully",
+        "made_private": "Timetable made private successfully",
+        "visibility_error": "Failed to update timetable visibility"
       }
     },
     "blogs": {
@@ -1823,6 +1830,13 @@
     "players": "Participants",
     "winner": "Winner",
     "no_players": "No players available",
+    "match_outcome": {
+      "title": "Match Outcome",
+      "normal": "Normal",
+      "walkover_tooltip": "Walkover - when a player doesn't show up or withdraws before the match starts",
+      "retirement_tooltip": "Retirement - when a player gives up during the match due to injury or other reasons",
+      "disqualification_tooltip": "Disqualification - when a player is removed from the match due to rule violations or misconduct"
+    },
     "actions": {
       "title": "Actions",
       "add_set": "Add set",

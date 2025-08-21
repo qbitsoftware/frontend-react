@@ -594,7 +594,8 @@
         "finished": "Lõppenud",
         "final_match": "Finaal",
         "bronze_match": "Pronksimäng",
-        "round_prefix": "Voor"
+        "round_prefix": "Voor",
+        "show_participants": "Näita osalejaid"
       }
     },
     "errors": {
@@ -1625,7 +1626,13 @@
         "updating": "Uuendatakse...",
         "updated_successfully": "Ajakava uuendatud edukalt",
         "update_error": "Ajakava uuendamine nurjus",
-        "move_conflict_error": "Mängu ei saa sellele ajale liigutada - see on vastuolus eelneva või järgneva mänguga"
+        "move_conflict_error": "Mängu ei saa sellele ajale liigutada - see on vastuolus eelneva või järgneva mänguga",
+        "visibility": "Ajakava nähtavus",
+        "public_timetable": "Avalik ajakava",
+        "public_timetable_desc": "Luba avalikul vaatamisel turniiri ajakava",
+        "made_public": "Ajakava muudetud avalikuks edukalt",
+        "made_private": "Ajakava muudetud privaatseks edukalt",
+        "visibility_error": "Ajakava nähtavuse muutmine nurjus"
       }
     },
     "blogs": {
@@ -1853,6 +1860,13 @@
     "players": "Mängijad",
     "winner": "Võitja",
     "no_players": "Mängijaid pole saadaval",
+    "match_outcome": {
+      "title": "Mängu tulemus",
+      "normal": "Tavaline",
+      "walkover_tooltip": "Walkover - kui üks mängija ei ilmu mängule või loobub mängust enne selle algust",
+      "retirement_tooltip": "Retirement - kui mängija loobub mängust vigastuse või muude põhjuste tõttu",
+      "disqualification_tooltip": "Disqualification - kui mängija eemaldatakse mängust reeglite rikkumise või vale käitumise tõttu"
+    },
     "actions": {
       "title": "Tegevused",
       "add_set": "Lisa set",
