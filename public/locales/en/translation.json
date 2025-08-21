@@ -1601,6 +1601,12 @@
         "public_timetable_desc": "Allow public access to view the tournament timetable",
         "made_public": "Timetable made public successfully",
         "made_private": "Timetable made private successfully",
+        "round_robin_conflict_error": "Cannot place match at this time - participants conflict with existing matches",
+        "change_time_slot_error": "Round time must be after previous round",
+        "move_success": "Match moved successfully",
+        "failed_to_move": "Failed to move match",
+        "time_slot_update_success": "Time slot updated successfully",
+        "failed_to_update_time_slot": "Failed to update time slot",
         "visibility_error": "Failed to update timetable visibility"
       }
     },

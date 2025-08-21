@@ -61,6 +61,7 @@ export function Timetable({
     const { data: tournamentTables } = UseGetFreeVenues(tournamentId, isAdmin);
     const { data: tournamentMatches } = UseGetTournamentMatchesQuery(tournamentId)
     const { data: tournamentClassesData } = UseGetTournamentTablesQuery(tournamentId)
+    console.log('tournamentclassesData', tournamentClassesData)
     const editTimeTableMutation = isAdmin ? UseEditTimeTable(tournamentId) : null
     const editTimeSlotsMutation = isAdmin ? UseChangeTimeSlotTime(tournamentId) : null
 
@@ -395,7 +396,7 @@ export function Timetable({
             }
 
             if (hasRoundRobinConflict(targetTimeSlot, match)) {
-                toast.error('Cannot place match at this time - participants conflict with existing matches')
+                toast.error(t('admin.tournaments.timetable.round_robin_conflict_error'))
                 return
             }
 
@@ -446,10 +447,10 @@ export function Timetable({
                 })
 
                 await editTimeTableMutation.mutateAsync(edited_match_array)
-                toast.success('moved match successfully')
+                toast.success(t('admin.tournaments.timetable.move_success'))
             } catch {
                 setMatchPositions(previousPositions)
-                toast.error('Failed to move match')
+                toast.error(t('admin.tournaments.timetable.failed_to_move'))
             }
         }
     }, [dayMatchesMap, selectedDay, showDragAndDrop, editTimeTableMutation, hasRoundRobinConflict, isValidTimeSlot, matchPositions, t])
@@ -505,7 +506,7 @@ export function Timetable({
             const prevMinutes = prevH * 60 + prevM
             const newMinutes = newH * 60 + newM
             if (newMinutes <= prevMinutes) {
-                toast.error('Round time must be after previous round.')
+                toast.error(t('admin.tournaments.timetable.change_time_slot_error'))
                 return
             }
         }
@@ -516,11 +517,11 @@ export function Timetable({
         try {
             if (isAdmin) {
                 await editTimeSlotsMutation?.mutateAsync(change)
-                toast.success('Time slot updated')
+                toast.success(t('admin.tournaments.timetable.time_slot_update_success'))
                 setEditingSlotIdx(null)
             }
         } catch {
-            toast.error('Failed to update time slot')
+            toast.error(t('admin.tournaments.timetable.failed_to_update_time_slot'))
         }
     }
 

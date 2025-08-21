@@ -1630,8 +1630,14 @@
         "visibility": "Ajakava nähtavus",
         "public_timetable": "Avalik ajakava",
         "public_timetable_desc": "Luba avalikul vaatamisel turniiri ajakava",
+        "round_robin_conflict_error": "Ajaaken on kinni, kuna mängija on juba teises mängus",
+        "move_success": "Mäng edukalt liigutatud",
+        "failed_to_move": "Mängu liigutamine nurjus",
         "made_public": "Ajakava muudetud avalikuks edukalt",
         "made_private": "Ajakava muudetud privaatseks edukalt",
+        "change_time_slot_error": "Ringiaeg peab olema pärast eelmist ringiaega ja enne järgmist ringiaega",
+        "time_slot_update_success": "Ringiaeg edukalt uuendatud",
+        "failed_to_update_time_slot": "Ringiaja uuendamine nurjus",
         "visibility_error": "Ajakava nähtavuse muutmine nurjus"
       }
     },
