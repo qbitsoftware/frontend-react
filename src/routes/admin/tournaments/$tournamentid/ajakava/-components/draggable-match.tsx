@@ -13,9 +13,10 @@ interface Props {
     getGroupColor: (groupId: string) => string,
     allMatches: MatchWrapper[] | null | undefined,
     isMatchTimeInvalid: (activeMatch: MatchWrapper, currentMatch: MatchWrapper, allMatches: MatchWrapper[]) => boolean,
+    showParticipants: boolean,
 }
 
-export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor, activeMatch, allMatches, isMatchTimeInvalid }: Props) => {
+export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementMatch, getPlacementLabel, getGroupColor, activeMatch, allMatches, isMatchTimeInvalid, showParticipants }: Props) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable(
         {
             id: `match-${match.match.id}`,
@@ -67,12 +68,22 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
                         : ''
                 }`}
         >
-            <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
-                {match.match.readable_id}
-            </div>
-            <div className="text-[10px] font-medium text-gray-600 leading-tight">
-                {tournamentClassesData && tournamentClassesData.find((t) => t.id === match.match.tournament_table_id)?.class || 'Class'}
-            </div>
+            {match.match.readable_id !== 0 && (
+                <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
+                    {match.match.readable_id}
+                </div>
+            )}
+            {!showParticipants ? (
+                <div className="text-[10px] font-medium text-gray-600 leading-tight">
+                    {tournamentClassesData && tournamentClassesData.find((t) => t.id === match.match.tournament_table_id)?.class || 'Class'}
+                </div>
+            ) : (
+                <div className="text-[8px] font-medium text-gray-700 leading-tight px-0.5 w-full overflow-hidden">
+                    <div className="truncate">{match.p1?.name || 'TBD'}</div>
+                    <div className="text-[6px] text-gray-500">vs</div>
+                    <div className="truncate">{match.p2?.name || 'TBD'}</div>
+                </div>
+            )}
             {isPlacementMatch(match) && (
                 <div className="text-[8px] text-red-600 font-bold mt-0.5">{getPlacementLabel(match)}</div>
             )}

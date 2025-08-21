@@ -36,6 +36,7 @@ function RouteComponent() {
     const [hoveredCell, setHoveredCell] = useState<string | null>(null)
     const [selectedDay, setSelectedDay] = useState<string>('')
     const [activeMatch, setActiveMatch] = useState<MatchWrapper | null>(null)
+    const [showParticipants, setShowParticipants] = useState<boolean>(false)
 
     const [matchPositions, setMatchPositions] = useState<Map<string, { table: string, timeSlot: string }>>(new Map())
 
@@ -189,17 +190,43 @@ function RouteComponent() {
         return classData ? `${classData.bg} ${classData.border}` : 'bg-gray-100 border-gray-400'
     }, [tournamentClassesData?.data, tournamentClasses])
 
-    // Check if a match is a placement match (1-2 or 3-4) based on bracket positions
+    const isRoundRobinMatch = useCallback((match: MatchWrapper) => {
+        return match.match.type === 'roundrobin'
+    }, [])
+
     const isPlacementMatch = useCallback((match: MatchWrapper) => {
         const bracket = match.match.bracket
 
         if (!bracket || typeof bracket !== 'string') return false
 
-        // Check for exact placement matches: 1-2 (final) or 3-4 (3rd place)
         return bracket === '1-2' || bracket === '3-4'
     }, [])
 
-    // Get placement match label based on bracket
+    const hasRoundRobinConflict = useCallback((timeSlot: string, draggedMatch: MatchWrapper) => {
+        if (!isRoundRobinMatch(draggedMatch) || !dayMatches) return false
+
+        const matchesAtTimeSlot = dayMatches.filter(match => {
+            if (!match.match.start_date) return false
+            const date = new Date(match.match.start_date)
+            const hours = String(date.getUTCHours()).padStart(2, '0')
+            const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+            const matchTimeString = `${hours}:${minutes}`
+            return matchTimeString === timeSlot
+        })
+
+        const draggedP1Id = draggedMatch.p1?.id
+        const draggedP2Id = draggedMatch.p2?.id
+
+        return matchesAtTimeSlot.some(match => {
+            if (match.match.id === draggedMatch.match.id) return false // Ignore self
+            const p1Id = match.p1?.id
+            const p2Id = match.p2?.id
+            
+            return (draggedP1Id && (p1Id === draggedP1Id || p2Id === draggedP1Id)) ||
+                   (draggedP2Id && (p1Id === draggedP2Id || p2Id === draggedP2Id))
+        })
+    }, [dayMatches, isRoundRobinMatch])
+
     const getPlacementLabel = useCallback((match: MatchWrapper) => {
         const bracket = match.match.bracket
         if (bracket === '1-2') return t('competitions.timetable.view.final_match')
@@ -208,10 +235,9 @@ function RouteComponent() {
     }, [t])
 
     const [visibleRange, setVisibleRange] = useState({ start: 0, end: 20 })
-    const ITEM_HEIGHT = 48 // 12 * 4px (min-h-12)
+    const ITEM_HEIGHT = 48 
     const BUFFER_SIZE = 5
 
-    // Create a match lookup map for O(1) access instead of O(n) array.find
     const dayMatchesMap = useMemo(() => {
         if (!dayMatches.length) return new Map()
 
@@ -230,7 +256,6 @@ function RouteComponent() {
         return map
     }, [dayMatches])
 
-    // Optimize getMatchForCell with memoized lookup
     const getMatchForCell = useCallback((tableId: string, timeSlot: string) => {
         const key = `${tableId}-${timeSlot}`
         return dayMatchesMap.get(key) || null
@@ -250,7 +275,6 @@ function RouteComponent() {
         })
     }, [rounds])
 
-    // Virtual scrolling handler
     const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
         if (!tournamentTables?.data) return
 
@@ -264,7 +288,6 @@ function RouteComponent() {
         setVisibleRange({ start, end })
     }, [tournamentTables?.data])
 
-    // Get visible tables for virtual scrolling
     const visibleTables = useMemo(() => {
         if (!tournamentTables?.data) return []
         return tournamentTables.data.slice(visibleRange.start, visibleRange.end)
@@ -363,6 +386,12 @@ function RouteComponent() {
 
             if (!isValidTimeSlot(match, targetTimeSlot)) {
                 toast.error(t('admin.tournaments.timetable.move_conflict_error'))
+                return
+            }
+
+            // Check for round robin conflicts
+            if (hasRoundRobinConflict(targetTimeSlot, match)) {
+                toast.error('Cannot place match at this time - participants conflict with existing matches')
                 return
             }
 
@@ -476,6 +505,18 @@ function RouteComponent() {
                             <div className="w-3 h-3 border-l-4 border-blue-500 bg-gray-100"></div>
                             <span>{t('competitions.timetable.view.finished')}</span>
                         </div>
+                        <div className="flex items-center gap-1 ml-auto">
+                            <input
+                                type="checkbox"
+                                id="showParticipants"
+                                checked={showParticipants}
+                                onChange={(e) => setShowParticipants(e.target.checked)}
+                                className="w-3 h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            />
+                            <label htmlFor="showParticipants" className="text-xs font-medium cursor-pointer">
+                                {t('competitions.timetable.view.show_participants')}
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div className="flex-1 overflow-auto" onScroll={handleScroll}>
@@ -519,6 +560,8 @@ function RouteComponent() {
                                             setHoveredCell={setHoveredCell}
                                             allMatches={dayMatches}
                                             isMatchTimeInvalid={isMatchTimeInvalid}
+                                            showParticipants={showParticipants}
+                                            hasRoundRobinConflict={hasRoundRobinConflict}
                                         />
                                     )
                                 })}
@@ -539,6 +582,7 @@ function RouteComponent() {
                                 getGroupColor={getGroupColor}
                                 allMatches={dayMatches}
                                 isMatchTimeInvalid={isMatchTimeInvalid}
+                                showParticipants={showParticipants}
                             />
                         </div>
                     ) : null}

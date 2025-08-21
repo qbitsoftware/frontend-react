@@ -594,7 +594,8 @@
         "finished": "Lõppenud",
         "final_match": "Finaal",
         "bronze_match": "Pronksimäng",
-        "round_prefix": "Voor"
+        "round_prefix": "Voor",
+        "show_participants": "Näita osalejaid"
       }
     },
     "errors": {

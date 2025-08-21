@@ -547,7 +547,8 @@
         "finished": "Finished",
         "final_match": "Final",
         "bronze_match": "Bronze Match",
-        "round_prefix": "Round"
+        "round_prefix": "Round",
+        "show_participants": "Show participants"
       }
     },
     "errors": {
