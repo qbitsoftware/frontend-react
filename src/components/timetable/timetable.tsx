@@ -516,7 +516,6 @@ export function Timetable({
         try {
             if (isAdmin) {
                 await editTimeSlotsMutation?.mutateAsync(change)
-                console.log('Changed time slot:', change)
                 toast.success('Time slot updated')
                 setEditingSlotIdx(null)
             }
