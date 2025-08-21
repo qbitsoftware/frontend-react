@@ -164,7 +164,7 @@ export default function TimetableConfigurationsForm({
           id: table.id,
           time_table: isSelected, // Include the enabled/disabled status
           start_date: isSelected && tableStartTime ? tableStartTime.date : null,
-          start_time: isSelected && tableStartTime ? new Date(`${tableStartTime.date}T${tableStartTime.time}:00`).toISOString() : null,
+          start_time: isSelected && tableStartTime ? `${tableStartTime.date}T${tableStartTime.time}:00.000Z` : null,
           avg_match_duration: isSelected ? avgMatchDuration : null,
           break_duration: isSelected ? breakDuration : null,
           concurrency_priority: isSelected ? concurrencyPriority : false,
