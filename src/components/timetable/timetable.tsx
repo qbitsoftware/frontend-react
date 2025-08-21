@@ -284,7 +284,7 @@ export function Timetable({
             const startMinutes = startTime[0] * 60 + startTime[1]
             const endMinutes = endTime[0] * 60 + endTime[1]
 
-            return slotMinutes >= startMinutes && slotMinutes < endMinutes
+            return slotMinutes >= startMinutes && (slotMinutes < endMinutes || (slotMinutes === endMinutes && slotMinutes === startMinutes))
         })
     }, [rounds])
 
@@ -586,7 +586,7 @@ export function Timetable({
                             {t('competitions.timetable.view.tables')}
                         </div>
                         {/* Render time slots with pencil icon and per-slot editing */}
-                        {editableTimeSlots.map((timeSlot, idx) => {
+                        {isAdmin ? (editableTimeSlots.map((timeSlot, idx) => {
                             const round = getRoundForTimeSlot(timeSlot)
                             return (
                                 <div
@@ -624,7 +624,22 @@ export function Timetable({
                                     {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
                                 </div>
                             )
-                        })}
+                        })) : (
+                            <div className='flex'>
+                                {timeSlots.map((timeSlot, idx) => {
+                                    const round = getRoundForTimeSlot(timeSlot)
+                                    return (
+                                        <div
+                                            key={idx}
+                                            className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100 relative"
+                                        >
+                                            <span className="font-medium">{timeSlot}</span>
+                                            {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     <div style={{ height: totalHeight, position: 'relative' }}>
