@@ -14,6 +14,7 @@ import Loader from "@/components/loader";
 import Protocol from "./-components/protocol";
 import { EliminationBrackets } from "@/components/elimination-brackets";
 import { ResponsiveClassSelector } from "@/components/responsive-class-selector";
+import { DialogType } from "@/types/groups";
 
 export const Route = createFileRoute(
   "/voistlused/$tournamentid/tulemused/$groupid/"
@@ -275,7 +276,7 @@ function RouteComponent() {
       </div>
 
       {/* Match details modal */}
-      {selectedMatch && !tableQuery.data.data.group.solo && (
+      {selectedMatch && !tableQuery.data.data.group.solo && tableQuery.data.data.group.dialog_type != DialogType.DT_FIXED_DOUBLES && tableQuery.data.data.group.dialog_type !== DialogType.DT_DOUBLES && (
         <Protocol
           key={selectedMatch.match.id}
           tournamentId={tournamentId}
