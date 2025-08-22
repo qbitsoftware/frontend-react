@@ -20,7 +20,7 @@ interface MatchesProps {
   openMatchId?: string;
 }
 
-type FilterOptions = MatchState | "all";
+export type FilterOptions = MatchState | "all";
 
 export const Matches: React.FC<MatchesProps> = ({
   data,
@@ -305,7 +305,7 @@ export const Matches: React.FC<MatchesProps> = ({
             </div>
           </div>
 
-          {tournament_table.type === "champions_league" && (
+          {tournament_table.type === GroupType.CHAMPIONS_LEAGUE && (
             <div className="flex gap-1 border bg-[#FAFCFE] py-1 px-0 rounded-md">
               <Button
                 variant="ghost"
@@ -342,8 +342,7 @@ export const Matches: React.FC<MatchesProps> = ({
             matches={filteredData}
             handleRowClick={handleCardClick}
             tournament_id={tournament_id}
-            tournament_table={tournament_table}
-            group_id={tournament_table.id}
+            tournament_table={[tournament_table]}
             active_participant={activeParticipant}
           />
           {selectedMatch &&

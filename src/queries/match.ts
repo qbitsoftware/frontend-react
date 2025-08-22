@@ -131,7 +131,7 @@ export const UseGetTournamentMatchesQuery = (tournament_id: number) => {
 
 export const UseGetMatchesQuery = (tournament_id: number, group_id: number) => {
     return useQuery<MatchesResponse>({
-        queryKey: ['matches', group_id],
+        queryKey: ['matches_group', group_id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${group_id}/matches`, {
                 withCredentials: true
