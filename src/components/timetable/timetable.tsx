@@ -479,7 +479,15 @@ export function Timetable({
     const [originalTimeSlots, setOriginalTimeSlots] = useState<string[]>([])
 
     useEffect(() => {
-        setEditableTimeSlots(timeSlots)
+        // Convert UTC timeSlots to Estonian time for display/editing
+        const estonianTimeSlots = timeSlots.map(timeSlot => 
+            new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                timeZone: 'Europe/Tallinn' 
+            })
+        )
+        setEditableTimeSlots(estonianTimeSlots)
         setOriginalTimeSlots(timeSlots)
         setEditingSlotIdx(null)
     }, [timeSlots])
@@ -515,12 +523,24 @@ export function Timetable({
     }
 
     const handleSaveSlot = async (idx: number) => {
-        if (idx > 0) {
-            const prevTime = editableTimeSlots[idx - 1]
-            const newTime = editableTimeSlots[idx]
+        // Convert Estonian time back to UTC
+        const convertEstonianToUTC = (estonianTime: string) => {
+            // Create a date in Estonian timezone and get UTC equivalent
+            const estonianDate = new Date(`1970-01-01 ${estonianTime}:00`)
+            estonianDate.setTime(estonianDate.getTime() - (3 * 60 * 60 * 1000)) // Subtract 3 hours for UTC
+            const utcHours = estonianDate.getUTCHours()
+            const utcMinutes = estonianDate.getUTCMinutes()
+            return `${String(utcHours).padStart(2, '0')}:${String(utcMinutes).padStart(2, '0')}`
+        }
 
-            const [prevH, prevM] = prevTime.split(':').map(Number)
-            const [newH, newM] = newTime.split(':').map(Number)
+        if (idx > 0) {
+            const prevTimeEstonian = editableTimeSlots[idx - 1]
+            const newTimeEstonian = editableTimeSlots[idx]
+            const prevTimeUTC = convertEstonianToUTC(prevTimeEstonian)
+            const newTimeUTC = convertEstonianToUTC(newTimeEstonian)
+
+            const [prevH, prevM] = prevTimeUTC.split(':').map(Number)
+            const [newH, newM] = newTimeUTC.split(':').map(Number)
             const prevMinutes = prevH * 60 + prevM
             const newMinutes = newH * 60 + newM
             if (newMinutes <= prevMinutes) {
@@ -530,7 +550,8 @@ export function Timetable({
         }
 
         const before = getFullDateString(selectedDay, originalTimeSlots[idx])
-        const after = getFullDateString(selectedDay, editableTimeSlots[idx])
+        const newTimeUTC = convertEstonianToUTC(editableTimeSlots[idx])
+        const after = getFullDateString(selectedDay, newTimeUTC)
         const change = { before, after }
         try {
             if (isAdmin) {
@@ -605,7 +626,7 @@ export function Timetable({
                                         <div className="flex items-center gap-1">
                                             <input
                                                 type="text"
-                                                value={timeSlot}
+                                                value={editableTimeSlots[idx] || ''}
                                                 onChange={e => handleTimeSlotChange(idx, e.target.value)}
                                                 className="w-16 px-1 py-0.5 border rounded text-xs"
                                                 placeholder="HH:MM"
