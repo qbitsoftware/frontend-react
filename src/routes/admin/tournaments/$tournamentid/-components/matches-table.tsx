@@ -15,26 +15,27 @@ interface MatchesTableProps {
     matches: MatchWrapper[] | []
     handleRowClick: (match: MatchWrapper) => void
     tournament_id: number
-    tournament_table: TournamentTable
-    group_id: number
+    tournament_table: TournamentTable[]
     active_participant: string[]
+    all?: boolean
 }
 
 export const MatchesTable: React.FC<MatchesTableProps> = ({
     matches,
     handleRowClick,
     tournament_id,
-    group_id,
     tournament_table,
     active_participant,
+    all = false,
 }: MatchesTableProps) => {
     const { t } = useTranslation()
     const queryClient = useQueryClient()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
+    const tableMap = new Map(tournament_table.map(table => [table.id, table]))
 
     const getScore = (match: MatchWrapper, player: ParticipantType) => {
-        if (match.match.table_type === "champions_league" || tournament_table.dialog_type === DialogType.DT_TEAM_LEAGUES) {
+        if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES) {
             return player === ParticipantType.P1 ? match.match.extra_data.team_1_total || 0 : match.match.extra_data.team_2_total || 0
         }
 
@@ -158,17 +159,18 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             }
 
             await axiosInstance.patch(
-                `/api/v1/tournaments/${tournament_id}/tables/${group_id}/match/${match.match.id}`,
+                `/api/v1/tournaments/${tournament_id}/tables/${match.match.tournament_table_id}/match/${match.match.id}`,
                 updatedMatch,
                 { withCredentials: true }
             )
 
             queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.refetchQueries({ queryKey: ['bracket', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['matches', group_id] })
+            queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
             queryClient.invalidateQueries({ queryKey: ['venues', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['tournament_table', group_id] })
-            queryClient.refetchQueries({ queryKey: ['tournament_table', group_id] })
+            queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
+            queryClient.refetchQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
 
             setPendingScores(prev => {
                 const newScores = { ...prev }
@@ -232,6 +234,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                     <TableHeader>
                         <TableRow className="bg-gray-50">
                             <TableHead className="min-w-[100px]">Actions</TableHead>
+                            {all && <TableHead className="min-w-[80px]">Grupp</TableHead>}
                             <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
                             <TableHead>{t("admin.tournaments.matches.table.table")}</TableHead>
                             <TableHead className="min-w-[120px]">{t("admin.tournaments.matches.table.participant_1")}</TableHead>
@@ -261,6 +264,9 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                             {t("admin.tournaments.matches.table.modify")}
                                         </Button>
                                     </TableCell>
+                                    {all && <TableCell>
+                                        {tableMap.get(match.match.tournament_table_id)?.class || "N/A"}
+                                    </TableCell>}
                                     <TableCell>
                                         {/* {match.p1.group_id} */}
                                         {match.match.round}
@@ -277,7 +283,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                         {renderPlayer(match, ParticipantType.P1)}
                                     </TableCell>
                                     <TableCell>
-                                        {match.match.table_type === "champions_league" || tournament_table.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                                        {match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
                                             getScore(match, ParticipantType.P1)
                                         ) : (
                                             <ScoreSelector
@@ -312,7 +318,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                         )}
                                     </TableCell>
                                     <TableCell>
-                                        {match.match.table_type === "champions_league" || tournament_table.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                                        {match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
                                             getScore(match, ParticipantType.P2)
                                         ) : (
                                             <ScoreSelector

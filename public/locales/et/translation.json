@@ -515,6 +515,7 @@
     }
   },
   "competitions": {
+    "all": "Kõik",
     "details": "Andmed",
     "category": "Kategooria",
     "dates": "Kuupäevad",

@@ -468,6 +468,7 @@
     }
   },
   "competitions": {
+    "all": "All",
     "details": "Details",
     "category": "Category",
     "dates": "Dates",
