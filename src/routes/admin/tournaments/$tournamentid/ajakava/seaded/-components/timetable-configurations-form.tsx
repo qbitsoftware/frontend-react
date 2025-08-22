@@ -82,7 +82,7 @@ export default function TimetableConfigurationsForm({
             const date = new Date(table.start_date);
             if (!isNaN(date.getTime())) {
               const formattedDate = date.toISOString().split("T")[0];
-              const formattedTime = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+              const formattedTime = `${date.getUTCHours().toString().padStart(2, "0")}:${date.getUTCMinutes().toString().padStart(2, "0")}`;
               startTimes.set(table.id, {
                 date: formattedDate,
                 time: formattedTime
@@ -165,10 +165,9 @@ export default function TimetableConfigurationsForm({
           time_table: isSelected, // Include the enabled/disabled status
           start_date: isSelected && tableStartTime ? tableStartTime.date : null,
           start_time: isSelected && tableStartTime ? (() => {
-            // Parse Estonian time and convert to UTC
+            // Parse time as UTC directly
             const [hours, minutes] = tableStartTime.time.split(':').map(Number);
-            const utcHours = hours - 3; // Estonian time is UTC+3
-            const utcDate = new Date(`${tableStartTime.date}T${String(utcHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`);
+            const utcDate = new Date(`${tableStartTime.date}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`);
             return utcDate.toISOString();
           })() : null,
           avg_match_duration: isSelected ? avgMatchDuration : null,
