@@ -159,7 +159,7 @@ export const Filters = ({
               .map((date, index) => ({ date, index }))
               .filter(({ date }) => {
                 const formatted = formatDate(date);
-                return formatted !== "01 Jan";
+                return formatted !== "Jan 01";
               })
               .map(({ date, index }) => (
                 <DropdownMenuItem
