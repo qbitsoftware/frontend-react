@@ -594,7 +594,6 @@ export function Timetable({
                         <div className="w-16 bg-gray-50 border-x flex items-center justify-center text-xs font-medium p-1 sticky left-0 z-10">
                             {t('competitions.timetable.view.tables')}
                         </div>
-                        {/* Render time slots with pencil icon and per-slot editing */}
                         {isAdmin ? (editableTimeSlots.map((timeSlot, idx) => {
                             const round = getRoundForTimeSlot(timeSlot)
                             return (
@@ -620,7 +619,7 @@ export function Timetable({
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-1">
-                                            <span className="font-medium">{timeSlot}</span>
+                                            <span className="font-medium">{new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Tallinn' })}</span>
                                             <button
                                                 className="ml-1 text-gray-500 hover:text-blue-600"
                                                 onClick={() => handleEditSlot(idx)}
@@ -642,7 +641,7 @@ export function Timetable({
                                             key={idx}
                                             className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100 relative"
                                         >
-                                            <span className="font-medium">{timeSlot}</span>
+                                            <span className="font-medium">{new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Tallinn' })}</span>
                                             {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
                                         </div>
                                     )
