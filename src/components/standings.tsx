@@ -43,7 +43,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
           <div key={groupId} className="bg-white rounded-lg shadow-sm border">
             <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg border-b">
               <h3 className="font-semibold text-gray-800">
-                {groupIdToName[groupId] || `${t("competitions.standings.group")} ${groupId}`}
+                {groupIdToName[groupId] || `Alagrupp`}
               </h3>
             </div>
             <Table>
@@ -54,7 +54,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {groupedParticipants && groupedParticipants[groupId].reverse().map((participant, index) => (
+                {groupedParticipants && groupedParticipants[groupId].map((participant, index) => (
                   <TableRow key={participant.id || index} className="hover:bg-gray-50">
                     <TableCell className="w-16 font-medium">{index + 1}</TableCell>
                     <TableCell>{participant.name}</TableCell>
