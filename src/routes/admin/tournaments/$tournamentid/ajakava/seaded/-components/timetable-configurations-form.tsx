@@ -165,9 +165,11 @@ export default function TimetableConfigurationsForm({
           time_table: isSelected, // Include the enabled/disabled status
           start_date: isSelected && tableStartTime ? tableStartTime.date : null,
           start_time: isSelected && tableStartTime ? (() => {
-            const estonianDate = new Date(`${tableStartTime.date}T${tableStartTime.time}:00`);
-            const utcTime = new Date(estonianDate.getTime() - (3 * 60 * 60 * 1000)); // Subtract 3 hours to convert Estonian time to UTC
-            return utcTime.toISOString();
+            // Parse Estonian time and convert to UTC
+            const [hours, minutes] = tableStartTime.time.split(':').map(Number);
+            const utcHours = hours - 3; // Estonian time is UTC+3
+            const utcDate = new Date(`${tableStartTime.date}T${String(utcHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`);
+            return utcDate.toISOString();
           })() : null,
           avg_match_duration: isSelected ? avgMatchDuration : null,
           break_duration: isSelected ? breakDuration : null,
