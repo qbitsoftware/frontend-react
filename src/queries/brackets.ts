@@ -12,7 +12,8 @@ export function UseGetBracket(tournament_id: number, table_id: number) {
                 withCredentials: true
             });
             return data
-        }
+        },
+        refetchInterval: 10000,
     })
 }
 
