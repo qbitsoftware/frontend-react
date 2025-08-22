@@ -20,13 +20,38 @@ export const ClassFilters = ({
   activeGroupId,
   onGroupChange,
 }: ClassFiltersProps) => {
-  const activeTable = availableTables.find(
+  const sortedTables = [...availableTables].sort((a, b) => {
+    // Extract gender and age from class names like "Poisid U11", "Tudrukud U9"
+    const parseClass = (className: string) => {
+      const match = className.match(/^(Poisid|Tudrukud)\s*U?(\d+)$/i);
+      if (match) {
+        return {
+          gender: match[1].toLowerCase(),
+          age: parseInt(match[2])
+        };
+      }
+      return { gender: className.toLowerCase(), age: 0 };
+    };
+
+    const classA = parseClass(a.class);
+    const classB = parseClass(b.class);
+
+    // Sort by gender first (Poisid before Tudrukud)
+    if (classA.gender !== classB.gender) {
+      return classA.gender.localeCompare(classB.gender);
+    }
+
+    // Then sort by age
+    return classA.age - classB.age;
+  });
+  
+  const activeTable = sortedTables.find(
     (table) =>
       table.id === activeGroupId ||
       (table.stages && table.stages.some((stage) => stage.id === activeGroupId))
   );
 
-  if (availableTables.length <= 1) {
+  if (sortedTables.length <= 1) {
     return null;
   }
 
@@ -46,7 +71,7 @@ export const ClassFilters = ({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {availableTables.map((table) => (
+                {sortedTables.map((table) => (
                   <SelectItem key={table.id} value={table.id.toString()}>
                     {table.class}
                   </SelectItem>
@@ -58,7 +83,7 @@ export const ClassFilters = ({
           {/* Desktop Horizontal Scroll (hidden on mobile) */}
           <div className="hidden md:flex overflow-x-auto scrollbar-hide flex-1">
             <div className="flex space-x-1 sm:space-x-2 py-3">
-              {availableTables.map((table) => {
+              {sortedTables.map((table) => {
                 const isActive =
                   table.id === activeGroupId ||
                   (table.stages && table.stages.some((stage) => stage.id === activeGroupId));
@@ -78,7 +103,7 @@ export const ClassFilters = ({
                       className="font-medium text-center leading-tight truncate"
                       title={table.class}
                     >
-                      {table.class}
+                      {table.class} ddd
                     </span>
                   </button>
                 );
