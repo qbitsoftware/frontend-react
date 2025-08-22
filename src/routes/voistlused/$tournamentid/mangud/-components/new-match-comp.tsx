@@ -35,7 +35,7 @@ const truncateNameResponsive = (name: string): string => {
 
 const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
   const { t } = useTranslation();
-  
+
   if (!table_data) {
     return <Skeleton className="h-20 w-full" />;
   }
@@ -44,6 +44,12 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
 
   const isMatchCompleted = match.match.winner_id !== "";
   const matchDate = match.match.start_date;
+  const matchDateObj = matchDate ? new Date(matchDate) : null;
+
+  const isValidDate =
+    matchDateObj &&
+    !isNaN(matchDateObj.getTime()) &&
+    matchDateObj.getTime() > new Date("1970-01-02").getTime();
 
   return (
     <Card className="pb-0 border-[#EFF0EF] !shadow-scheduleCard hover:shadow-lg transition-shadow duration-200 w-full">
@@ -68,7 +74,7 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
             ) : (
               <div className="text-center">
                 <p className="text-xs sm:text-sm font-medium text-gray-600">{t('admin.tournaments.matches.upcoming')}</p>
-                {matchDate && (
+                {isValidDate && (
                   <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">
                     {matchDate ? new Date(matchDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Tallinn' }) : ''}
                   </p>
@@ -78,7 +84,7 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
           </div>
         </div>
 
-        {matchDate && (
+        {isValidDate && (
           <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 text-xs text-gray-600 bg-gray-50 rounded-md px-2 py-1 sm:py-1.5">
             <Clock className="h-3 w-3 flex-shrink-0" />
             <span className="truncate">{new Date(matchDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Tallinn' })}</span>
