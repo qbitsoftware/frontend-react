@@ -35,16 +35,14 @@ export const ResponsiveClassSelector = ({
 }: ResponsiveClassSelectorProps) => {
   const { t } = useTranslation();
 
-  // For tulemused route (tables variant)
   if (variant === "tables") {
     if (availableTables.length <= 1) {
       return null;
     }
 
     const sortedTables = [...availableTables].sort((a, b) => {
-      // Extract gender and age from class names like "Poisid U11", "Tudrukud U9"
       const parseClass = (className: string) => {
-        const match = className.match(/^(Poisid|Tudrukud)\s*U?(\d+)$/i);
+        const match = className.match(/^(Poisid|Tüdrukud)\s*U?(\d+)$/i);
         if (match) {
           return {
             gender: match[1].toLowerCase(),
@@ -57,12 +55,10 @@ export const ResponsiveClassSelector = ({
       const classA = parseClass(a.class);
       const classB = parseClass(b.class);
 
-      // Sort by gender first (Poisid before Tudrukud)
       if (classA.gender !== classB.gender) {
         return classA.gender.localeCompare(classB.gender);
       }
 
-      // Then sort by age
       return classA.age - classB.age;
     });
 
