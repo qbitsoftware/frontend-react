@@ -14,12 +14,12 @@ interface ResponsiveClassSelectorProps {
   availableTables?: TournamentTable[];
   activeGroupId?: number;
   onGroupChange?: (groupId: number) => void;
-  
+
   // For ajakava route (string classes)
   classes?: string[];
   activeClass?: string;
   onClassChange?: (classValue: string) => void;
-  
+
   // Required prop
   variant?: "tables" | "classes";
 }
@@ -129,8 +129,8 @@ export const ResponsiveClassSelector = ({
               >
                 <SelectTrigger className="w-full h-9 text-sm">
                   <SelectValue>
-                    {currentSelection === "all" 
-                      ? t("competitions.timetable.all_groups") 
+                    {currentSelection === "all"
+                      ? t("competitions.timetable.all_groups")
                       : currentSelection}
                   </SelectValue>
                 </SelectTrigger>
@@ -164,7 +164,7 @@ export const ResponsiveClassSelector = ({
                     {t("competitions.timetable.all_groups")}
                   </span>
                 </button>
-                
+
                 {/* Individual Class Buttons */}
                 {classes.map((classValue) => (
                   <button

@@ -1,12 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import ReGrouping from "./regrouping";
 import TimeEditingModal from "./time-editing-modal";
 import { useTranslation } from "react-i18next";
@@ -42,7 +35,8 @@ export const Matches: React.FC<MatchesProps> = ({
   const [selectedMatch, setSelectedMatch] = useState<MatchWrapper | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeParticipant, setActiveParticipant] = useState<string[]>([]);
-  const [filterValue, setFilterValue] = useState<FilterOptions>("all");
+  // Change filterValue to array
+  const [filterValue, setFilterValue] = useState<FilterOptions[]>(["all"]);
   const [initialTab, setInitialTab] = useState<"regrouping" | "finals">(
     "regrouping"
   );
@@ -86,67 +80,33 @@ export const Matches: React.FC<MatchesProps> = ({
     }
   }, [openMatchId, data]);
 
-  // const filteredData = useMemo(() => {
-  //   let filtered;
-
-  //   switch (filterValue) {
-  //     case MatchState.FINISHED:
-  //       filtered = data.filter(
-  //         (match) => match.match.state === MatchState.FINISHED
-  //       );
-  //       break;
-  //     case MatchState.ONGOING:
-  //       filtered = data.filter(
-  //         (match) => match.match.state === MatchState.ONGOING
-  //       );
-  //       break;
-  //     case MatchState.CREATED:
-  //       filtered = data.filter(
-  //         (match) => match.match.state === MatchState.CREATED
-  //       );
-  //       break;
-  //     case "all":
-  //     default:
-  //       filtered = data;
-  //   }
-
-  //   const validMatches = filtered.filter(
-  //     (match) => match.p1.id !== "" && match.p2.id !== ""
-  //   );
-
-  //   return validMatches.sort((a, b) => {
-  //     const stateOrder = {
-  //       [MatchState.ONGOING]: 0,
-  //       [MatchState.CREATED]: 1,
-  //       [MatchState.FINISHED]: 2,
-  //     };
-
-  //     return stateOrder[a.match.state] - stateOrder[b.match.state];
-  //   });
-  // }, [data, filterValue]);
+  // Helper to handle checkbox changes
+  const handleFilterChange = (value: FilterOptions) => {
+    setFilterValue(prev => {
+      if (value === "all") {
+        return ["all"];
+      }
+      const filtered = prev.filter(v => v !== "all");
+      if (filtered.includes(value)) {
+        // Remove value
+        return filtered.length === 1 ? ["all"] : filtered.filter(v => v !== value);
+      } else {
+        // Add value
+        return [...filtered, value];
+      }
+    });
+  };
 
   const filteredData = useMemo(() => {
     let filtered;
 
-    switch (filterValue) {
-      case MatchState.FINISHED:
-        filtered = data.filter(
-          (match) => match.match.state === MatchState.FINISHED
-        );
-        break;
-      case MatchState.ONGOING:
-        filtered = data.filter(
-          (match) => match.match.state === MatchState.ONGOING
-        );
-        break;
-      case MatchState.CREATED:
-        filtered = data.filter(
-          (match) => match.match.state === MatchState.CREATED
-        );
-        break;
-      case "all":
-      default:
-        filtered = data;
+    // If "all" is selected, show all
+    if (filterValue.includes("all")) {
+      filtered = data;
+    } else {
+      filtered = data.filter(
+        (match) => filterValue.includes(match.match.state)
+      );
     }
 
     const validMatches = filtered.filter(
@@ -279,47 +239,68 @@ export const Matches: React.FC<MatchesProps> = ({
     return (
       <Card className="w-full border-stone-100">
         <CardHeader className="flex flex-row w-full items-center justify-between space-y-0">
-          <div className="flex items-center gap-2">
-            <Select
-              value={filterValue}
-              onValueChange={(value: FilterOptions) => setFilterValue(value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter matches" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  {t("admin.tournaments.filters.all_games")}
-                </SelectItem>
-                <SelectItem value={MatchState.FINISHED}>
-                  {t("admin.tournaments.filters.winner_declared")}
-                </SelectItem>
-                <SelectItem value={MatchState.ONGOING}>
-                  {t("admin.tournaments.filters.ongoing_games")}
-                </SelectItem>
-                <SelectItem value={MatchState.CREATED}>
-                  {t("admin.tournaments.filters.upcoming_games")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <h3 className="text-lg font-bold text-gray-900">
-              <span className="font-light text-base">
-                {t("admin.tournaments.groups.layout.games_title")}
-              </span>{" "}
-              {tournament_table.class}
-            </h3>
-            <div className="flex items-center gap-4 ml-6 text-xs text-gray-600">
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-white border border-gray-300"></div>
-                <span>{t("admin.tournaments.matches.legend.upcoming")}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-green-100 border border-green-200"></div>
-                <span>{t("admin.tournaments.matches.legend.ongoing")}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-gray-100 border border-gray-300"></div>
-                <span>{t("admin.tournaments.matches.legend.finished")}</span>
+          <div className="flex gap-4 flex-col">
+            {/* Compact filter checkboxes */}
+            <div className="flex flex-col sm:flex-row">
+              <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
+                <input
+                  type="checkbox"
+                  checked={filterValue.includes("all")}
+                  onChange={() => handleFilterChange("all")}
+                  className="w-3 h-3"
+                />
+                <span className="text-xs">{t("admin.tournaments.filters.all_games")}</span>
+              </label>
+              <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
+                <input
+                  type="checkbox"
+                  checked={filterValue.includes(MatchState.FINISHED)}
+                  onChange={() => handleFilterChange(MatchState.FINISHED)}
+                  className="w-3 h-3"
+                />
+                <span className="text-xs">{t("admin.tournaments.filters.winner_declared")}</span>
+              </label>
+              <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
+                <input
+                  type="checkbox"
+                  checked={filterValue.includes(MatchState.ONGOING)}
+                  onChange={() => handleFilterChange(MatchState.ONGOING)}
+                  className="w-3 h-3"
+                />
+                <span className="text-xs">{t("admin.tournaments.filters.ongoing_games")}</span>
+              </label>
+              <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
+                <input
+                  type="checkbox"
+                  checked={filterValue.includes(MatchState.CREATED)}
+                  onChange={() => handleFilterChange(MatchState.CREATED)}
+                  className="w-3 h-3"
+                />
+                <span className="text-xs">{t("admin.tournaments.filters.upcoming_games")}</span>
+              </label>
+            </div>
+            <div>
+              <div className="flex gap-4  text-xs text-gray-600">
+                <h3 className="text-lg font-bold text-gray-900">
+                  <span className="font-light text-base">
+                    {t("admin.tournaments.groups.layout.games_title")}
+                  </span>{" "}
+                  {tournament_table.class}
+                </h3>
+                <div className="flex flex-col sm:flex-row">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-white border border-gray-300"></div>
+                    <span>{t("admin.tournaments.matches.legend.upcoming")}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-green-100 border border-green-200"></div>
+                    <span>{t("admin.tournaments.matches.legend.ongoing")}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-gray-100 border border-gray-300"></div>
+                    <span>{t("admin.tournaments.matches.legend.finished")}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
