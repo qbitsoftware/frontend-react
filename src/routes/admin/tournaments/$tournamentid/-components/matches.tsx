@@ -153,6 +153,7 @@ export const Matches: React.FC<MatchesProps> = ({
       (match) => match.p1.id !== "" && match.p2.id !== ""
     );
 
+
     // Sort by state order first
     const sortedByState = validMatches.sort((a, b) => {
       const stateOrder = {
@@ -162,6 +163,20 @@ export const Matches: React.FC<MatchesProps> = ({
       };
       return stateOrder[a.match.state] - stateOrder[b.match.state];
     });
+
+    if (tournament_table.time_table === true) {
+      const ongoing = validMatches
+        .filter(m => m.match.state === MatchState.ONGOING)
+        .sort((a, b) => new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime());
+      const created = validMatches
+        .filter(m => m.match.state === MatchState.CREATED)
+        .sort((a, b) => new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime());
+      const finished = validMatches
+        .filter(m => m.match.state === MatchState.FINISHED)
+        .sort((a, b) => new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime());
+
+      return [...ongoing, ...created, ...finished];
+    }
 
     // If round-robin, apply additional sorting for participant spacing and group alternation
     if (tournament_table.type === GroupType.DYNAMIC || tournament_table.type === GroupType.ROUND_ROBIN) {
@@ -246,7 +261,7 @@ export const Matches: React.FC<MatchesProps> = ({
     }
 
     return sortedByState;
-  }, [data, filterValue, tournament_table.type]);
+  }, [data, filterValue, tournament_table]);
 
   const handleCardClick = (match: MatchWrapper) => {
     setSelectedMatch(match);

@@ -264,6 +264,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                     <TableCell>
                                         {/* {match.p1.group_id} */}
                                         {match.match.round}
+                                        {/* {new Date(match.match.start_date).toLocaleString()} */}
                                     </TableCell>
                                     <TableCell>
                                         <TableNumberForm
@@ -329,7 +330,22 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                         {getWinnerName(match)}
                                     </TableCell>
                                     <TableCell>
-                                        {match.match.type === "winner" ? t("admin.tournaments.matches.table.winner_bracket") : match.match.type === "loser" ? t("admin.tournaments.matches.table.loser_bracket") : ""}
+                                        {/* {match.match.type === "winner" ? t("admin.tournaments.matches.table.winner_bracket") : match.match.type === "loser" ? t("admin.tournaments.matches.table.loser_bracket") : ""} */}
+                                        {/* {match.match.bracket != "" ? match.match.bracket : "-"} */}
+                                        {/* {match.match.bracket !== ""
+                                            ? match.match.bracket
+                                            : match.match.table_type
+                                                ? t(`admin.tournaments.matches.table.${match.match.table_type}`)
+                                                : "-"} */}
+                                        {match.match.bracket !== ""
+                                            ? match.match.bracket
+                                            : match.match.type === "winner"
+                                                ? t("admin.tournaments.matches.table.winner_bracket")
+                                                : match.match.type === "loser"
+                                                    ? t("admin.tournaments.matches.table.loser_bracket")
+                                                    : match.match.type === "bracket"
+                                                        ? t("admin.tournaments.matches.table.bracket")
+                                                        : "-"}
                                     </TableCell>
                                 </TableRow>
                             )
