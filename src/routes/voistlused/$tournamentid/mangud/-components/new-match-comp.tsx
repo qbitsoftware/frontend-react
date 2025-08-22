@@ -13,6 +13,7 @@ import { extractMatchSets } from "@/components/utils/utils";
 interface ITTFMatchComponentProps {
   match: MatchWrapper;
   table_data: TournamentTable | null | undefined;
+  timeZone?: string;
 }
 
 const truncateName = (name: string, maxLength: number = 10): string => {
@@ -32,7 +33,7 @@ const truncateNameResponsive = (name: string): string => {
   return truncateName(name, 18);
 };
 
-const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
+const ITTFMatchComponent = ({ match, table_data, timeZone = 'Europe/Tallinn' }: ITTFMatchComponentProps) => {
   if (!table_data) {
     return <Skeleton className="h-20 w-full" />;
   }
@@ -67,7 +68,7 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
                 <p className="text-xs sm:text-sm font-medium text-gray-600">Upcoming</p>
                 {matchDate && (
                   <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">
-                    {formatDateGetHours(matchDate)}
+                    {formatDateGetHours(matchDate, timeZone)}
                   </p>
                 )}
               </div>
@@ -78,9 +79,9 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
         {matchDate && (
           <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 text-xs text-gray-600 bg-gray-50 rounded-md px-2 py-1 sm:py-1.5">
             <Clock className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate">{formatDateGetDayMonthYear(matchDate)}</span>
+            <span className="truncate">{formatDateGetDayMonthYear(matchDate, timeZone)}</span>
             <span className="font-semibold flex-shrink-0">
-              {formatDateGetHours(matchDate)}
+              {formatDateGetHours(matchDate, timeZone)}
             </span>
           </div>
         )}

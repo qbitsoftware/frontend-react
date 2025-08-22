@@ -184,14 +184,15 @@ export const formatDateTimeNew = (dateTime: string) => {
   });
 };
 
-export const formatDateGetDayMonthYear = (dateTime: string) => {
+export const formatDateGetDayMonthYear = (dateTime: string, timeZone?: string) => {
   const date = new Date(dateTime);
   const locale = i18n.language;
+  const tz = timeZone || 'Europe/Tallinn';
 
-  const dayOfWeek = date.toLocaleString(locale, { weekday: 'short' });
-  const dayOfMonth = date.getDate();
-  const month = date.toLocaleString(locale, { month: 'short' });
-  const year = date.getFullYear();
+  const dayOfWeek = date.toLocaleString(locale, { weekday: 'short', timeZone: tz });
+  const dayOfMonth = parseInt(date.toLocaleString(locale, { day: 'numeric', timeZone: tz }));
+  const month = date.toLocaleString(locale, { month: 'short', timeZone: tz });
+  const year = parseInt(date.toLocaleString(locale, { year: 'numeric', timeZone: tz }));
   const ordinalSuffix = getLocalizedOrdinalSuffix(dayOfMonth, locale);
 
   return `${dayOfWeek}, ${dayOfMonth}${ordinalSuffix} ${month} ${year}`;
@@ -252,12 +253,14 @@ export const formatDateTimeBracket = (dateTime: string) => {
   });
 };
 
-export const formatDateGetHours = (dateTime: string) => {
+export const formatDateGetHours = (dateTime: string, timeZone?: string) => {
   const date = new Date(dateTime);
+  const tz = timeZone || 'Europe/Tallinn';
   return date.toLocaleString(i18n.language, {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false
+    hour12: false,
+    timeZone: tz
   })
 }
 
