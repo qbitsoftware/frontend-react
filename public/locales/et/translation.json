@@ -1560,6 +1560,8 @@
         "tables": "Laudu kokku"
       },
       "matches": {
+        "completed": "Lõppenud",
+        "upcoming": "Ees ootav",
         "table": {
           "bracket": "Tabel",
           "modify": "Uuenda tulemus",

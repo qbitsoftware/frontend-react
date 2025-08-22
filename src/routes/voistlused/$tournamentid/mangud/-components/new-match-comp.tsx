@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { cn, formatDateGetDayMonthYear, formatDateGetHours } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { TournamentTable } from "@/types/groups";
 import { MatchWrapper } from "@/types/matches";
 import { Participant } from "@/types/participants";
@@ -9,11 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import blueprofile from "@/assets/blue-profile.png";
 import { Clock, MapPin } from "lucide-react";
 import { extractMatchSets } from "@/components/utils/utils";
+import { useTranslation } from "react-i18next";
 
 interface ITTFMatchComponentProps {
   match: MatchWrapper;
   table_data: TournamentTable | null | undefined;
-  timeZone?: string;
 }
 
 const truncateName = (name: string, maxLength: number = 10): string => {
@@ -33,7 +33,9 @@ const truncateNameResponsive = (name: string): string => {
   return truncateName(name, 18);
 };
 
-const ITTFMatchComponent = ({ match, table_data, timeZone = 'Europe/Tallinn' }: ITTFMatchComponentProps) => {
+const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
+  const { t } = useTranslation();
+  
   if (!table_data) {
     return <Skeleton className="h-20 w-full" />;
   }
@@ -61,14 +63,14 @@ const ITTFMatchComponent = ({ match, table_data, timeZone = 'Europe/Tallinn' }: 
                 <p className="text-lg sm:text-xl lg:text-2xl font-bold">
                   {match.match.forfeit ? "-" : `${p1_sets}:${p2_sets}`}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">Completed</p>
+                <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">{t('admin.tournaments.matches.completed')}</p>
               </div>
             ) : (
               <div className="text-center">
-                <p className="text-xs sm:text-sm font-medium text-gray-600">Upcoming</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-600">{t('admin.tournaments.matches.upcoming')}</p>
                 {matchDate && (
                   <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">
-                    {formatDateGetHours(matchDate, timeZone)}
+                    {matchDate ? new Date(matchDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Tallinn' }) : ''}
                   </p>
                 )}
               </div>
@@ -79,9 +81,9 @@ const ITTFMatchComponent = ({ match, table_data, timeZone = 'Europe/Tallinn' }: 
         {matchDate && (
           <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 text-xs text-gray-600 bg-gray-50 rounded-md px-2 py-1 sm:py-1.5">
             <Clock className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate">{formatDateGetDayMonthYear(matchDate, timeZone)}</span>
+            <span className="truncate">{new Date(matchDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Tallinn' })}</span>
             <span className="font-semibold flex-shrink-0">
-              {formatDateGetHours(matchDate, timeZone)}
+              {new Date(matchDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Tallinn' })}
             </span>
           </div>
         )}

@@ -1529,6 +1529,8 @@
         "tables": "Total tables"
       },
       "matches": {
+        "completed": "Completed",
+        "upcoming": "Upcoming",
         "table": {
           "bracket": "Bracket",
           "modify": "Modify",

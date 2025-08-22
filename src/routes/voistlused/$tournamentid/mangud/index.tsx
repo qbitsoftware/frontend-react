@@ -293,7 +293,6 @@ function RouteComponent() {
             key={`${match.match.id}-${index}`}
             match={match}
             table_data={getMatchTTTable(match)}
-            timeZone="Europe/Tallinn"
           />
         ))}
       </div>

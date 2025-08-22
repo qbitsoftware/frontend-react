@@ -155,16 +155,21 @@ export const Filters = ({
               All Dates
             </DropdownMenuItem>
 
-            {/* Individual Date Options */}
-            {gamedays.map((date, index) => (
-              <DropdownMenuItem
-                key={date}
-                onClick={() => setActiveDay(index)}
-                className={activeDay === index ? "bg-slate-100" : ""}
-              >
-                {formatDate(date)}
-              </DropdownMenuItem>
-            ))}
+            {gamedays
+              .map((date, index) => ({ date, index }))
+              .filter(({ date }) => {
+                const formatted = formatDate(date);
+                return formatted !== "01 Jan";
+              })
+              .map(({ date, index }) => (
+                <DropdownMenuItem
+                  key={date}
+                  onClick={() => setActiveDay(index)}
+                  className={activeDay === index ? "bg-slate-100" : ""}
+                >
+                  {formatDate(date)}
+                </DropdownMenuItem>
+              ))}
           </DropdownMenuContent>
           </DropdownMenu>
         )}
