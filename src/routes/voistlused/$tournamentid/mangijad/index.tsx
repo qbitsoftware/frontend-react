@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import { ErrorResponse } from "@/types/errors";
 import { ResponsiveClassSelector } from "@/components/responsive-class-selector";
 import { SearchWithResults } from "@/components/search-with-results";
+import { Player } from "@/types/players";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/voistlused/$tournamentid/mangijad/")({
   component: RouteComponent,
@@ -59,9 +61,21 @@ function RouteComponent() {
 
     filteredData = filteredData
       .map((table) => {
-        const filteredParticipants = table.participants.filter((player) =>
-          player.name?.toLowerCase().includes(searchBy)
-        );
+        const filteredParticipants = table.participants.filter((player) => {
+          // Check name
+          const nameMatch = player.name?.toLowerCase().includes(searchBy);
+
+          // Check nested players array for eltl_id or clubname
+          const nestedMatch = Array.isArray(player.players)
+            ? player.players.some(
+              (p: Player) =>
+                (p.extra_data.eltl_id && p.extra_data.eltl_id.toString().toLowerCase().includes(searchBy)) ||
+                (p.extra_data.club && p.extra_data.club.toLowerCase().includes(searchBy))
+            )
+            : false;
+
+          return nameMatch || nestedMatch;
+        });
 
         return {
           ...table,
@@ -158,7 +172,7 @@ function RouteComponent() {
           />
 
           {filteredData.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className={cn("grid grid-cols-1 gap-6", filteredData.length !== 1 && "lg:grid-cols-2 xl:grid-cols-3")}>
               {filteredData.map((table) => (
                 <Group
                   key={table.id}

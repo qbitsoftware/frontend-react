@@ -14,12 +14,12 @@ interface ResponsiveClassSelectorProps {
   availableTables?: TournamentTable[];
   activeGroupId?: number;
   onGroupChange?: (groupId: number) => void;
-  
+
   // For ajakava route (string classes)
   classes?: string[];
   activeClass?: string;
   onClassChange?: (classValue: string) => void;
-  
+
   // Required prop
   variant?: "tables" | "classes";
 }
@@ -41,7 +41,32 @@ export const ResponsiveClassSelector = ({
       return null;
     }
 
-    const activeTable = availableTables.find(
+    const sortedTables = [...availableTables].sort((a, b) => {
+      // Extract gender and age from class names like "Poisid U11", "Tudrukud U9"
+      const parseClass = (className: string) => {
+        const match = className.match(/^(Poisid|Tudrukud)\s*U?(\d+)$/i);
+        if (match) {
+          return {
+            gender: match[1].toLowerCase(),
+            age: parseInt(match[2])
+          };
+        }
+        return { gender: className.toLowerCase(), age: 0 };
+      };
+
+      const classA = parseClass(a.class);
+      const classB = parseClass(b.class);
+
+      // Sort by gender first (Poisid before Tudrukud)
+      if (classA.gender !== classB.gender) {
+        return classA.gender.localeCompare(classB.gender);
+      }
+
+      // Then sort by age
+      return classA.age - classB.age;
+    });
+
+    const activeTable = sortedTables.find(
       (table) =>
         table.id === activeGroupId ||
         (table.stages && table.stages.some((stage) => stage.id === activeGroupId))
@@ -63,7 +88,7 @@ export const ResponsiveClassSelector = ({
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {availableTables.map((table) => (
+                  {sortedTables.map((table) => (
                     <SelectItem key={table.id} value={table.id.toString()}>
                       {table.class}
                     </SelectItem>
@@ -75,7 +100,7 @@ export const ResponsiveClassSelector = ({
             {/* Desktop Horizontal Scroll (hidden on mobile) */}
             <div className="hidden md:flex overflow-x-auto scrollbar-hide flex-1">
               <div className="flex space-x-1 sm:space-x-2 py-3">
-                {availableTables.map((table) => {
+                {sortedTables.map((table) => {
                   const isActive =
                     table.id === activeGroupId ||
                     (table.stages && table.stages.some((stage) => stage.id === activeGroupId));
@@ -115,6 +140,30 @@ export const ResponsiveClassSelector = ({
       return null;
     }
 
+    const sortedClasses = [...classes].sort((a, b) => {
+      // Extract gender and age from class names like "Poisid U11", "Tudrukud U9"
+      const parseClass = (className: string) => {
+        const match = className.match(/^(Poisid|Tudrukud)\s*U?(\d+)$/i);
+        if (match) {
+          return {
+            gender: match[1].toLowerCase(),
+            age: parseInt(match[2])
+          };
+        }
+        return { gender: className.toLowerCase(), age: 0 };
+      };
+
+      const classA = parseClass(a);
+      const classB = parseClass(b);
+
+      // Sort by gender first (Poisid before Tudrukud)
+      if (classA.gender !== classB.gender) {
+        return classA.gender.localeCompare(classB.gender);
+      }
+
+      // Then sort by age
+      return classA.age - classB.age;
+    });
     const currentSelection = activeClass || "all";
 
     return (
@@ -129,8 +178,8 @@ export const ResponsiveClassSelector = ({
               >
                 <SelectTrigger className="w-full h-9 text-sm">
                   <SelectValue>
-                    {currentSelection === "all" 
-                      ? t("competitions.timetable.all_groups") 
+                    {currentSelection === "all"
+                      ? t("competitions.timetable.all_groups")
                       : currentSelection}
                   </SelectValue>
                 </SelectTrigger>
@@ -138,7 +187,7 @@ export const ResponsiveClassSelector = ({
                   <SelectItem value="all">
                     {t("competitions.timetable.all_groups")}
                   </SelectItem>
-                  {classes.map((classValue) => (
+                  {sortedClasses.map((classValue) => (
                     <SelectItem key={classValue} value={classValue}>
                       {classValue}
                     </SelectItem>
@@ -164,9 +213,9 @@ export const ResponsiveClassSelector = ({
                     {t("competitions.timetable.all_groups")}
                   </span>
                 </button>
-                
+
                 {/* Individual Class Buttons */}
-                {classes.map((classValue) => (
+                {sortedClasses.map((classValue) => (
                   <button
                     key={classValue}
                     onClick={() => onClassChange?.(classValue)}

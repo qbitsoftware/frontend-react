@@ -104,7 +104,7 @@ function RouteComponent() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 px-2">
       <CompactClassFilters
         availableTables={availableTables}
-        activeGroupId={groupIds}
+        activeGroupId={[0, ...groupIds]}
         onGroupChange={handleGroupChange}
       />
 

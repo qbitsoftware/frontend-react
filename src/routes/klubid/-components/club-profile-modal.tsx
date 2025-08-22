@@ -203,6 +203,9 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
                     <tr className="bg-gradient-to-r from-gray-100 to-gray-200 text-left text-gray-700">
                       <th className="px-4 py-3 font-semibold">#</th>
                       <th className="px-4 py-3 font-semibold">
+                        ELTL ID
+                      </th>
+                      <th className="px-4 py-3 font-semibold">
                         {t("rating.table.head.last_name")}
                       </th>
                       <th className="px-4 py-3 font-semibold">
@@ -224,6 +227,7 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
                         className="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-150"
                       >
                         <td className="px-4 py-3 text-gray-800">{index + 1}</td>
+                        <td className="px-4 py-3 font-medium text-gray-800">{player.eltl_id}</td>
                         <td className="px-4 py-3 font-medium text-gray-800">
                           {player.last_name}
                         </td>
