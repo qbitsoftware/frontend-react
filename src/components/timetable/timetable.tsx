@@ -59,7 +59,7 @@ export function Timetable({
         })
     )
 
-    const { data: tournamentTables } = UseGetFreeVenues(tournamentId, isAdmin);
+    const { data: tournamentTables } = UseGetFreeVenues(tournamentId, true);
     const { data: tournamentMatches } = UseGetTournamentMatchesQuery(tournamentId)
     const { data: tournamentClassesData } = UseGetTournamentTablesQuery(tournamentId)
     const editTimeTableMutation = isAdmin ? UseEditTimeTable(tournamentId) : null
@@ -135,6 +135,7 @@ export function Timetable({
         })
     }, [tournamentMatches, selectedDay, matchPositions])
 
+    console.log("dayMatches", dayMatches)
 
     const timeSlots = useMemo(() => {
         if (dayMatches.length === 0) return []
@@ -313,6 +314,7 @@ export function Timetable({
         if (!tournamentTables?.data) return []
         return tournamentTables.data.slice(visibleRange.start, visibleRange.end)
     }, [tournamentTables?.data, visibleRange])
+    console.log('tournamentTables', tournamentTables)
 
     const totalHeight = (tournamentTables?.data?.length || 0) * ITEM_HEIGHT
     const offsetY = visibleRange.start * ITEM_HEIGHT
@@ -480,11 +482,11 @@ export function Timetable({
 
     useEffect(() => {
         // Convert UTC timeSlots to Estonian time for display/editing
-        const estonianTimeSlots = timeSlots.map(timeSlot => 
-            new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', { 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                timeZone: 'Europe/Tallinn' 
+        const estonianTimeSlots = timeSlots.map(timeSlot =>
+            new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'Europe/Tallinn'
             })
         )
         setEditableTimeSlots(estonianTimeSlots)
@@ -548,7 +550,7 @@ export function Timetable({
 
         const beforeTimeUTC = originalTimeSlots[idx] // This is already UTC
         const newTimeUTC = convertEstonianToUTC(editableTimeSlots[idx])
-        
+
         const before = getFullDateString(selectedDay, beforeTimeUTC)
         const after = getFullDateString(selectedDay, newTimeUTC)
         const change = { before, after }
