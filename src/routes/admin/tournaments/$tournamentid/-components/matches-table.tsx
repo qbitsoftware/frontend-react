@@ -121,6 +121,15 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         })
     }
 
+    const getClosestPowerOf2 = (num: number): number => {
+        if (num <= 4) return 4;
+        return Math.pow(2, Math.ceil(Math.log2(num)));
+    };
+
+    console.log("closest power of 2:", getClosestPowerOf2(10));
+
+    console.log("closest power of 2:", getClosestPowerOf2(24));
+
     const submitScore = async (match: MatchWrapper) => {
         const pending = pendingScores[match.match.id]
         if (!pending || (pending.p1 === null && pending.p2 === null)) return
@@ -246,7 +255,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                             <TableHead className="min-w-[100px]">Actions</TableHead>
                             {all && <TableHead className="min-w-[80px]">Grupp</TableHead>}
                             {all ?
-                                <TableHead>Aeg</TableHead>
+                                <TableHead>Ring</TableHead>
                                 :
                                 <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
                             }
@@ -265,6 +274,8 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                             const hasPendingScores = pendingScores[match.match.id] &&
                                 (pendingScores[match.match.id].p1 !== null || pendingScores[match.match.id].p2 !== null)
                             const isLoading = loadingUpdates.has(match.match.id)
+                            let table = tableMap.get(match.match.tournament_table_id)
+                            const round = getClosestPowerOf2(table?.size || 0) / Math.pow(2, match.match.round - 1)
 
                             return (
                                 <TableRow key={`match-${match.match.id}`} className={getRowClassName(match)}>
@@ -282,8 +293,21 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                         {tableMap.get(match.match.tournament_table_id)?.class || "N/A"}
                                     </TableCell>}
                                     <TableCell>
-                                        {/* {(tableMap.get(match.match.tournament_table_id)?.size || match.match.round) / Math.pow(2, match.match.round - 1)} */}
-                                        {all ? new Date(match.match.start_date).toLocaleTimeString('et', { hour: "2-digit", minute: "2-digit" }) : match.match.round}
+                                        {match.match.type === "winner"
+                                            ? (round > 8
+                                                ? `R${round}`
+                                                : round === 8
+                                                    ? t("admin.tournaments.matches.table.quarterfinal")
+                                                    : round === 4
+                                                        ? t("admin.tournaments.matches.table.semifinal")
+                                                        : round === 2
+                                                            ? t("admin.tournaments.matches.table.final")
+                                                            : round)
+                                            : match.match.type === "loser"
+                                                ? `-> ${match.match.next_loser_bracket}`
+                                                : match.match.type === "bracket"
+                                                    ? match.match.bracket
+                                                    : match.match.round}
                                     </TableCell>
                                     <TableCell>
                                         <TableNumberForm
@@ -356,15 +380,13 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                             : match.match.table_type
                                                 ? t(`admin.tournaments.matches.table.${match.match.table_type}`)
                                                 : "-"} */}
-                                        {match.match.bracket !== ""
-                                            ? match.match.bracket
-                                            : match.match.type === "winner"
-                                                ? t("admin.tournaments.matches.table.winner_bracket")
-                                                : match.match.type === "loser"
-                                                    ? t("admin.tournaments.matches.table.loser_bracket")
-                                                    : match.match.type === "bracket"
-                                                        ? t("admin.tournaments.matches.table.bracket")
-                                                        : "-"}
+                                        {match.match.type === "winner"
+                                            ? t("admin.tournaments.matches.table.winner_bracket")
+                                            : match.match.type === "loser"
+                                                ? t("admin.tournaments.matches.table.loser_bracket")
+                                                : match.match.type === "bracket"
+                                                    ? t("admin.tournaments.matches.table.bracket_bracket")
+                                                    : "-"}
                                     </TableCell>
                                 </TableRow>
                             )

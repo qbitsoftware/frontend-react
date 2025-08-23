@@ -1566,6 +1566,10 @@
         "table": {
           "bracket": "Tabel",
           "modify": "Uuenda tulemus",
+          "quarterfinal": "Veerandfinaal",
+          "semifinal": "Poolfinaal",
+          "bracket_bracket": "Kohad",
+          "final": "Finaal",
           "serial_number": "JKNR.",
           "round": "Ring",
           "class": "Klass",

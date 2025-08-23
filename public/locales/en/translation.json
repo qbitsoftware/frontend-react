@@ -1534,6 +1534,10 @@
         "upcoming": "Upcoming",
         "table": {
           "bracket": "Bracket",
+          "quarterfinal": "Quarterfinal",
+          "semifinal": "Semifinal",
+          "bracket_bracket": "Bracket",
+          "final": "Final",
           "modify": "Modify",
           "serial_number": "SN.",
           "round": "Round",
