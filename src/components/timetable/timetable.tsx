@@ -656,12 +656,17 @@ export function Timetable({
                             <div className='flex'>
                                 {timeSlots.map((timeSlot, idx) => {
                                     const round = getRoundForTimeSlot(timeSlot)
+                                    const estonianTime = new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        timeZone: 'Europe/Tallinn'
+                                    })
                                     return (
                                         <div
                                             key={idx}
                                             className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100 relative"
                                         >
-                                            <span className="font-medium">{timeSlot}</span>
+                                            <span className="font-medium">{estonianTime}</span>
                                             {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
                                         </div>
                                     )
