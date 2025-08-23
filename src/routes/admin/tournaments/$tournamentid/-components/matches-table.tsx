@@ -60,6 +60,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         const tournament_table = tableMap.get(match.match.tournament_table_id)
         if (state === 'finished') return 'opacity-60 bg-gray-50'
         if (
+            // state === 'ongoing'
             state === 'ongoing' &&
             (
                 (tournament_table?.time_table && new Date(match.match.start_date) < new Date()) ||
@@ -244,7 +245,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         <TableRow className="bg-gray-50">
                             <TableHead className="min-w-[100px]">Actions</TableHead>
                             {all && <TableHead className="min-w-[80px]">Grupp</TableHead>}
-                            <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
+                            {all ?
+                                <TableHead>Aeg</TableHead>
+                                :
+                                <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
+                            }
                             <TableHead>{t("admin.tournaments.matches.table.table")}</TableHead>
                             <TableHead className="min-w-[120px]">{t("admin.tournaments.matches.table.participant_1")}</TableHead>
                             <TableHead className="min-w-[80px]">{t("admin.tournaments.matches.table.participant_1_score")}</TableHead>
@@ -277,7 +282,8 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                         {tableMap.get(match.match.tournament_table_id)?.class || "N/A"}
                                     </TableCell>}
                                     <TableCell>
-                                        {(tableMap.get(match.match.tournament_table_id)?.size || match.match.round) / Math.pow(2, match.match.round - 1)}
+                                        {/* {(tableMap.get(match.match.tournament_table_id)?.size || match.match.round) / Math.pow(2, match.match.round - 1)} */}
+                                        {all ? new Date(match.match.start_date).toLocaleTimeString('et', { hour: "2-digit", minute: "2-digit" }) : match.match.round}
                                     </TableCell>
                                     <TableCell>
                                         <TableNumberForm

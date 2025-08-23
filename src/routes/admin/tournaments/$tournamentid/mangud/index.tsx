@@ -46,7 +46,11 @@ function RouteComponent() {
   const { t } = useTranslation()
   const { selectedGroup } = Route.useSearch()
   const { data: matchData, isLoading: isLoadingMatches } = UseGetTournamentMatchesQuery(tournamentId)
-  let tableMap = new Map<number, TournamentTable>();
+  const tableMap = useMemo(() => {
+    return new Map(
+      (tablesQuery.data?.data || []).map(table => [table.id, table])
+    );
+  }, [tablesQuery.data?.data]);
 
 
 
@@ -65,7 +69,6 @@ function RouteComponent() {
 
   useEffect(() => {
     if (tablesQuery.data?.data && tablesQuery.data.data.length > 0) {
-      tableMap = new Map(tablesQuery.data.data.map(table => [table.id, table]));
       const targetGroupId = selectedGroup &&
         (() => {
           const tableMatch = tablesQuery.data.data.find(table => table.id.toString() === selectedGroup)
@@ -166,7 +169,7 @@ function RouteComponent() {
     const finishedSorted = sortIfTimetable(finished);
 
     return [...ongoingSorted, ...createdSorted, ...finishedSorted];
-  }, [matchData, filterValue, tableMap]);
+  }, [matchData, matchData?.data, filterValue, tableMap]);
 
 
   const handleCardClick = (match: MatchWrapper) => {

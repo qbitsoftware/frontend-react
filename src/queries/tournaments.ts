@@ -411,3 +411,23 @@ export const UseUpdateTimetableVisibility = (tournament_id: number) => {
     },
   });
 };
+
+export const UseResetTimeTableFully = (tournament_id: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.post(
+        `/api/v1/tournaments/${tournament_id}/timetable/reset`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tournament_tables", tournament_id] });
+      queryClient.invalidateQueries({ queryKey: ["matches", tournament_id] });
+    },
+  });
+}

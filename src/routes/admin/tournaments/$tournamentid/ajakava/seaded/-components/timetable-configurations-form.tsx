@@ -10,9 +10,10 @@ import { TournamentTable } from "@/types/groups";
 import { Tournament } from "@/types/tournaments";
 import { toast } from "sonner";
 import { UseGenerateTimeTable } from "@/queries/tables";
-import { UseUpdateTimetableVisibility } from "@/queries/tournaments";
+import { UseResetTimeTableFully, UseUpdateTimetableVisibility } from "@/queries/tournaments";
 import { Switch } from "@/components/ui/switch";
 import { Globe, Lock } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 export interface TimeTableFormValues {
   id: number;
@@ -42,9 +43,11 @@ export default function TimetableConfigurationsForm({
   const [selectedTables, setSelectedTables] = useState<Set<number>>(new Set());
   const [tableStartTimes, setTableStartTimes] = useState<Map<number, { date: string; time: string }>>(new Map());
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const timetableMutation = UseGenerateTimeTable(tournament.id);
   const timetableVisibilityMutation = UseUpdateTimetableVisibility(tournament.id);
+  const timetableFullReset = UseResetTimeTableFully(tournament.id);
 
   const getTournamentDateRange = () => {
     const parseDate = (dateString: string) => {
@@ -126,6 +129,15 @@ export default function TimetableConfigurationsForm({
     }
     setSelectedTables(newSelectedTables);
   };
+
+  const resetTimeTable = async () => {
+    try {
+      await timetableFullReset.mutateAsync();
+      toast.success(t("admin.tournaments.timetable.reset_successfully", "Ajakava on edukalt lähtestatud"));
+    } catch {
+      toast.error(t("admin.tournaments.timetable.reset_error", "Ajakava lähtestamine ebaõnnestus"));
+    }
+  }
 
   const handleTableTimeChange = (tableId: number, field: 'date' | 'time', value: string) => {
     const newStartTimes = new Map(tableStartTimes);
@@ -352,6 +364,41 @@ export default function TimetableConfigurationsForm({
               )}
             </Button>
           </div>
+          <div>
+            <Button
+              onClick={() => setShowResetConfirm(true)}
+              variant="outline" size="sm">
+              <span className="text-red-600">
+                {t("admin.tournaments.timetable.reset_timetable", "Eemalda kogu ajakava")}
+              </span>
+            </Button>
+          </div>
+          <Dialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {t("admin.tournaments.timetable.reset_confirm_title", "Kas oled kindel?")}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="py-2">
+                {t("admin.tournaments.timetable.reset_confirm_desc", "See eemaldab kogu ajakava. Seda ei saa tagasi võtta.")}
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowResetConfirm(false)}>
+                  {t("common.cancel", "Tühista")}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={async () => {
+                    setShowResetConfirm(false);
+                    await resetTimeTable();
+                  }}
+                >
+                  {t("admin.tournaments.timetable.reset_confirm_action", "Jah, eemalda")}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </CardContent>
       </Card>
     </div>
