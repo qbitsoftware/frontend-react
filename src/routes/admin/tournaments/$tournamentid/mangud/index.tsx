@@ -160,6 +160,35 @@ function RouteComponent() {
 
         if (isTimetableA && !isTimetableB) return -1;
         if (!isTimetableA && isTimetableB) return 1;
+        
+        if (!isTimetableA && !isTimetableB) {
+          const roundA = a.match.round || 0;
+          const roundB = b.match.round || 0;
+          console.log('Non-timetabled sort - Match A:', a.p1.name, 'vs', a.p2.name, 'Round:', roundA, 'Type:', a.match.type);
+          console.log('Non-timetabled sort - Match B:', b.p1.name, 'vs', b.p2.name, 'Round:', roundB, 'Type:', b.match.type);
+          
+          if (roundA !== roundB) {
+            return roundA - roundB;
+          }
+          
+          // Secondary sort: by match type - "winner" above "loser" when rounds are equal
+          if (a.match.type === "winner" && b.match.type === "loser") return -1;
+          if (a.match.type === "loser" && b.match.type === "winner") return 1;
+          
+          // Tertiary sort: other types go after winner/loser
+          const typeOrder = { "winner": 1, "loser": 2 };
+          const orderA = typeOrder[a.match.type as keyof typeof typeOrder] || 3;
+          const orderB = typeOrder[b.match.type as keyof typeof typeOrder] || 3;
+          
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+          
+          // Quaternary sort: stable sort by match ID to keep new matches at bottom within same tier
+          // Higher IDs (newer matches) appear after lower IDs (older matches)
+          return a.match.id.localeCompare(b.match.id);
+        }
+        
         return 0;
       });
     };
@@ -167,6 +196,12 @@ function RouteComponent() {
     const ongoingSorted = sortIfTimetable(ongoing);
     const createdSorted = sortIfTimetable(created);
     const finishedSorted = sortIfTimetable(finished);
+
+    // Log the final order of upcoming matches
+    console.log('UPCOMING MATCHES FINAL ORDER:');
+    createdSorted.forEach((match, index) => {
+      console.log(`${index + 1}. ${match.p1.name} vs ${match.p2.name} - Round: ${match.match.round}, Type: ${match.match.type}, Bracket: ${match.match.bracket}`);
+    });
 
     return [...ongoingSorted, ...createdSorted, ...finishedSorted];
   }, [matchData, matchData?.data, filterValue, tableMap]);

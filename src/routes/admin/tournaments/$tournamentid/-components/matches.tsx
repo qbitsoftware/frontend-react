@@ -124,17 +124,60 @@ export const Matches: React.FC<MatchesProps> = ({
       return stateOrder[a.match.state] - stateOrder[b.match.state];
     });
 
-    if (tournament_table.time_table === true) {
-      const ongoing = validMatches
-        .filter(m => m.match.state === MatchState.ONGOING)
-        .sort((a, b) => new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime());
-      const created = validMatches
-        .filter(m => m.match.state === MatchState.CREATED)
-        .sort((a, b) => new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime());
-      const finished = validMatches
-        .filter(m => m.match.state === MatchState.FINISHED)
-        .sort((a, b) => new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime());
+    // Apply sorting logic similar to the main tournament view
+    const sortMatches = (matches: MatchWrapper[]) => {
+      return matches.slice().sort((a, b) => {
+        const isTimetableA = tournament_table.time_table === true;
+        const isTimetableB = tournament_table.time_table === true;
 
+        if (isTimetableA && isTimetableB) {
+          return new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime();
+        }
+
+        // Both matches are non-timetabled - sort by round and type
+        if (!isTimetableA && !isTimetableB) {
+          const roundA = a.match.round || 0;
+          const roundB = b.match.round || 0;
+          
+          // Primary sort: by base round number
+          if (roundA !== roundB) {
+            return roundA - roundB;
+          }
+          
+          // Secondary sort: by match type - "winner" above "loser" when rounds are equal
+          if (a.match.type === "winner" && b.match.type === "loser") return -1;
+          if (a.match.type === "loser" && b.match.type === "winner") return 1;
+          
+          // Tertiary sort: other types go after winner/loser
+          const typeOrder = { "winner": 1, "loser": 2 };
+          const orderA = typeOrder[a.match.type as keyof typeof typeOrder] || 3;
+          const orderB = typeOrder[b.match.type as keyof typeof typeOrder] || 3;
+          
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+          
+          // Quaternary sort: stable sort by match ID to keep new matches at bottom within same tier
+          // Higher IDs (newer matches) appear after lower IDs (older matches)
+          return a.match.id.localeCompare(b.match.id);
+        }
+        
+        return 0;
+      });
+    };
+
+    const ongoing = sortMatches(validMatches.filter(m => m.match.state === MatchState.ONGOING));
+    const created = sortMatches(validMatches.filter(m => m.match.state === MatchState.CREATED));
+    const finished = sortMatches(validMatches.filter(m => m.match.state === MatchState.FINISHED));
+
+    // Log the final order of upcoming matches for group view
+    console.log('GROUP VIEW - UPCOMING MATCHES FINAL ORDER:');
+    created.forEach((match, index) => {
+      console.log(`${index + 1}. ${match.p1.name} vs ${match.p2.name} - Round: ${match.match.round}, Type: ${match.match.type}, Bracket: ${match.match.bracket}`);
+    });
+
+    // Return early for non-round-robin tournaments
+    if (tournament_table.type !== GroupType.DYNAMIC && tournament_table.type !== GroupType.ROUND_ROBIN) {
       return [...ongoing, ...created, ...finished];
     }
 

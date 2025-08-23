@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
 import { DialogType, TournamentTable } from "@/types/groups"
+import { Edit } from "lucide-react"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
@@ -254,11 +255,6 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         <TableRow className="bg-gray-50">
                             <TableHead className="min-w-[100px]">Actions</TableHead>
                             {all && <TableHead className="min-w-[80px]">Grupp</TableHead>}
-                            {all ?
-                                <TableHead>Ring</TableHead>
-                                :
-                                <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
-                            }
                             <TableHead>{t("admin.tournaments.matches.table.table")}</TableHead>
                             <TableHead className="min-w-[120px]">{t("admin.tournaments.matches.table.participant_1")}</TableHead>
                             <TableHead className="min-w-[80px]">{t("admin.tournaments.matches.table.participant_1_score")}</TableHead>
@@ -267,6 +263,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                             <TableHead className="min-w-[120px]">{t("admin.tournaments.matches.table.participant_2")}</TableHead>
                             <TableHead>{t("admin.tournaments.matches.table.winner")}</TableHead>
                             <TableHead>{t("admin.tournaments.matches.table.bracket")}</TableHead>
+                            {all ?
+                                <TableHead>Ring</TableHead>
+                                :
+                                <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
+                            }
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -286,29 +287,12 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                             size="sm"
                                             onClick={() => handleRowClick(match)}
                                         >
-                                            {t("admin.tournaments.matches.table.modify")}
+                                            <Edit className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
                                     {all && <TableCell>
                                         {tableMap.get(match.match.tournament_table_id)?.class || "N/A"}
                                     </TableCell>}
-                                    <TableCell>
-                                        {match.match.type === "winner"
-                                            ? (round > 8
-                                                ? `R${round}`
-                                                : round === 8
-                                                    ? t("admin.tournaments.matches.table.quarterfinal")
-                                                    : round === 4
-                                                        ? t("admin.tournaments.matches.table.semifinal")
-                                                        : round === 2
-                                                            ? t("admin.tournaments.matches.table.final")
-                                                            : round)
-                                            : match.match.type === "loser"
-                                                ? `-> ${match.match.next_loser_bracket}`
-                                                : match.match.type === "bracket"
-                                                    ? match.match.bracket
-                                                    : match.match.round}
-                                    </TableCell>
                                     <TableCell>
                                         <TableNumberForm
                                             brackets={false}
@@ -387,6 +371,23 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                                 : match.match.type === "bracket"
                                                     ? t("admin.tournaments.matches.table.bracket_bracket")
                                                     : "-"}
+                                    </TableCell>
+                                    <TableCell>
+                                        {match.match.type === "winner"
+                                            ? (round > 8
+                                                ? `R${round}`
+                                                : round === 8
+                                                    ? t("admin.tournaments.matches.table.quarterfinal")
+                                                    : round === 4
+                                                        ? t("admin.tournaments.matches.table.semifinal")
+                                                        : round === 2
+                                                            ? t("admin.tournaments.matches.table.final")
+                                                            : round)
+                                            : match.match.type === "loser"
+                                                ? `-> ${match.match.next_loser_bracket}`
+                                                : match.match.type === "bracket"
+                                                    ? match.match.bracket
+                                                    : match.match.round}
                                     </TableCell>
                                 </TableRow>
                             )
