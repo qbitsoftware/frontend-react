@@ -608,7 +608,7 @@ export function Timetable({
                     </div>
                 </div>
             </div>
-            <div className="flex-1 overflow-auto" onScroll={handleScroll}>
+            <div id='scroll-container-fix' className="flex-1 overflow-auto" onScroll={handleScroll}>
                 <div className="min-w-max">
                     <div className="sticky top-0 bg-white border-b flex z-10">
                         <div className="w-16 bg-gray-50 border-x flex items-center justify-center text-xs font-medium p-1 sticky left-0 z-10">
