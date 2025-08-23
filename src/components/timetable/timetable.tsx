@@ -135,7 +135,6 @@ export function Timetable({
         })
     }, [tournamentMatches, selectedDay, matchPositions])
 
-    console.log("dayMatches", dayMatches)
 
     const timeSlots = useMemo(() => {
         if (dayMatches.length === 0) return []
@@ -314,7 +313,6 @@ export function Timetable({
         if (!tournamentTables?.data) return []
         return tournamentTables.data.slice(visibleRange.start, visibleRange.end)
     }, [tournamentTables?.data, visibleRange])
-    console.log('tournamentTables', tournamentTables)
 
     const totalHeight = (tournamentTables?.data?.length || 0) * ITEM_HEIGHT
     const offsetY = visibleRange.start * ITEM_HEIGHT
