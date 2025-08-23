@@ -57,15 +57,15 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     const getRowClassName = (match: MatchWrapper) => {
         const state = match.match.state
-        const tournament_table = tableMap.get(match.match.tournament_table_id)
+        // const tournament_table = tableMap.get(match.match.tournament_table_id)
         if (state === 'finished') return 'opacity-60 bg-gray-50'
         if (
-            // state === 'ongoing'
-            state === 'ongoing' &&
-            (
-                (tournament_table?.time_table && new Date(match.match.start_date) < new Date()) ||
-                !tournament_table?.time_table
-            )
+            state === 'ongoing'
+            // state === 'ongoing' &&
+            // (
+            //     (tournament_table?.time_table && new Date(match.match.start_date) < new Date()) ||
+            //     !tournament_table?.time_table
+            // )
         ) {
             return 'bg-green-50 border-green-200'
         }
