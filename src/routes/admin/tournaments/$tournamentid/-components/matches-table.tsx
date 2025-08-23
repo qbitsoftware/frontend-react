@@ -57,8 +57,17 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     const getRowClassName = (match: MatchWrapper) => {
         const state = match.match.state
+        const tournament_table = tableMap.get(match.match.tournament_table_id)
         if (state === 'finished') return 'opacity-60 bg-gray-50'
-        if (state === 'ongoing') return 'bg-green-50 border-green-200'
+        if (
+            state === 'ongoing' &&
+            (
+                (tournament_table?.time_table && new Date(match.match.start_date) < new Date()) ||
+                !tournament_table?.time_table
+            )
+        ) {
+            return 'bg-green-50 border-green-200'
+        }
         return ''
     }
 
@@ -268,9 +277,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                         {tableMap.get(match.match.tournament_table_id)?.class || "N/A"}
                                     </TableCell>}
                                     <TableCell>
-                                        {/* {match.p1.group_id} */}
-                                        {match.match.round}
-                                        {/* {new Date(match.match.start_date).toLocaleString()} */}
+                                        {(tableMap.get(match.match.tournament_table_id)?.size || match.match.round) / Math.pow(2, match.match.round - 1)}
                                     </TableCell>
                                     <TableCell>
                                         <TableNumberForm

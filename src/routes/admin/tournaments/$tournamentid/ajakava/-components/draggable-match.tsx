@@ -42,8 +42,8 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
         (activeMatch.match.next_winner_match_id === match.match.id ||
             match.match.id === activeMatch.match.next_loser_match_id)
 
-    const shouldGreyOut = activeMatch && !isDragging && allMatches 
-        ? isMatchTimeInvalid(activeMatch, match, allMatches) 
+    const shouldGreyOut = activeMatch && !isDragging && allMatches
+        ? isMatchTimeInvalid(activeMatch, match, allMatches)
         : false
 
     return (
@@ -52,25 +52,24 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
             style={style}
             {...(isAdmin ? listeners : {})}
             {...(isAdmin ? attributes : {})}
-            className={`relative text-center w-full h-full flex flex-col justify-center ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''} border-l-2 ${!isDragging ? 'transition-all' : ''} ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "ongoing"
-                ? "border-l-green-500"
-                : match.match.state === "finished"
-                    ? "border-l-blue-500"
-                    : "border-l-yellow-500"
-                } ${isPlacementMatch(match) ? 'border-red-200' : ""} ${
-                    isNextMatch 
-                        ? 'ring-2 ring-black ring-opacity-80 shadow-md shadow-red-200/50' 
-                        : ''
-                } ${
-                    isPreviousMatch 
-                        ? 'ring-2 ring-black ring-opacity-80 shadow-md shadow-blue-200/50' 
-                        : ''
-                } ${
-                    shouldGreyOut 
-                        ? 'opacity-30 grayscale cursor-not-allowed' 
-                        : ''
+            className={`relative text-center w-full h-full flex flex-col justify-center ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''} ${!isDragging ? 'transition-all' : ''} ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "finished"
+                    ? "opacity-40 grayscale cursor-not-allowed"
+                    : ""
+                } ${isPlacementMatch(match) ? 'border-red-200' : ""} ${isNextMatch
+                    ? 'ring-2 ring-black ring-opacity-80 shadow-md shadow-red-200/50'
+                    : ''
+                } ${isPreviousMatch
+                    ? 'ring-2 ring-black ring-opacity-80 shadow-md shadow-blue-200/50'
+                    : ''
+                } ${shouldGreyOut
+                    ? 'opacity-30 grayscale cursor-not-allowed'
+                    : ''
                 }`}
         >
+            {/* Yellow indicator for ongoing matches */}
+            {match.match.state === "ongoing" && (
+                <span className="absolute top-1 left-1 w-2 h-2 rounded-full bg-yellow-400 shadow" title="Ongoing"></span>
+            )}
             {match.match.readable_id !== 0 && (
                 <div className="absolute top-0 right-0 text-[8px] text-gray-800 font-bold bg-white/80 px-1 rounded-bl">
                     {match.match.readable_id}
