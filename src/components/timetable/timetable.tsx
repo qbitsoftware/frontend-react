@@ -640,7 +640,7 @@ export function Timetable({
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-1">
-                                            <span className="font-medium">{new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Tallinn' })}</span>
+                                            <span className="font-medium">{timeSlot}</span>
                                             <button
                                                 className="ml-1 text-gray-500 hover:text-blue-600"
                                                 onClick={() => handleEditSlot(idx)}
@@ -662,7 +662,7 @@ export function Timetable({
                                             key={idx}
                                             className="w-24 border-r flex flex-col items-center justify-center p-1 text-xs bg-gray-100 relative"
                                         >
-                                            <span className="font-medium">{new Date(`1970-01-01T${timeSlot}:00Z`).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Tallinn' })}</span>
+                                            <span className="font-medium">{timeSlot}</span>
                                             {round && <div className="text-[10px] text-gray-600 truncate w-full text-center">{round.name}</div>}
                                         </div>
                                     )
