@@ -159,13 +159,13 @@ export function Timetable({
 
         return timeSlots.map((timeSlot, index) => ({
             id: index + 1,
-            name: `${t('competitions.timetable.view.round_prefix')} ${index + 1}`,
+            name: ``,
             startTime: timeSlot,
             endTime: timeSlots[index + 1] || timeSlot,
             status: "upcoming",
             color: `bg-blue-${(index % 3 + 1) * 100}`
         }))
-    }, [timeSlots, t])
+    }, [timeSlots])
 
     const tournamentClasses = useMemo(() => {
         if (!dayMatches.length || !tournamentClassesData?.data) return []
