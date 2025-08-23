@@ -549,8 +549,10 @@ export function Timetable({
             }
         }
 
-        const before = getFullDateString(selectedDay, originalTimeSlots[idx])
+        const beforeTimeUTC = originalTimeSlots[idx] // This is already UTC
         const newTimeUTC = convertEstonianToUTC(editableTimeSlots[idx])
+        
+        const before = getFullDateString(selectedDay, beforeTimeUTC)
         const after = getFullDateString(selectedDay, newTimeUTC)
         const change = { before, after }
         try {
