@@ -523,14 +523,11 @@ export function Timetable({
     }
 
     const handleSaveSlot = async (idx: number) => {
-        // Convert Estonian time back to UTC
         const convertEstonianToUTC = (estonianTime: string) => {
-            // Create a date in Estonian timezone and get UTC equivalent
-            const estonianDate = new Date(`1970-01-01 ${estonianTime}:00`)
-            estonianDate.setTime(estonianDate.getTime() - (3 * 60 * 60 * 1000)) // Subtract 3 hours for UTC
-            const utcHours = estonianDate.getUTCHours()
-            const utcMinutes = estonianDate.getUTCMinutes()
-            return `${String(utcHours).padStart(2, '0')}:${String(utcMinutes).padStart(2, '0')}`
+            const [hours, minutes] = estonianTime.split(':').map(Number)
+            const utcHours = hours - 3
+            const normalizedHours = utcHours < 0 ? utcHours + 24 : utcHours
+            return `${String(normalizedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
         }
 
         if (idx > 0) {
