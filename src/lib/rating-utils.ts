@@ -18,22 +18,31 @@ export const calculateAgeFromBirthDate = (birthDateString: string): number => {
 }
 
 export const filterByAgeClass = (user: User, ageClass: string) => {
-  const age = calculateAgeFromBirthDate(user.birth_date);
+  const birthYear = new Date(user.birth_date).getFullYear();
+  const currentYear = new Date().getFullYear();
   const sex = user.sex;
 
   switch (ageClass) {
-    case "cadet_boys":
-      return age <= 15 && sex === "M";
-    case "cadet_girls":
-      return age <= 15 && sex === "N";
-    case "junior_boys":
-      return age <= 18 && sex === "M";
-    case "junior_girls":
-      return age <= 18 && sex === "N";
-    case "senior_men":
-      return age >= 30 && sex === "M";
-    case "senior_women":
-      return age >= 30 && sex === "N";
+    case "boys_u9":
+      return birthYear >= (currentYear - 8) && sex === "M";
+    case "girls_u9":
+      return birthYear >= (currentYear - 8) && sex === "N";
+    case "boys_u11":
+      return birthYear >= (currentYear - 10) && sex === "M";
+    case "girls_u11":
+      return birthYear >= (currentYear - 10) && sex === "N";
+    case "boys_u13":
+      return birthYear >= (currentYear - 12) && sex === "M";
+    case "girls_u13":
+      return birthYear >= (currentYear - 12) && sex === "N";
+    case "boys_u15":
+      return birthYear >= (currentYear - 14) && sex === "M";
+    case "girls_u15":
+      return birthYear >= (currentYear - 14) && sex === "N";
+    case "boys_u19":
+      return birthYear >= (currentYear - 18) && sex === "M";
+    case "girls_u19":
+      return birthYear >= (currentYear - 18) && sex === "N";
     default:
       return true;
   }
@@ -50,14 +59,20 @@ export const modifyTitleDependingOnFilter = (
   if (!showCombined) {
     if (sex === 'M') {
       switch (ageClass) {
-        case 'cadet_boys':
-          prefix = t('rating.header_prefix.cadet_boys');
+        case 'boys_u9':
+          prefix = t('rating.header_prefix.boys_u9');
           break;
-        case 'junior_boys':
-          prefix = t('rating.header_prefix.junior_boys');
+        case 'boys_u11':
+          prefix = t('rating.header_prefix.boys_u11');
           break;
-        case 'senior_men':
-          prefix = t('rating.header_prefix.senior_men');
+        case 'boys_u13':
+          prefix = t('rating.header_prefix.boys_u13');
+          break;
+        case 'boys_u15':
+          prefix = t('rating.header_prefix.boys_u15');
+          break;
+        case 'boys_u19':
+          prefix = t('rating.header_prefix.boys_u19');
           break;
         default:
           prefix = t('rating.header_prefix.men');
@@ -65,21 +80,25 @@ export const modifyTitleDependingOnFilter = (
       }
     } else if (sex === 'N') {
       switch (ageClass) {
-        case 'cadet_girls':
-          prefix = t('rating.header_prefix.cadet_girls');
+        case 'girls_u9':
+          prefix = t('rating.header_prefix.girls_u9');
           break;
-        case 'junior_girls':
-          prefix = t('rating.header_prefix.junior_girls');
+        case 'girls_u11':
+          prefix = t('rating.header_prefix.girls_u11');
           break;
-        case 'senior_women':
-          prefix = t('rating.header_prefix.senior_women');
+        case 'girls_u13':
+          prefix = t('rating.header_prefix.girls_u13');
+          break;
+        case 'girls_u15':
+          prefix = t('rating.header_prefix.girls_u15');
+          break;
+        case 'girls_u19':
+          prefix = t('rating.header_prefix.girls_u19');
           break;
         default:
           prefix = t('rating.header_prefix.women');
           break;
       }
-    } else if (ageClass === 'senior') {
-      prefix = t('rating.header_prefix.senior');
     }
   }
 

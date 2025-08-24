@@ -663,10 +663,16 @@
       "senior_men": "Senior Men's",
       "women": "Women's",
       "senior_women": "Senior Women's",
-      "junior_boys": "Junior Boys",
-      "cadet_boys": "Cadet Boys",
-      "junior_girls": "Junior Girls",
-      "cadet_girls": "Cadet Girls",
+      "boys_u9": "Boys U9",
+      "girls_u9": "Girls U9",
+      "boys_u11": "Boys U11",
+      "girls_u11": "Girls U11",
+      "boys_u13": "Boys U13",
+      "girls_u13": "Girls U13",
+      "boys_u15": "Boys U15",
+      "girls_u15": "Girls U15",
+      "boys_u19": "Boys U19",
+      "girls_u19": "Girls U19",
       "combined": "Combined"
     },
     "last_updated": "Last updated",
@@ -686,15 +692,22 @@
       "select": {
         "options": {
           "all": "All age groups",
-          "cadets_boys": "Cadets - Boys",
-          "juniors_boys": "Juniors - Boys",
-          "cadets_girls": "Cadets - Girls",
-          "juniors_girls": "Juniors - Girls",
+          "boys_u9": "Boys U9",
+          "girls_u9": "Girls U9",
+          "boys_u11": "Boys U11",
+          "girls_u11": "Girls U11",
+          "boys_u13": "Boys U13",
+          "girls_u13": "Girls U13",
+          "boys_u15": "Boys U15",
+          "girls_u15": "Girls U15",
+          "boys_u19": "Boys U19",
+          "girls_u19": "Girls U19",
           "seniors_men": "Seniors - Men",
           "seniors_women": "Seniors - Women"
         }
       },
-      "search_placeholder": "Search by player or club..."
+      "search_placeholder": "Search by player or club...",
+      "show_foreigners": "Show foreigners"
     },
     "table": {
       "head": {

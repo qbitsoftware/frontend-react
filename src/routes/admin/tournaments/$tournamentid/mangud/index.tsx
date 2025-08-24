@@ -171,11 +171,9 @@ function RouteComponent() {
             return roundA - roundB;
           }
           
-          // Secondary sort: by match type - "winner" above "loser" when rounds are equal
           if (a.match.type === "winner" && b.match.type === "loser") return -1;
           if (a.match.type === "loser" && b.match.type === "winner") return 1;
           
-          // Tertiary sort: other types go after winner/loser
           const typeOrder = { "winner": 1, "loser": 2 };
           const orderA = typeOrder[a.match.type as keyof typeof typeOrder] || 3;
           const orderB = typeOrder[b.match.type as keyof typeof typeOrder] || 3;
@@ -184,8 +182,6 @@ function RouteComponent() {
             return orderA - orderB;
           }
           
-          // Quaternary sort: stable sort by match ID to keep new matches at bottom within same tier
-          // Higher IDs (newer matches) appear after lower IDs (older matches)
           return a.match.id.localeCompare(b.match.id);
         }
         

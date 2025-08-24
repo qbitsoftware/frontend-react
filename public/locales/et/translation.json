@@ -707,12 +707,18 @@
     "header_prefix": {
       "men": "Meeste",
       "senior_men": "Seeniorite Meeste",
-      "junior_boys": "Juuniorite Noormeeste",
-      "cadet_boys": "Kadettide Poiste",
       "women": "Naiste",
       "senior_women": "Seeniorite Naiste",
-      "junior_girls": "Juuniorite Neiude",
-      "cadet_girls": "Kadettide Tüdrukute",
+      "boys_u9": "Poiste U9",
+      "girls_u9": "Tüdrukute U9",
+      "boys_u11": "Poiste U11",
+      "girls_u11": "Tüdrukute U11",
+      "boys_u13": "Poiste U13",
+      "girls_u13": "Tüdrukute U13",
+      "boys_u15": "Poiste U15",
+      "girls_u15": "Tüdrukute U15",
+      "boys_u19": "Poiste U19",
+      "girls_u19": "Tüdrukute U19",
       "combined": "Ühine"
     },
     "last_updated": "Viimati uuendatud",
@@ -732,15 +738,22 @@
       "select": {
         "options": {
           "all": "Kõik vanuserühmad",
-          "cadets_boys": "Kadetid - Poisid",
-          "juniors_boys": "Juuniorid - Noormehed ",
-          "cadets_girls": "Kadetid - Tüdrukud",
-          "juniors_girls": "Juuniorid - Neiud",
+          "boys_u9": "Poisid U9",
+          "girls_u9": "Tüdrukud U9",
+          "boys_u11": "Poisid U11",
+          "girls_u11": "Tüdrukud U11",
+          "boys_u13": "Poisid U13",
+          "girls_u13": "Tüdrukud U13",
+          "boys_u15": "Poisid U15",
+          "girls_u15": "Tüdrukud U15",
+          "boys_u19": "Poisid U19",
+          "girls_u19": "Tüdrukud U19",
           "seniors_men": "Seeniorid - Mehed",
           "seniors_women": "Seeniorid - Naised"
         }
       },
-      "search_placeholder": "Otsi mängijat või klubi..."
+      "search_placeholder": "Otsi mängijat või klubi...",
+      "show_foreigners": "Näita välismaalasi"
     },
     "table": {
       "head": {
