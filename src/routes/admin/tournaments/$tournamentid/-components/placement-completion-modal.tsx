@@ -88,44 +88,33 @@ const PlacementCompletionModal: React.FC<PlacementCompletionModalProps> = ({
   const { t } = useTranslation();
   const [completedPlacementMatch, setCompletedPlacementMatch] = useState<MatchWrapper | null>(null);
   const [placementResults, setPlacementResults] = useState<PlacementResult[]>([]);
-  const previousFinishedMatchesRef = useRef<Set<string>>(new Set());
-  const [initialized, setInitialized] = useState(false);
+  const previousMatchStatesRef = useRef<Map<string, MatchState>>(new Map());
 
   useEffect(() => {
-    const finishedMatches = matches.filter(match => 
-      match.match.state === MatchState.FINISHED
-    );
-
-    const currentFinishedIds = new Set(finishedMatches.map(m => m.match.id));
-    
-    if (!initialized) {
-      previousFinishedMatchesRef.current = currentFinishedIds;
-      setInitialized(true);
-      return;
-    }
-    
-    const newlyFinished = finishedMatches.filter(match => 
-      !previousFinishedMatchesRef.current.has(match.match.id)
-    );
-
-    const newPlacementMatch = newlyFinished.find(match => {
-      const { places, isPlacementMatch } = extractPlacementFromMatch(match);
-      if (!isPlacementMatch || !match.match.winner_id) return false;
+    matches.forEach(match => {
+      const matchId = match.match.id;
+      const currentState = match.match.state;
+      const previousState = previousMatchStatesRef.current.get(matchId);
       
-      const [lowerPlace, higherPlace] = places.split("-").map(Number);
-      return higherPlace - lowerPlace === 1;
-    });
-
-    if (newPlacementMatch) {
-      const results = determinePlacementResults(newPlacementMatch);
-      if (results.length > 0) {
-        setCompletedPlacementMatch(newPlacementMatch);
-        setPlacementResults(results);
+      if (currentState === MatchState.FINISHED && previousState && previousState !== MatchState.FINISHED) {
+        const { places, isPlacementMatch } = extractPlacementFromMatch(match);
+        
+        if (isPlacementMatch && match.match.winner_id) {
+          const [lowerPlace, higherPlace] = places.split("-").map(Number);
+          
+          if (higherPlace - lowerPlace === 1) {
+            const results = determinePlacementResults(match);
+            if (results.length > 0) {
+              setCompletedPlacementMatch(match);
+              setPlacementResults(results);
+            }
+          }
+        }
       }
-    }
-
-    previousFinishedMatchesRef.current = currentFinishedIds;
-  }, [matches, initialized]);
+      
+      previousMatchStatesRef.current.set(matchId, currentState);
+    });
+  }, [matches]);
 
   const handleClose = () => {
     setCompletedPlacementMatch(null);
