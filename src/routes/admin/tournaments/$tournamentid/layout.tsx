@@ -112,7 +112,7 @@ function RouteComponent() {
   return (
     <>
       <TournamentProvider tournamentData={tournament_data.data!}>
-        <div className="mx-auto min-h-[95vh] h-full">
+        <div className="mx-auto min-h-[95vh] h-full lg:mr-64">
           <div className="w-full relative">
             <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col xl:flex-row gap-3 lg:gap-4 justify-between items-start w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20 overflow-visible">
               <div className="flex items-center gap-2 flex-shrink-0">
