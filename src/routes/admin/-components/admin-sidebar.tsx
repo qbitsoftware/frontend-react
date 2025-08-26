@@ -53,7 +53,7 @@ const AdminSidebar = () => {
           </div>
         )}
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="overflow-y-auto">
         <nav
           className={`p-2 flex flex-col w-full gap-1 ${isCollapsed && "gap-4"}`}
         >

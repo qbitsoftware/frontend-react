@@ -961,7 +961,8 @@
         "tournaments": "Tournaments",
         "blogs": "Blogs",
         "clubs": "Clubs",
-        "feedback": "Feedback"
+        "feedback": "Feedback",
+        "export": "Data Export"
       },
       "info": "Settings",
       "schedule": "Schedule",
@@ -1628,6 +1629,16 @@
         "time_slot_update_success": "Time slot updated successfully",
         "failed_to_update_time_slot": "Failed to update time slot",
         "visibility_error": "Failed to update timetable visibility"
+      },
+      "placement": {
+        "tournament_complete": "Tournament Complete",
+        "first": "1st",
+        "second": "2nd", 
+        "third": "3rd",
+        "th": "th",
+        "place": "place",
+        "match_completed": "Match completed",
+        "places_match": "places match"
       }
     },
     "blogs": {
@@ -2009,6 +2020,16 @@
     },
     "auth": {
       "login_success": "Login successful"
+    }
+  },
+  "export": {
+    "users": {
+      "title": "Export Users",
+      "subtitle": "Download user data in Excel format",
+      "cardTitle": "User Data Export",
+      "description": "Export all registered users to an Excel file for analysis and record keeping.",
+      "exportButton": "Export to Excel",
+      "exporting": "Exporting..."
     }
   }
 }

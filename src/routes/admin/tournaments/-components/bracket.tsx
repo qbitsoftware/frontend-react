@@ -13,6 +13,7 @@ import MatchDialog from "@/components/match-dialog";
 import { TableTennisProtocolModal } from "../$tournamentid/-components/tt-modal/tt-modal";
 import { UseGetMatchesQuery } from "@/queries/match";
 import { useParams } from "@tanstack/react-router";
+import PlacementCompletionModal from "../$tournamentid/-components/placement-completion-modal";
 
 interface BracketComponentProps {
   bracket: BracketReponse;
@@ -165,6 +166,12 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
             </ProtocolModalProvider>
           )
         )}
+
+      <PlacementCompletionModal
+        matches={matches?.data || []}
+        isOpen={true}
+        onClose={() => {}}
+      />
     </div>
   );
 };

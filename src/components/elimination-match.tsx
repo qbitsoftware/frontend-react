@@ -97,6 +97,26 @@ const EliminationMatch = ({
     return false;
   };
 
+  const getIndividualPlacement = (match: TableMatch, participantId: string): string | null => {
+    const parts = match.match.bracket.split("-");
+    if (parts.length === 2) {
+      const lowerPlace = Number(parts[0]);
+      const higherPlace = Number(parts[1]);
+      
+      // Only show individual placement for consecutive placement matches (difference of 1)
+      if (Math.abs(higherPlace - lowerPlace) === 1 && match.match.winner_id) {
+        if (match.match.winner_id === participantId) {
+          // Winner gets the lower place (better position - lower number is better)
+          return lowerPlace.toString();
+        } else if (match.participant_1.id === participantId || match.participant_2.id === participantId) {
+          // Loser gets the higher place (worse position - higher number is worse)
+          return higherPlace.toString();
+        }
+      }
+    }
+    return null;
+  };
+
   const isEmptyDate = (date: string | Date) => {
     const dateObj = new Date(date);
     const year = dateObj.getFullYear();
@@ -232,6 +252,14 @@ const EliminationMatch = ({
                 onMouseEnter={() => handlePlayerHover(match.participant_1.id)}
                 onMouseLeave={() => handlePlayerHover(null)}
               >
+                {(() => {
+                  const placement = getIndividualPlacement(match, match.participant_1.id);
+                  return placement ? (
+                    <span className="mr-1 text-[10px] font-medium text-gray-600">
+                      {placement}.
+                    </span>
+                  ) : null;
+                })()}
                 {capitalizeWords(match.participant_1.name)}
               </p>
               <p
@@ -299,6 +327,14 @@ const EliminationMatch = ({
                 onMouseEnter={() => handlePlayerHover(match.participant_2.id)}
                 onMouseLeave={() => handlePlayerHover(null)}
               >
+                {(() => {
+                  const placement = getIndividualPlacement(match, match.participant_2.id);
+                  return placement ? (
+                    <span className="mr-1 text-[10px] font-medium text-gray-600">
+                      {placement}.
+                    </span>
+                  ) : null;
+                })()}
                 {capitalizeWords(match.participant_2.name)}
               </p>
               <p

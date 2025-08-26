@@ -985,7 +985,8 @@
         "tournaments": "Võistlused",
         "blogs": "Blogi & Uudised",
         "clubs": "Klubid",
-        "feedback": "Tagasiside"
+        "feedback": "Tagasiside",
+        "export": "Andmete Eksport"
       },
       "info": "Info",
       "groups": "Võistlusklassid",
@@ -1659,6 +1660,16 @@
         "time_slot_update_success": "Ringiaeg edukalt uuendatud",
         "failed_to_update_time_slot": "Ringiaja uuendamine nurjus",
         "visibility_error": "Ajakava nähtavuse muutmine nurjus"
+      },
+      "placement": {
+        "tournament_complete": "Mängijatel turniir lõppenud",
+        "first": "1.",
+        "second": "2.", 
+        "third": "3.",
+        "th": ".",
+        "place": "koht",
+        "match_completed": "Mäng lõppenud",
+        "places_match": "kohtade mäng"
       }
     },
     "blogs": {
@@ -2039,6 +2050,16 @@
     },
     "auth": {
       "login_success": "Sisselogimine õnnestus"
+    }
+  },
+  "export": {
+    "users": {
+      "title": "Mängijate Eksport",
+      "subtitle": "Laadi alla kasutajate andmed Excel formaadis",
+      "cardTitle": "Mängijate eksport (Excel)",
+      "description": "Ekspordi kõik registreeritud kasutajad Excel faili analüüsiks ja andmete säilitamiseks.",
+      "exportButton": "Ekspordi Excelisse",
+      "exporting": "Ekspordib..."
     }
   }
 }

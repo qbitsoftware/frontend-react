@@ -1,5 +1,6 @@
 import { UserRoles } from "@/types/enums";
 import {
+  Download,
   FileText,
   LayoutDashboard,
   MessagesSquare,
@@ -42,6 +43,13 @@ export const getAdminNavigationItems = (t: any, userRole?: string) => {
       label: t("admin.layout.sidebar.feedback"),
       icon: <MessagesSquare className="h-5 w-5" />,
       to: "/admin/feedback",
+    },
+    {
+      id: "export",
+      label: t("admin.layout.sidebar.export"),
+      icon: <Download className="h-5 w-5" />,
+      to: "/admin/users",
+      requiredRole: [UserRoles.ROLE_ROOT_ADMIN],
     },
   ];
 

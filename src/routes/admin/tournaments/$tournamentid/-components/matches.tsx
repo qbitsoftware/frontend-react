@@ -10,6 +10,7 @@ import { ProtocolModalProvider } from "@/providers/protocolProvider";
 import { TableTennisProtocolModal } from "./tt-modal/tt-modal";
 import MatchDialog from "@/components/match-dialog";
 import { MatchesTable } from "./matches-table";
+import PlacementCompletionModal from "./placement-completion-modal";
 
 interface MatchesProps {
   data: MatchWrapper[] | [];
@@ -425,6 +426,11 @@ export const Matches: React.FC<MatchesProps> = ({
           tournamentId={tournament_id}
           isOpen={isTimeEditingModalOpen}
           onClose={() => setIsTimeEditingModalOpen(false)}
+        />
+        <PlacementCompletionModal
+          matches={data}
+          isOpen={true}
+          onClose={() => {}}
         />
       </Card>
     );
