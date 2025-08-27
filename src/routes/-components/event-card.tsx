@@ -34,7 +34,10 @@ export default function EventCard({ event, isUpcoming }: Props) {
                                     {getAbbreviatedMonth(event.gameday_date)}
                                 </div>
                                 <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
-                                    {new Date(event.gameday_date).getDate()}
+                                    {new Intl.DateTimeFormat('et-EE', { 
+                                        day: 'numeric', 
+                                        timeZone: 'Europe/Tallinn' 
+                                    }).format(new Date(event.gameday_date))}
                                 </div>
                             </div>
                         ) : (
@@ -65,10 +68,21 @@ export default function EventCard({ event, isUpcoming }: Props) {
                                             }
                       `}>
                                             <div className="text-xs font-medium opacity-90">
-                                                {new Date(event.tournament.start_date).getMonth() !==
-                                                    new Date(event.tournament.end_date).getMonth()
-                                                    ? getAbbreviatedMonth(event.tournament.end_date)
-                                                    : getAbbreviatedMonth(event.tournament.start_date)}
+                                                {(() => {
+                                                    const startMonth = new Intl.DateTimeFormat('et-EE', { 
+                                                        month: 'numeric', 
+                                                        timeZone: 'Europe/Tallinn' 
+                                                    }).format(new Date(event.tournament.start_date));
+                                                    
+                                                    const endMonth = new Intl.DateTimeFormat('et-EE', { 
+                                                        month: 'numeric', 
+                                                        timeZone: 'Europe/Tallinn' 
+                                                    }).format(new Date(event.tournament.end_date));
+                                                    
+                                                    return startMonth !== endMonth
+                                                        ? getAbbreviatedMonth(event.tournament.end_date)
+                                                        : getAbbreviatedMonth(event.tournament.start_date);
+                                                })()}
                                             </div>
                                             <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
                                                 {formatDateRange(event.tournament.start_date, event.tournament.end_date).split(" - ")[1]}

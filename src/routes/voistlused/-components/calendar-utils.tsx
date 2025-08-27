@@ -67,14 +67,30 @@ export const formatDate = (year: number, month: number, day: number) => {
 export const formatDateRange = (startDate: string, endDate: string) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  return `${start.getDate().toString().padStart(2, "0")} - ${end.getDate().toString().padStart(2, "0")}`;
+  
+  // Get the day in Estonian timezone
+  const startDay = new Intl.DateTimeFormat('et-EE', { 
+    day: 'numeric', 
+    timeZone: 'Europe/Tallinn' 
+  }).format(start);
+  
+  const endDay = new Intl.DateTimeFormat('et-EE', { 
+    day: 'numeric', 
+    timeZone: 'Europe/Tallinn' 
+  }).format(end);
+  
+  return `${startDay.padStart(2, "0")} - ${endDay.padStart(2, "0")}`;
 };
 
 export const getAbbreviatedMonth = (dateString: string) => {
   const date = new Date(dateString);
-  const monthIndex = date.getMonth();
-
-
+  
+  // Get the month in Estonian timezone
+  const monthIndex = new Intl.DateTimeFormat('et-EE', { 
+    month: 'numeric',
+    timeZone: 'Europe/Tallinn' 
+  }).format(date);
+  
   const abbreviations = [
     'Jan.',
     'Feb.',
@@ -90,7 +106,7 @@ export const getAbbreviatedMonth = (dateString: string) => {
     'Dec.'
   ];
 
-  return abbreviations[monthIndex];
+  return abbreviations[parseInt(monthIndex) - 1];
 };
 
 export interface ProcessedEvent {
