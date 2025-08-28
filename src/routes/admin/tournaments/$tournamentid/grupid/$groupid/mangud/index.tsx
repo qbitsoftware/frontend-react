@@ -1,15 +1,14 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import {
-  MatchesResponse,
   UseGetMatchesAllQuery,
   UseGetMatchesQuery,
 } from '@/queries/match'
-import { Matches } from '@/routes/admin/tournaments/$tournamentid/-components/matches'
-import { UseGetTournamentTable, UseGetTournamentTablesQuery } from '@/queries/tables'
-import Loader from '@/components/loader'
+import { FilterOptions, Matches } from '@/routes/admin/tournaments/$tournamentid/-components/matches'
+import { UseGetTournamentTableQuery, UseGetTournamentTablesQuery } from '@/queries/tables'
 import ErrorPage from '@/components/error'
-import { ErrorResponse } from '@/types/errors'
 import { CompactClassFilters } from '@/routes/admin/tournaments/-components/compact-class-filters'
+import { Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/mangud/',
@@ -17,27 +16,10 @@ export const Route = createFileRoute(
   validateSearch: (search: Record<string, unknown>) => {
     return {
       openMatch: search.openMatch as string | undefined,
+      filter: search.filter as string | undefined,
     }
   },
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    const matches: MatchesResponse | undefined = undefined
-    let tableData
-    try {
-      tableData = await queryClient.ensureQueryData(
-        UseGetTournamentTable(
-          Number(params.tournamentid),
-          Number(params.groupid),
-        ),
-      )
-    } catch (error) {
-      const err = error as ErrorResponse
-      if (err.response.status !== 404) {
-        throw error
-      }
-    }
-    return { matches, params, tableData }
-  },
   component: RouteComponent,
 })
 
@@ -45,107 +27,137 @@ function RouteComponent() {
   const { tournamentid, groupid } = Route.useParams()
   const { openMatch } = Route.useSearch()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const tournamentId = Number(tournamentid)
   const groupId = Number(groupid)
 
-  const { data: matches, isLoading: isLoadingMatches } = UseGetMatchesQuery(
+
+  const { filter: filterParam } = Route.useSearch()
+  const filterValue: FilterOptions[] = filterParam
+    ? filterParam.split(',') as FilterOptions[]
+    : ["all"];
+
+  const { data: matches, isLoading: isLoading1 } = UseGetMatchesQuery(
     tournamentId,
     groupId,
   )
 
+  const { data: tableData, isLoading: isLoading2 } = UseGetTournamentTableQuery(tournamentId, groupId)
+
 
   const {
-    data: matchesForTimeChange,
-    isLoading: isLoadingMatchesForTimeChange,
+    data: matchesForTimeChange, isLoading: isLoading3
   } = UseGetMatchesAllQuery(tournamentId, groupId,
   )
 
   const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
 
   const handleGroupChange = (newGroupId: number) => {
-    navigate({
-      to: "/admin/tournaments/$tournamentid/mangud",
-      params: {
-        tournamentid: tournamentid,
-      },
-      search: {
-        selectedGroup: newGroupId.toString(),
-      },
-    });
+    if (newGroupId == 0) {
+      navigate({
+        to: "/admin/tournaments/$tournamentid/mangud",
+        params: {
+          tournamentid: tournamentid,
+        },
+        search: {
+          filter: filterValue.join(","),
+          openMatch: undefined,
+        },
+        replace: true,
+      });
+    } else {
+      navigate({
+        to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
+        params: {
+          tournamentid: tournamentid,
+          groupid: newGroupId.toString()
+        },
+        search: {
+          filter: filterValue.join(","),
+          openMatch: undefined,
+        },
+        replace: true,
+      });
+
+    }
   }
 
-  const { tableData } = Route.useLoaderData()
+  if (tablesQuery.data && tablesQuery.data.data && tableData) {
+    const availableTables = tablesQuery.data.data || [];
+    const groupIds = tableData.data.stages?.map((stage) => stage.id) || [groupId];
 
-  if (isLoadingMatches || isLoadingMatchesForTimeChange || tablesQuery.isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-        <div className="flex justify-center items-center h-[50vh]">
-          <Loader />
-        </div>
-      </div>
-    )
-  }
-
-  if (!matches || !tableData || !tableData.data || !matchesForTimeChange || !tablesQuery.data?.data || !tableData.data.group) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-        <div className="flex justify-center items-center h-[50vh]">
-          <ErrorPage />
-        </div>
-      </div>
-    )
-  }
-
-  const availableTables = tablesQuery.data.data || [];
-  const groupIds = tableData.data.stages?.map((stage) => stage.id) || [groupId];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 px-2">
-      <CompactClassFilters
-        availableTables={availableTables}
-        activeGroupId={[0, ...groupIds]}
-        onGroupChange={handleGroupChange}
-      />
-
-      {tableData.data.stages && tableData.data.stages.length >= 1 && (
-        <div className="border-b border-gray-200 mb-4">
-          <nav className="-mb-px flex space-x-8">
-            {tableData.data.stages?.map((stage) => {
-              return (
-                <button
-                  key={stage.id}
-                  onClick={() => navigate({
-                    to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
-                    params: {
-                      tournamentid: tournamentid,
-                      groupid: stage.id.toString()
-                    },
-                    search: { selectedGroup: undefined, openMatch: undefined }
-                  })}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${groupId === stage.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                >
-                  {stage.class}
-                </button>
-              )
-            })}
-          </nav>
-        </div>
-      )}
-
-      <div className="pb-12">
-        <Matches
-          tournament_id={tournamentId}
-          player_count={tableData.data.group.min_team_size}
-          data={matches.data ?? []}
-          all_matches={matchesForTimeChange.data ?? []}
-          tournament_table={tableData.data.group}
-          openMatchId={openMatch}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 px-2">
+        <CompactClassFilters
+          availableTables={availableTables}
+          activeGroupId={[0, ...groupIds]}
+          onGroupChange={handleGroupChange}
         />
+
+        {tableData.data.stages && tableData.data.stages.length >= 1 && (
+          <div className="border-b border-gray-200 mb-4">
+            <nav className="-mb-px flex space-x-8">
+              {tableData.data.stages?.map((stage) => {
+                return (
+                  <button
+                    key={stage.id}
+                    onClick={() => navigate({
+                      to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
+                      params: {
+                        tournamentid: tournamentid,
+                        groupid: stage.id.toString()
+                      },
+                      search: { openMatch: undefined, filter: filterValue.join(",") }
+                    })}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm ${groupId === stage.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                  >
+                    {stage.class}
+                  </button>
+                )
+              })}
+            </nav>
+          </div>
+        )}
+
+        {tableData.data.group && matches && matches.data && matchesForTimeChange ? (<div className="pb-12">
+          <Matches
+            tournament_id={tournamentId}
+            player_count={tableData.data.group.min_team_size}
+            data={matches.data ?? []}
+            all_matches={matchesForTimeChange.data ?? []}
+            tournament_table={tableData.data.group}
+            openMatchId={openMatch}
+          />
+        </div>
+        ) : (
+          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+            <div className="flex justify-center items-center h-[50vh] animate-spin">
+              <Loader2 />
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  )
+    )
+
+  } else if (isLoading1 || isLoading2 || isLoading3) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex justify-center items-center h-[50vh] animate-spin">
+          <Loader2 />
+        </div>
+      </div>
+    )
+  } else {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <span className="text-gray-400 text-base font-medium">
+          {t('competitions.errors.no_games_found')}
+        </span>
+      </div>
+    )
+  }
 }

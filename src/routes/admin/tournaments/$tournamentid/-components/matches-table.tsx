@@ -1,16 +1,17 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
 import { DialogType, TournamentTable } from "@/types/groups"
 import { Edit } from "lucide-react"
+import { AutoSizer, Column, Table } from "react-virtualized"
+import 'react-virtualized/styles.css'
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
@@ -33,7 +34,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const queryClient = useQueryClient()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
-    const tableMap = new Map(tournament_table.map(table => [table.id, table]))
+    const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
 
     const getScore = (match: MatchWrapper, player: ParticipantType) => {
         if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES) {
@@ -50,24 +51,10 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         }).length
     }
 
-    const getWinnerName = (match: MatchWrapper) => {
-        if (match.match.p1_id === "empty" && match.match.p2_id === "empty") return ""
-        if (!match.match.winner_id) return t("admin.tournaments.matches.not_played")
-        return match.match.winner_id === match.match.p1_id ? match.p1.name : match.p2.name
-    }
-
     const getRowClassName = (match: MatchWrapper) => {
         const state = match.match.state
-        // const tournament_table = tableMap.get(match.match.tournament_table_id)
         if (state === 'finished') return 'opacity-60 bg-gray-50'
-        if (
-            state === 'ongoing'
-            // state === 'ongoing' &&
-            // (
-            //     (tournament_table?.time_table && new Date(match.match.start_date) < new Date()) ||
-            //     !tournament_table?.time_table
-            // )
-        ) {
+        if (state === 'ongoing') {
             return 'bg-green-50 border-green-200'
         }
         return ''
@@ -126,10 +113,6 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         if (num <= 4) return 4;
         return Math.pow(2, Math.ceil(Math.log2(num)));
     };
-
-    console.log("closest power of 2:", getClosestPowerOf2(10));
-
-    console.log("closest power of 2:", getClosestPowerOf2(24));
 
     const submitScore = async (match: MatchWrapper) => {
         const pending = pendingScores[match.match.id]
@@ -233,7 +216,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 onValueChange={handleScoreChange}
                 disabled={isDisabled || isLoading}
             >
-                <SelectTrigger className="w-16 h-8">
+                <SelectTrigger className="w-16 h-8 focus:outline-none focus:ring-0">
                     <SelectValue placeholder="-" />
                 </SelectTrigger>
                 <SelectContent>
@@ -247,161 +230,266 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         )
     }
 
-    if (matches.length > 0) {
-        return (
-            <div className="rounded-md border my-2">
-                <Table className="[&_td]:py-1 [&_th]:py-1 [&_td]:px-2 [&_th]:px-2 text-sm">
-                    <TableHeader>
-                        <TableRow className="bg-gray-50">
-                            <TableHead className="min-w-[100px]">Actions</TableHead>
-                            {all && <TableHead className="min-w-[80px]">Grupp</TableHead>}
-                            <TableHead>{t("admin.tournaments.matches.table.table")}</TableHead>
-                            <TableHead className="min-w-[120px]">{t("admin.tournaments.matches.table.participant_1")}</TableHead>
-                            <TableHead className="min-w-[80px]">{t("admin.tournaments.matches.table.participant_1_score")}</TableHead>
-                            <TableHead className="min-w-[80px]">{""}</TableHead>
-                            <TableHead className="min-w-[80px]">{t("admin.tournaments.matches.table.participant_2_score")}</TableHead>
-                            <TableHead className="min-w-[120px]">{t("admin.tournaments.matches.table.participant_2")}</TableHead>
-                            <TableHead>{t("admin.tournaments.matches.table.winner")}</TableHead>
-                            <TableHead>{t("admin.tournaments.matches.table.bracket")}</TableHead>
-                            {all ?
-                                <TableHead>Ring</TableHead>
-                                :
-                                <TableHead>{t("admin.tournaments.matches.table.round")}</TableHead>
-                            }
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {matches.map((match) => {
-                            const hasPendingScores = pendingScores[match.match.id] &&
-                                (pendingScores[match.match.id].p1 !== null || pendingScores[match.match.id].p2 !== null)
-                            const isLoading = loadingUpdates.has(match.match.id)
-                            let table = tableMap.get(match.match.tournament_table_id)
-                            const round = getClosestPowerOf2(table?.size || 0) / Math.pow(2, match.match.round - 1)
+    // Cell renderers for each column
+    const actionsCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full justify-center">
+            <Button
+                disabled={rowData.p1.id === "" || rowData.p2.id === ""}
+                variant="outline"
+                size="sm"
+                onClick={() => handleRowClick(rowData)}
+            >
+                <Edit className="h-2 w-2" />
+            </Button>
+        </div>
+    )
 
-                            return (
-                                <TableRow key={`match-${match.match.id}`} className={getRowClassName(match)}>
-                                    <TableCell>
-                                        <Button
-                                            disabled={match.p1.id === "" || match.p2.id === ""}
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleRowClick(match)}
-                                        >
-                                            <Edit className="h-4 w-4" />
-                                        </Button>
-                                    </TableCell>
-                                    {all && <TableCell>
-                                        {tableMap.get(match.match.tournament_table_id)?.class || "N/A"}
-                                    </TableCell>}
-                                    <TableCell>
-                                        <TableNumberForm
-                                            brackets={false}
-                                            match={match.match}
-                                            initialTableNumber={match.match.extra_data ? match.match.extra_data.table : "0"}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        {renderPlayer(match, ParticipantType.P1)}
-                                    </TableCell>
-                                    <TableCell>
-                                        {match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
-                                            getScore(match, ParticipantType.P1)
-                                        ) : (
-                                            <ScoreSelector
-                                                match={match}
-                                                player={ParticipantType.P1}
-                                                currentScore={getScore(match, ParticipantType.P1)}
-                                                isDisabled={match.p1.id === "" || match.p2.id === "" || match.match.state === MatchState.FINISHED}
-                                            />
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {hasPendingScores && (
-                                            <div className="mx-auto flex gap-1 justify-center">
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => submitScore(match)}
-                                                    disabled={isLoading}
-                                                    className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
-                                                >
-                                                    {isLoading ? "..." : "✓"}
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() => clearPendingScore(match.match.id)}
-                                                    disabled={isLoading}
-                                                    className="text-red-600 hover:text-red-700 w-8 h-8 p-0"
-                                                >
-                                                    ✕
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
-                                            getScore(match, ParticipantType.P2)
-                                        ) : (
-                                            <ScoreSelector
-                                                match={match}
-                                                player={ParticipantType.P2}
-                                                currentScore={getScore(match, ParticipantType.P2)}
-                                                isDisabled={match.p1.id === "" || match.p2.id === "" || match.match.state === MatchState.FINISHED}
-                                            />
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {renderPlayer(match, ParticipantType.P2)}
-                                    </TableCell>
-                                    <TableCell className="whitespace-nowrap">
-                                        {getWinnerName(match)}
-                                    </TableCell>
-                                    <TableCell>
-                                        {/* {match.match.type === "winner" ? t("admin.tournaments.matches.table.winner_bracket") : match.match.type === "loser" ? t("admin.tournaments.matches.table.loser_bracket") : ""} */}
-                                        {/* {match.match.bracket != "" ? match.match.bracket : "-"} */}
-                                        {/* {match.match.bracket !== ""
-                                            ? match.match.bracket
-                                            : match.match.table_type
-                                                ? t(`admin.tournaments.matches.table.${match.match.table_type}`)
-                                                : "-"} */}
-                                        {match.match.type === "winner"
-                                            ? t("admin.tournaments.matches.table.winner_bracket")
-                                            : match.match.type === "loser"
-                                                ? t("admin.tournaments.matches.table.loser_bracket")
-                                                : match.match.type === "bracket"
-                                                    ? t("admin.tournaments.matches.table.bracket_bracket")
-                                                    : "-"}
-                                    </TableCell>
-                                    <TableCell>
-                                        {match.match.type === "winner"
-                                            ? (round > 8
-                                                ? `R${round}`
-                                                : round === 8
-                                                    ? t("admin.tournaments.matches.table.quarterfinal")
-                                                    : round === 4
-                                                        ? t("admin.tournaments.matches.table.semifinal")
-                                                        : round === 2
-                                                            ? t("admin.tournaments.matches.table.final")
-                                                            : round)
-                                            : match.match.type === "loser"
-                                                ? `-> ${match.match.next_loser_bracket}`
-                                                : match.match.type === "bracket"
-                                                    ? match.match.bracket
-                                                    : match.match.round}
-                                    </TableCell>
-                                </TableRow>
-                            )
-                        })}
-                        {matches.length === 0 && (
-                            <TableRow>
-                                <TableCell colSpan={10} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+    const groupCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full px-2 text-[10px]">
+            {tableMap.get(rowData.match.tournament_table_id)?.class || "N/A"}
+        </div>
+    )
+
+    const tableCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full px-2">
+            <TableNumberForm
+                brackets={false}
+                match={rowData.match}
+                initialTableNumber={rowData.match.extra_data ? rowData.match.extra_data.table : "0"}
+            />
+        </div>
+    )
+
+    const participant1CellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full px-2 text-sm">
+            {renderPlayer(rowData, ParticipantType.P1)}
+        </div>
+    )
+
+    const participant1ScoreCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full px-2">
+            {rowData.match.table_type === "champions_league" || tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                getScore(rowData, ParticipantType.P1)
+            ) : (
+                <ScoreSelector
+                    match={rowData}
+                    player={ParticipantType.P1}
+                    currentScore={getScore(rowData, ParticipantType.P1)}
+                    isDisabled={rowData.p1.id === "" || rowData.p2.id === "" || rowData.match.state === MatchState.FINISHED}
+                />
+            )}
+        </div>
+    )
+
+    const actionsCenterCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => {
+        const hasPendingScores = pendingScores[rowData.match.id] &&
+            (pendingScores[rowData.match.id].p1 !== null || pendingScores[rowData.match.id].p2 !== null)
+        const isLoading = loadingUpdates.has(rowData.match.id)
+
+        return (
+            <div className="flex items-center justify-center h-full px-2">
+                {hasPendingScores && (
+                    <div className="flex gap-1">
+                        <Button
+                            size="sm"
+                            onClick={() => submitScore(rowData)}
+                            disabled={isLoading}
+                            className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
+                        >
+                            {isLoading ? "..." : "✓"}
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => clearPendingScore(rowData.match.id)}
+                            disabled={isLoading}
+                            className="text-red-600 hover:text-red-700 w-8 h-8 p-0"
+                        >
+                            ✕
+                        </Button>
+                    </div>
+                )}
             </div>
         )
     }
+
+    const participant2ScoreCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full px-2">
+            {rowData.match.table_type === "champions_league" || tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                getScore(rowData, ParticipantType.P2)
+            ) : (
+                <ScoreSelector
+                    match={rowData}
+                    player={ParticipantType.P2}
+                    currentScore={getScore(rowData, ParticipantType.P2)}
+                    isDisabled={rowData.p1.id === "" || rowData.p2.id === "" || rowData.match.state === MatchState.FINISHED}
+                />
+            )}
+        </div>
+    )
+
+    const participant2CellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full px-2 text-sm">
+            {renderPlayer(rowData, ParticipantType.P2)}
+        </div>
+    )
+
+    const bracketCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+        <div className="flex items-center h-full px-2 text-[10px]">
+            {rowData.match.type === "winner"
+                ? t("admin.tournaments.matches.table.winner_bracket")
+                : rowData.match.type === "loser"
+                    ? t("admin.tournaments.matches.table.loser_bracket")
+                    : rowData.match.type === "bracket"
+                        ? t("admin.tournaments.matches.table.bracket_bracket")
+                        : "-"}
+        </div>
+    )
+
+    const roundCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => {
+        const table = tableMap.get(rowData.match.tournament_table_id)
+        const round = getClosestPowerOf2(table?.size || 0) / Math.pow(2, rowData.match.round - 1)
+
+        return (
+            <div className="flex items-center h-full px-2 text-sm">
+                {all ? (
+                    // Ring display for all view
+                    round
+                ) : (
+                    // Round display for single table view
+                    rowData.match.type === "winner"
+                        ? (round > 8
+                            ? `R${round}`
+                            : round === 8
+                                ? t("admin.tournaments.matches.table.quarterfinal")
+                                : round === 4
+                                    ? t("admin.tournaments.matches.table.semifinal")
+                                    : round === 2
+                                        ? t("admin.tournaments.matches.table.final")
+                                        : round)
+                        : rowData.match.type === "loser"
+                            ? `-> ${rowData.match.next_loser_bracket}`
+                            : rowData.match.type === "bracket"
+                                ? rowData.match.bracket
+                                : rowData.match.round
+                )}
+            </div>
+        )
+    }
+
+    if (matches.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-48">
+                <span className="text-gray-400 text-base font-medium">
+                    {t('competitions.errors.no_games_found')}
+                </span>
+            </div>
+
+        )
+    }
+
+    return (
+        <div className="rounded-md border my-2 overflow-x-auto h-[68vh]" >
+            <AutoSizer>
+                {({ height, width }) => (
+                    <Table
+                        width={Math.max(width, 750)}
+                        height={height}
+                        headerHeight={40}
+                        rowHeight={48}
+                        rowCount={matches.length}
+                        rowGetter={({ index }) => matches[index]}
+                        rowClassName={({ index }) =>
+                            index !== -1 ? `border-b ${getRowClassName(matches[index])}` : "bg-gray-50"
+                        }
+                        headerClassName="bg-gray-50 font-semibold text-[10px] border-b"
+                    >
+                        <Column
+                            label="Actions"
+                            dataKey="actions"
+                            headerClassName="text-center"
+                            width={60}
+                            flexGrow={0}
+                            cellRenderer={actionsCellRenderer}
+                        />
+
+                        {all && (
+                            <Column
+                                label="Grupp"
+                                dataKey="group"
+                                width={100}
+                                flexGrow={0}
+                                cellRenderer={groupCellRenderer}
+                            />
+                        )}
+
+                        <Column
+                            label={t("admin.tournaments.matches.table.table")}
+                            dataKey="table"
+                            headerClassName="text-center"
+                            width={80}
+                            flexGrow={0}
+                            cellRenderer={tableCellRenderer}
+                        />
+
+                        <Column
+                            label={t("admin.tournaments.matches.table.participant_1")}
+                            dataKey="participant1"
+                            width={100}
+                            flexGrow={1}
+                            cellRenderer={participant1CellRenderer}
+                        />
+
+                        <Column
+                            label={t("admin.tournaments.matches.table.participant_1_score")}
+                            dataKey="p1Score"
+                            width={60}
+                            flexGrow={0}
+                            cellRenderer={participant1ScoreCellRenderer}
+                        />
+
+                        <Column
+                            label=""
+                            dataKey="actionsCenter"
+                            width={80}
+                            flexGrow={0}
+                            cellRenderer={actionsCenterCellRenderer}
+                        />
+
+                        <Column
+                            label={t("admin.tournaments.matches.table.participant_2_score")}
+                            dataKey="p2Score"
+                            width={60}
+                            flexGrow={0}
+                            cellRenderer={participant2ScoreCellRenderer}
+                        />
+
+                        <Column
+                            label={t("admin.tournaments.matches.table.participant_2")}
+                            dataKey="participant2"
+                            width={100}
+                            flexGrow={1}
+                            cellRenderer={participant2CellRenderer}
+                        />
+
+                        <Column
+                            label={t("admin.tournaments.matches.table.bracket")}
+                            dataKey="bracket"
+                            width={120}
+                            flexGrow={0}
+                            cellRenderer={bracketCellRenderer}
+                        />
+
+                        <Column
+                            label={all ? "Ring" : t("admin.tournaments.matches.table.round")}
+                            dataKey="round"
+                            width={100}
+                            flexGrow={0}
+                            cellRenderer={roundCellRenderer}
+                        />
+                    </Table>
+                )}
+            </AutoSizer>
+        </div>
+    )
 }

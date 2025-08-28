@@ -1,6 +1,6 @@
 import ErrorPage from '@/components/error'
 import { UseGetTournamentTablesQuery } from '@/queries/tables'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { CompactClassFilters } from '../../-components/compact-class-filters'
 import { useEffect, useMemo, useState } from 'react'
 import { UseGetTournamentMatchesQuery } from '@/queries/match'
@@ -14,24 +14,20 @@ import { TableTennisProtocolModal } from '../-components/tt-modal/tt-modal'
 import { FilterOptions } from '../-components/matches'
 import { useTranslation } from 'react-i18next'
 import LoadingScreen from '@/routes/-components/loading-screen'
+import { useNavigationHelper } from '@/providers/navigationProvider'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/mangud/',
 )({
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      selectedGroup: search.selectedGroup as string | undefined,
-    }
-  },
-  loader: ({ params }) => {
-    return { params }
-  },
   errorComponent: () => <ErrorPage />,
   component: RouteComponent,
+  validateSearch: (search: { filter?: string; openMatch?: string }) => ({
+    filter: search.filter,
+    openMatch: search.openMatch,
+  })
 })
 
 function RouteComponent() {
-  const { params } = Route.useLoaderData()
   const navigate = useNavigate()
 
   const [activeParticipant, setActiveParticipant] = useState<string[]>([]);
@@ -39,75 +35,40 @@ function RouteComponent() {
   const [selectedTournamentTable, setSelectedTournamentTable] = useState<TournamentTable | null>(null);
   const [filterValue, setFilterValue] = useState<FilterOptions[]>(["all"]);
   const [isOpen, setIsOpen] = useState(false);
-
-
-  const tournamentId = Number(params.tournamentid)
-  const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
+  const params = useParams({ from: "/admin/tournaments/$tournamentid" })
+  const search = useSearch({ from: "/admin/tournaments/$tournamentid/mangud/" });
+  const { data: tablesQuery, isLoading: isLoadingTables } = UseGetTournamentTablesQuery(Number(params.tournamentid))
   const { t } = useTranslation()
-  const { selectedGroup } = Route.useSearch()
-  const { data: matchData, isLoading: isLoadingMatches } = UseGetTournamentMatchesQuery(tournamentId)
+  const { groupId } = useNavigationHelper();
+  const { data: matchData, isLoading: isLoadingMatches, isFetching: isFetchingMatches } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
+
   const tableMap = useMemo(() => {
     return new Map(
-      (tablesQuery.data?.data || []).map(table => [table.id, table])
+      (tablesQuery?.data || []).map(table => [table.id, table])
     );
-  }, [tablesQuery.data?.data]);
+  }, [tablesQuery?.data]);
 
-
+  useEffect(() => {
+    const urlFilterValue: FilterOptions[] = search.filter
+      ? search.filter.split(',') as FilterOptions[]
+      : ["all"];
+    setFilterValue(urlFilterValue);
+  }, [search.filter]);
 
   const handleGroupChange = (newGroupId: number) => {
     navigate({
-      to: "/admin/tournaments/$tournamentid/mangud",
+      to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
       params: {
-        tournamentid: String(tournamentId),
+        tournamentid: String(params.tournamentid),
+        groupid: groupId ? String(groupId) : String(newGroupId),
       },
       search: {
-        selectedGroup: newGroupId.toString(),
+        filter: filterValue.join(','),
+        openMatch: undefined,
       },
+      replace: true,
     });
   }
-
-
-  useEffect(() => {
-    if (tablesQuery.data?.data && tablesQuery.data.data.length > 0) {
-      const targetGroupId = selectedGroup &&
-        (() => {
-          const tableMatch = tablesQuery.data.data.find(table => table.id.toString() === selectedGroup)
-          if (tableMatch) return tableMatch.id
-
-          for (const table of tablesQuery.data.data) {
-            const stageMatch = table.stages?.find(stage => stage.id.toString() === selectedGroup)
-            if (stageMatch) return stageMatch.id
-          }
-
-          return null
-        })()
-
-
-      const groupId = targetGroupId
-      if (groupId) {
-        navigate({
-          to: '/admin/tournaments/$tournamentid/grupid/$groupid/mangud',
-          params: {
-            tournamentid: params.tournamentid,
-            groupid: groupId.toString(),
-          },
-          search: { selectedGroup: undefined, openMatch: undefined },
-          replace: true,
-        })
-      } else {
-        navigate({
-          to: '/admin/tournaments/$tournamentid/mangud',
-          params: {
-            tournamentid: params.tournamentid,
-          },
-          search: { selectedGroup: undefined },
-          replace: true,
-        })
-      }
-
-    }
-  }, [tablesQuery.data?.data, navigate, params.tournamentid, selectedGroup])
-
 
   useEffect(() => {
     const activeParticipantIds: string[] = [];
@@ -160,31 +121,29 @@ function RouteComponent() {
 
         if (isTimetableA && !isTimetableB) return -1;
         if (!isTimetableA && isTimetableB) return 1;
-        
+
         if (!isTimetableA && !isTimetableB) {
           const roundA = a.match.round || 0;
           const roundB = b.match.round || 0;
-          console.log('Non-timetabled sort - Match A:', a.p1.name, 'vs', a.p2.name, 'Round:', roundA, 'Type:', a.match.type);
-          console.log('Non-timetabled sort - Match B:', b.p1.name, 'vs', b.p2.name, 'Round:', roundB, 'Type:', b.match.type);
-          
+
           if (roundA !== roundB) {
             return roundA - roundB;
           }
-          
+
           if (a.match.type === "winner" && b.match.type === "loser") return -1;
           if (a.match.type === "loser" && b.match.type === "winner") return 1;
-          
+
           const typeOrder = { "winner": 1, "loser": 2 };
           const orderA = typeOrder[a.match.type as keyof typeof typeOrder] || 3;
           const orderB = typeOrder[b.match.type as keyof typeof typeOrder] || 3;
-          
+
           if (orderA !== orderB) {
             return orderA - orderB;
           }
-          
+
           return a.match.id.localeCompare(b.match.id);
         }
-        
+
         return 0;
       });
     };
@@ -192,12 +151,6 @@ function RouteComponent() {
     const ongoingSorted = sortIfTimetable(ongoing);
     const createdSorted = sortIfTimetable(created);
     const finishedSorted = sortIfTimetable(finished);
-
-    // Log the final order of upcoming matches
-    console.log('UPCOMING MATCHES FINAL ORDER:');
-    createdSorted.forEach((match, index) => {
-      console.log(`${index + 1}. ${match.p1.name} vs ${match.p2.name} - Round: ${match.match.round}, Type: ${match.match.type}, Bracket: ${match.match.bracket}`);
-    });
 
     return [...ongoingSorted, ...createdSorted, ...finishedSorted];
   }, [matchData, matchData?.data, filterValue, tableMap]);
@@ -215,44 +168,46 @@ function RouteComponent() {
 
   const handleFilterChange = (value: FilterOptions) => {
     setFilterValue(prev => {
+      let next: FilterOptions[];
       if (value === "all") {
-        return ["all"];
-      }
-      const filtered = prev.filter(v => v !== "all");
-      if (filtered.includes(value)) {
-        // Remove value
-        return filtered.length === 1 ? ["all"] : filtered.filter(v => v !== value);
+        next = ["all"];
       } else {
-        // Add value
-        return [...filtered, value];
+        const filtered = prev.filter(v => v !== "all");
+        if (filtered.includes(value)) {
+          next = filtered.length === 1 ? ["all"] : filtered.filter(v => v !== value);
+        } else {
+          next = [...filtered, value];
+        }
       }
+      navigate({
+        to: '/admin/tournaments/$tournamentid/mangud',
+        params: { tournamentid: params.tournamentid },
+        search: {
+          openMatch: undefined,
+          filter: next.join(","),
+        },
+        replace: true,
+      });
+      return next;
     });
   };
 
-  // if (tablesQuery.isLoading) {
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-  //       <Loader />
-  //     </div>
-  //   )
-  // }
-
-  // if (tablesQuery.isError || !tablesQuery.data?.data) {
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-  //       <NoGroupsError />
-  //     </div>
-  //   )
-  // }
-
-  // return (
-  //   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-  //     <Loader />
-  //   </div>
-  // )
-  if (isLoadingMatches) {
+  if (isLoadingTables) {
     return (
       <div className=''>
+        <LoadingScreen />
+      </div>
+    )
+  }
+
+  if (isLoadingMatches || isFetchingMatches) {
+    return (
+      <div className=''>
+        < CompactClassFilters
+          availableTables={tablesQuery?.data || []}
+          activeGroupId={[0]}
+          onGroupChange={handleGroupChange}
+        />
         <LoadingScreen />
       </div>
     )
@@ -260,7 +215,7 @@ function RouteComponent() {
   return (
     <div>
       < CompactClassFilters
-        availableTables={tablesQuery.data?.data || []}
+        availableTables={tablesQuery?.data || []}
         activeGroupId={[0]}
         onGroupChange={handleGroupChange}
       />
@@ -332,8 +287,8 @@ function RouteComponent() {
           <MatchesTable
             matches={filteredData}
             handleRowClick={handleCardClick}
-            tournament_id={tournamentId}
-            tournament_table={tablesQuery.data?.data || []}
+            tournament_id={Number(params.tournamentid)}
+            tournament_table={tablesQuery?.data || []}
             active_participant={activeParticipant}
             all={true}
           />
@@ -345,7 +300,7 @@ function RouteComponent() {
               open={isOpen}
               onClose={handleModalClose}
               match={selectedMatch}
-              tournamentId={tournamentId}
+              tournamentId={Number(params.tournamentid)}
             />
           ) : (
             selectedMatch &&
@@ -353,7 +308,7 @@ function RouteComponent() {
               <ProtocolModalProvider
                 isOpen={isOpen}
                 onClose={handleModalClose}
-                tournamentId={tournamentId}
+                tournamentId={Number(params.tournamentid)}
                 match={selectedMatch}
                 playerCount={selectedTournamentTable?.min_team_size || 1}
               >

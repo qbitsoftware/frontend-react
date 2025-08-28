@@ -2,43 +2,25 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { UseGetTournamentTableQuery, UseGetTournamentTablesQuery } from '@/queries/tables'
-import Loader from '@/components/loader'
 import ErrorPage from '@/components/error'
-import { ErrorResponse } from '@/types/errors'
 import { NewSolo } from './-components/new-solo'
 import { NewTeams } from './-components/new-teams'
 import { UseGetParticipantsQuery } from '@/queries/participants'
 import SeedingHeader from './-components/seeding-header'
-import { UseGetTournamentAdmin } from '@/queries/tournaments'
 import { DialogType } from '@/types/groups'
 import NewDouble from './-components/new-double'
 import { CompactClassFilters } from '@/routes/admin/tournaments/-components/compact-class-filters'
 import { GroupType } from '@/types/matches'
+import { Loader2 } from 'lucide-react'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/',
 )({
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    let tournament_data
-    try {
-      tournament_data = await queryClient.ensureQueryData(
-        UseGetTournamentAdmin(Number(params.tournamentid)),
-      )
-    } catch (error) {
-      const err = error as ErrorResponse
-      if (err.response.status !== 404) {
-        throw error
-      }
-    }
-
-    return { tournament_data }
-  },
 })
 
 function RouteComponent() {
-  const { tournament_data } = Route.useLoaderData()
   const { tournamentid, groupid } = Route.useParams()
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -56,7 +38,7 @@ function RouteComponent() {
     groupId,
   )
 
-  const tablesQuery = UseGetTournamentTablesQuery(tournamentId)
+  const { data: tables_data } = UseGetTournamentTablesQuery(tournamentId)
 
   const [highlightInput, setHighlightInput] = useState(false)
   const [glowBracketTabs, setGlowBracketTabs] = useState(false)
@@ -91,24 +73,20 @@ function RouteComponent() {
 
   const handleGroupChange = (newGroupId: number) => {
     navigate({
-      to: "/admin/tournaments/$tournamentid/osalejad",
+      to: "/admin/tournaments/$tournamentid/grupid/$groupid/osalejad",
       params: {
         tournamentid: tournamentid,
-      },
-      search: {
-        selectedGroup: newGroupId.toString(),
+        groupid: newGroupId.toString()
       },
     });
   }
 
   if (
-    tournament_data &&
-    tournament_data.data &&
     table_data &&
     table_data.data &&
-    tablesQuery.data?.data
+    tables_data?.data
   ) {
-    const availableTables = tablesQuery.data.data || [];
+    const availableTables = tables_data.data || [];
     const groupIds = table_data.data.stages?.map((stage) => stage.id) || [groupId];
 
     return (
@@ -121,8 +99,7 @@ function RouteComponent() {
           />
         </div>
 
-        {tournament_data &&
-          table_data &&
+        {table_data &&
           participant_data &&
           participant_data.data &&
           table_data.data.group
@@ -162,7 +139,6 @@ function RouteComponent() {
                                   tournamentid,
                                   groupid: stage.id.toString()
                                 },
-                                search: { selectedGroup: undefined }
                               })}
                               className={`py-2 px-2 border-b-2 font-medium text-sm transition-all duration-300 ${groupId === stage.id
                                 ? 'border-blue-500 text-blue-600'
@@ -223,8 +199,8 @@ function RouteComponent() {
   } else {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-        <div className="flex justify-center items-center h-[50vh]">
-          <Loader />
+        <div className="flex justify-center items-center h-[50vh] animate-spin">
+          <Loader2 />
         </div>
       </div>
     )

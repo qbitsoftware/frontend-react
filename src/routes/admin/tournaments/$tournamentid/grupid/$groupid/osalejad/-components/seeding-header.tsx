@@ -110,7 +110,7 @@ const SeedingHeader = ({
           groupid: table_data.id.toString()
         },
         search: {
-          selectedGroup: undefined,
+          filter: undefined,
           openMatch: undefined
         }
       });

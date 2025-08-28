@@ -66,7 +66,7 @@ function RouteComponent() {
         </div> */}
         <TournamentTables
           tables={tournament_tables?.data}
-          tournament={tournament}
+          tournament={tournament.tournamentData}
         />
       </div>
     </div>

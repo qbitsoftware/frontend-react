@@ -6,10 +6,8 @@ interface TournamentContextProps {
   children?: ReactNode
 }
 
-const TournamentContext = createContext<Tournament | undefined>(undefined)
+const TournamentContext = createContext<TournamentContextProps | undefined>(undefined)
 
-
-// eslint-disable-next-line react-refresh/only-export-components
 export const useTournament = () => {
   const context = useContext(TournamentContext)
   if (!context) {
@@ -18,6 +16,17 @@ export const useTournament = () => {
   return context
 }
 
-export const TournamentProvider: React.FC<TournamentContextProps> = ({ tournamentData, children }) => {
-  return <TournamentContext.Provider value={tournamentData}>{children}</TournamentContext.Provider>
+interface ProviderProps {
+  tournamentData: Tournament
+  groupId?: number | null
+  children?: ReactNode
+}
+
+export const TournamentProvider: React.FC<ProviderProps> = ({ tournamentData, children }) => {
+
+  return (
+    <TournamentContext.Provider value={{ tournamentData }}>
+      {children}
+    </TournamentContext.Provider>
+  )
 }

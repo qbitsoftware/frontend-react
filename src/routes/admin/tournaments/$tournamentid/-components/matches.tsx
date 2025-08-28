@@ -10,6 +10,7 @@ import { ProtocolModalProvider } from "@/providers/protocolProvider";
 import { TableTennisProtocolModal } from "./tt-modal/tt-modal";
 import MatchDialog from "@/components/match-dialog";
 import { MatchesTable } from "./matches-table";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import PlacementCompletionModal from "./placement-completion-modal";
 
 interface MatchesProps {
@@ -36,11 +37,13 @@ export const Matches: React.FC<MatchesProps> = ({
   const [selectedMatch, setSelectedMatch] = useState<MatchWrapper | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeParticipant, setActiveParticipant] = useState<string[]>([]);
+  const search = useSearch({ from: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud/" })
   // Change filterValue to array
   const [filterValue, setFilterValue] = useState<FilterOptions[]>(["all"]);
   const [initialTab, setInitialTab] = useState<"regrouping" | "finals">(
     "regrouping"
   );
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -59,6 +62,13 @@ export const Matches: React.FC<MatchesProps> = ({
 
     setActiveParticipant(activeParticipantIds);
   }, [data]);
+
+  useEffect(() => {
+    const urlFilterValue: FilterOptions[] = search.filter
+      ? search.filter.split(',') as FilterOptions[]
+      : ["all"];
+    setFilterValue(urlFilterValue);
+  }, [search.filter]);
 
   useEffect(() => {
     if (selectedMatch) {
@@ -81,27 +91,35 @@ export const Matches: React.FC<MatchesProps> = ({
     }
   }, [openMatchId, data]);
 
-  // Helper to handle checkbox changes
   const handleFilterChange = (value: FilterOptions) => {
     setFilterValue(prev => {
+      let next: FilterOptions[];
       if (value === "all") {
-        return ["all"];
-      }
-      const filtered = prev.filter(v => v !== "all");
-      if (filtered.includes(value)) {
-        // Remove value
-        return filtered.length === 1 ? ["all"] : filtered.filter(v => v !== value);
+        next = ["all"];
       } else {
-        // Add value
-        return [...filtered, value];
+        const filtered = prev.filter(v => v !== "all");
+        if (filtered.includes(value)) {
+          next = filtered.length === 1 ? ["all"] : filtered.filter(v => v !== value);
+        } else {
+          next = [...filtered, value];
+        }
       }
+      navigate({
+        to: '/admin/tournaments/$tournamentid/grupid/$groupid/mangud',
+        params: { tournamentid: String(tournament_id), groupid: String(tournament_table.id) },
+        search: {
+          openMatch: undefined,
+          filter: next.join(","),
+        },
+        replace: true,
+      });
+      return next;
     });
   };
 
   const filteredData = useMemo(() => {
     let filtered;
 
-    // If "all" is selected, show all
     if (filterValue.includes("all")) {
       filtered = data;
     } else {
@@ -139,30 +157,30 @@ export const Matches: React.FC<MatchesProps> = ({
         if (!isTimetableA && !isTimetableB) {
           const roundA = a.match.round || 0;
           const roundB = b.match.round || 0;
-          
+
           // Primary sort: by base round number
           if (roundA !== roundB) {
             return roundA - roundB;
           }
-          
+
           // Secondary sort: by match type - "winner" above "loser" when rounds are equal
           if (a.match.type === "winner" && b.match.type === "loser") return -1;
           if (a.match.type === "loser" && b.match.type === "winner") return 1;
-          
+
           // Tertiary sort: other types go after winner/loser
           const typeOrder = { "winner": 1, "loser": 2 };
           const orderA = typeOrder[a.match.type as keyof typeof typeOrder] || 3;
           const orderB = typeOrder[b.match.type as keyof typeof typeOrder] || 3;
-          
+
           if (orderA !== orderB) {
             return orderA - orderB;
           }
-          
+
           // Quaternary sort: stable sort by match ID to keep new matches at bottom within same tier
           // Higher IDs (newer matches) appear after lower IDs (older matches)
           return a.match.id.localeCompare(b.match.id);
         }
-        
+
         return 0;
       });
     };
@@ -170,12 +188,6 @@ export const Matches: React.FC<MatchesProps> = ({
     const ongoing = sortMatches(validMatches.filter(m => m.match.state === MatchState.ONGOING));
     const created = sortMatches(validMatches.filter(m => m.match.state === MatchState.CREATED));
     const finished = sortMatches(validMatches.filter(m => m.match.state === MatchState.FINISHED));
-
-    // Log the final order of upcoming matches for group view
-    console.log('GROUP VIEW - UPCOMING MATCHES FINAL ORDER:');
-    created.forEach((match, index) => {
-      console.log(`${index + 1}. ${match.p1.name} vs ${match.p2.name} - Round: ${match.match.round}, Type: ${match.match.type}, Bracket: ${match.match.bracket}`);
-    });
 
     // Return early for non-round-robin tournaments
     if (tournament_table.type !== GroupType.DYNAMIC && tournament_table.type !== GroupType.ROUND_ROBIN) {
@@ -430,7 +442,7 @@ export const Matches: React.FC<MatchesProps> = ({
         <PlacementCompletionModal
           matches={data}
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => { }}
         />
       </Card>
     );

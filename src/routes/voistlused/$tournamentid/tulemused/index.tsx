@@ -32,7 +32,7 @@ export const Route = createFileRoute('/voistlused/$tournamentid/tulemused/')({
 
 function RouteComponent() {
   const { tournament_tables } = Route.useLoaderData()
-  const tournament = useTournament();
+  const { tournamentData: tournament } = useTournament();
   const { t } = useTranslation()
   const startDate = formatDateString(tournament.start_date);
 

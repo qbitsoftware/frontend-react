@@ -11,13 +11,13 @@ export const Route = createFileRoute('/voistlused/$tournamentid/lauad/')({
 })
 
 function RouteComponent() {
-    const tournament = useTournament()
+    const { tournamentData: tournament } = useTournament()
     const { data: venues, isLoading } = UseGetFreeVenues(Number(tournament.id), true)
     const { data: tournamentGroups } = UseGetTournamentTablesQuery(Number(tournament.id))
 
     if (isLoading) {
         return <LoadingScreen />;
-      }
+    }
 
     return (
         <div className="min-h-screen">

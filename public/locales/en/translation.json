@@ -557,6 +557,7 @@
       "no_schedule": "No schedule available",
       "standings_missing": "No standings data available yet",
       "no_games": "No games available for that group",
+      "no_games_found": "No games available",
       "winner_unknown": "Unknown",
       "no_groups": "No scheduled games yet",
       "no_table": "Table not available yet"
@@ -1633,7 +1634,7 @@
       "placement": {
         "tournament_complete": "Tournament Complete",
         "first": "1st",
-        "second": "2nd", 
+        "second": "2nd",
         "third": "3rd",
         "th": "th",
         "place": "place",

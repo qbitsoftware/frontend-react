@@ -604,6 +604,7 @@
       "no_schedule": "Ajakava puudub",
       "standings_missing": "Kohad pole veel välja mängitud",
       "no_games": "Mänge pole selles klassis sel päeval",
+      "no_games_found": "Mänge ei leitud",
       "winner_unknown": "Teadmata",
       "no_groups": "Mängude ajakava pole veel saadaval",
       "no_table": "Tabel pole veel saadaval"
@@ -1664,7 +1665,7 @@
       "placement": {
         "tournament_complete": "Mängijatel turniir lõppenud",
         "first": "1.",
-        "second": "2.", 
+        "second": "2.",
         "third": "3.",
         "th": ".",
         "place": "koht",

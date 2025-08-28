@@ -26,7 +26,7 @@ export const Route = createFileRoute("/voistlused/$tournamentid/")({
 });
 
 function RouteComponent() {
-  const tournament = useTournament();
+  const { tournamentData: tournament } = useTournament();
   const { t } = useTranslation();
   const [value, setValue] = useState<YooptaContentValue | undefined>(
     tournament.information ? JSON.parse(tournament.information) : undefined
@@ -148,7 +148,7 @@ function RouteComponent() {
     const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    
+
     if (endDate < now) {
       return {
         text: t('competitions.status.ended'),
@@ -157,7 +157,7 @@ function RouteComponent() {
         dotColor: 'bg-gray-400',
       };
     } else if (startDate <= now && endDate >= now) {
-            return {
+      return {
         text: t('competitions.status.ongoing'),
         color: 'text-yellow-700',
         bgColor: 'bg-yellow-50',

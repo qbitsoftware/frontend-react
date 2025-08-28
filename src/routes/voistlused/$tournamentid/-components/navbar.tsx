@@ -12,11 +12,11 @@ interface Props {
 
 const Navbar = ({ tournament_tables }: Props) => {
   const { t } = useTranslation()
-  
+
   // Get the first available tournament table for direct bracket navigation
   const firstTableId = tournament_tables.length > 0 ? tournament_tables[0].id : null;
   const resultsHref = firstTableId ? `/tulemused/${firstTableId}` : "/tulemused";
-  
+
   const NavLinks = [
     { name: t("competitions.navbar.info"), href: "/" },
     { name: t("competitions.navbar.matches"), href: "/mangud" },
@@ -30,7 +30,7 @@ const Navbar = ({ tournament_tables }: Props) => {
   ];
   const params = useParams({ strict: false });
   const location = useLocation();
-  const tournament = useTournament();
+  const { tournamentData: tournament } = useTournament();
 
   const currentPath = location.pathname;
   const baseUrl = `/voistlused/${params.tournamentid}`;
@@ -71,7 +71,7 @@ const Navbar = ({ tournament_tables }: Props) => {
               <div className="flex items-center justify-center md:justify-start gap-2 text-sm md:text-base lg:text-lg text-blue-100 font-medium">
                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="text-center md:text-left truncate">
-                  {tournament.start_date === tournament.end_date 
+                  {tournament.start_date === tournament.end_date
                     ? formatDateString(tournament.start_date)
                     : `${formatDateString(tournament.start_date)} - ${formatDateString(tournament.end_date)}`
                   }
