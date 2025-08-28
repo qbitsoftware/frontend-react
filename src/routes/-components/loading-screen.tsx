@@ -11,8 +11,8 @@ const LoadingScreen = () => {
     //   />
     // </div>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-      <div className="flex justify-center items-center h-[80vh] animate-spin">
-        <Loader2 />
+      <div className="flex justify-center items-center h-[80vh]">
+        <Loader2 className="animate-spin" />
       </div>
     </div>
   );

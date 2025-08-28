@@ -7,6 +7,7 @@ import {
 } from "@/queries/tables";
 import ErrorPage from "@/components/error";
 import { CompactClassFilters } from "@/routes/admin/tournaments/-components/compact-class-filters";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute(
   "/admin/tournaments/$tournamentid/grupid/$groupid/tabelid/"
@@ -23,15 +24,15 @@ function RouteComponent() {
   const groupId = Number(params.groupid);
 
   const {
-    data: bracketsData,
+    data: bracketsData, isLoading: isLoading1
   } = UseGetBracketQuery(tournamentId, groupId);
 
-  const { data: tournamentTableData } = UseGetTournamentTableQuery(
+  const { data: tournamentTableData, isLoading: isLoading2 } = UseGetTournamentTableQuery(
     tournamentId,
     groupId
   );
 
-  const tablesQuery = UseGetTournamentTablesQuery(tournamentId);
+  const { data: tables_data, isLoading: isLoading3 } = UseGetTournamentTablesQuery(tournamentId);
 
   const handleGroupChange = (newGroupId: number) => {
     navigate({
@@ -43,8 +44,8 @@ function RouteComponent() {
     });
   };
 
-  if (tablesQuery && tablesQuery.data && tournamentTableData) {
-    const availableTables = tablesQuery.data.data || [];
+  if (tables_data && tables_data.data && tournamentTableData) {
+    const availableTables = tables_data.data || [];
     const groupIds = tournamentTableData.data.stages?.map((stage) => stage.id) || [groupId];
 
     return (
@@ -94,5 +95,23 @@ function RouteComponent() {
       </div>
     );
 
+  } else if (isLoading1 || isLoading2 || isLoading3) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex justify-center items-center h-[50vh]">
+          <Loader2 className="animate-spin" />
+        </div>
+      </div>
+    )
+  } else {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex justify-center items-center h-48">
+          <span className="text-gray-400 text-base font-medium">
+            Tabeli andmete laadimisel tekkis viga.
+          </span>
+        </div>
+      </div>
+    )
   }
 }
