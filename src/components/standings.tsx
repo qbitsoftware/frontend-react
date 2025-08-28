@@ -89,7 +89,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
   const isRoundRobin = tournament_table.type === GroupType.ROUND_ROBIN || tournament_table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT
 
   if (isRoundRobin) {
-    const groupNames = filteredParticipants.filter(p => !p.group_id)
+    // const groupNames = filteredParticipants.filter(p => !p.group_id)
 
     const groupedParticipants = filteredParticipants
       .filter(p => p.group_id)
@@ -102,12 +102,12 @@ const Standings = ({ participants, tournament_table }: Props) => {
         return acc
       }, {} as Record<string, Participant[]>)
 
-    const groupIdToName = groupNames.reduce((acc, group) => {
-      if (group.id) {
-        acc[group.id.toString()] = group.name
-      }
-      return acc
-    }, {} as Record<string, string>)
+    // const groupIdToName = groupNames.reduce((acc, group) => {
+    //   if (group.id) {
+    //     acc[group.id.toString()] = group.name
+    //   }
+    //   return acc
+    // }, {} as Record<string, string>)
 
     const sortedGroupIds = Object.keys(groupedParticipants).sort((a, b) => Number(a) - Number(b))
 
@@ -155,23 +155,54 @@ const Standings = ({ participants, tournament_table }: Props) => {
         </div>
         {sortedGroupIds && sortedGroupIds.map((groupId) => (
           <div key={groupId} className="bg-white rounded-lg shadow-sm border">
-            <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg border-b">
-              <h3 className="font-semibold text-gray-800">
-                {groupIdToName[groupId] || t("competitions.standings.subgroup")}
-              </h3>
-            </div>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-16">{t("competitions.standings.placement")}</TableHead>
                   <TableHead>{t("competitions.standings.participants")}</TableHead>
+                  <TableHead>{t("competitions.standings.rating")}</TableHead>
+                  <TableHead>ELTL ID</TableHead>
+                  <TableHead>{t("competitions.standings.sex")}</TableHead>
+                  <TableHead>{t("competitions.standings.yob")}</TableHead>
+                  <TableHead>{t("competitions.standings.club")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {groupedParticipants && groupedParticipants[groupId].map((participant, index) => (
                   <TableRow key={participant.id || index} className="hover:bg-gray-50">
                     <TableCell className="w-16 font-medium">{index + 1}</TableCell>
-                    <TableCell>{participant.name} {tournament_table.woman_weight}</TableCell>
+                    <TableCell className="flex items-center space-x-3">
+                      <Avatar className="w-8 h-8 flex-shrink-0">
+                        <AvatarImage src={participant.players?.[0]?.extra_data?.image_url || ""} alt={`${participant.name}'s profile`} />
+                        <AvatarFallback className="p-0">
+                          <img src={placeholderImg} className="rounded-full h-full w-full object-cover" alt="Profile" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{participant.name}</span>
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const player = participant.players?.[0]
+                        const baseRating = player?.rank || 0
+                        const effectiveRating = getEffectiveRating(participant)
+                        
+                        if (baseRating === 0) return "-"
+                        
+                        if (player?.sex === "N" && tournament_table.woman_weight && baseRating > 0) {
+                          return (
+                            <span>
+                              {baseRating} <span className="text-gray-500 text-sm">({effectiveRating})</span>
+                            </span>
+                          )
+                        }
+                        
+                        return baseRating
+                      })()}
+                    </TableCell>
+                    <TableCell>{participant.players?.[0]?.extra_data?.eltl_id}</TableCell>
+                    <TableCell>{participant.players?.[0]?.sex}</TableCell>
+                    <TableCell>{participant.players?.[0]?.birthdate?.slice(0, 4)}</TableCell>
+                    <TableCell>{participant.players?.[0]?.extra_data?.club}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
