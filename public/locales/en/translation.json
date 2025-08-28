@@ -510,7 +510,22 @@
     },
     "standings": {
       "placement": "Placement",
-      "participants": "Participants"
+      "participants": "Participants",
+      "rating": "Rating",
+      "sex": "Sex",
+      "yob": "YOB",
+      "club": "Club",
+      "subgroup": "Subgroup",
+      "filter": {
+        "all_ratings": "All ratings",
+        "rating_plus": "{{rating}}+",
+        "rating_placeholder": "Filter by rating",
+        "all_sexes": "All",
+        "men": "Men",
+        "women": "Women",
+        "sex_placeholder": "Filter by sex",
+        "age_placeholder": "Filter by age"
+      }
     },
     "timetable": {
       "table": "Table",
@@ -693,6 +708,12 @@
       "select": {
         "options": {
           "all": "All age groups",
+          "u9": "U9",
+          "u11": "U11",
+          "u13": "U13",
+          "u15": "U15",
+          "u19": "U19",
+          "u21": "U21",
           "boys_u9": "Boys U9",
           "girls_u9": "Girls U9",
           "boys_u11": "Boys U11",
@@ -703,6 +724,8 @@
           "girls_u15": "Girls U15",
           "boys_u19": "Boys U19",
           "girls_u19": "Girls U19",
+          "boys_u21": "Boys U21",
+          "girls_u21": "Girls U21",
           "seniors_men": "Seniors - Men",
           "seniors_women": "Seniors - Women"
         }

@@ -557,7 +557,22 @@
     },
     "standings": {
       "placement": "Koht",
-      "participants": "Osalejad"
+      "participants": "Osalejad",
+      "rating": "Reitingukoht",
+      "sex": "Sugu",
+      "yob": "Sünniaasta",
+      "club": "Klubi",
+      "subgroup": "Alagrupp",
+      "filter": {
+        "all_ratings": "Kõik reitingud",
+        "rating_plus": "{{rating}}+",
+        "rating_placeholder": "Filtreeri reitingu järgi",
+        "all_sexes": "Kõik",
+        "men": "Mehed",
+        "women": "Naised",
+        "sex_placeholder": "Filtreeri soo järgi",
+        "age_placeholder": "Filtreeri vanuse järgi"
+      }
     },
     "timetable": {
       "table": "Laud",
@@ -567,7 +582,7 @@
       "match_details": "Mängu detailid",
       "player_1": "Mängija 1",
       "player_2": "Mängija 2",
-      "group": "Grupp",
+      "group": "Klass",
       "round": "Ring",
       "type": "Tüüp",
       "play_off": "Play-off",
@@ -738,7 +753,13 @@
       },
       "select": {
         "options": {
-          "all": "Kõik vanuserühmad",
+          "all": "Vanuseklassid",
+          "u9": "U9",
+          "u11": "U11",
+          "u13": "U13",
+          "u15": "U15",
+          "u19": "U19",
+          "u21": "U21",
           "boys_u9": "Poisid U9",
           "girls_u9": "Tüdrukud U9",
           "boys_u11": "Poisid U11",

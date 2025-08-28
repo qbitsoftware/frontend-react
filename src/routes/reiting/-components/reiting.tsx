@@ -10,26 +10,16 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect, useRef } from "react";
 import {
   filterByAgeClass,
+  filterByGender,
   modifyTitleDependingOnFilter,
 } from "@/lib/rating-utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Calculator, Info } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Info } from "lucide-react";
 import { User } from "@/types/users";
 import { UseGetClubsQuery } from "@/queries/clubs";
 import { Link } from "@tanstack/react-router";
@@ -39,12 +29,13 @@ import RatingCalculator from "./rating-calc";
 import UserRow from "./user-row";
 import { Club } from "@/types/clubs";
 import UserRowSkeleton from "./user-row-skeleton";
+import { RatingFilters } from "@/components/rating-filters";
 
 
 export function Reiting() {
   const { t } = useTranslation();
 
-  const [activeTab, setActiveTab] = useState("men");
+  const [gender, setGender] = useState("M");
   const [ageClass, setAgeClass] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [SelectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
@@ -72,40 +63,12 @@ export function Reiting() {
   const windowScrollRef = useRef(0);
 
 
-  const getSexAndCombined = (tab: string) => {
-    switch (tab) {
-      case "men":
-        return { sex: "M", showCombined: false };
-      case "women":
-        return { sex: "N", showCombined: false };
-      case "combined":
-        return { sex: "", showCombined: true };
-      default:
-        return { sex: "M", showCombined: false };
-    }
-  };
-
-  const { sex, showCombined } = getSexAndCombined(activeTab);
-
   const handleAgeClassChange = (value: string) => {
     setAgeClass(value);
-
-    if (["boys_u9", "boys_u11", "boys_u13", "boys_u15", "boys_u19"].includes(value)) {
-      setActiveTab("men");
-    } else if (
-      ["girls_u9", "girls_u11", "girls_u13", "girls_u15", "girls_u19"].includes(value)
-    ) {
-      setActiveTab("women");
-    } else {
-      setActiveTab("combined");
-    }
   };
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    if (value === "combined") {
-      setAgeClass("all");
-    }
+  const handleGenderChange = (value: string) => {
+    setGender(value);
   };
 
   useEffect(() => {
@@ -135,8 +98,8 @@ export function Reiting() {
 
   const filteredUsers = users
     .filter((user) => {
-      const matchesSex = showCombined || sex === "" || user.sex === sex;
-      const matchesAgeClass = showCombined || filterByAgeClass(user, ageClass);
+      const matchesGender = filterByGender(user, gender);
+      const matchesAgeClass = filterByAgeClass(user, ageClass);
       const hasELTLId = user.eltl_id != 0;
 
       const searchLower = searchQuery.toLowerCase().trim();
@@ -164,7 +127,7 @@ export function Reiting() {
       const isEstonianPlayer = hasELTLId && user.rate_order > 0;
       const isForeigner = showForeigners && user.rate_order === 0 && user.foreigner === 1;
 
-      return matchesSex && matchesAgeClass && matchesSearchQuery && (isEstonianPlayer || isForeigner);
+      return matchesGender && matchesAgeClass && matchesSearchQuery && (isEstonianPlayer || isForeigner);
     })
     .sort((a, b) => {
       if (a.rate_order > 0 && b.rate_order > 0) {
@@ -207,7 +170,7 @@ export function Reiting() {
           <div className="flex items-center gap-4 pb-6 border-b border-gray-200/50">
             <div className="w-1 h-8 bg-[#4C97F1] rounded-full"></div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {modifyTitleDependingOnFilter(t, showCombined, sex, ageClass)}
+              {modifyTitleDependingOnFilter(t, gender, ageClass)}
             </h2>
           </div>
           <p className="font-medium pb-1 text-sm sm:text-base">
@@ -252,173 +215,20 @@ export function Reiting() {
         </div>
 
         <div className="mt-5 border rounded-t-[12px]">
-          <div className="border-b border-stone-200 bg-[#EBEFF5] rounded-t-[12px] flex flex-col gap-3 sm:gap-4 lg:grid lg:grid-cols-12 lg:gap-4 items-stretch lg:items-center w-full p-3 sm:p-4 lg:p-1 mb-1">
-            <div className="w-full lg:col-span-3 flex flex-row gap-2">
-              <Button
-                onClick={() => setIsRatingCalculatorOpen(true)}
-                className="bg-[#4C97F1] hover:bg-[#4C97F1]/90 text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
-              >
-                <Calculator className="h-3 w-3 shrink-0" />
-                <span className="hidden sm:inline">
-                  {t("rating.calculator.button")}
-                </span>
-                <span className="sm:hidden">
-                  {t("rating.calculator.button_short", "Calculator")}
-                </span>
-              </Button>
-              <Button
-                onClick={() => setIsRatingInfoOpen(true)}
-                variant="outline"
-                className="border-[#4C97F1] text-[#4C97F1] hover:bg-[#4C97F1] hover:text-white px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 flex-1 min-w-0"
-              >
-                <Info className="h-3 w-3 shrink-0" />
-                <span className="hidden sm:inline truncate ">
-                  {t("rating.calculator.info_button")}
-                </span>
-                <span className="sm:hidden">
-                  {t("rating.calculator.info_button_short", "Info")}
-                </span>
-              </Button>
-            </div>
-            <div className="relative w-full lg:col-span-3">
-              <Input
-                type="text"
-                placeholder={t("rating.filtering.search_placeholder")}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 sm:h-12 w-full pl-4 pr-10 py-2 border rounded-lg text-xs sm:text-sm bg-[#F7F6F7] focus:outline-none focus:ring-1 focus:ring-gray-300"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
-            </div>
-
-            <div className="w-full lg:col-span-3">
-              <Select value={ageClass} onValueChange={handleAgeClassChange}>
-                <SelectTrigger className="w-full h-10 sm:h-12 flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm bg-[#F7F6F7]">
-                  <SelectValue
-                    placeholder={t("rating.filtering.select.options.all")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {t("rating.filtering.select.options.all")}
-                  </SelectItem>
-                  <SelectItem value="boys_u9">
-                    {t("rating.filtering.select.options.boys_u9")}
-                  </SelectItem>
-                  <SelectItem value="girls_u9">
-                    {t("rating.filtering.select.options.girls_u9")}
-                  </SelectItem>
-                  <SelectItem value="boys_u11">
-                    {t("rating.filtering.select.options.boys_u11")}
-                  </SelectItem>
-                  <SelectItem value="girls_u11">
-                    {t("rating.filtering.select.options.girls_u11")}
-                  </SelectItem>
-                  <SelectItem value="boys_u13">
-                    {t("rating.filtering.select.options.boys_u13")}
-                  </SelectItem>
-                  <SelectItem value="girls_u13">
-                    {t("rating.filtering.select.options.girls_u13")}
-                  </SelectItem>
-                  <SelectItem value="boys_u15">
-                    {t("rating.filtering.select.options.boys_u15")}
-                  </SelectItem>
-                  <SelectItem value="girls_u15">
-                    {t("rating.filtering.select.options.girls_u15")}
-                  </SelectItem>
-                  <SelectItem value="boys_u19">
-                    {t("rating.filtering.select.options.boys_u19")}
-                  </SelectItem>
-                  <SelectItem value="girls_u19">
-                    {t("rating.filtering.select.options.girls_u19")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Mobile gender dropdown and foreigners checkbox row */}
-            <div className="w-full flex gap-2 lg:hidden">
-              <div className="flex-1">
-                <Select value={activeTab} onValueChange={handleTabChange}>
-                  <SelectTrigger className="w-full h-10 flex items-center space-x-2 px-3 py-2 rounded-lg border text-xs bg-[#F7F6F7]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="women">
-                      {t("rating.filtering.buttons.women")}
-                    </SelectItem>
-                    <SelectItem value="men">
-                      {t("rating.filtering.buttons.men")}
-                    </SelectItem>
-                    <SelectItem value="combined">
-                      {t("rating.filtering.buttons.combined")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex items-center space-x-2 px-3 py-2 rounded-lg border bg-[#F7F6F7] text-xs sm:text-sm hover:bg-gray-100 transition-colors">
-                <Checkbox 
-                  id="show-foreigners-mobile"
-                  checked={showForeigners}
-                  onCheckedChange={(checked) => setShowForeigners(checked === true)}
-                  className="data-[state=checked]:bg-[#4C97F1] data-[state=checked]:border-[#4C97F1]"
-                />
-                <label 
-                  htmlFor="show-foreigners-mobile" 
-                  className="text-xs cursor-pointer whitespace-nowrap select-none"
-                >
-                  {t("rating.filtering.show_foreigners", "Show foreigners")}
-                </label>
-              </div>
-            </div>
-
-            <div className="w-full lg:col-span-3 hidden lg:flex gap-2">              
-              <div className="flex items-center space-x-2 h-12 px-4 py-2 rounded-lg border bg-[#F7F6F7] text-sm hover:bg-gray-100 transition-colors w-fit">
-                <Checkbox 
-                  id="show-foreigners-desktop"
-                  checked={showForeigners}
-                  onCheckedChange={(checked) => setShowForeigners(checked === true)}
-                  className="data-[state=checked]:bg-[#4C97F1] data-[state=checked]:border-[#4C97F1]"
-                />
-                <label 
-                  htmlFor="show-foreigners-desktop" 
-                  className="text-sm cursor-pointer whitespace-nowrap select-none"
-                >
-                  {t("rating.filtering.show_foreigners", "Show foreigners")}
-                </label>
-              </div>
-            </div>
-
-            <div className="w-full lg:col-span-4 hidden sm:block">
-              <Tabs
-                defaultValue="men"
-                value={activeTab}
-                onValueChange={handleTabChange}
-                className="w-full"
-              >
-                <TabsList className="justify-start w-full rounded-[2px] py-1.5 sm:py-2 gap-0.5 sm:gap-1 h-10 sm:h-auto">
-                  <TabsTrigger
-                    value="women"
-                    className="rounded-[4px] flex-1 text-xs sm:text-sm px-2 sm:px-3"
-                  >
-                    {t("rating.filtering.buttons.women")}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="men"
-                    className="rounded-[4px] flex-1 text-xs sm:text-sm px-2 sm:px-3"
-                  >
-                    {t("rating.filtering.buttons.men")}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="combined"
-                    className="rounded-[4px] flex-1 text-xs sm:text-sm px-2 sm:px-3"
-                  >
-                    {t("rating.filtering.buttons.combined")}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-          </div>
+          <RatingFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            ageClass={ageClass}
+            onAgeClassChange={handleAgeClassChange}
+            gender={gender}
+            onGenderChange={handleGenderChange}
+            showForeigners={showForeigners}
+            onShowForeignersChange={setShowForeigners}
+            showCalculator
+            onCalculatorClick={() => setIsRatingCalculatorOpen(true)}
+            showInfo
+            onInfoClick={() => setIsRatingInfoOpen(true)}
+          />
 
           <div className="w-full overflow-auto rounded-t-md max-h-[70vh]">
             <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg">

@@ -365,7 +365,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                 : round === 4
                                     ? t("admin.tournaments.matches.table.semifinal")
                                     : round === 2
-                                        ? t("admin.tournaments.matches.table.final")
+                                        ? (rowData.match.bracket === '1-2' 
+                                            ? t("admin.tournaments.matches.table.final")
+                                            : rowData.match.bracket === '3-4'
+                                                ? '3-4'
+                                                : t("admin.tournaments.matches.table.final"))
                                         : round)
                         : rowData.match.type === "loser"
                             ? `-> ${rowData.match.next_loser_bracket}`
@@ -415,7 +419,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
                         {all && (
                             <Column
-                                label="Grupp"
+                                label={t("admin.tournaments.matches.table.class")}
                                 dataKey="group"
                                 width={100}
                                 flexGrow={0}
