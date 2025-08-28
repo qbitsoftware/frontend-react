@@ -165,7 +165,7 @@ function RouteComponent() {
                             onClick={e => {
                               if (!first_tournament_table) {
                                 e.preventDefault();
-                                toast.error("You need to create a tournament class first");
+                                toast.error(t('admin.tournaments.create_tournament.errors.create_tournament_class'));
                               }
                             }}
                           >
@@ -185,7 +185,7 @@ function RouteComponent() {
                             onClick={e => {
                               if (!first_tournament_table) {
                                 e.preventDefault();
-                                toast.error("You need to create a tournament class first");
+                                toast.error(t('admin.tournaments.create_tournament.errors.create_tournament_class'));
                               }
                             }}
                           >
@@ -202,7 +202,7 @@ function RouteComponent() {
                             onClick={e => {
                               if (!first_tournament_table) {
                                 e.preventDefault();
-                                toast.error("You need to create a tournament class first");
+                                toast.error(t('admin.tournaments.create_tournament.errors.create_tournament_class'));
                               }
                             }}
                           >

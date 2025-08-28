@@ -1093,7 +1093,8 @@
           "rating_coef_min": "Rating coefficient must be at least 1",
           "rating_coef_max": "Rating coefficient must be at most 2",
           "registration_type": "Registration type is required",
-          "invalid_url": "URL must start with https:// or http://"
+          "invalid_url": "URL must start with https:// or http://",
+          "create_tournament_class": "You need to create a tournament class first"
         },
         "tournament_tables": {
           "single_elimination": "Single Elimination (No bronze)",

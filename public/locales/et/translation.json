@@ -1123,7 +1123,8 @@
           "rating_coef_min": "Reitingu koefitsient peab olema suurem kui 1",
           "rating_coef_max": "Reitingu koefitsient peab olema maksimaalselt 2",
           "registration_type": "Registreerimise tüüp on kohustuslik",
-          "invalid_url": "URL peab algama https:// või http://"
+          "invalid_url": "URL peab algama https:// või http://",
+          "create_tournament_class": "Peate looma vähemalt ühe võistlusklassi"
         },
         "tournament_tables": {
           "single_elimination": "Klassikaline Üksikeliminatsioon",
