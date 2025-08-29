@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
@@ -170,7 +170,8 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.refetchQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
-            queryClient.resetQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
+            // queryClient.resetQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
+            queryClient.refetchQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
             // 'matches_group', group_id
             queryClient.invalidateQueries({ queryKey: ['venues', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
@@ -398,10 +399,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             <AutoSizer>
                 {({ height, width }) => (
                     <Table
+                        key={JSON.stringify(matches.map(m => m.match.id + JSON.stringify(m.match)))}
                         width={Math.max(width, 750)}
                         height={height}
                         headerHeight={40}
-                        rowHeight={48}
+                        rowHeight={40}
                         rowCount={matches.length}
                         rowGetter={({ index }) => matches[index]}
                         rowClassName={({ index }) =>

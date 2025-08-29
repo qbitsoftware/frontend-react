@@ -40,7 +40,7 @@ function RouteComponent() {
   const { data: tablesQuery, isLoading: isLoadingTables } = UseGetTournamentTablesQuery(Number(params.tournamentid))
   const { t } = useTranslation()
   const { groupId } = useNavigationHelper();
-  const { data: matchData, isLoading: isLoadingMatches, isFetching: isFetchingMatches } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
+  const { data: matchData, isLoading: isLoadingMatches } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
 
   const tableMap = useMemo(() => {
     return new Map(
@@ -200,7 +200,7 @@ function RouteComponent() {
     )
   }
 
-  if (isLoadingMatches || isFetchingMatches) {
+  if (isLoadingMatches) {
     return (
       <div className=''>
         < CompactClassFilters
