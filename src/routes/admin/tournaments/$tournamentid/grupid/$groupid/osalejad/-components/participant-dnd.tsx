@@ -36,7 +36,7 @@ interface Props {
 }
 
 export default function ParticipantDND({ participant, index, disableOrdering, setDisableOrdering, forceDisableOrdering, tournament_id, tournament_table, participants_len, selectedTeams, setSelectedTeams, renderRR, isSecondary }: Props) {
-
+    void index;
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: participant.id })
 
     const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
@@ -240,7 +240,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                         {...attributes}
                         {...listeners}
                     >
-                        {index + 1}
+                        {participantState.order}
                         <GripVertical className="h-2.5 w-2.5" />
                     </div>
                 }

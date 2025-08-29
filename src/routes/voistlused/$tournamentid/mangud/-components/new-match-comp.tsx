@@ -133,7 +133,7 @@ const ITTFMatchComponent = ({ match, table_data }: ITTFMatchComponentProps) => {
               {match.match.extra_data.table && (
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <span className="font-medium">
-                    Table {match.match.extra_data.table}
+                    {t('admin.tournaments.matches.table.table')} {match.match.extra_data.table}
                   </span>
                 </div>
               )}
@@ -212,7 +212,7 @@ const ITTFMatchUserComponent = ({
       <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 flex-shrink-0">
         {/* Set Scores */}
         {match.match.extra_data.score &&
-          match.match.extra_data.score.length > 0 && (
+          match.match.extra_data.score.length > 0 && !match.match.forfeit && (
             <div className="flex gap-0.5 sm:gap-1 lg:gap-1.5">
               {!match.match.use_sets && match.match.extra_data.score.map((set, index) => {
                 const score = playerNumber === 1 ? set.p1_score : set.p2_score;
