@@ -170,7 +170,8 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.refetchQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
+            queryClient.resetQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
+            // 'matches_group', group_id
             queryClient.invalidateQueries({ queryKey: ['venues', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
             queryClient.refetchQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
@@ -365,7 +366,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                                 : round === 4
                                     ? t("admin.tournaments.matches.table.semifinal")
                                     : round === 2
-                                        ? (rowData.match.bracket === '1-2' 
+                                        ? (rowData.match.bracket === '1-2'
                                             ? t("admin.tournaments.matches.table.final")
                                             : rowData.match.bracket === '3-4'
                                                 ? '3-4'
