@@ -141,7 +141,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter className="p-4 border-t text-center border-gray-200">
-                <div className="text-sm text-gray-500">© {new Date().getFullYear()} ELTA</div>
+                <div className="text-sm text-gray-500">© {new Date().getFullYear()} ELTL</div>
             </SidebarFooter>
         </Sidebar>
     )
