@@ -787,7 +787,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                   />
                 </div>
 
-                {/* Rating Coefficient */}
+{/* 
                 <FormField
                   control={form.control}
                   name="rating_coef"
@@ -830,6 +830,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                     </FormItem>
                   )}
                 />
+                */}
               </div>
 
               {/* Additional Information Section */}

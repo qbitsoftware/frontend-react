@@ -526,6 +526,7 @@
     "tables": "Laudu kokku",
     "bracket": "Tabelid",
     "play_off": "Kohamängud",
+    "print_qr_code": "Prindi QR kood",
     "participants": {
       "search": "Otsi nime",
       "title": "Mängijad",

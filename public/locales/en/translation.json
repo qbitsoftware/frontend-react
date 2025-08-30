@@ -479,6 +479,7 @@
     "tables": "Total tables",
     "bracket": "Bracket",
     "play_off": "Play-off",
+    "print_qr_code": "Print QR Code",
     "participants": {
       "search": "Search",
       "title": "Participants",

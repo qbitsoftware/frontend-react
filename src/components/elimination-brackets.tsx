@@ -7,9 +7,10 @@ import { Separator } from "./ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { useRef, useState } from "react";
 import { Button } from "./ui/button";
-import { Printer } from "lucide-react";
+import { Printer, QrCode } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PDFPreviewModal } from "./pdf-preview-modal";
+import { printQRCodeToBlankSheet } from "@/lib/qr-print";
 
 interface TournamentTableProps {
   admin?: boolean;
@@ -33,8 +34,38 @@ export const EliminationBrackets = ({
     setShowPreview(true);
   };
 
+  const handlePrintQR = async () => {
+    const currentUrl = window.location.href;
+    const groupName = tournament_table.class || "Tournament Bracket";
+
+    const url = new URL(currentUrl);
+    const pathSegments = url.pathname.split("/");
+
+    if (pathSegments[1] === "admin" && pathSegments[2] === "tournaments") {
+      const tournamentId = pathSegments[3];
+      const groupId = pathSegments[5];
+
+      if (tournamentId && groupId) {
+        const publicUrl = `${url.origin}/voistlused/${tournamentId}/tulemused/${groupId}`;
+
+        try {
+          await printQRCodeToBlankSheet(publicUrl, groupName);
+          return;
+        } catch (error) {
+          console.error("Failed to print QR code:", error);
+        }
+      }
+    }
+
+    try {
+      await printQRCodeToBlankSheet(currentUrl, groupName);
+    } catch (error) {
+      console.error("Failed to print QR code:", error);
+    }
+  };
+
   return (
-    <div className='border-grey-200 border rounded-t-lg'>
+    <div className="border-grey-200 border rounded-t-lg">
       <div className="z-40 top-0 w-full hide-in-pdf">
         <div className="px-0 w-full bg-[#F8F9FA] rounded-t-lg pdf-background">
           <div className="flex flex-col sm:flex-row sm:items-center px-2 py-3 gap-3 sm:gap-4">
@@ -53,12 +84,14 @@ export const EliminationBrackets = ({
                         onClick={() => {
                           const container = scrollContainerRef.current;
                           const targetElement = document.getElementById(
-                            item.elimination[0].name,
+                            item.elimination[0].name
                           );
 
                           if (container && targetElement) {
-                            const containerRect = container.getBoundingClientRect();
-                            const targetRect = targetElement.getBoundingClientRect();
+                            const containerRect =
+                              container.getBoundingClientRect();
+                            const targetRect =
+                              targetElement.getBoundingClientRect();
                             const scrollTop =
                               targetRect.top -
                               containerRect.top +
@@ -81,16 +114,28 @@ export const EliminationBrackets = ({
               </Tabs>
             </div>
 
-            <Button
-              variant="outline"
-              className="hidden sm:flex flex-shrink-0 order-1 sm:order-2 self-end sm:self-auto"
-              onClick={handlePrint}
-            >
-              <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-xs sm:text-sm">
-                {t("admin.tournaments.groups.tables.print")}
-              </span>
-            </Button>
+            <div className="flex gap-2 order-1 sm:order-2">
+              <Button
+                variant="outline"
+                className="hidden sm:flex flex-shrink-0 self-end sm:self-auto"
+                onClick={handlePrintQR}
+              >
+                <QrCode className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">
+                  {t("competitions.print_qr_code")}
+                </span>
+              </Button>
+              <Button
+                variant="outline"
+                className="hidden sm:flex flex-shrink-0 self-end sm:self-auto"
+                onClick={handlePrint}
+              >
+                <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">
+                  {t("admin.tournaments.groups.tables.print")}
+                </span>
+              </Button>
+            </div>
           </div>
           <Separator className="border-gray-300" />
         </div>
@@ -109,7 +154,9 @@ export const EliminationBrackets = ({
 
               return (
                 <div key={uniqueKey}>
-                  <div className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, '-').toLowerCase()}`}>
+                  <div
+                    className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
+                  >
                     {table.name}
                   </div>
                   {table.name !== BracketType.MIINUSRING ? (
@@ -146,9 +193,12 @@ export const EliminationBrackets = ({
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}
         containerId="bracket-container"
-        title={tournament_table ? `${tournament_table.class} Tournament` : "Tournament Bracket"}
+        title={
+          tournament_table
+            ? `${tournament_table.class} Tournament`
+            : "Tournament Bracket"
+        }
       />
     </div>
   );
 };
-
