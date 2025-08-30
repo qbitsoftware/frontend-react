@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { TournamentProvider } from "@/routes/voistlused/$tournamentid/-components/tournament-provider";
 import { useNavigationHelper } from "@/providers/navigationProvider";
 import { NavbarButtonSkeleton } from "./-components/navbar-skeleton";
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
   component: RouteComponent,
@@ -43,7 +43,7 @@ function RouteComponent() {
   const { tournamentid } = Route.useParams();
   const { t } = useTranslation();
   const { data, isLoading } = UseGetTournamentTablesQuery(Number(tournamentid));
-  const { groupId } = useNavigationHelper()
+  const { groupId } = useNavigationHelper();
 
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -99,11 +99,13 @@ function RouteComponent() {
         ? "brackets"
         : location.pathname.includes("/ajakava")
           ? "schedule"
-          : location.pathname.includes("/grupid")
-            ? "groups"
-            : location.pathname.includes("/pildid")
-              ? "images"
-              : "info";
+          : location.pathname.includes("/kohad")
+            ? "finalplacement"
+            : location.pathname.includes("/grupid")
+              ? "groups"
+              : location.pathname.includes("/pildid")
+                ? "images"
+                : "info";
 
   return (
     <>
@@ -125,9 +127,13 @@ function RouteComponent() {
                   {tournament_data.data?.name}
                 </h5>
               </div>
-              <div className={`relative w-full lg:w-auto ${showGroupsDropdown ? 'overflow-visible' : 'overflow-visible overflow-x-auto'}`}>
+              <div
+                className={`relative w-full lg:w-auto ${showGroupsDropdown ? "overflow-visible" : "overflow-visible overflow-x-auto"}`}
+              >
                 <Tabs value={currentTab} className="w-full lg:w-auto">
-                  <div className={`w-full ${showGroupsDropdown ? 'overflow-visible' : 'overflow-x-auto overflow-y-visible'}`}>
+                  <div
+                    className={`w-full ${showGroupsDropdown ? "overflow-visible" : "overflow-x-auto overflow-y-visible"}`}
+                  >
                     <TabsList className="p-1 md:p-0 flex flex-row justify-start items-center gap-1 px-1 min-w-max">
                       <Link to={`/admin/tournaments/${tournamentid}`}>
                         <TabsTrigger
@@ -161,11 +167,19 @@ function RouteComponent() {
                       ) : (
                         <>
                           <Link
-                            to={groupId ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/osalejad` : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/osalejad`}
-                            onClick={e => {
+                            to={
+                              groupId
+                                ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/osalejad`
+                                : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/osalejad`
+                            }
+                            onClick={(e) => {
                               if (!first_tournament_table) {
                                 e.preventDefault();
-                                toast.error(t('admin.tournaments.create_tournament.errors.create_tournament_class'));
+                                toast.error(
+                                  t(
+                                    "admin.tournaments.create_tournament.errors.create_tournament_class"
+                                  )
+                                );
                               }
                             }}
                           >
@@ -181,11 +195,19 @@ function RouteComponent() {
                           </Link>
 
                           <Link
-                            to={groupId ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/mangud` : `/admin/tournaments/${tournamentid}/mangud`}
-                            onClick={e => {
+                            to={
+                              groupId
+                                ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/mangud`
+                                : `/admin/tournaments/${tournamentid}/mangud`
+                            }
+                            onClick={(e) => {
                               if (!first_tournament_table) {
                                 e.preventDefault();
-                                toast.error(t('admin.tournaments.create_tournament.errors.create_tournament_class'));
+                                toast.error(
+                                  t(
+                                    "admin.tournaments.create_tournament.errors.create_tournament_class"
+                                  )
+                                );
                               }
                             }}
                           >
@@ -193,16 +215,27 @@ function RouteComponent() {
                               value="matches"
                               className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                             >
-                              {t("admin.tournaments.groups.layout.games", "Mängud")}
+                              {t(
+                                "admin.tournaments.groups.layout.games",
+                                "Mängud"
+                              )}
                             </TabsTrigger>
                           </Link>
 
                           <Link
-                            to={groupId ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/tabelid` : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/tabelid`}
-                            onClick={e => {
+                            to={
+                              groupId
+                                ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/tabelid`
+                                : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/tabelid`
+                            }
+                            onClick={(e) => {
                               if (!first_tournament_table) {
                                 e.preventDefault();
-                                toast.error(t('admin.tournaments.create_tournament.errors.create_tournament_class'));
+                                toast.error(
+                                  t(
+                                    "admin.tournaments.create_tournament.errors.create_tournament_class"
+                                  )
+                                );
                               }
                             }}
                           >
@@ -210,11 +243,39 @@ function RouteComponent() {
                               value="brackets"
                               className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
                             >
-                              {t("admin.tournaments.groups.layout.tables", "Tabelid")}
+                              {t(
+                                "admin.tournaments.groups.layout.tables",
+                                "Tabelid"
+                              )}
                             </TabsTrigger>
                           </Link>
                         </>
                       )}
+                      <Link
+                        to={
+                          groupId
+                            ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/kohad`
+                            : `/admin/tournaments/${tournamentid}/kohad`
+                        }
+                        onClick={(e) => {
+                          if (!first_tournament_table) {
+                            e.preventDefault();
+                            toast.error(
+                              t(
+                                "admin.tournaments.create_tournament.errors.create_tournament_class"
+                              )
+                            );
+                          }
+                        }}
+                      >
+                        <TabsTrigger
+                          value="finalplacement"
+                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                        >
+                          {t("competitions.navbar.standings")}
+                        </TabsTrigger>
+                      </Link>
+
                       <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
                         <TabsTrigger
                           value="schedule"
@@ -231,39 +292,36 @@ function RouteComponent() {
                           {t("admin.layout.images")}
                         </TabsTrigger>
                       </Link>
-
                     </TabsList>
                   </div>
                 </Tabs>
 
-                {showGroupsDropdown &&
-                  data &&
-                  data.data && (
-                    <div
-                      ref={dropdownRef}
-                      className="absolute top-full mt-2 pt-2 w-100 bg-white border border-gray-200 rounded-xl shadow-2xl z-[999999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-visible flex flex-col"
-                      style={{
-                        left: dropdownPosition.left,
-                        right: dropdownPosition.right,
-                        maxHeight: "400px",
-                      }}
-                      onMouseEnter={handleGroupsMouseEnter}
-                      onMouseLeave={handleGroupsMouseLeave}
-                    >
-                      <GroupDropdown
-                        groups={data.data || []}
-                        tournament_id={Number(tournamentid)}
-                      />
-                    </div>
-                  )}
+                {showGroupsDropdown && data && data.data && (
+                  <div
+                    ref={dropdownRef}
+                    className="absolute top-full mt-2 pt-2 w-100 bg-white border border-gray-200 rounded-xl shadow-2xl z-[999999] animate-in fade-in-0 zoom-in-95 duration-200 overflow-visible flex flex-col"
+                    style={{
+                      left: dropdownPosition.left,
+                      right: dropdownPosition.right,
+                      maxHeight: "400px",
+                    }}
+                    onMouseEnter={handleGroupsMouseEnter}
+                    onMouseLeave={handleGroupsMouseLeave}
+                  >
+                    <GroupDropdown
+                      groups={data.data || []}
+                      tournament_id={Number(tournamentid)}
+                    />
+                  </div>
+                )}
               </div>
             </div>
             <div className="px-0 md:px-0 pb-8">
               <Outlet />
             </div>
           </div>
-        </div >
-      </TournamentProvider >
+        </div>
+      </TournamentProvider>
     </>
   );
 }

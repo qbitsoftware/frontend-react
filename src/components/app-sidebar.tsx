@@ -52,7 +52,7 @@ export function AppSidebar() {
 
     return (
         <Sidebar
-            className="bg-white border-r w-60 border-gray-200 flex flex-col"
+            className="bg-white border-r w-60 border-gray-200 flex flex-col lg:hidden"
             side="right"
         >
             <SidebarHeader className="p-4 border-b border-gray-200">
