@@ -189,6 +189,9 @@ const Standings = ({ participants, tournament_table }: Props) => {
                         if (baseRating === 0) return "-"
                         
                         if (player?.sex === "N" && tournament_table.woman_weight && baseRating > 0) {
+                          if (tournament_table.woman_weight === 1) {
+                            return baseRating
+                          }
                           return (
                             <span>
                               {baseRating} <span className="text-gray-500 text-sm">({effectiveRating})</span>
@@ -290,6 +293,9 @@ const Standings = ({ participants, tournament_table }: Props) => {
                   if (baseRating === 0) return "-"
                   
                   if (player?.sex === "N" && tournament_table.woman_weight && baseRating > 0) {
+                    if (tournament_table.woman_weight === 1) {
+                      return baseRating
+                    }
                     return (
                       <span>
                         {baseRating} <span className="text-gray-500 text-sm">({effectiveRating})</span>
