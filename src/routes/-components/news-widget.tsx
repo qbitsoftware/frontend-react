@@ -120,7 +120,7 @@ const NewsWidget = () => {
                   </div>
 
                   <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-[#4C97F1]/10 text-[#4C97F1]">
-                    News
+                    {t(`news.categories.${(post.category || 'news').toLowerCase()}`, post.category || 'News')}
                   </span>
                 </div>
               </div>
