@@ -1183,7 +1183,7 @@
         "group_amount": "Number of subgroups",
         "class": "Class",
         "class_placeholder": "Class name",
-        "tournament_size": "Tournament Size (amount of participants/teams)",
+        "tournament_size": "Bracket Size (amount of participants/teams)",
         "min_team_size": "Minimum Team Size",
         "additional_information": "Additional Information",
         "sport": "Sport",
@@ -1194,8 +1194,8 @@
         },
         "end_date": "End Date",
         "start_date_placeholder": "Pick a date",
-        "type": "Tournament Type",
-        "type_placeholder": "Select Tournament Type",
+        "type": "Bracket Type",
+        "type_placeholder": "Select Bracket Type",
         "max_team_size": "Maximum Team Size",
         "private": "Private Tournament",
         "private_description": "Make this tournament private (only seen to admins)",
@@ -1294,7 +1294,7 @@
           }
         },
         "table": {
-          "group": "Group",
+          "group": "Class",
           "number_and_team_size": "Participants / Table size",
           "type": "Table type",
           "format": "Format"

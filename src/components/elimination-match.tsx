@@ -271,13 +271,15 @@ const EliminationMatch = ({
                   ) && "bg-[#F3F9FC] font-semibold",
                 )}
               >
-                {match.match.forfeit && match.match.forfeit_type === "WO"
-                  ? (match.match.winner_id === match.participant_1.id ? "w" : "o")
-                  : (match.match.forfeit && match.match.forfeit_type === "RET") ?
-                    (match.match.winner_id === match.participant_1.id ? "-" : "RET")
-                    : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
-                      (match.match.winner_id === match.participant_1.id ? "-" : "DQ")
-                      : p1_sets
+                {match.participant_2.id === "empty" ? "→" :
+                  match.participant_2.id === "" ? "" :
+                  match.match.forfeit && match.match.forfeit_type === "WO"
+                    ? (match.match.winner_id === match.participant_1.id ? "w" : "o")
+                    : (match.match.forfeit && match.match.forfeit_type === "RET") ?
+                      (match.match.winner_id === match.participant_1.id ? "-" : "RET")
+                      : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
+                        (match.match.winner_id === match.participant_1.id ? "-" : "DQ")
+                        : p1_sets
                 }
               </p>
             </>
@@ -346,17 +348,15 @@ const EliminationMatch = ({
                   ) && "bg-[#F3F9FC] font-semibold",
                 )}
               >
-                {/* {match.match.forfeit
-                  ? (match.match.winner_id === match.participant_2.id ? "w" : "o")
-                  : p2_sets
-                } */}
-                {match.match.forfeit && match.match.forfeit_type === "WO"
-                  ? (match.match.winner_id === match.participant_2.id ? "w" : "o")
-                  : (match.match.forfeit && match.match.forfeit_type === "RET") ?
-                    (match.match.winner_id === match.participant_2.id ? "-" : "RET")
-                    : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
-                      (match.match.winner_id === match.participant_2.id ? "-" : "DQ")
-                      : p2_sets
+                {match.participant_1.id === "empty" ? "→" :
+                  match.participant_1.id === "" ? "" :
+                  match.match.forfeit && match.match.forfeit_type === "WO"
+                    ? (match.match.winner_id === match.participant_2.id ? "w" : "o")
+                    : (match.match.forfeit && match.match.forfeit_type === "RET") ?
+                      (match.match.winner_id === match.participant_2.id ? "-" : "RET")
+                      : (match.match.forfeit && match.match.forfeit_type === "DSQ") ?
+                        (match.match.winner_id === match.participant_2.id ? "-" : "DQ")
+                        : p2_sets
                 }
               </p>
             </>

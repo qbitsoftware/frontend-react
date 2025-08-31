@@ -1323,7 +1323,7 @@
           }
         },
         "table": {
-          "group": "Grupp",
+          "group": "Klass",
           "number_and_team_size": "Osalejate arv / Tabeli suurus",
           "type": "Tabeli tüüp",
           "format": "Formaat"
