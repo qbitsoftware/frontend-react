@@ -114,9 +114,50 @@ const Standings = ({ participants, tournament_table }: Props) => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 w-full md:hidden">
+            <div className="flex gap-2 w-full">
+              <Select value={ratingFilter} onValueChange={setRatingFilter}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder={t("competitions.standings.filter.rating_placeholder", "Filter by rating")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {ratingFilterOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sexFilter} onValueChange={setSexFilter}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder={t("competitions.standings.filter.sex_placeholder", "Filter by gender")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {sexFilterOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
+              </SelectTrigger>
+              <SelectContent>
+                {ageClassFilterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="hidden md:flex gap-2">
             <Select value={ratingFilter} onValueChange={setRatingFilter}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-45">
                 <SelectValue placeholder={t("competitions.standings.filter.rating_placeholder", "Filter by rating")} />
               </SelectTrigger>
               <SelectContent>
@@ -128,7 +169,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
               </SelectContent>
             </Select>
             <Select value={sexFilter} onValueChange={setSexFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-45">
                 <SelectValue placeholder={t("competitions.standings.filter.sex_placeholder", "Filter by gender")} />
               </SelectTrigger>
               <SelectContent>
@@ -140,7 +181,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
               </SelectContent>
             </Select>
             <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-              <SelectTrigger className="w-36">
+              <SelectTrigger className="w-45">
                 <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
               </SelectTrigger>
               <SelectContent>
@@ -219,9 +260,51 @@ const Standings = ({ participants, tournament_table }: Props) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <div className="flex gap-2">
+        {/* Mobile filters */}
+        <div className="flex flex-col gap-2 w-full md:hidden">
+          <div className="flex gap-2 w-full">
+            <Select value={ratingFilter} onValueChange={setRatingFilter}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder={t("competitions.standings.filter.rating_placeholder", "Filter by rating")} />
+              </SelectTrigger>
+              <SelectContent>
+                {ratingFilterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sexFilter} onValueChange={setSexFilter}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder={t("competitions.standings.filter.sex_placeholder", "Filter by gender")} />
+              </SelectTrigger>
+              <SelectContent>
+                {sexFilterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
+            </SelectTrigger>
+            <SelectContent>
+              {ageClassFilterOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="hidden md:flex gap-2">
           <Select value={ratingFilter} onValueChange={setRatingFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-45">
               <SelectValue placeholder={t("competitions.standings.filter.rating_placeholder", "Filter by rating")} />
             </SelectTrigger>
             <SelectContent>
@@ -233,7 +316,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
             </SelectContent>
           </Select>
           <Select value={sexFilter} onValueChange={setSexFilter}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-45">
               <SelectValue placeholder={t("competitions.standings.filter.sex_placeholder", "Filter by gender")} />
             </SelectTrigger>
             <SelectContent>
@@ -245,7 +328,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
             </SelectContent>
           </Select>
           <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-            <SelectTrigger className="w-36">
+            <SelectTrigger className="w-45">
               <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
             </SelectTrigger>
             <SelectContent>

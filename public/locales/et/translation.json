@@ -501,7 +501,7 @@
     "empty_state_title": "Mängijaid pole lisatud",
     "info": {
       "title": "Litsentside hinnakiri",
-      "validity": "Kõik litsentsid kehtivad poolteist kalendriaastat, v.a ühekordne litsents mis kehtib üheks võistluseks"
+      "validity": "Kõik litsentsid kehtivad ühe kalendriaasta, v.a ühekordne litsents mis kehtib üheks võistluseks"
     },
     "types": {
       "adult": "Täiskasvanu litsents",
@@ -769,7 +769,7 @@
       },
       "select": {
         "options": {
-          "all": "Vanuseklassid",
+          "all": "Kõik vanuseklassid",
           "u9": "U9",
           "u11": "U11",
           "u13": "U13",
