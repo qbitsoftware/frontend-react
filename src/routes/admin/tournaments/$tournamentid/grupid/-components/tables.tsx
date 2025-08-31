@@ -60,13 +60,13 @@ export const TournamentTables: React.FC<TournamentTablesProps> = ({ tables }) =>
                     <TableCell className="font-medium text-xs sm:text-sm px-1 sm:px-4 max-w-[80px] sm:max-w-none truncate">
                       {table.class}
                     </TableCell>
-                    <TableCell className="text-xs sm:text-sm px-1 sm:px-4 text-center">
+                    <TableCell className="text-xs sm:text-sm px-1 sm:px-4">
                       <span className="font-semibold">{participants}</span>/{table.size}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4 truncate max-w-[90px] sm:max-w-none">
                       {parseTableType(table.type)}
                     </TableCell>
-                    <TableCell className="text-xs sm:text-sm px-1 sm:px-4 text-center">
+                    <TableCell className="text-xs sm:text-sm px-1 sm:px-4">
                       {table.solo ? t('admin.tournaments.groups.solo') : t('admin.tournaments.groups.team')}
                     </TableCell>
 
