@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { TournamentTable } from '@/types/groups'
 import { Venue } from '@/types/venues'
 import { useTranslation } from 'react-i18next'
+import { getRoundDisplayName } from '@/lib/match-utils'
 
 interface VenueTableProps {
     venues: Venue[]
@@ -18,6 +19,20 @@ export const VenueTable = ({ venues, groups }: VenueTableProps) => {
             : undefined
     }
 
+    const getRing = (venue: Venue) => {
+        const group = getGroup(venue)
+        if (!group || !venue.match?.match) return "-"
+        
+        return getRoundDisplayName(
+            venue.match.match.type,
+            venue.match.match.round,
+            venue.match.match.bracket,
+            venue.match.match.next_loser_bracket,
+            group.size || 0,
+            t
+        );
+    }
+
     return (
         <div className="rounded-md border">
             <Table className="table-compact">
@@ -27,12 +42,14 @@ export const VenueTable = ({ venues, groups }: VenueTableProps) => {
                         <TableHead className="h-8 py-2 text-xs font-semibold">{t('admin.tournaments.tables.player_1')}</TableHead>
                         <TableHead className="h-8 py-2 text-xs font-semibold">{t('admin.tournaments.tables.player_2')}</TableHead>
                         <TableHead className="h-8 py-2 text-xs font-semibold">{t('admin.tournaments.tables.class')}</TableHead>
+                        <TableHead className="h-8 py-2 text-xs font-semibold">{t('admin.tournaments.tables.bracket')}</TableHead>
+                        <TableHead className="h-8 py-2 text-xs font-semibold">{t('admin.tournaments.tables.round')}</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {venues.length === 0 ? (
                         <TableRow className="h-10">
-                            <TableCell colSpan={4} className="text-center py-3 text-sm text-muted-foreground">
+                            <TableCell colSpan={6} className="text-center py-3 text-sm text-muted-foreground">
                                 {t('competitions.tables.no_tables', { defaultValue: 'No tables available' })}
                             </TableCell>
                         </TableRow>
@@ -66,6 +83,30 @@ export const VenueTable = ({ venues, groups }: VenueTableProps) => {
                                     {!isFree && group?.class ? (
                                         <span className="block max-w-[100px]" title={group.class}>
                                             {group.class}
+                                        </span>
+                                    ) : (
+                                        <span className="text-muted-foreground">-</span>
+                                    )}
+                                </TableCell>
+                                <TableCell className="py-2 text-sm">
+                                    {!isFree && venue?.match?.match ? (
+                                        <span className="block max-w-[100px]">
+                                            {venue.match.match.type === "winner"
+                                                ? t("admin.tournaments.matches.table.winner_bracket")
+                                                : venue.match.match.type === "loser"
+                                                    ? t("admin.tournaments.matches.table.loser_bracket")
+                                                    : venue.match.match.type === "bracket"
+                                                        ? t("admin.tournaments.matches.table.bracket_bracket")
+                                                        : "-"}
+                                        </span>
+                                    ) : (
+                                        <span className="text-muted-foreground">-</span>
+                                    )}
+                                </TableCell>
+                                <TableCell className="py-2 text-sm">
+                                    {!isFree ? (
+                                        <span className="block max-w-[80px] whitespace-nowrap">
+                                            {getRing(venue)}
                                         </span>
                                     ) : (
                                         <span className="text-muted-foreground">-</span>

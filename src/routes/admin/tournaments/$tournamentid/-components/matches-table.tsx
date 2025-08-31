@@ -12,6 +12,7 @@ import { DialogType, TournamentTable } from "@/types/groups"
 import { Edit } from "lucide-react"
 import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
+import { getRoundDisplayName } from "@/lib/match-utils"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
@@ -109,10 +110,6 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         })
     }
 
-    const getClosestPowerOf2 = (num: number): number => {
-        if (num <= 4) return 4;
-        return Math.pow(2, Math.ceil(Math.log2(num)));
-    };
 
     const submitScore = async (match: MatchWrapper) => {
         const pending = pendingScores[match.match.id]
@@ -350,35 +347,18 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     const roundCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => {
         const table = tableMap.get(rowData.match.tournament_table_id)
-        const round = getClosestPowerOf2(table?.size || 0) / Math.pow(2, rowData.match.round - 1)
+        const roundDisplayName = getRoundDisplayName(
+            rowData.match.type,
+            rowData.match.round,
+            rowData.match.bracket,
+            rowData.match.next_loser_bracket,
+            table?.size || 0,
+            t
+        );
 
         return (
             <div className="flex items-center h-full px-2 text-sm">
-                {all ? (
-                    // Ring display for all view
-                    round
-                ) : (
-                    // Round display for single table view
-                    rowData.match.type === "winner"
-                        ? (round > 8
-                            ? `R${round}`
-                            : round === 8
-                                ? t("admin.tournaments.matches.table.quarterfinal")
-                                : round === 4
-                                    ? t("admin.tournaments.matches.table.semifinal")
-                                    : round === 2
-                                        ? (rowData.match.bracket === '1-2'
-                                            ? t("admin.tournaments.matches.table.final")
-                                            : rowData.match.bracket === '3-4'
-                                                ? '3-4'
-                                                : t("admin.tournaments.matches.table.final"))
-                                        : round)
-                        : rowData.match.type === "loser"
-                            ? `-> ${rowData.match.next_loser_bracket}`
-                            : rowData.match.type === "bracket"
-                                ? rowData.match.bracket
-                                : rowData.match.round
-                )}
+                {roundDisplayName}
             </div>
         )
     }
@@ -488,7 +468,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         />
 
                         <Column
-                            label={all ? "Ring" : t("admin.tournaments.matches.table.round")}
+                            label={t("admin.tournaments.matches.table.round")}
                             dataKey="round"
                             width={100}
                             flexGrow={0}

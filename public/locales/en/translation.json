@@ -1230,10 +1230,13 @@
         "taken": "Occupied",
         "free": "Free",
         "empty_placeholder": "Table available for matches",
+        "fullscreen": "Fullscreen Display",
         "table": "Table",
+        "bracket": "Bracket",
         "player_1": "Player 1",
         "player_2": "Player 2",
-        "class": "Class"
+        "class": "Class",
+        "round": "Round"
       },
       "participants": {
         "round_robin": "Group Draw Participants",

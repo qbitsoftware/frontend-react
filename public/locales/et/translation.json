@@ -1259,10 +1259,13 @@
         "taken": "Võetud",
         "free": "Vaba",
         "empty_placeholder": "Laud on mänguks vaba",
+        "fullscreen": "Täisekraani vaade",
         "table": "Laud",
         "player_1": "Mängija 1",
+        "bracket": "Tabel",
         "player_2": "Mängija 2",
-        "class": "Klass"
+        "class": "Klass",
+        "round": "Voor"
       },
       "participants": {
         "round_robin": "Alagruppides osalejad",
@@ -1621,7 +1624,7 @@
           "modify": "Uuenda tulemus",
           "quarterfinal": "Veerandfinaal",
           "semifinal": "Poolfinaal",
-          "bracket_bracket": "Kohad",
+          "bracket_bracket": "Kohamängud",
           "final": "Finaal",
           "serial_number": "JKNR.",
           "round": "Ring",
