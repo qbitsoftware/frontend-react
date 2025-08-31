@@ -8,6 +8,7 @@ import placeholderImg from "@/assets/blue-profile.png"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { useState } from "react"
 import { filterByAgeClass } from "@/lib/rating-utils"
+import { User } from "@/types/users"
 
 interface Props {
   participants: Participant[]
@@ -64,6 +65,9 @@ const Standings = ({ participants, tournament_table }: Props) => {
     if (!player) return false
 
     if (ratingFilter !== "all") {
+      if (player.extra_data?.foreign_player) {
+        return false
+      }
       const effectiveRating = getEffectiveRating(participant)
       if (!(effectiveRating >= parseInt(ratingFilter) || effectiveRating === 0)) {
         return false
@@ -78,7 +82,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
 
     if (ageClassFilter !== "all") {
       const playerBirthDate = player.birthdate
-      if (!playerBirthDate || !filterByAgeClass({ birth_date: playerBirthDate, sex: player.sex } as any, ageClassFilter)) {
+      if (!playerBirthDate || !filterByAgeClass({ birth_date: playerBirthDate, sex: player.sex } as User, ageClassFilter)) {
         return false
       }
     }
@@ -223,6 +227,9 @@ const Standings = ({ participants, tournament_table }: Props) => {
                     </TableCell>
                     <TableCell>
                       {(() => {
+                        if (participant.players && participant.players.length > 1) {
+                          return "-"
+                        }
                         const player = participant.players?.[0]
                         const baseRating = player?.rank || 0
                         const effectiveRating = getEffectiveRating(participant)
@@ -243,10 +250,30 @@ const Standings = ({ participants, tournament_table }: Props) => {
                         return baseRating
                       })()}
                     </TableCell>
-                    <TableCell>{participant.players?.[0]?.extra_data?.eltl_id}</TableCell>
-                    <TableCell>{participant.players?.[0]?.sex}</TableCell>
-                    <TableCell>{participant.players?.[0]?.birthdate?.slice(0, 4)}</TableCell>
-                    <TableCell>{participant.players?.[0]?.extra_data?.club}</TableCell>
+                    <TableCell>
+                      {participant.players && participant.players.length > 1
+                        ? participant.players.map(p => p.extra_data?.eltl_id).filter(Boolean).join(' & ')
+                        : participant.players?.[0]?.extra_data?.eltl_id
+                      }
+                    </TableCell>
+                    <TableCell>
+                      {participant.players && participant.players.length > 1
+                        ? "-"
+                        : participant.players?.[0]?.sex
+                      }
+                    </TableCell>
+                    <TableCell>
+                      {participant.players && participant.players.length > 1
+                        ? "-"
+                        : participant.players?.[0]?.birthdate?.slice(0, 4)
+                      }
+                    </TableCell>
+                    <TableCell>
+                      {participant.players && participant.players.length > 1
+                        ? participant.players.map(p => p.extra_data?.club).filter(Boolean).join(' & ')
+                        : participant.players?.[0]?.extra_data?.club
+                      }
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -369,6 +396,9 @@ const Standings = ({ participants, tournament_table }: Props) => {
               </TableCell>
               <TableCell>
                 {(() => {
+                  if (participant.players && participant.players.length > 1) {
+                    return "-"
+                  }
                   const player = participant.players?.[0]
                   const baseRating = player?.rank || 0
                   const effectiveRating = getEffectiveRating(participant)
@@ -389,10 +419,30 @@ const Standings = ({ participants, tournament_table }: Props) => {
                   return baseRating
                 })()}
               </TableCell>
-              <TableCell>{participant.players?.[0].extra_data.eltl_id}</TableCell>
-              <TableCell>{participant.players?.[0]?.sex}</TableCell>
-              <TableCell>{participant.players?.[0]?.birthdate?.slice(0, 4)}</TableCell>
-              <TableCell>{participant.players?.[0]?.extra_data?.club}</TableCell>
+              <TableCell>
+                {participant.players && participant.players.length > 1
+                  ? participant.players.map(p => p.extra_data?.eltl_id).filter(Boolean).join(' & ')
+                  : participant.players?.[0]?.extra_data?.eltl_id
+                }
+              </TableCell>
+              <TableCell>
+                {participant.players && participant.players.length > 1
+                  ? "-"
+                  : participant.players?.[0]?.sex
+                }
+              </TableCell>
+              <TableCell>
+                {participant.players && participant.players.length > 1
+                  ? "-"
+                  : participant.players?.[0]?.birthdate?.slice(0, 4)
+                }
+              </TableCell>
+              <TableCell>
+                {participant.players && participant.players.length > 1
+                  ? participant.players.map(p => p.extra_data?.club).filter(Boolean).join(' & ')
+                  : participant.players?.[0]?.extra_data?.club
+                }
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
