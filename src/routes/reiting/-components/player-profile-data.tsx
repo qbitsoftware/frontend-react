@@ -68,17 +68,6 @@ export const PlayerProfileData = ({ profile, isLoading }: PlayerProfileDataProps
 
           <div className="grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 lg:gap-6">
             <div className="bg-gray-50/50 p-1.5 sm:p-2 md:p-3 lg:p-4 rounded border border-gray-200/30">
-              <p className="text-xs text-gray-500 mb-1">{t("rating.player_modal.fields.nationality")}</p>
-              <p className="font-semibold flex items-center text-gray-900 text-xs sm:text-sm">
-                {profile.user.foreigner === 0 ? (
-                  <span className="text-base sm:text-lg">🇪🇪</span>
-                ) : (
-                  t("rating.player_modal.values.foreigner")
-                )}
-              </p>
-            </div>
-
-            <div className="bg-gray-50/50 p-1.5 sm:p-2 md:p-3 lg:p-4 rounded border border-gray-200/30">
               <p className="text-xs text-gray-500 mb-1">{t("rating.player_modal.fields.eltl_id")}</p>
               <p className="font-semibold text-gray-900 text-xs sm:text-sm">{profile.user.eltl_id}</p>
             </div>
@@ -86,7 +75,7 @@ export const PlayerProfileData = ({ profile, isLoading }: PlayerProfileDataProps
             <div className="bg-gray-50/50 p-1.5 sm:p-2 md:p-3 lg:p-4 rounded border border-gray-200/30">
               <p className="text-xs text-gray-500 mb-1">{t("rating.player_modal.fields.year_of_birth")}</p>
               <p className="font-semibold text-gray-900 text-xs sm:text-sm">
-                {profile.user.birth_date ? formatDateToNumber(profile.user.birth_date) : "----"}
+                {profile.user.birth_date ? formatDateToNumber(profile.user.birth_date).slice(-4) : "----"}
               </p>
             </div>
 
@@ -97,7 +86,7 @@ export const PlayerProfileData = ({ profile, isLoading }: PlayerProfileDataProps
               </p>
             </div>
 
-            <div className="bg-gray-50/50 p-2 sm:p-3 md:p-4 rounded-lg border border-gray-200/30 col-span-2 lg:col-span-1">
+            <div className="bg-gray-50/50 p-1.5 sm:p-2 md:p-3 lg:p-4 rounded border border-gray-200/30">
               <p className="text-xs text-gray-500 mb-1">{t("rating.player_modal.fields.sex")}</p>
               <p className="font-semibold text-gray-900 text-xs sm:text-sm">
                 {profile.user.sex === "M" ? t("rating.player_modal.values.male") : t("rating.player_modal.values.female")}

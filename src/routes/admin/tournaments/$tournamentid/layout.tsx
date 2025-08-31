@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
 import ErrorPage from "@/components/error";
 import { useState, useRef, useEffect } from "react";
@@ -16,7 +17,6 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TournamentProvider } from "@/routes/voistlused/$tournamentid/-components/tournament-provider";
 import { useNavigationHelper } from "@/providers/navigationProvider";
-import { NavbarButtonSkeleton } from "./-components/navbar-skeleton";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
       tournament_data = await queryClient.ensureQueryData(
         UseGetTournamentAdmin(Number(params.tournamentid))
       );
-    } catch (error) {
+    } catch {
       throw redirect({
         to: "/admin/tournaments",
       });
@@ -109,7 +109,8 @@ function RouteComponent() {
 
   return (
     <>
-      <TournamentProvider tournamentData={tournament_data.data!}>
+      <TooltipProvider delayDuration={300}>
+        <TournamentProvider tournamentData={tournament_data.data!}>
         <div className="mx-auto min-h-[95vh] h-full lg:mr-64">
           <div className="w-full relative">
             <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col xl:flex-row gap-3 lg:gap-4 justify-between items-start w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20 overflow-visible">
@@ -158,14 +159,8 @@ function RouteComponent() {
                           </TabsTrigger>
                         </Link>
                       </div>
-                      {isLoading ? (
-                        <>
-                          <NavbarButtonSkeleton />
-                          <NavbarButtonSkeleton />
-                          <NavbarButtonSkeleton />
-                        </>
-                      ) : (
-                        <>
+                      <Tooltip open={!first_tournament_table ? undefined : false}>
+                        <TooltipTrigger asChild>
                           <Link
                             to={
                               groupId
@@ -185,7 +180,11 @@ function RouteComponent() {
                           >
                             <TabsTrigger
                               value="participants"
-                              className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                              className={`py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] transition-colors rounded-none ${
+                                !first_tournament_table 
+                                  ? "text-gray-300 hover:text-gray-300 cursor-not-allowed" 
+                                  : "text-gray-600 hover:text-[#03326B]"
+                              }`}
                             >
                               {t(
                                 "admin.tournaments.groups.layout.participants",
@@ -193,7 +192,16 @@ function RouteComponent() {
                               )}
                             </TabsTrigger>
                           </Link>
+                        </TooltipTrigger>
+                        {!first_tournament_table && (
+                          <TooltipContent>
+                            {t("admin.tournaments.create_tournament.errors.create_tournament_class")}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
 
+                      <Tooltip open={!first_tournament_table ? undefined : false}>
+                        <TooltipTrigger asChild>
                           <Link
                             to={
                               groupId
@@ -213,7 +221,11 @@ function RouteComponent() {
                           >
                             <TabsTrigger
                               value="matches"
-                              className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                              className={`py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] transition-colors rounded-none ${
+                                !first_tournament_table 
+                                  ? "text-gray-300 hover:text-gray-300 cursor-not-allowed" 
+                                  : "text-gray-600 hover:text-[#03326B]"
+                              }`}
                             >
                               {t(
                                 "admin.tournaments.groups.layout.games",
@@ -221,7 +233,16 @@ function RouteComponent() {
                               )}
                             </TabsTrigger>
                           </Link>
+                        </TooltipTrigger>
+                        {!first_tournament_table && (
+                          <TooltipContent>
+                            {t("admin.tournaments.create_tournament.errors.create_tournament_class")}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
 
+                      <Tooltip open={!first_tournament_table ? undefined : false}>
+                        <TooltipTrigger asChild>
                           <Link
                             to={
                               groupId
@@ -241,7 +262,11 @@ function RouteComponent() {
                           >
                             <TabsTrigger
                               value="brackets"
-                              className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
+                              className={`py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] transition-colors rounded-none ${
+                                !first_tournament_table 
+                                  ? "text-gray-300 hover:text-gray-300 cursor-not-allowed" 
+                                  : "text-gray-600 hover:text-[#03326B]"
+                              }`}
                             >
                               {t(
                                 "admin.tournaments.groups.layout.tables",
@@ -249,32 +274,50 @@ function RouteComponent() {
                               )}
                             </TabsTrigger>
                           </Link>
-                        </>
-                      )}
-                      <Link
-                        to={
-                          groupId
-                            ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/kohad`
-                            : `/admin/tournaments/${tournamentid}/kohad`
-                        }
-                        onClick={(e) => {
-                          if (!first_tournament_table) {
-                            e.preventDefault();
-                            toast.error(
-                              t(
-                                "admin.tournaments.create_tournament.errors.create_tournament_class"
-                              )
-                            );
-                          }
-                        }}
-                      >
-                        <TabsTrigger
-                          value="finalplacement"
-                          className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
-                        >
-                          {t("competitions.navbar.standings")}
-                        </TabsTrigger>
-                      </Link>
+                        </TooltipTrigger>
+                        {!first_tournament_table && (
+                          <TooltipContent>
+                            {t("admin.tournaments.create_tournament.errors.create_tournament_class")}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                      <Tooltip open={!first_tournament_table ? undefined : false}>
+                        <TooltipTrigger asChild>
+                          <Link
+                            to={
+                              groupId
+                                ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/kohad`
+                                : `/admin/tournaments/${tournamentid}/kohad`
+                            }
+                            onClick={(e) => {
+                              if (!first_tournament_table) {
+                                e.preventDefault();
+                                toast.error(
+                                  t(
+                                    "admin.tournaments.create_tournament.errors.create_tournament_class"
+                                  )
+                                );
+                              }
+                            }}
+                          >
+                            <TabsTrigger
+                              value="finalplacement"
+                              className={`py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] transition-colors rounded-none ${
+                                !first_tournament_table 
+                                  ? "text-gray-300 hover:text-gray-300 cursor-not-allowed" 
+                                  : "text-gray-600 hover:text-[#03326B]"
+                              }`}
+                            >
+                              {t("competitions.navbar.standings")}
+                            </TabsTrigger>
+                          </Link>
+                        </TooltipTrigger>
+                        {!first_tournament_table && (
+                          <TooltipContent>
+                            {t("admin.tournaments.create_tournament.errors.create_tournament_class")}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
 
                       <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
                         <TabsTrigger
@@ -322,6 +365,7 @@ function RouteComponent() {
           </div>
         </div>
       </TournamentProvider>
+      </TooltipProvider>
     </>
   );
 }

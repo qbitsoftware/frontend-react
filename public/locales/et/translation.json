@@ -909,10 +909,10 @@
       },
       "menus": {
         "latest_matches": {
-          "title": "Viimased mängud"
+          "title": "Mängud"
         },
         "player_profile": {
-          "title": "Mängija Profiil"
+          "title": "Profiil"
         },
         "rating_change_graph": {
           "title": "Graafik"
@@ -1161,7 +1161,7 @@
           "rating_coef_max": "Reitingu koefitsient peab olema maksimaalselt 2",
           "registration_type": "Registreerimise tüüp on kohustuslik",
           "invalid_url": "URL peab algama https:// või http://",
-          "create_tournament_class": "Peate looma vähemalt ühe võistlusklassi"
+          "create_tournament_class": "Peate enne looma vähemalt ühe võistlusklassi"
         },
         "tournament_tables": {
           "single_elimination": "Klassikaline Üksikeliminatsioon",
@@ -1329,7 +1329,7 @@
           "format": "Formaat"
         },
         "add_new": "Lisa uus",
-        "no_tables": "Gruppe pole veel lisatud",
+        "no_tables": "Võistlusklasse pole veel lisatud",
         "title": "Turniiri klassid",
         "errors": {
           "class": "Grupi nimi on kohustuslik",

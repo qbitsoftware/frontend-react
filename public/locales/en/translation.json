@@ -904,13 +904,13 @@
       },
       "menus": {
         "latest_matches": {
-          "title": "Latest matches"
+          "title": "Matches"
         },
         "player_profile": {
-          "title": "Player information"
+          "title": "Profile"
         },
         "rating_change_graph": {
-          "title": "Rank trend"
+          "title": "Graph"
         }
       },
       "sections": {
@@ -921,7 +921,7 @@
       "fields": {
         "nationality": "Nationality",
         "eltl_id": "ELTL ID",
-        "year_of_birth": "Year of birth",
+        "year_of_birth": "Birthyear",
         "rating": "Rating",
         "sex": "Sex",
         "rank": "Rank #",
@@ -1295,8 +1295,8 @@
         },
         "table": {
           "group": "Class",
-          "number_and_team_size": "Participants / Table size",
-          "type": "Table type",
+          "number_and_team_size": "Participants / Bracket size",
+          "type": "Bracket type",
           "format": "Format"
         },
         "add_new": "Add new",
