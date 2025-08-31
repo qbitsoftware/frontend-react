@@ -27,12 +27,14 @@
         "results": "Tulemused"
       },
       "eltl": "ELTL",
+      "tournaments": "Võistlused",
       "competition": "Kalender",
       "clubs": "Klubid",
       "young_sport": "Noortesport",
       "ratings": "Reiting",
       "rules": "Reeglid",
       "contact": "Kontakt",
+      "feedback": "Tagasiside",
       "admin": "Admin Paneel",
       "license": "Litsentsid"
     },
@@ -119,15 +121,19 @@
     }
   },
   "feedback": {
-    "title": "Tagasisidevorm",
+    "title": "Saada tagasisidet",
     "subtitle": "Teie ettepanekud ja tagasiside aitavad meil platvormi paremaks teha",
+    "name": {
+      "title": "Nimi",
+      "placeholder": "Teie nimi"
+    },
     "topic": {
-      "title": "Teema",
+      "title": "Pealkiri",
       "placeholder": "Kokkuvõte"
     },
     "message": {
       "title": "Sõnum",
-      "placeholder": "Palun kirjeldage oma kogemust või ettepanekut detailsemalt..."
+      "placeholder": "Kirjelda oma kogemust detailsemalt. Oodatud on kõiksugune tagasiside - mis meeldib, mida võiks tulevikus lisada. Kuidas oled ELTL uue platvormiga rahul?"
     },
     "submitButton": {
       "send": "Saada",
@@ -141,6 +147,15 @@
     "validation": {
       "titleMin": "Pealkiri peab olema vähemalt 5 tähemärki pikk.",
       "bodyMin": "Sõnum peab olema vähemalt 10 tähemärki pikk."
+    },
+    "feed": {
+      "title": "Saadetud tagasiside",
+      "empty": "Tagasisidet pole veel",
+      "empty_description": "Tagasisidet pole veel esitatud.",
+      "loading": "Tagasiside laadimine...",
+      "from": "Saatja",
+      "anonymous": "Anonüümne",
+      "submitted": "Esitatud"
     }
   },
   "news": {

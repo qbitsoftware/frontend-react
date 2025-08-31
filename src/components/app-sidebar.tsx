@@ -6,6 +6,7 @@ import { AuthButton } from "./ui/auth-button"
 import { LanguageDropdown } from "./languageSelector"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, useSidebar } from "./ui/sidebar"
 import { useUser } from "@/providers/userProvider"
+import { ChevronDown, ChevronRight } from "lucide-react"
 
 export function AppSidebar() {
     const { setOpen, setOpenMobile } = useSidebar()
@@ -25,17 +26,27 @@ export function AppSidebar() {
             ]
         },
         {
-            name: t('navbar.menu.competition'),
-            href: '/voistlused',
+            name: t('navbar.menu.tournaments'),
+            href: '#',
+            dropdownItems: [
+                { name: t('navbar.menu.competition'), href: '/voistlused' },
+            ]
         },
         {
             name: t('navbar.menu.clubs'),
             href: '/klubid',
         },
         { name: t('navbar.menu.ratings'), href: '/reiting' },
-        { name: t('navbar.menu.rules'), href: '/reeglid' },
-        { name: t('navbar.menu.contact'), href: '/kontakt' },
         { name: t('navbar.menu.license'), href: '/litsents' },
+        {
+            name: t('navbar.menu.eltl'),
+            href: '#',
+            dropdownItems: [
+                { name: t('navbar.menu.contact'), href: '/kontakt' },
+                { name: t('navbar.menu.rules'), href: '/reeglid' },
+            ]
+        },
+        { name: t('navbar.menu.feedback'), href: '/tagasiside' },
     ]
 
     const toggleDropdown = (item: string) => {
@@ -72,11 +83,16 @@ export function AppSidebar() {
                                 <button
                                     onClick={() => toggleDropdown(item.name)}
                                     className={cn(
-                                        "w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors",
+                                        "w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors flex items-center justify-between",
                                         activeItem === item.name && "bg-gray-100 font-semibold"
                                     )}
                                 >
-                                    {item.name}
+                                    <span>{item.name}</span>
+                                    {openDropdown === item.name ? (
+                                        <ChevronDown className="w-4 h-4 text-gray-500" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                                    )}
                                 </button>
                             ) : (
                                 <Link

@@ -16,6 +16,7 @@ import { Route as AdminLayoutImport } from './routes/admin/layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as VoistlusedIndexImport } from './routes/voistlused/index'
 import { Route as UudisedIndexImport } from './routes/uudised/index'
+import { Route as TagasisideIndexImport } from './routes/tagasiside/index'
 import { Route as ReitingIndexImport } from './routes/reiting/index'
 import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as ReeglidIndexImport } from './routes/reeglid/index'
@@ -101,6 +102,12 @@ const VoistlusedIndexRoute = VoistlusedIndexImport.update({
 const UudisedIndexRoute = UudisedIndexImport.update({
   id: '/uudised/',
   path: '/uudised/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TagasisideIndexRoute = TagasisideIndexImport.update({
+  id: '/tagasiside/',
+  path: '/tagasiside/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -598,6 +605,13 @@ declare module '@tanstack/react-router' {
       path: '/reiting'
       fullPath: '/reiting'
       preLoaderRoute: typeof ReitingIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tagasiside/': {
+      id: '/tagasiside/'
+      path: '/tagasiside'
+      fullPath: '/tagasiside'
+      preLoaderRoute: typeof TagasisideIndexImport
       parentRoute: typeof rootRoute
     }
     '/uudised/': {
@@ -1135,6 +1149,7 @@ export interface FileRoutesByFullPath {
   '/reeglid': typeof ReeglidIndexRoute
   '/register': typeof RegisterIndexRoute
   '/reiting': typeof ReitingIndexRoute
+  '/tagasiside': typeof TagasisideIndexRoute
   '/uudised': typeof UudisedIndexRoute
   '/voistlused': typeof VoistlusedIndexRoute
   '/admin/tournaments/$tournamentid': typeof AdminTournamentsTournamentidLayoutRouteWithChildren
@@ -1192,6 +1207,7 @@ export interface FileRoutesByTo {
   '/reeglid': typeof ReeglidIndexRoute
   '/register': typeof RegisterIndexRoute
   '/reiting': typeof ReitingIndexRoute
+  '/tagasiside': typeof TagasisideIndexRoute
   '/uudised': typeof UudisedIndexRoute
   '/voistlused': typeof VoistlusedIndexRoute
   '/admin/blog': typeof AdminBlogIndexRoute
@@ -1253,6 +1269,7 @@ export interface FileRoutesById {
   '/reeglid/': typeof ReeglidIndexRoute
   '/register/': typeof RegisterIndexRoute
   '/reiting/': typeof ReitingIndexRoute
+  '/tagasiside/': typeof TagasisideIndexRoute
   '/uudised/': typeof UudisedIndexRoute
   '/voistlused/': typeof VoistlusedIndexRoute
   '/admin/tournaments/$tournamentid': typeof AdminTournamentsTournamentidLayoutRouteWithChildren
@@ -1318,6 +1335,7 @@ export interface FileRouteTypes {
     | '/reeglid'
     | '/register'
     | '/reiting'
+    | '/tagasiside'
     | '/uudised'
     | '/voistlused'
     | '/admin/tournaments/$tournamentid'
@@ -1374,6 +1392,7 @@ export interface FileRouteTypes {
     | '/reeglid'
     | '/register'
     | '/reiting'
+    | '/tagasiside'
     | '/uudised'
     | '/voistlused'
     | '/admin/blog'
@@ -1433,6 +1452,7 @@ export interface FileRouteTypes {
     | '/reeglid/'
     | '/register/'
     | '/reiting/'
+    | '/tagasiside/'
     | '/uudised/'
     | '/voistlused/'
     | '/admin/tournaments/$tournamentid'
@@ -1492,6 +1512,7 @@ export interface RootRouteChildren {
   ReeglidIndexRoute: typeof ReeglidIndexRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
   ReitingIndexRoute: typeof ReitingIndexRoute
+  TagasisideIndexRoute: typeof TagasisideIndexRoute
   UudisedIndexRoute: typeof UudisedIndexRoute
   VoistlusedIndexRoute: typeof VoistlusedIndexRoute
 }
@@ -1512,6 +1533,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReeglidIndexRoute: ReeglidIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
   ReitingIndexRoute: ReitingIndexRoute,
+  TagasisideIndexRoute: TagasisideIndexRoute,
   UudisedIndexRoute: UudisedIndexRoute,
   VoistlusedIndexRoute: VoistlusedIndexRoute,
 }
@@ -1540,6 +1562,7 @@ export const routeTree = rootRoute
         "/reeglid/",
         "/register/",
         "/reiting/",
+        "/tagasiside/",
         "/uudised/",
         "/voistlused/"
       ]
@@ -1647,6 +1670,9 @@ export const routeTree = rootRoute
     },
     "/reiting/": {
       "filePath": "reiting/index.tsx"
+    },
+    "/tagasiside/": {
+      "filePath": "tagasiside/index.tsx"
     },
     "/uudised/": {
       "filePath": "uudised/index.tsx"

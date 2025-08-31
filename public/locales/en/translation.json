@@ -27,12 +27,14 @@
         "results": "Results"
       },
       "eltl": "ELTL",
+      "tournaments": "Tournaments",
       "competition": "Calendar",
       "clubs": "Clubs",
       "young_sport": "Youths",
       "ratings": "Ranking",
       "rules": "Rules",
       "contact": "Contact",
+      "feedback": "Feedback",
       "admin": "Admin Panel",
       "license": "Licenses"
     },
@@ -123,15 +125,19 @@
     }
   },
   "feedback": {
-    "title": "Feedback Form",
+    "title": "Send Feedback",
     "subtitle": "Your suggestions and feedback help us improve the platform",
+    "name": {
+      "title": "Name",
+      "placeholder": "Your name (optional)"
+    },
     "topic": {
       "title": "Subject",
       "placeholder": "Summary"
     },
     "message": {
       "title": "Message",
-      "placeholder": "Please describe your experience or suggestion in detail..."
+      "placeholder": "Please describe your experience or suggestion in detail. All feedback is greatly appreciated. You can for example write about what you enjoy about the platform or what could be improved in the future."
     },
     "submitButton": {
       "send": "Send",
@@ -145,6 +151,15 @@
     "validation": {
       "titleMin": "Title must be at least 5 characters.",
       "bodyMin": "Message must be at least 10 characters."
+    },
+    "feed": {
+      "title": "All Feedback",
+      "empty": "No feedback yet",
+      "empty_description": "No feedback has been submitted yet.",
+      "loading": "Loading feedback...",
+      "from": "From",
+      "anonymous": "Anonymous",
+      "submitted": "Submitted"
     }
   },
   "news": {

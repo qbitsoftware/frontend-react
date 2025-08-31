@@ -254,6 +254,20 @@ export interface FeedbackForm {
   body: string;
 }
 
+export interface FeedbackItem {
+  id: string;
+  name: string;
+  title: string;
+  body: string;
+  created_at: string;
+}
+
+export interface FeedbackResponse {
+  data: FeedbackItem[];
+  message: string;
+  error: string | null;
+}
+
 export const sendUserFeedback = async (feedback: FeedbackForm) => {
   try {
     await axiosInstance.post("/api/v1/feedback", feedback);
@@ -262,4 +276,16 @@ export const sendUserFeedback = async (feedback: FeedbackForm) => {
     void error
     return { success: false, error };
   }
+};
+
+export const useGetAllFeedback = () => {
+  return useQuery<FeedbackResponse>({
+    queryKey: ["feedback"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get("/api/v1/feedback", {
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
 };
