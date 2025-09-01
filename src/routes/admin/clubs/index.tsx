@@ -104,6 +104,8 @@ function RouteComponent() {
       await updateClubMutation.mutateAsync(selectedClub, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["clubs_query"] });
+          queryClient.invalidateQueries({ queryKey: ["clubs_me"] });
+          fetchMyClubs();
           setIsEditDialogOpen(false);
           setSelectedClub(null);
           toast.message(t("admin.clubs.toast.club_updated"));

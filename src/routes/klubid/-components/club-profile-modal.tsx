@@ -32,8 +32,29 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
   if (isOpen && (isLoading || !playerData)) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl focus:outline-none focus:ring-0 border-0">
-          <ClubProfileSkeleton />
+        <DialogContent className="w-[95vw] max-w-4xl p-3 sm:p-8 bg-white rounded-xl sm:rounded-2xl shadow-xl focus:outline-none focus:ring-0 border-0 max-h-[95vh] sm:max-h-[90vh]">
+          <div className="relative">
+            <button
+              onClick={onClose}
+              className="absolute right-0 top-0 w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors z-10"
+              aria-label="Close modal"
+            >
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <ClubProfileSkeleton />
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -45,16 +66,37 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-8 bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-scroll focus:outline-none focus:ring-0 border-0">
-        <div className="flex flex-col items-center space-y-4 mb-6">
-          <DialogTitle className="text-3xl font-bold text-gray-900 focus:outline-none">
-            {club.name}
-          </DialogTitle>
+      <DialogContent className="w-[95vw] max-w-4xl p-3 sm:p-8 bg-white rounded-xl sm:rounded-2xl shadow-xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto focus:outline-none focus:ring-0 border-0">
+        <div className="relative">
+          <button
+            onClick={onClose}
+            className="absolute right-0 top-0 w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors z-10"
+            aria-label="Close modal"
+          >
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div className="flex flex-col items-center space-y-3 sm:space-y-4 mb-4 sm:mb-6 pr-8 sm:pr-10">
+            <DialogTitle className="text-lg sm:text-3xl font-bold text-gray-900 focus:outline-none text-center leading-tight px-2">
+              {club.name}
+            </DialogTitle>
+          </div>
         </div>
 
         {/* Contact Information Section */}
-        <div className="mb-6 border-b pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mb-4 sm:mb-6 border-b pb-4 sm:pb-6">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
             {club.contact_person && (
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
@@ -191,66 +233,107 @@ export const ClubProfileModal: React.FC<ClubProfileModal> = ({
           </div>
         </div>
 
-        <div className="flex flex-col space-y-8">
+        <div className="flex flex-col space-y-6 sm:space-y-8">
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">
               {t("clubs.club_players")}
             </h2>
             {players.length > 0 ? (
-              <div className="overflow-x-auto rounded-lg shadow">
-                <table className="w-full bg-white">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-gray-100 to-gray-200 text-left text-gray-700">
-                      <th className="px-4 py-3 font-semibold">#</th>
-                      <th className="px-4 py-3 font-semibold">
-                        ELTL ID
-                      </th>
-                      <th className="px-4 py-3 font-semibold">
-                        {t("rating.table.head.last_name")}
-                      </th>
-                      <th className="px-4 py-3 font-semibold">
-                        {t("rating.table.head.first_name")}
-                      </th>
-                      <th className="px-4 py-3 font-semibold">RP</th>
-                      <th className="px-4 py-3 font-semibold">
-                        {t("rating.table.head.birthyear")}
-                      </th>
-                      <th className="px-4 py-3 font-semibold">
-                        {t("rating.table.head.sex")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {players.map((player, index) => (
-                      <tr
-                        key={index}
-                        className="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-150"
-                      >
-                        <td className="px-4 py-3 text-gray-800">{index + 1}</td>
-                        <td className="px-4 py-3 font-medium text-gray-800">{player.eltl_id}</td>
-                        <td className="px-4 py-3 font-medium text-gray-800">
-                          {player.last_name}
-                        </td>
-                        <td className="px-4 py-3 text-gray-800">
-                          {player.first_name}
-                        </td>
-                        <td className="px-4 py-3 text-gray-800 font-medium">
-                          {player.rate_points}
-                        </td>
-                        <td className="px-4 py-3 text-gray-800">
-                          {formatDateToNumber(player.birth_date)}
-                        </td>
-                        <td className="px-4 py-3 text-gray-800">
-                          {player.sex}
-                        </td>
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden sm:block overflow-x-auto rounded-lg shadow">
+                  <table className="w-full bg-white">
+                    <thead>
+                      <tr className="bg-gradient-to-r from-gray-100 to-gray-200 text-left text-gray-700">
+                        <th className="px-4 py-3 font-semibold">#</th>
+                        <th className="px-4 py-3 font-semibold">
+                          ELTL ID
+                        </th>
+                        <th className="px-4 py-3 font-semibold">
+                          {t("rating.table.head.last_name")}
+                        </th>
+                        <th className="px-4 py-3 font-semibold">
+                          {t("rating.table.head.first_name")}
+                        </th>
+                        <th className="px-4 py-3 font-semibold">RP</th>
+                        <th className="px-4 py-3 font-semibold">
+                          {t("rating.table.head.birthyear")}
+                        </th>
+                        <th className="px-4 py-3 font-semibold">
+                          {t("rating.table.head.sex")}
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {players.map((player, index) => (
+                        <tr
+                          key={index}
+                          className="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-150"
+                        >
+                          <td className="px-4 py-3 text-gray-800">{index + 1}</td>
+                          <td className="px-4 py-3 font-medium text-gray-800">{player.eltl_id}</td>
+                          <td className="px-4 py-3 font-medium text-gray-800">
+                            {player.last_name}
+                          </td>
+                          <td className="px-4 py-3 text-gray-800">
+                            {player.first_name}
+                          </td>
+                          <td className="px-4 py-3 text-gray-800 font-medium">
+                            {player.rate_points}
+                          </td>
+                          <td className="px-4 py-3 text-gray-800">
+                            {formatDateToNumber(player.birth_date)}
+                          </td>
+                          <td className="px-4 py-3 text-gray-800">
+                            {player.sex}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                {/* Mobile Card View */}
+                <div className="sm:hidden space-y-2">
+                  {players.map((player, index) => (
+                    <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">#{index + 1}</span>
+                        <div className="bg-blue-50 px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-blue-700">ID: {player.eltl_id}</span>
+                        </div>
+                      </div>
+                      <div className="mb-3 pb-3 border-b border-gray-100">
+                        <h3 className="font-bold text-gray-900 text-lg leading-tight">
+                          {player.first_name} {player.last_name}
+                        </h3>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-gray-600 text-sm font-medium">RP:</span>
+                          <span className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded">{player.rate_points}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-gray-600 text-sm font-medium">{t("rating.table.head.birthyear")}:</span>
+                          <span className="text-gray-900 font-medium">{formatDateToNumber(player.birth_date)}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-gray-600 text-sm font-medium">{t("rating.table.head.sex")}:</span>
+                          <span className="text-gray-900 font-medium">{player.sex}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
-              <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-100">
-                <p className="text-gray-500">{t("clubs.no_players")}</p>
+              <div className="text-center py-8 sm:py-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <p className="text-gray-600 text-base font-medium">{t("clubs.no_players")}</p>
               </div>
             )}
           </div>
