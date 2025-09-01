@@ -143,19 +143,27 @@ export function Reiting() {
 
   const selectedPlayer = users.find((user) => user.id === SelectedPlayerId);
 
-  const getMondayOfCurrentWeek = () => {
+  const getTuesdayOfCurrentWeek = () => {
     const today = new Date();
     const day = today.getDay();
+    const hour = today.getHours();
 
-    const diff = today.getDate() - day + (day === 0 ? -6 : 2);
+    let diff;
+    if (day === 1 || day === 0) { 
+      diff = day === 1 ? today.getDate() - 6 : today.getDate() - 5;
+    } else if (day === 2 && hour < 9) { 
+      diff = today.getDate() - 7;
+    } else { 
+      diff = today.getDate() - day + 2;
+    }
 
-    const monday = new Date(today.setDate(diff));
-    monday.setHours(9, 0, 0, 0);
+    const tuesday = new Date(today.setDate(diff));
+    tuesday.setHours(9, 0, 0, 0);
 
-    const dd = String(monday.getDate()).padStart(2, "0");
-    const mm = String(monday.getMonth() + 1).padStart(2, "0");
-    const yyyy = monday.getFullYear();
-    const hours = monday.getHours();
+    const dd = String(tuesday.getDate()).padStart(2, "0");
+    const mm = String(tuesday.getMonth() + 1).padStart(2, "0");
+    const yyyy = tuesday.getFullYear();
+    const hours = tuesday.getHours();
 
     return `${dd}.${mm}.${yyyy}, ${hours}:00`;
   };
@@ -176,7 +184,7 @@ export function Reiting() {
           <p className="font-medium pb-1 text-sm sm:text-base">
             {t("rating.last_updated")}:{" "}
             <span className="bg-[#FBFBFB] px-2 sm:px-3 py-1 rounded-full border border-[#EAEAEA] text-xs sm:text-sm">
-              {getMondayOfCurrentWeek()}
+              {getTuesdayOfCurrentWeek()}
             </span>
           </p>
           <p className="pb-4 text-xs sm:text-sm text-gray-600">
