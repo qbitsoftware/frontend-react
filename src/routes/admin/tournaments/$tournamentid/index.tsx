@@ -27,6 +27,6 @@ function RouteComponent() {
         <TournamentForm initial_data={tournament.data} />
       </div>
     </div>
-  );
+  )
 }
 

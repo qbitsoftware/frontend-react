@@ -170,7 +170,8 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             // queryClient.resetQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
             queryClient.refetchQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
             // 'matches_group', group_id
-            queryClient.invalidateQueries({ queryKey: ['venues', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_free', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_all', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
             queryClient.refetchQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
 

@@ -207,32 +207,32 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: initial_data
       ? {
-          ...initial_data,
-          start_date: new Date(initial_data.start_date),
-          end_date: new Date(initial_data.end_date),
-          rating_coef:
-            initial_data.rating_coef == 0 ? 1 : initial_data.rating_coef,
-          registration_type: initial_data.registration_type || "onsite",
-          registered_players_link: initial_data.registered_players_link || "",
-          registration_link: initial_data.registration_link || "",
-        }
+        ...initial_data,
+        start_date: new Date(initial_data.start_date),
+        end_date: new Date(initial_data.end_date),
+        rating_coef:
+          initial_data.rating_coef == 0 ? 1 : initial_data.rating_coef,
+        registration_type: initial_data.registration_type || "onsite",
+        registered_players_link: initial_data.registered_players_link || "",
+        registration_link: initial_data.registration_link || "",
+      }
       : {
-          name: "",
-          start_date: new Date(),
-          end_date: new Date(),
-          total_tables: 1,
-          sport: "tabletennis",
-          location: "",
-          organizer: "",
-          category: "",
-          information: "",
-          private: false,
-          calc_rating: false,
-          rating_coef: 1,
-          registration_type: "onsite",
-          registration_link: "",
-          registered_players_link: "",
-        },
+        name: "",
+        start_date: new Date(),
+        end_date: new Date(),
+        total_tables: 1,
+        sport: "tabletennis",
+        location: "",
+        organizer: "",
+        category: "",
+        information: "",
+        private: false,
+        calc_rating: false,
+        rating_coef: 1,
+        registration_type: "onsite",
+        registration_link: "",
+        registered_players_link: "",
+      },
   });
 
   const [showDeleteDialog, setShowDeleteDialog] = useStateOriginal(false);
@@ -628,56 +628,56 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                   {(form.watch("registration_type") === "google_forms" ||
                     form.watch("registration_type") === "excel" ||
                     form.watch("registration_type") === "email") && (
-                    <FormField
-                      control={form.control}
-                      name="registration_link"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium">
-                            {form.watch("registration_type") === "google_forms"
-                              ? t(
+                      <FormField
+                        control={form.control}
+                        name="registration_link"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium">
+                              {form.watch("registration_type") === "google_forms"
+                                ? t(
                                   "admin.tournaments.create_tournament.google_forms_link",
                                   "Google Forms Link"
                                 )
-                              : form.watch("registration_type") === "excel"
-                                ? t(
+                                : form.watch("registration_type") === "excel"
+                                  ? t(
                                     "admin.tournaments.create_tournament.excel_link",
                                     "Excel Sheet Link"
                                   )
-                                : t(
+                                  : t(
                                     "admin.tournaments.create_tournament.email_address",
                                     "Email Address"
                                   )}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              autoComplete="off"
-                              placeholder={
-                                form.watch("registration_type") ===
-                                "google_forms"
-                                  ? t(
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                autoComplete="off"
+                                placeholder={
+                                  form.watch("registration_type") ===
+                                    "google_forms"
+                                    ? t(
                                       "admin.tournaments.create_tournament.google_forms_link_placeholder",
                                       "Enter Google Forms URL"
                                     )
-                                  : form.watch("registration_type") === "excel"
-                                    ? t(
+                                    : form.watch("registration_type") === "excel"
+                                      ? t(
                                         "admin.tournaments.create_tournament.excel_link_placeholder",
                                         "Enter Excel sheet URL"
                                       )
-                                    : t(
+                                      : t(
                                         "admin.tournaments.create_tournament.email_address_placeholder",
                                         "Enter email address"
                                       )
-                              }
-                              className="h-10"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                                }
+                                className="h-10"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
                   {form.watch("registration_type") !== "onsite" && (
                     <FormField
@@ -787,7 +787,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                   />
                 </div>
 
-{/* 
+                {/* 
                 <FormField
                   control={form.control}
                   name="rating_coef"

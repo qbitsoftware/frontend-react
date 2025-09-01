@@ -3,19 +3,23 @@ import {
   Outlet,
   redirect,
   useLocation,
+  useNavigate,
   useRouter,
   useRouterState,
 } from "@tanstack/react-router";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebar from "./-components/admin-sidebar";
 import AdminBottomNav from "./-components/admin-bottom-nav";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import ErrorPage from "@/components/error";
 import { UseGetCurrentUser } from "@/queries/users";
 import { ErrorResponse } from "@/types/errors";
 import { useUser } from "@/providers/userProvider";
 import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
 import TableStatusSidebarSkeleton from "./tournaments/$tournamentid/-components/table-status-skeleton";
+import { WSProvider } from "@/providers/wsProvider";
+import { WSMessage, WSMsgType } from "@/types/ws_message";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Helper function to get cookie value
 function getCookie(name: string) {
@@ -47,9 +51,10 @@ function RouteComponent() {
   const router = useRouter();
   const location = useLocation();
   const { user } = useUser();
+  const navigate = useNavigate()
 
   const defaultOpen = getCookie("sidebar:state") !== "false";
-  
+
   const [hasSidebarLoaded, setHasSidebarLoaded] = useState(false);
   const previousTournamentId = useRef<string | null>(null);
 
@@ -67,11 +72,12 @@ function RouteComponent() {
 
   const { status } = useRouterState()
   const isLoading = status === "pending"
+  const queryClient = useQueryClient()
 
   const isTournamentRoute = location.pathname.includes('/tournaments/') &&
     location.pathname.split('/tournaments/')[1]?.split('/')[0];
 
-  const currentTournamentId = isTournamentRoute ? 
+  const currentTournamentId = isTournamentRoute ?
     location.pathname.split('/tournaments/')[1]?.split('/')[0] : null;
 
   useEffect(() => {
@@ -91,19 +97,106 @@ function RouteComponent() {
     window.scrollTo(0, 0);
   }, []);
 
+  // const handleWSMessage = (data: WSMessage) => {
+  //   if (data.type === WSMsgType.ParticipantUpdated || data.type === WSMsgType.ParticipantCreated || data.type === WSMsgType.ParticipantDeleted) {
+  //     const { tournament_id, table_id } = data.data;
+  //     const path = location.pathname;
+  //     if (path.includes(tournament_id) && path.includes(table_id)) {
+  //       console.log("Participant update received, invalidating queries for tournament", tournament_id, "table", table_id);
+  //       queryClient.invalidateQueries({ queryKey: ["participants", Number(table_id)] });
+  //     }
+  //   } else if (data.type === WSMsgType.TournamentCreated || data.type === WSMsgType.TournamentDeleted) {
+  //     queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
+  //   } else if (data.type === WSMsgType.TournamentUpdated) {
+  //     const { tournament_id } = data.data
+  //     queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
+  //     queryClient.invalidateQueries({ queryKey: ['tournament_admin_query', Number(tournament_id)] })
+  //     queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
+  //     queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
+  //   } else if (data.type === WSMsgType.MatchUpdated) {
+  //     const { tournament_id, table_id } = data.data;
+  //     queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id), Number(table_id)] })
+  //     queryClient.invalidateQueries({ queryKey: ['matches', Number(tournament_id)] })
+  //     queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
+  //     queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
+  //     queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
+  //   } else if (data.type === WSMsgType.TournamentTableCreated || data.type === WSMsgType.TournamentTableUpdated) {
+  //     const { tournament_id } = data.data;
+  //     const path = location.pathname;
+  //     if (path.includes(tournament_id)) {
+  //       queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
+  //     }
+  //   } else if (data.type === WSMsgType.TournamentTableDeleted) {
+  //     const { tournament_id, table_id } = data.data;
+  //     const path = location.pathname;
+  //     if (path.includes(tournament_id) && path.includes(table_id)) {
+  //       queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
+  //       navigate({ to: `/admin/tournaments/${tournament_id}/grupid` });
+  //     }
+  //   }
+  //   // Add similar logic for matches, brackets, etc.
+  // };
+
+  const handleWSMessage = useCallback((data: WSMessage) => {
+    if (data.type === WSMsgType.ParticipantUpdated || data.type === WSMsgType.ParticipantCreated || data.type === WSMsgType.ParticipantDeleted) {
+      const { tournament_id, table_id } = data.data;
+      const path = location.pathname;
+      if (path.includes(tournament_id) && path.includes(table_id)) {
+        console.log("Participant update received, invalidating queries for tournament", tournament_id, "table", table_id);
+        queryClient.invalidateQueries({ queryKey: ["participants", Number(table_id)] });
+      }
+    } else if (data.type === WSMsgType.TournamentCreated || data.type === WSMsgType.TournamentDeleted) {
+      queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
+    } else if (data.type === WSMsgType.TournamentUpdated) {
+      const { tournament_id } = data.data
+      queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
+      queryClient.invalidateQueries({ queryKey: ['tournament_admin_query', Number(tournament_id)] })
+      queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
+      queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
+    } else if (data.type === WSMsgType.MatchUpdated) {
+      const { tournament_id, table_id } = data.data;
+      queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id), Number(table_id)] })
+      queryClient.invalidateQueries({ queryKey: ['matches', Number(tournament_id)] })
+      queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
+      queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
+      queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
+    } else if (data.type === WSMsgType.TournamentTableCreated || data.type === WSMsgType.TournamentTableUpdated) {
+      const { tournament_id } = data.data;
+      const path = location.pathname;
+      if (path.includes(tournament_id)) {
+        queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
+      }
+    } else if (data.type === WSMsgType.TournamentTableDeleted) {
+      const { tournament_id, table_id } = data.data;
+      const path = window.location.pathname;
+
+      if (path.includes(tournament_id)) {
+        queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
+        if (path.includes(String(table_id))) {
+          navigate({ to: `/admin/tournaments/${Number(tournament_id)}/grupid` });
+        }
+      }
+    }
+  }, [location.pathname, queryClient, navigate]);
+
+
+
+
   return (
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <AdminSidebar />
-          <div className="w-full overflow-x-auto pb-20 lg:pb-0">
-            <Outlet />
-          </div>
-          {isTournamentRoute && (
-            (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
-          )}
-        </SidebarProvider>
-        <AdminBottomNav />
+        <WSProvider url={import.meta.env.VITE_BACKEND_API_URL_WS + "ws/v1/admin"} onMessage={handleWSMessage}>
+          <SidebarProvider defaultOpen={defaultOpen}>
+            <AdminSidebar />
+            <div className="w-full overflow-x-auto pb-20 lg:pb-0">
+              <Outlet />
+            </div>
+            {isTournamentRoute && (
+              (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
+            )}
+          </SidebarProvider>
+          <AdminBottomNav />
+        </WSProvider>
       </div>
     </div>
   );
