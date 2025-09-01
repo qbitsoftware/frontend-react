@@ -1791,6 +1791,7 @@
         "description": "Add new players or manage existing players in this club",
         "close_button": "Close",
         "or": "OR",
+        "search_players_placeholder": "Search players by name...",
         "search": {
           "title": "Search Existing Player",
           "placeholder": "Search for a player...",
@@ -1843,6 +1844,11 @@
             "description": "Get started by adding your first player",
             "add_first_button": "Add First Player"
           }
+        },
+        "search_no_results": {
+          "title": "No players found",
+          "description": "No players match your search criteria. Try adjusting your search terms.",
+          "clear_search": "Clear Search"
         },
         "remove_confirmation": {
           "title": "Remove Player from Club",

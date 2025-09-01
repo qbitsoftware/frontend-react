@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Plus } from "lucide-react"
 import { Link, useNavigate, useParams } from "@tanstack/react-router"
-import { parseTableType } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 import { TournamentTable } from "@/types/groups"
 import { Tournament } from "@/types/tournaments"
@@ -64,7 +63,7 @@ export const TournamentTables: React.FC<TournamentTablesProps> = ({ tables }) =>
                       <span className="font-semibold">{participants}</span>/{table.size}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4 truncate max-w-[90px] sm:max-w-none">
-                      {parseTableType(table.type)}
+                      {t(`admin.tournaments.create_tournament.tournament_tables.${table.type}`)}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4">
                       {table.solo ? t('admin.tournaments.groups.solo') : t('admin.tournaments.groups.team')}
