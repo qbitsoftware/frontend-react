@@ -97,52 +97,11 @@ function RouteComponent() {
     window.scrollTo(0, 0);
   }, []);
 
-  // const handleWSMessage = (data: WSMessage) => {
-  //   if (data.type === WSMsgType.ParticipantUpdated || data.type === WSMsgType.ParticipantCreated || data.type === WSMsgType.ParticipantDeleted) {
-  //     const { tournament_id, table_id } = data.data;
-  //     const path = location.pathname;
-  //     if (path.includes(tournament_id) && path.includes(table_id)) {
-  //       console.log("Participant update received, invalidating queries for tournament", tournament_id, "table", table_id);
-  //       queryClient.invalidateQueries({ queryKey: ["participants", Number(table_id)] });
-  //     }
-  //   } else if (data.type === WSMsgType.TournamentCreated || data.type === WSMsgType.TournamentDeleted) {
-  //     queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
-  //   } else if (data.type === WSMsgType.TournamentUpdated) {
-  //     const { tournament_id } = data.data
-  //     queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
-  //     queryClient.invalidateQueries({ queryKey: ['tournament_admin_query', Number(tournament_id)] })
-  //     queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
-  //     queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
-  //   } else if (data.type === WSMsgType.MatchUpdated) {
-  //     const { tournament_id, table_id } = data.data;
-  //     queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id), Number(table_id)] })
-  //     queryClient.invalidateQueries({ queryKey: ['matches', Number(tournament_id)] })
-  //     queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
-  //     queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
-  //     queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
-  //   } else if (data.type === WSMsgType.TournamentTableCreated || data.type === WSMsgType.TournamentTableUpdated) {
-  //     const { tournament_id } = data.data;
-  //     const path = location.pathname;
-  //     if (path.includes(tournament_id)) {
-  //       queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
-  //     }
-  //   } else if (data.type === WSMsgType.TournamentTableDeleted) {
-  //     const { tournament_id, table_id } = data.data;
-  //     const path = location.pathname;
-  //     if (path.includes(tournament_id) && path.includes(table_id)) {
-  //       queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
-  //       navigate({ to: `/admin/tournaments/${tournament_id}/grupid` });
-  //     }
-  //   }
-  //   // Add similar logic for matches, brackets, etc.
-  // };
-
   const handleWSMessage = useCallback((data: WSMessage) => {
     if (data.type === WSMsgType.ParticipantUpdated || data.type === WSMsgType.ParticipantCreated || data.type === WSMsgType.ParticipantDeleted) {
       const { tournament_id, table_id } = data.data;
-      const path = location.pathname;
+      const path = window.location.pathname;
       if (path.includes(tournament_id) && path.includes(table_id)) {
-        console.log("Participant update received, invalidating queries for tournament", tournament_id, "table", table_id);
         queryClient.invalidateQueries({ queryKey: ["participants", Number(table_id)] });
       }
     } else if (data.type === WSMsgType.TournamentCreated || data.type === WSMsgType.TournamentDeleted) {
@@ -162,7 +121,7 @@ function RouteComponent() {
       queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
     } else if (data.type === WSMsgType.TournamentTableCreated || data.type === WSMsgType.TournamentTableUpdated) {
       const { tournament_id } = data.data;
-      const path = location.pathname;
+      const path = window.location.pathname;
       if (path.includes(tournament_id)) {
         queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
       }
