@@ -101,9 +101,9 @@
       "name": "Reiting",
       "view_all": "Kogu edetabel"
     },
-    "adboard": {
-      "name": "Reklaamtahvel",
-      "description": "Reklaamtahvel"
+    "sponsors": {
+      "name": "Toetajad",
+      "description": "Meie toetajad"
     },
     "videoboard": {
       "name": "Videod",
@@ -2026,7 +2026,7 @@
     "no_images_subtitle": "Hetkel pole galeriis ühtegi pilti."
   },
   "sponsors": {
-    "title": "Sponsors",
+    "title": "Toetajad",
     "description": "Meie sponsorid"
   },
   "media": {
