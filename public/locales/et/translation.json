@@ -1813,6 +1813,7 @@
         "description": "Lisa uusi mängijaid või halda olemasolevaid mängijaid selles klubis",
         "close_button": "Sulge",
         "or": "VÕI",
+        "search_players_placeholder": "Otsi mängijaid nime järgi...",
         "search": {
           "title": "Otsi mängijat andmebaasist",
           "placeholder": "Otsi mängijat nime või ELTL ID järgi",
@@ -1865,6 +1866,11 @@
             "description": "Alusta oma esimese mängija lisamist",
             "add_first_button": "Lisa Esimene Mängija"
           }
+        },
+        "search_no_results": {
+          "title": "Mängijaid ei leitud",
+          "description": "Ükski mängija ei vasta sinu otsingu kriteeriumitele. Proovi otsingu tingimusi muuta.",
+          "clear_search": "Tühjenda Otsing"
         },
         "remove_confirmation": {
           "title": "Eemalda Mängija Klubist",
