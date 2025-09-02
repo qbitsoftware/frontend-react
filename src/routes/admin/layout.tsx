@@ -156,6 +156,7 @@ function RouteComponent() {
 
       if (path.includes(tournament_id) && path.includes(table_id)) {
         queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
+        queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id)] })
       }
       queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
       queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
