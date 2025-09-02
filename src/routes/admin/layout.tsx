@@ -148,6 +148,7 @@ function RouteComponent() {
 
       if (path.includes(tournament_id) && path.includes(table_id)) {
         queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
+        queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id)] })
       }
     } else if (data.type === WSMsgType.MatchReset) {
       const { tournament_id, table_id } = data.data;
