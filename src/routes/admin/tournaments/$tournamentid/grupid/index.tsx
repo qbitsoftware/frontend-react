@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { TournamentTables } from "./-components/tables";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import ErrorPage from "@/components/error";
@@ -12,8 +12,9 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const params = useParams({ from: "/admin/tournaments/$tournamentid/grupid/" })
+  const { data: tournament_tables } = UseGetTournamentTablesQuery(Number(params.tournamentid))
   const tournament = useTournament()
-  const { data: tournament_tables } = UseGetTournamentTablesQuery(tournament.tournamentData.id)
   // const useRatingMutation = UseCalcTournamentRating(tournament.id);
   // const handleRatingCalculation = async () => {
   //   try {

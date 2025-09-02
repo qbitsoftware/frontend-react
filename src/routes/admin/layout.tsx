@@ -104,8 +104,15 @@ function RouteComponent() {
       if (path.includes(tournament_id) && path.includes(table_id)) {
         queryClient.invalidateQueries({ queryKey: ["participants", Number(table_id)] });
       }
-    } else if (data.type === WSMsgType.TournamentCreated || data.type === WSMsgType.TournamentDeleted) {
+    } else if (data.type === WSMsgType.TournamentCreated) {
       queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
+    } else if (data.type === WSMsgType.TournamentDeleted) {
+      const { tournament_id } = data.data;
+      const path = window.location.pathname;
+      queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
+      if (path.includes(tournament_id)) {
+        navigate({ to: `/admin/tournaments` });
+      }
     } else if (data.type === WSMsgType.TournamentUpdated) {
       const { tournament_id } = data.data
       queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
@@ -149,6 +156,8 @@ function RouteComponent() {
       if (path.includes(tournament_id) && path.includes(table_id)) {
         queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
       }
+      queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
+      queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
     } else if (data.type === WSMsgType.MatchResetSolo) {
       const { tournament_id, table_id } = data.data;
       const path = window.location.pathname;

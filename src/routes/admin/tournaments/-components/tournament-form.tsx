@@ -195,6 +195,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
   initial_data,
 }) => {
   const { t } = useTranslation();
+  const [editorKey, setEditorKey] = useState(0);
 
   const [value, setValue] = useState<YooptaContentValue | undefined>(
     initial_data && initial_data.information
@@ -245,9 +246,49 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
   }
 
   useEffect(() => {
-    if (initial_data && initial_data.information != "") {
-      setValue(JSON.parse(initial_data.information));
+    if (initial_data) {
+      // Update the editor value
+      if (initial_data.information && initial_data.information !== "") {
+        setValue(JSON.parse(initial_data.information));
+      } else {
+        setValue(undefined);
+      }
+      // Reset the form with new initial_data
+      form.reset({
+        ...initial_data,
+        start_date: new Date(initial_data.start_date),
+        end_date: new Date(initial_data.end_date),
+        rating_coef: initial_data.rating_coef == 0 ? 1 : initial_data.rating_coef,
+        registration_type: initial_data.registration_type || "onsite",
+        registered_players_link: initial_data.registered_players_link || "",
+        registration_link: initial_data.registration_link || "",
+      });
+    } else {
+      // Reset to empty form if no initial_data
+      setValue(undefined);
+      form.reset({
+        name: "",
+        start_date: new Date(),
+        end_date: new Date(),
+        total_tables: 1,
+        sport: "tabletennis",
+        location: "",
+        organizer: "",
+        category: "",
+        information: "",
+        private: false,
+        calc_rating: false,
+        rating_coef: 1,
+        registration_type: "onsite",
+        registration_link: "",
+        registered_players_link: "",
+      });
     }
+
+
+    setTimeout(() => {
+      setEditorKey((prevKey) => prevKey + 1);
+    }, 50)
   }, [initial_data]);
 
   const onSubmit = async (values: TournamentFormValues) => {
@@ -569,7 +610,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger className="h-10">
@@ -786,51 +827,6 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                     )}
                   />
                 </div>
-
-                {/* 
-                <FormField
-                  control={form.control}
-                  name="rating_coef"
-                  render={({ field }) => (
-                    <FormItem
-                      className="space-y-3"
-                      id="tutorial-tournament-rating-coef"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <FormLabel className="text-sm font-medium">
-                            {t(
-                              "admin.tournaments.create_tournament.rating_coef"
-                            )}
-                          </FormLabel>
-                          <FormDescription className="text-xs mt-1">
-                            {t(
-                              "admin.tournaments.create_tournament.rating_coef_description"
-                            )}
-                          </FormDescription>
-                        </div>
-                        <div className="text-sm font-semibold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                          {field.value}
-                        </div>
-                      </div>
-                      <FormControl>
-                        <input
-                          type="range"
-                          min={1}
-                          max={2}
-                          step={0.05}
-                          value={field.value}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                */}
               </div>
 
               {/* Additional Information Section */}
@@ -853,7 +849,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                   className="bg-gray-50/50 rounded-lg p-4 border border-gray-200"
                   id="tutorial-tournament-information"
                 >
-                  <Editor value={value} setValue={setValue} readOnly={false} />
+                  <Editor key={editorKey} value={value} setValue={setValue} readOnly={false} />
                 </div>
               </div>
 

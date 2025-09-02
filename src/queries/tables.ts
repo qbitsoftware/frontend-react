@@ -46,11 +46,19 @@ export function UseGetTournamentTablesQuery(tournament_id: number) {
     return useQuery<TournamentTablesResponse>({
         queryKey: ["tournament_tables_query", tournament_id],
         queryFn: async () => {
-            const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables`, {
-                withCredentials: true,
-            })
+            try {
+                const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables`, {
+                    withCredentials: true,
+                })
 
-            return data;
+                return data;
+            } catch (error: any) {
+                if (error.response?.status == 404) {
+                    return { data: [], message: "No tables found", error: null };
+                } else {
+                    return { data: null, message: "", error: "An error occurred" };
+                }
+            }
         },
     });
 }

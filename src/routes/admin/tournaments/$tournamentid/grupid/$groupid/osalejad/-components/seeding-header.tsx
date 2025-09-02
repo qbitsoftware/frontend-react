@@ -64,11 +64,11 @@ const SeedingHeader = ({
     if (!data || !data.data) {
       return false;
     }
-    const winners = data.data.find((match) => {
-      return match.match.winner_id != "";
+    const have_matches = data.data.find((match) => {
+      return match.match.p1_id != "" && match.match.p2_id != "";
     });
 
-    if (!winners) {
+    if (!have_matches) {
       return false;
     } else {
       return true;

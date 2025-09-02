@@ -190,11 +190,18 @@ export const UseGetTournamentAdminQuery = (id: number) => {
   return useQuery<TournamentResponse>({
     queryKey: ["tournament_admin_query", id],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(`/api/v1/tournaments/${id}`, {
-        params: { public: false },
-        withCredentials: true,
-      });
-      return data;
+      try {
+        const { data } = await axiosInstance.get(`/api/v1/tournaments/${id}`, {
+          params: { public: false },
+          withCredentials: true,
+        });
+        return data;
+      } catch (error: any) {
+        if (error.response.status === 404) {
+          return { data: null, message: "Tournament not found", error: null };
+        }
+        return { data: null, message: "Tournament not found", error: "Not found" };
+      }
     },
   });
 };
