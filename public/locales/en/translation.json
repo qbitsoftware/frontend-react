@@ -532,6 +532,7 @@
       "yob": "YOB",
       "club": "Club",
       "subgroup": "Subgroup",
+      "export": "Export Standings",
       "filter": {
         "all_ratings": "All ratings",
         "rating_plus": "{{rating}}+",

@@ -14,6 +14,7 @@ export const UseGetDownloadProtocol = (tournament_id: number, group_id: number, 
     })
 }
 
+
 export const downloadExcelFile = (blob: Blob, fileName: string = 'protocol.xlsx') => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
