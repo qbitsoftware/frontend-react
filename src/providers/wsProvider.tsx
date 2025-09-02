@@ -20,25 +20,20 @@ export const WSProvider: React.FC<WSProviderProps> = ({ url, children, onMessage
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        console.log("WSProvider: setting up WebSocket connection to", url);
         if (!wsRef.current) {
             wsRef.current = new WebSocket(url + "?token=" + import.meta.env.VITE_TOURNAMENT10_PUBLIC_KEY);
             wsRef.current.onopen = () => {
-                console.log("WSProvider: opening connection");
                 setConnected(true);
             };
             wsRef.current.onclose = () => {
-                console.log("WSProvider: closing connection");
                 setConnected(false);
             };
             wsRef.current.onerror = () => {
-                console.log("WSProvider: error");
                 setConnected(false);
             };
             wsRef.current.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
-                    console.log("WSProvider: received message", data);
                     if (onMessage) {
                         onMessage(data);
                     }

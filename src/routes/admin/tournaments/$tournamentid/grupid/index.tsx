@@ -1,44 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TournamentTables } from "./-components/tables";
-import { UseGetTournamentTables } from "@/queries/tables";
-import { ErrorResponse } from "@/types/errors";
+import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import ErrorPage from "@/components/error";
 import { useTournament } from "@/routes/voistlused/$tournamentid/-components/tournament-provider";
-// import { Button } from "@/components/ui/button";
-// import { UseCalcTournamentRating } from "@/queries/tournaments";
 
 export const Route = createFileRoute(
   "/admin/tournaments/$tournamentid/grupid/"
 )({
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    let tournament_tables;
-    try {
-      tournament_tables = await queryClient.ensureQueryData(
-        UseGetTournamentTables(Number(params.tournamentid))
-      );
-    } catch (error) {
-      const err = error as ErrorResponse;
-      if (err.response.status !== 404) {
-        throw error;
-      }
-    }
-    return { tournament_tables };
-  },
 });
 
 function RouteComponent() {
-  const { tournament_tables } = Route.useLoaderData();
-  const tournament = useTournament();
-   // const useRatingMutation = UseCalcTournamentRating(tournament.id);
-   // const handleRatingCalculation = async () => {
-   //   try {
-   //     await useRatingMutation.mutateAsync();
-   //   } catch (error) {
-   //     console.log("Error", error);
-   //   }
-   // };
+  const tournament = useTournament()
+  const { data: tournament_tables } = UseGetTournamentTablesQuery(tournament.tournamentData.id)
+  // const useRatingMutation = UseCalcTournamentRating(tournament.id);
+  // const handleRatingCalculation = async () => {
+  //   try {
+  //     await useRatingMutation.mutateAsync();
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">

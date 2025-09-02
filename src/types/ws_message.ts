@@ -14,6 +14,7 @@ export enum WSMsgType {
     MatchUpdated = "match_updated",
     MatchDeleted = "match_deleted",
     MatchReset = "match_reset",
+    MatchResetSolo = "match_reset_solo",
     MatchStarted = "match_started",
 
     // Participant events

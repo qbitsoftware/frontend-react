@@ -13,7 +13,7 @@ import EmptyComponent from '@/routes/-components/empty-component'
 import LoadingScreen from '@/routes/-components/loading-screen'
 
 export const Route = createFileRoute(
-  '/admin/tournaments/$tournamentid/grupid/$groupid/kohad',
+  '/admin/tournaments/$tournamentid/grupid/$groupid/kohad/',
 )({
   errorComponent: () => <ErrorPage />,
   component: RouteComponent,
@@ -112,11 +112,10 @@ function RouteComponent() {
                       },
                     })
                   }
-                  className={`py-2 px-2 border-b-2 font-medium text-sm transition-all duration-300 ${
-                    groupId === stage.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+                  className={`py-2 px-2 border-b-2 font-medium text-sm transition-all duration-300 ${groupId === stage.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
                 >
                   {translatedName}
                 </button>

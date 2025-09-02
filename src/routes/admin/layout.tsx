@@ -135,6 +135,33 @@ function RouteComponent() {
           navigate({ to: `/admin/tournaments/${Number(tournament_id)}/grupid` });
         }
       }
+    } else if (data.type === WSMsgType.MatchStarted) {
+      const { tournament_id, table_id } = data.data;
+      const path = window.location.pathname;
+
+      if (path.includes(tournament_id) && path.includes(table_id)) {
+        queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
+      }
+    } else if (data.type === WSMsgType.MatchReset) {
+      const { tournament_id, table_id } = data.data;
+      const path = window.location.pathname;
+
+      if (path.includes(tournament_id) && path.includes(table_id)) {
+        queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
+      }
+    } else if (data.type === WSMsgType.MatchResetSolo) {
+      const { tournament_id, table_id } = data.data;
+      const path = window.location.pathname;
+
+      if (path.includes(tournament_id) && path.includes(table_id)) {
+        queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
+        queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id)] })
+        queryClient.invalidateQueries({ queryKey: ['matches', Number(table_id)] })
+        queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
+        queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
+        queryClient.invalidateQueries({ queryKey: ['tournament_table', Number(table_id)] })
+
+      }
     }
   }, [location.pathname, queryClient, navigate]);
 
