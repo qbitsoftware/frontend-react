@@ -58,7 +58,14 @@ const EliminationMatch = ({
     if (hasValidParticipants) {
       const rect = event.currentTarget.getBoundingClientRect();
       const parentElement = event.currentTarget.parentElement;
-      const hasTransform = parentElement?.classList.contains('-translate-y-1/2');
+      
+      // Check if element is inside a TransformWrapper (zoom container)
+      const isInsideTransformWrapper = event.currentTarget.closest('[data-testid="react-transform-wrapper"]') !== null ||
+                                      event.currentTarget.closest('.react-transform-wrapper') !== null ||
+                                      event.currentTarget.closest('.react-transform-component') !== null;
+      
+      const hasTranslateTransform = parentElement?.classList.contains('-translate-y-1/2');
+      const hasTransform = hasTranslateTransform || isInsideTransformWrapper;
 
       setMousePosition({
         x: rect.right,

@@ -568,6 +568,12 @@
       "final": "FINAL",
       "semifinal": "SEMIFINAL",
       "quarterfinal": "QUARTERFINAL",
+      "round_of_16": "ROUND OF 16",
+      "round_of_32": "ROUND OF 32",
+      "round_of_64": "ROUND OF 64",
+      "round_of_128": "ROUND OF 128",
+      "round_of_256": "ROUND OF 256",
+      "round_of": "Round of {{count}}",
       "winner": "Winner",
       "matches": "Matches",
       "timetable": "Timetable",
@@ -2086,5 +2092,12 @@
       "exportButton": "Export to Excel",
       "exporting": "Exporting..."
     }
+  },
+  "match_tooltip": {
+    "match": "Match",
+    "set_scores": "Set Scores",
+    "set": "Set",
+    "match_scored_by_sets_only": "Match scored by sets only",
+    "no_detailed_scores_available": "No detailed scores available"
   }
 }

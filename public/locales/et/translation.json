@@ -615,6 +615,12 @@
       "final": "FINAAL",
       "semifinal": "POOLFINAAL",
       "quarterfinal": "VEERANDFINAAL",
+      "round_of_16": "16-FINAAL",
+      "round_of_32": "32-FINAAL",
+      "round_of_64": "64-FINAAL",
+      "round_of_128": "128-FINAAL",
+      "round_of_256": "256-FINAAL",
+      "round_of": "{{count}}-finaal",
       "winner": "Võitja",
       "matches": "Mängud",
       "timetable": "Ajakava",
@@ -2115,5 +2121,12 @@
       "exportButton": "Ekspordi Excelisse",
       "exporting": "Ekspordib..."
     }
+  },
+  "match_tooltip": {
+    "match": "Mäng",
+    "set_scores": "Setide tulemused",
+    "set": "Set",
+    "match_scored_by_sets_only": "Tulemuse sisestatud settides",
+    "no_detailed_scores_available": "Tulemust pole veel sisestatud"
   }
 }

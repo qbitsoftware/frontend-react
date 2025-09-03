@@ -66,18 +66,18 @@ export const SingleElimination = ({
             case 2:
                 return t("competitions.timetable.quarterfinal");
             case 3:
-                return "ROUND OF 16";
+                return t("competitions.timetable.round_of_16");
             case 4:
-                return "ROUND OF 32";
+                return t("competitions.timetable.round_of_32");
             case 5:
-                return "ROUND OF 64";
+                return t("competitions.timetable.round_of_64");
             case 6:
-                return "ROUND OF 128";
+                return t("competitions.timetable.round_of_128");
             case 7:
-                return "ROUND OF 256";
+                return t("competitions.timetable.round_of_256");
             default: {
                 const participantCount = Math.pow(2, roundsFromEnd + 1);
-                return `Round of ${participantCount}`;
+                return t("competitions.timetable.round_of", { count: participantCount });
             }
         }
     };

@@ -2,6 +2,7 @@ import React from "react";
 import { TableMatch } from "@/types/brackets";
 import { capitalizeWords, cn } from "@/lib/utils";
 import { extractMatchSets } from "./utils/utils";
+import { useTranslation } from "react-i18next";
 
 interface MatchHoverTooltipProps {
   match: TableMatch;
@@ -14,6 +15,7 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
   visible,
   position,
 }) => {
+  const { t } = useTranslation();
   const { p1_sets, p2_sets } = extractMatchSets(match);
   const scores = match.match?.extra_data?.score || [];
 
@@ -62,7 +64,7 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
       <div className="space-y-3">
         <div className="border-b border-gray-100 pb-2">
           <div className="text-sm font-semibold text-gray-700">
-            Match {match.match.readable_id > 0 ? match.match.readable_id : ""}
+            {t("match_tooltip.match")} {match.match.readable_id > 0 ? match.match.readable_id : ""}
           </div>
         </div>
 
@@ -137,7 +139,7 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
         {scores.length > 0 && hasActualPointScores && (
           <div className="space-y-2">
             <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-              Set Scores
+              {t("match_tooltip.set_scores")}
             </div>
             <div className="grid gap-1">
               {scores.map((score: any, index: number) => {
@@ -146,7 +148,7 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
 
                 return (
                   <div key={index} className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Set {index + 1}</span>
+                    <span className="text-gray-600">{t("match_tooltip.set")} {index + 1}</span>
                     <div className="flex items-center space-x-1">
                       <span className={cn(
                         "font-mono",
@@ -172,14 +174,14 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
         {/* Show message when only set scores are available */}
         {scores.length > 0 && !hasActualPointScores && (
           <div className="text-xs text-gray-500 text-center py-2">
-            Match scored by sets only
+            {t("match_tooltip.match_scored_by_sets_only")}
           </div>
         )}
 
         {/* No scores available */}
         {scores.length === 0 && (
           <div className="text-xs text-gray-500 text-center py-2">
-            No detailed scores available
+            {t("match_tooltip.no_detailed_scores_available")}
           </div>
         )}
       </div>

@@ -7,10 +7,11 @@ import { Separator } from "./ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { useRef, useState } from "react";
 import { Button } from "./ui/button";
-import { Printer, QrCode } from "lucide-react";
+import { Printer, QrCode, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PDFPreviewModal } from "./pdf-preview-modal";
 import { printQRCodeToBlankSheet } from "@/lib/qr-print";
+import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 
 interface TournamentTableProps {
   admin?: boolean;
@@ -18,6 +19,39 @@ interface TournamentTableProps {
   tournament_table: TournamentTable;
   handleSelectMatch?: (match: MatchWrapper) => void;
 }
+
+const ZoomControls = () => {
+  const { zoomIn, zoomOut, resetTransform } = useControls();
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50 flex gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => zoomIn(0.1)}
+        className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg"
+      >
+        <ZoomIn className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => zoomOut(0.1)}
+        className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg"
+      >
+        <ZoomOut className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => resetTransform()}
+        className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg"
+      >
+        <RotateCcw className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 export const EliminationBrackets = ({
   admin = false,
@@ -29,6 +63,7 @@ export const EliminationBrackets = ({
   const { t } = useTranslation();
   const [showPreview, setShowPreview] = useState(false);
   const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
+
 
   const handlePrint = () => {
     setShowPreview(true);
@@ -143,51 +178,81 @@ export const EliminationBrackets = ({
         </div>
       </div>
 
-      <div
-        ref={scrollContainerRef}
-        className="bg-[#F8F9FA] relative h-[85vh] flex flex-col overflow-auto"
-        id="bracket-container"
-      >
-        <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 min-w-max">
-          {data.eliminations.map((eliminations, eliminationIndex) => {
-            return eliminations.elimination.map((table, tableIndex) => {
-              const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;
-              const uniqueId = `${eliminations.elimination[0].name}`;
+      <div className="bg-[#F8F9FA] relative h-[85vh] flex flex-col">
+        <div className="relative h-full">
+          <TransformWrapper
+            initialScale={1}
+            minScale={0.8}
+            maxScale={1.5}
+            doubleClick={{ disabled: true}}
+            wheel={{ step: 0.1 }}
+            pinch={{ step: 5 }}
+            panning={{ 
+              disabled: false,
+              velocityDisabled: true,
+              excluded: ["input", "textarea", "button", "select"]
+            }}
+            limitToBounds={false}
+            centerOnInit={false}
+            centerZoomedOut={false}
+            zoomAnimation={{ disabled: false }}
+            alignmentAnimation={{ disabled: false }}
+            smooth={true}
+          >
+            <ZoomControls />
+            <div
+              ref={scrollContainerRef}
+              className="h-full overflow-auto"
+              id="bracket-container"
+            >
+              <TransformComponent
+                wrapperClass="!min-h-full !min-w-full !cursor-grab active:!cursor-grabbing"
+                contentClass="!min-w-max"
+              >
+                <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 min-w-max">
+                  {data.eliminations.map((eliminations, eliminationIndex) => {
+                    return eliminations.elimination.map((table, tableIndex) => {
+                      const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;
+                      const uniqueId = `${eliminations.elimination[0].name}`;
 
-              return (
-                <div key={uniqueKey}>
-                  <div
-                    className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
-                  >
-                    {table.name}
-                  </div>
-                  {table.name !== BracketType.MIINUSRING ? (
-                    <div className="" id={uniqueId}>
-                      <SingleElimination
-                        admin={admin}
-                        tournament_table={tournament_table}
-                        data={table}
-                        handleSelectMatch={handleSelectMatch}
-                        hoveredPlayerId={hoveredPlayerId}
-                        onPlayerHover={setHoveredPlayerId}
-                      />
-                    </div>
-                  ) : (
-                    <div className="" id={uniqueId}>
-                      <DoubleElimination
-                        admin={admin}
-                        tournament_table={tournament_table}
-                        data={table}
-                        handleSelectMatch={handleSelectMatch}
-                        hoveredPlayerId={hoveredPlayerId}
-                        onPlayerHover={setHoveredPlayerId}
-                      />
-                    </div>
-                  )}
+                      return (
+                        <div key={uniqueKey}>
+                          <div
+                            className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
+                          >
+                            {table.name}
+                          </div>
+                          {table.name !== BracketType.MIINUSRING ? (
+                            <div className="" id={uniqueId}>
+                              <SingleElimination
+                                admin={admin}
+                                tournament_table={tournament_table}
+                                data={table}
+                                handleSelectMatch={handleSelectMatch}
+                                hoveredPlayerId={hoveredPlayerId}
+                                onPlayerHover={setHoveredPlayerId}
+                              />
+                            </div>
+                          ) : (
+                            <div className="" id={uniqueId}>
+                              <DoubleElimination
+                                admin={admin}
+                                tournament_table={tournament_table}
+                                data={table}
+                                handleSelectMatch={handleSelectMatch}
+                                hoveredPlayerId={hoveredPlayerId}
+                                onPlayerHover={setHoveredPlayerId}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    });
+                  })}
                 </div>
-              );
-            });
-          })}
+              </TransformComponent>
+            </div>
+          </TransformWrapper>
         </div>
       </div>
 
