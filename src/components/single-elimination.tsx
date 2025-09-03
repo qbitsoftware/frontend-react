@@ -215,7 +215,6 @@ export const SingleElimination = ({
                                                 marginTop: matchIndex > 0 && matchIndex % 2 === 0 ? `${gap}px` : undefined,
                                             }}
                                         >
-                                            <div className={cn("absolute text-[8px]", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
                                             <div className={cn("py-[27px]", isEven ? 'self-start' : 'self-end')}>
                                                 <div className={cn("w-4 self-start", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                             </div>

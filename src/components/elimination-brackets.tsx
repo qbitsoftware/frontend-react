@@ -125,16 +125,18 @@ export const EliminationBrackets = ({
                   {t("competitions.print_qr_code")}
                 </span>
               </Button>
-              <Button
-                variant="outline"
-                className="hidden sm:flex flex-shrink-0 self-end sm:self-auto"
-                onClick={handlePrint}
-              >
-                <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">
-                  {t("admin.tournaments.groups.tables.print")}
-                </span>
-              </Button>
+              {admin && (
+                <Button
+                  variant="outline"
+                  className="hidden sm:flex flex-shrink-0 self-end sm:self-auto"
+                  onClick={handlePrint}
+                >
+                  <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="text-xs sm:text-sm">
+                    {t("admin.tournaments.groups.tables.print")}
+                  </span>
+                </Button>
+              )}
             </div>
           </div>
           <Separator className="border-gray-300" />

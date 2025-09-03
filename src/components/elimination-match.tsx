@@ -137,13 +137,6 @@ const EliminationMatch = ({
       handleSelectMatch(matchWrapper);
     }
   };
-  const bracket =
-    Math.abs(
-      Number(match.match.bracket.split("-")[0]) -
-      Number(match.match.bracket.split("-")[1]),
-    ) == 1
-      ? match.match.bracket
-      : "";
 
   const matchDate = match.match.start_date;
 
@@ -156,11 +149,9 @@ const EliminationMatch = ({
         onMouseMove={handleMatchMouseMove}
         className="relative w-[198px] h-[60px] bg-white flex flex-col border border-gray-200 rounded-md hover:shadow-md transition-shadow cursor-pointer"
       >
-        {bracket && (
-          <div className="absolute -right-[35px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded">
-            {bracket}
-          </div>
-        )}
+        <div className="absolute -top-[18px] right-0 text-[9px] font-medium text-gray-600 bg-white px-1 border border-blue-300 rounded">
+          {match.match.readable_id}
+        </div>
         <div className="absolute text-[10px] -top-[15px]">
           {match.match.state !== MatchState.FINISHED &&
             match.participant_1.id != "" &&
@@ -178,9 +169,8 @@ const EliminationMatch = ({
                 showLabel={true}
               />
               {matchDate && match.match.extra_data.table != "" && !isEmptyDate(matchDate) && (
-                <div className="flex items-center gap-1 ml-3 whitespace-nowrap">
+                <div className="mb-1 flex items-center gap-1 ml-3 whitespace-nowrap">
                   <Clock className="h-3 w-3" />
-                  <span>{formatDateGetDayMonth(matchDate)}</span>
                   <span className="font-semibold">
                     {formatDateGetHours(matchDate)}
                   </span>
@@ -196,8 +186,8 @@ const EliminationMatch = ({
                 {match.match.extra_data.table}
               </span>
               {matchDate && !isEmptyDate(matchDate) && (
-                <div className="flex items-center gap-1 ml-3 whitespace-nowrap">
-                  <Clock className="h-3 w-3" />
+                <div className="flex items-center gap-1 ml-2 whitespace-nowrap">
+                  <Clock className="h-3 w-3 mb-0.5" />
                   <span>{formatDateGetDayMonth(matchDate)}</span>
                   <span className="font-semibold">
                     {formatDateGetHours(matchDate)}
@@ -215,11 +205,11 @@ const EliminationMatch = ({
             hoveredPlayerId === match.participant_1.id && "ring-2 ring-blue-400 bg-blue-50 shadow-md"
           )}
         >
-          <div className="absolute text-[8px] left-1">
-            {match.match.previous_match_readable_id_1 >= 0
-              ? ""
-              : match.match.previous_match_readable_id_1}
-          </div>
+          {match.match.previous_match_readable_id_1 < 0 && (
+            <div className="absolute text-[9px] left-1">
+              {match.match.previous_match_readable_id_1}
+            </div>
+          )}
           {match.participant_1.id === "empty" ? (
             <>
               <div className="text-center px-2">{""}</div>
@@ -232,39 +222,46 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-1 font-medium w-[30px] text-xs flex items-center h-full">
-                {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_1.order : ""}`} */}
-                {`${match.match.type == "winner" && match.match.round == 0
+              <span className={cn(
+                "ml-1 font-medium text-xs flex items-center h-full justify-center",
+                match.match.type == "winner" && match.match.round == 0 ? "w-[30px]" : "w-[15px]"
+              )}>
+                {match.match.type == "winner" && match.match.round == 0
                   ? (match.participant_1.rr_order && match.participant_1.rr_order !== ''
                     ? match.participant_1.rr_order
                     : match.participant_1.order)
-                  : ""}`}
+                  : ""}
               </span>
-              <p
-                className={cn(
-                  "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors flex items-center",
-                  // p1_sets > p2_sets && "font-semibold",
-                  (match.match.forfeit
-                    ? match.match.winner_id === match.participant_1.id
-                    : p1_sets > p2_sets
-                  ) && "font-semibold",
-                )}
-                onMouseEnter={() => handlePlayerHover(match.participant_1.id)}
-                onMouseLeave={() => handlePlayerHover(null)}
-              >
+              <div className={cn(
+                "relative",
+                match.match.previous_match_readable_id_1 < 0 ? "w-[calc(100%-15px)] ml-4" : "w-full"
+              )}>
+                <p
+                  className={cn(
+                    "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors flex items-center",
+                    // p1_sets > p2_sets && "font-semibold",
+                    (match.match.forfeit
+                      ? match.match.winner_id === match.participant_1.id
+                      : p1_sets > p2_sets
+                    ) && "font-semibold",
+                  )}
+                  onMouseEnter={() => handlePlayerHover(match.participant_1.id)}
+                  onMouseLeave={() => handlePlayerHover(null)}
+                >
+                  {capitalizeWords(match.participant_1.name)}
+                </p>
                 {(() => {
                   const placement = getIndividualPlacement(match, match.participant_1.id);
                   return placement ? (
-                    <span className="mr-1 text-[10px] font-medium text-gray-600">
-                      {placement}.
+                    <span className="absolute right-[-60px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded flex items-center justify-center w-6 h-4">
+                      {placement}
                     </span>
                   ) : null;
                 })()}
-                {capitalizeWords(match.participant_1.name)}
-              </p>
+              </div>
               <p
                 className={cn(
-                  "px-3 h-full flex items-center",
+                  "px-3 h-full flex items-center justify-center w-8 text-center",
                   (match.match.forfeit
                     ? match.match.winner_id === match.participant_1.id
                     : p1_sets > p2_sets
@@ -293,11 +290,11 @@ const EliminationMatch = ({
             hoveredPlayerId === match.participant_2.id && "ring-2 ring-blue-400 bg-blue-50 shadow-md"
           )}
         >
-          <div className="absolute text-[8px] left-1">
-            {match.match.previous_match_readable_id_2 >= 0
-              ? ""
-              : match.match.previous_match_readable_id_2}
-          </div>
+          {match.match.previous_match_readable_id_2 < 0 && (
+            <div className="absolute text-[9px] left-1">
+              {match.match.previous_match_readable_id_2}
+            </div>
+          )}
           {match.participant_2.id === "empty" ? (
             <>
               <div className="text-center px-2">{""}</div>
@@ -310,38 +307,45 @@ const EliminationMatch = ({
             <div className="w-full" />
           ) : (
             <>
-              <span className="px-1 font-medium w-[30px] text-xs flex items-center h-full">
-                {/* {`${match.match.type == "winner" && match.match.round == 0 ? match.participant_2.order : ""}`} */}
-                {`${match.match.type == "winner" && match.match.round == 0
+              <span className={cn(
+                "ml-1 font-medium text-xs flex items-center h-full justify-center",
+                match.match.type == "winner" && match.match.round == 0 ? "w-[30px]" : "w-[15px]"
+              )}>
+                {match.match.type == "winner" && match.match.round == 0
                   ? (match.participant_2.rr_order && match.participant_2.rr_order !== ''
                     ? match.participant_2.rr_order
                     : match.participant_2.order)
-                  : ""}`}
+                  : ""}
               </span>
-              <p
-                className={cn(
-                  "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors flex items-center",
-                  (match.match.forfeit
-                    ? match.match.winner_id === match.participant_2.id
-                    : p2_sets > p1_sets
-                  ) && "font-semibold",
-                )}
-                onMouseEnter={() => handlePlayerHover(match.participant_2.id)}
-                onMouseLeave={() => handlePlayerHover(null)}
-              >
+              <div className={cn(
+                "relative",
+                match.match.previous_match_readable_id_2 < 0 ? "w-[calc(100%-15px)] ml-4" : "w-full"
+              )}>
+                <p
+                  className={cn(
+                    "w-full text-xs cursor-pointer hover:text-blue-600 transition-colors flex items-center",
+                    (match.match.forfeit
+                      ? match.match.winner_id === match.participant_2.id
+                      : p2_sets > p1_sets
+                    ) && "font-semibold",
+                  )}
+                  onMouseEnter={() => handlePlayerHover(match.participant_2.id)}
+                  onMouseLeave={() => handlePlayerHover(null)}
+                >
+                  {capitalizeWords(match.participant_2.name)}
+                </p>
                 {(() => {
                   const placement = getIndividualPlacement(match, match.participant_2.id);
                   return placement ? (
-                    <span className="mr-1 text-[10px] font-medium text-gray-600">
-                      {placement}.
+                    <span className="absolute right-[-60px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded flex items-center justify-center w-6 h-4">
+                      {placement}
                     </span>
                   ) : null;
                 })()}
-                {capitalizeWords(match.participant_2.name)}
-              </p>
+              </div>
               <p
                 className={cn(
-                  "px-3 h-full flex items-center",
+                  "px-3 h-full flex items-center justify-center w-8 text-center",
                   (match.match.forfeit
                     ? match.match.winner_id === match.participant_2.id
                     : p2_sets > p1_sets
