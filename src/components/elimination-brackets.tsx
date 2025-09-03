@@ -25,19 +25,15 @@ const ZoomControls = () => {
 
   const handleZoomIn = () => {
     const { scale, positionX, positionY } = instance.transformState;
-    const newScale = Math.min(scale + 0.1, 1.5);
+    const newScale = Math.min(scale + 0.05, 1.5);
     
-    // Keep both left and top edges fixed when zooming in
-    // Don't adjust position - just change scale
     setTransform(positionX, positionY, newScale);
   };
 
   const handleZoomOut = () => {
     const { scale, positionX, positionY } = instance.transformState;
-    const newScale = Math.max(scale - 0.1, 0.1);
+    const newScale = Math.max(scale - 0.05, 0.4);
     
-    // Keep both left and top edges fixed when zooming out
-    // Don't adjust position - just change scale to expand right and down only
     setTransform(positionX, positionY, newScale);
   };
 
@@ -249,20 +245,23 @@ export const EliminationBrackets = ({
         <div className="relative h-full">
           <TransformWrapper
             initialScale={window.innerWidth < 640 ? 0.8 : 0.9}
-            minScale={0.1}
+            minScale={0.4}
             maxScale={1.5}
             wheel={{ disabled: true }}
+            pinch={{ disabled: false, step: 5 }}
             panning={{
               disabled: false,
               allowLeftClickPan: false,
               allowRightClickPan: false,
-              allowMiddleClickPan: false
+              allowMiddleClickPan: false,
+              touchPadDisabled: false
             }}
             limitToBounds={false}
             minPositionX={window.innerWidth >= 640 ? 0 : -100}
             maxPositionX={window.innerWidth >= 640 ? 0 : undefined}
             minPositionY={window.innerWidth >= 640 ? 0 : -50}
             maxPositionY={undefined}
+            doubleClick={{ disabled: true }}
           >
             <ZoomControls />
             <div
