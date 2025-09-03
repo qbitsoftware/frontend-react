@@ -18,7 +18,7 @@ export const calculateAgeFromBirthDate = (birthDateString: string): number => {
 }
 
 export const filterByAgeClass = (user: User, ageClass: string) => {
-  const birthYear = new Date(user.birth_date).getFullYear();
+  const birthYear = getYear(user.birth_date)
   const currentYear = new Date().getFullYear();
 
   switch (ageClass) {
@@ -76,5 +76,5 @@ export const modifyTitleDependingOnFilter = (
 };
 
 export const getYear = (date: string) => {
-  return new Date(date).getFullYear()
+  return Number(date.slice(0, 4))
 }

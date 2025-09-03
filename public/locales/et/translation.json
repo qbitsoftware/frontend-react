@@ -749,8 +749,11 @@
       "girls_u13": "Tüdrukute U13",
       "boys_u15": "Poiste U15",
       "girls_u15": "Tüdrukute U15",
-      "boys_u19": "Poiste U19",
-      "girls_u19": "Tüdrukute U19",
+      "boys_u19": "Noormeeste U19",
+      "girls_u19": "Neidude U19",
+      "boys_u21": "Noormeeste U21",
+      "girls_u21": "Neidude U21",
+
       "combined": "Ühine"
     },
     "last_updated": "Viimati uuendatud",
