@@ -258,9 +258,9 @@ export const EliminationBrackets = ({
               allowRightClickPan: false,
               allowMiddleClickPan: false
             }}
-            limitToBounds={true}
-            minPositionX={0}
-            maxPositionX={0}
+            limitToBounds={window.innerWidth >= 640}
+            minPositionX={window.innerWidth >= 640 ? 0 : undefined}
+            maxPositionX={window.innerWidth >= 640 ? 0 : undefined}
           >
             <ZoomControls />
             <div
