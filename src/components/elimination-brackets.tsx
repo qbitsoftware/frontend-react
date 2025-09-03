@@ -193,8 +193,7 @@ export const EliminationBrackets = ({
             panning={{ 
               disabled: false,
               velocityDisabled: true,
-              excluded: ["input", "textarea", "button", "select"],
-              touchPadDisabled: false
+              excluded: ["input", "textarea", "button", "select"]
             }}
             limitToBounds={false}
             centerOnInit={false}
