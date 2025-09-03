@@ -166,7 +166,7 @@ export function ClubTable({ clubs, variant, onEditClub, onManagePlayers, isLoadi
                         <TableCell className="px-3 py-3 text-gray-600 truncate hidden md:table-cell">{club.address}</TableCell>
                         <TableCell className="px-3 py-3 hidden lg:table-cell">
                           <a
-                            href={club.website}
+                            href={club.website.startsWith('http') ? club.website : `https://${club.website}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-500 hover:underline truncate block"

@@ -175,6 +175,9 @@
     "no_news_description": "Check back later for updates",
     "no_news_subtitle": "There are currently no blog posts created.",
     "read_more": "Read more",
+    "back_to_news": "Back to News",
+    "share": "Share",
+    "link_copied": "Link copied to clipboard",
     "categories": {
       "all": "All",
       "competitions": "Competitions",

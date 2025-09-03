@@ -171,6 +171,9 @@
     "no_news_subtitle": "Hetkel ei ole ühtegi blogi postitust.",
     "no_news_description": "Proovi hiljem uuesti",
     "read_more": "Loe edasi",
+    "back_to_news": "Tagasi uudiste juurde",
+    "share": "Jaga",
+    "link_copied": "Link kopeeritud lõikelauale",
     "categories": {
       "all": "Kõik",
       "news": "Teadaanded",

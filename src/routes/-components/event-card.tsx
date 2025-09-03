@@ -24,7 +24,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                     <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                         {event.is_gameday ? (
                             <div className={`
-                  px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
+                  px-1.5 sm:px-2 md:px-2 lg:px-3 py-1 sm:py-1.5 md:py-1 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
                   ${isUpcoming
                                     ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
                                     : 'bg-gray-100 text-gray-700 border-gray-200'
@@ -33,7 +33,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                                 <div className="text-xs font-medium opacity-90">
                                     {getAbbreviatedMonth(event.gameday_date)}
                                 </div>
-                                <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
+                                <div className="text-sm sm:text-base md:text-sm lg:text-lg font-bold leading-none">
                                     {new Intl.DateTimeFormat('et-EE', { 
                                         day: 'numeric', 
                                         timeZone: 'Europe/Tallinn' 
@@ -43,7 +43,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                         ) : (
                             <>
                                 <div className={`
-                    px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
+                    px-1.5 sm:px-2 md:px-2 lg:px-3 py-1 sm:py-1.5 md:py-1 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
                     ${isUpcoming
                                         ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
                                         : 'bg-gray-100 text-gray-700 border-gray-200'
@@ -52,7 +52,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                                     <div className="text-xs font-medium opacity-90">
                                         {getAbbreviatedMonth(event.tournament.start_date)}
                                     </div>
-                                    <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
+                                    <div className="text-sm sm:text-base md:text-sm lg:text-lg font-bold leading-none">
                                         {formatDateRange(event.tournament.start_date, event.tournament.end_date).split(" - ")[0]}
                                     </div>
                                 </div>
@@ -61,7 +61,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                                     <>
                                         <div className="w-2 sm:w-3 h-px bg-gray-300"></div>
                                         <div className={`
-                        px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
+                        px-1.5 sm:px-2 md:px-2 lg:px-3 py-1 sm:py-1.5 md:py-1 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
                         ${isUpcoming
                                                 ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
                                                 : 'bg-gray-100 text-gray-700 border-gray-200'
@@ -84,7 +84,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                                                         : getAbbreviatedMonth(event.tournament.start_date);
                                                 })()}
                                             </div>
-                                            <div className="text-sm sm:text-base lg:text-lg font-bold leading-none">
+                                            <div className="text-sm sm:text-base md:text-sm lg:text-lg font-bold leading-none">
                                                 {formatDateRange(event.tournament.start_date, event.tournament.end_date).split(" - ")[1]}
                                             </div>
                                         </div>
@@ -97,7 +97,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                     {/* Event Content */}
                     <div className="flex-1 min-w-0">
                         <h6 className={`
-                font-semibold text-sm sm:text-base mb-0.5 sm:mb-1 truncate group-hover:text-[#4C97F1] transition-colors duration-200
+                font-semibold text-sm md:text-sm lg:text-base mb-0.5 sm:mb-1 line-clamp-2 md:line-clamp-1 lg:line-clamp-2 group-hover:text-[#4C97F1] transition-colors duration-200
                 ${isUpcoming ? 'text-gray-900' : 'text-gray-800'}
               `} title={event.tournament.name}>
                             {event.tournament.name}
