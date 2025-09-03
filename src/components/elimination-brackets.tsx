@@ -5,9 +5,9 @@ import { SingleElimination } from "./single-elimination";
 import { DoubleElimination } from "./double-elimination";
 import { Separator } from "./ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { Button } from "./ui/button";
-import { Printer, QrCode, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { Printer, QrCode, ZoomIn, ZoomOut, ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PDFPreviewModal } from "./pdf-preview-modal";
 import { printQRCodeToBlankSheet } from "@/lib/qr-print";
@@ -21,34 +21,101 @@ interface TournamentTableProps {
 }
 
 const ZoomControls = () => {
-  const { zoomIn, zoomOut, resetTransform } = useControls();
+  const { setTransform, instance } = useControls();
+
+  const handleZoomIn = () => {
+    const { scale, positionX, positionY } = instance.transformState;
+    const newScale = Math.min(scale + 0.1, 1.5);
+    
+    // Keep both left and top edges fixed when zooming in
+    // Don't adjust position - just change scale
+    setTransform(positionX, positionY, newScale);
+  };
+
+  const handleZoomOut = () => {
+    const { scale, positionX, positionY } = instance.transformState;
+    const newScale = Math.max(scale - 0.1, 0.8);
+    
+    // Keep both left and top edges fixed when zooming out
+    // Don't adjust position - just change scale to expand right and down only
+    setTransform(positionX, positionY, newScale);
+  };
+
+  const handlePan = useCallback((direction: 'left' | 'right') => {
+    const { positionX, positionY, scale } = instance.transformState;
+    const panAmount = 200;
+    
+    let newX = positionX;
+    
+    switch (direction) {
+      case 'left':
+        newX = Math.min(positionX + panAmount, 0);
+        break;
+      case 'right':
+        newX = positionX - panAmount;
+        break;
+    }
+    
+    setTransform(newX, positionY, scale);
+  }, [instance, setTransform]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => zoomIn(0.1)}
-        className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg"
-      >
-        <ZoomIn className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => zoomOut(0.1)}
-        className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg"
-      >
-        <ZoomOut className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => resetTransform()}
-        className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg"
-      >
-        <RotateCcw className="h-4 w-4" />
-      </Button>
+    <div className="absolute top-4 right-4 z-40">
+      {/* Desktop Layout: 2x2 Grid */}
+      <div className="hidden sm:grid grid-cols-2 gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePan('left')}
+          className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
+        >
+          <ArrowLeft className="h-3 w-3" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePan('right')}
+          className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
+        >
+          <ArrowRight className="h-3 w-3" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleZoomIn}
+          className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
+        >
+          <ZoomIn className="h-3 w-3" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleZoomOut}
+          className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
+        >
+          <ZoomOut className="h-3 w-3" />
+        </Button>
+      </div>
+      
+      {/* Mobile Layout: Single Column */}
+      <div className="sm:hidden flex flex-col gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleZoomIn}
+          className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
+        >
+          <ZoomIn className="h-3 w-3" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleZoomOut}
+          className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
+        >
+          <ZoomOut className="h-3 w-3" />
+        </Button>
+      </div>
     </div>
   );
 };
@@ -109,7 +176,7 @@ export const EliminationBrackets = ({
                 defaultValue={data?.eliminations[0]?.elimination[0].name}
                 className="z-10 w-full"
               >
-                <div className="w-full overflow-x-auto">
+                <div className="w-full overflow-auto">
                   <TabsList className="flex justify-start gap-2 px-0 bg-transparent min-w-max h-auto">
                     {data.eliminations.map((item, index) => (
                       <TabsTrigger
@@ -178,41 +245,30 @@ export const EliminationBrackets = ({
         </div>
       </div>
 
-      <div className="bg-[#F8F9FA] relative h-[85vh] flex flex-col" style={{ touchAction: 'none' }}>
+      <div className="bg-[#F8F9FA] relative h-[85vh] flex flex-col">
         <div className="relative h-full">
           <TransformWrapper
-            initialScale={1}
-            minScale={0.8}
+            initialScale={window.innerWidth < 640 ? 0.8 : 0.9}
+            minScale={0.5}
             maxScale={1.5}
-            doubleClick={{ disabled: true}}
-            wheel={{ step: 0.1 }}
-            pinch={{ 
-              step: 3,
-              disabled: false
-            }}
-            panning={{ 
+            wheel={{ disabled: true }}
+            panning={{
               disabled: false,
-              velocityDisabled: false,
-              excluded: ["input", "textarea", "button", "select"]
+              allowLeftClickPan: false,
+              allowRightClickPan: false,
+              allowMiddleClickPan: false
             }}
-            limitToBounds={false}
-            centerOnInit={false}
-            centerZoomedOut={false}
-            zoomAnimation={{ disabled: false }}
-            alignmentAnimation={{ disabled: false }}
-            smooth={true}
-            disablePadding={true}
+            limitToBounds={true}
+            minPositionX={0}
+            maxPositionX={0}
           >
             <ZoomControls />
             <div
               ref={scrollContainerRef}
-              className="h-full overflow-auto"
+              className="h-full overflow-y-auto overflow-x-hidden"
               id="bracket-container"
             >
-              <TransformComponent
-                wrapperClass="!min-h-full !min-w-full !cursor-grab active:!cursor-grabbing"
-                contentClass="!min-w-max"
-              >
+              <TransformComponent>
                 <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 min-w-max">
                   {data.eliminations.map((eliminations, eliminationIndex) => {
                     return eliminations.elimination.map((table, tableIndex) => {
