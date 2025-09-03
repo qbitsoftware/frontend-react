@@ -34,7 +34,7 @@ const ZoomControls = () => {
 
   const handleZoomOut = () => {
     const { scale, positionX, positionY } = instance.transformState;
-    const newScale = Math.max(scale - 0.1, 0.8);
+    const newScale = Math.max(scale - 0.1, 0.1);
     
     // Keep both left and top edges fixed when zooming out
     // Don't adjust position - just change scale to expand right and down only
@@ -249,7 +249,7 @@ export const EliminationBrackets = ({
         <div className="relative h-full">
           <TransformWrapper
             initialScale={window.innerWidth < 640 ? 0.8 : 0.9}
-            minScale={0.5}
+            minScale={0.1}
             maxScale={1.5}
             wheel={{ disabled: true }}
             panning={{
@@ -258,9 +258,11 @@ export const EliminationBrackets = ({
               allowRightClickPan: false,
               allowMiddleClickPan: false
             }}
-            limitToBounds={window.innerWidth >= 640}
-            minPositionX={window.innerWidth >= 640 ? 0 : undefined}
+            limitToBounds={false}
+            minPositionX={window.innerWidth >= 640 ? 0 : -100}
             maxPositionX={window.innerWidth >= 640 ? 0 : undefined}
+            minPositionY={window.innerWidth >= 640 ? 0 : -50}
+            maxPositionY={undefined}
           >
             <ZoomControls />
             <div
@@ -277,11 +279,13 @@ export const EliminationBrackets = ({
 
                       return (
                         <div key={uniqueKey}>
-                          <div
-                            className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
-                          >
-                            {table.name}
-                          </div>
+                          {table.name !== "Plussring" && (
+                            <div
+                              className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
+                            >
+                              {table.name}
+                            </div>
+                          )}
                           {table.name !== BracketType.MIINUSRING ? (
                             <div className="" id={uniqueId}>
                               <SingleElimination
