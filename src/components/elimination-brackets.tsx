@@ -187,12 +187,12 @@ export const EliminationBrackets = ({
             doubleClick={{ disabled: true}}
             wheel={{ step: 0.1 }}
             pinch={{ 
-              step: 5,
-              disabled: false 
+              step: 3,
+              disabled: false
             }}
             panning={{ 
               disabled: false,
-              velocityDisabled: true,
+              velocityDisabled: false,
               excluded: ["input", "textarea", "button", "select"]
             }}
             limitToBounds={false}
