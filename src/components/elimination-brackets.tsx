@@ -178,7 +178,7 @@ export const EliminationBrackets = ({
         </div>
       </div>
 
-      <div className="bg-[#F8F9FA] relative h-[85vh] flex flex-col">
+      <div className="bg-[#F8F9FA] relative h-[85vh] flex flex-col" style={{ touchAction: 'none' }}>
         <div className="relative h-full">
           <TransformWrapper
             initialScale={1}
@@ -186,11 +186,15 @@ export const EliminationBrackets = ({
             maxScale={1.5}
             doubleClick={{ disabled: true}}
             wheel={{ step: 0.1 }}
-            pinch={{ step: 5 }}
+            pinch={{ 
+              step: 5,
+              disabled: false 
+            }}
             panning={{ 
               disabled: false,
               velocityDisabled: true,
-              excluded: ["input", "textarea", "button", "select"]
+              excluded: ["input", "textarea", "button", "select"],
+              touchPadDisabled: false
             }}
             limitToBounds={false}
             centerOnInit={false}
@@ -198,6 +202,7 @@ export const EliminationBrackets = ({
             zoomAnimation={{ disabled: false }}
             alignmentAnimation={{ disabled: false }}
             smooth={true}
+            disablePadding={true}
           >
             <ZoomControls />
             <div
