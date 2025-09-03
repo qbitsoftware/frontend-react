@@ -117,7 +117,7 @@ function RouteComponent() {
   const availableTables = tablesQuery.data.data || [];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ touchAction: 'pan-y' }}>
       {/* Consolidated Navigation */}
       <div className="space-y-3 mb-6">
         {/* Primary Class Navigation */}
