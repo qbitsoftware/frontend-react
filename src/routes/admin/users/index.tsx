@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { axiosInstance } from '@/queries/axiosconf';
 import { Button } from '@/components/ui/button'
-import { Download, Users, Star } from 'lucide-react'
+import { Download, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import AdminHeader from '../-components/admin-header'
@@ -13,8 +13,8 @@ export const Route = createFileRoute('/admin/users/')({
 function RouteComponent() {
     const { t } = useTranslation()
     const [isExporting, setIsExporting] = useState(false)
-    const [isExportingRatings, setIsExportingRatings] = useState(false)
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+    // const [isExportingRatings, setIsExportingRatings] = useState(false)
+    // const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
 
     const downloadUsersExcel = async () => {
         setIsExporting(true)
@@ -39,31 +39,31 @@ function RouteComponent() {
         }
     };
 
-    const downloadRatingsExcel = async () => {
-        setIsExportingRatings(true)
-        try {
-            const response = await axiosInstance.get("/api/v1/ratings/export_xml", {
-                responseType: "blob",
-                withCredentials: true,
-                params: {
-                    timestamp: selectedDate
-                }
-            });
+    // const downloadRatingsExcel = async () => {
+    //     setIsExportingRatings(true)
+    //     try {
+    //         const response = await axiosInstance.get("/api/v1/ratings/export_xml", {
+    //             responseType: "blob",
+    //             withCredentials: true,
+    //             params: {
+    //                 timestamp: selectedDate
+    //             }
+    //         });
 
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "ratings.xml");
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Download failed", error);
-        } finally {
-            setIsExportingRatings(false)
-        }
-    };
+    //         const url = window.URL.createObjectURL(new Blob([response.data]));
+    //         const link = document.createElement("a");
+    //         link.href = url;
+    //         link.setAttribute("download", "ratings.xml");
+    //         document.body.appendChild(link);
+    //         link.click();
+    //         link.remove();
+    //         window.URL.revokeObjectURL(url);
+    //     } catch (error) {
+    //         console.error("Download failed", error);
+    //     } finally {
+    //         setIsExportingRatings(false)
+    //     }
+    // };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
@@ -97,7 +97,7 @@ function RouteComponent() {
                     </div>
 
                     {/* Ratings Export Card */}
-                    <div className="max-w-lg">
+                    {/* <div className="max-w-lg">
                         <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
                             <div className="flex items-center gap-3 mb-4">
                                 <Star className="text-yellow-500 h-6 w-6" />
@@ -127,7 +127,7 @@ function RouteComponent() {
                                 {isExportingRatings ? t('export.ratings.exporting', 'Exporting...') : t('export.ratings.exportButton', 'Export Ratings')}
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
 
                 </div>
             </div>

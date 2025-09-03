@@ -1,7 +1,6 @@
 import {
   createFileRoute,
   Outlet,
-  redirect,
   useLocation,
   useNavigate,
   useRouter,
@@ -13,7 +12,6 @@ import AdminBottomNav from "./-components/admin-bottom-nav";
 import { useEffect, useState, useRef, useCallback } from "react";
 import ErrorPage from "@/components/error";
 import { UseGetCurrentUser } from "@/queries/users";
-import { ErrorResponse } from "@/types/errors";
 import { useUser } from "@/providers/userProvider";
 import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
 import TableStatusSidebarSkeleton from "./tournaments/$tournamentid/-components/table-status-skeleton";
@@ -33,17 +31,17 @@ export const Route = createFileRoute("/admin")({
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
   loader: async ({ context: { queryClient } }) => {
-    try {
-      await queryClient.ensureQueryData(UseGetCurrentUser());
-    } catch (error) {
-      const err = error as ErrorResponse;
-      if (err.response.status === 401) {
-        throw redirect({
-          to: "/",
-        });
-      }
-      throw error;
-    }
+    // try {
+    await queryClient.ensureQueryData(UseGetCurrentUser());
+    // } catch (error) {
+    //   const err = error as ErrorResponse;
+    //   if (err.response.status === 401) {
+    //     throw redirect({
+    //       to: "/",
+    //     });
+    //   }
+    //   throw error;
+    // }
   },
 });
 

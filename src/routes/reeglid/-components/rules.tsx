@@ -1,9 +1,9 @@
 export default function LauatenniseReeglid() {
-    return (
-      <div className="w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-          {/* Left Column */}
-          <div className="space-y-6">
+  return (
+    <div className="w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        {/* Left Column */}
+        <div className="space-y-6">
           <section className="bg-gray-50/50 border border-gray-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
@@ -20,7 +20,7 @@ export default function LauatenniseReeglid() {
               </li>
             </ul>
           </section>
-  
+
           <section className="bg-gray-50/50 border border-gray-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
@@ -29,7 +29,7 @@ export default function LauatenniseReeglid() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-[#4C97F1] rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-gray-700 leading-relaxed">Seti võit läheb mängijale kes esimesena kogub 11 punkti välja arvatud juhul kui mõlemal mängijal on 10 punkti, sellisel juhul võidab mängija kes läheb juhtima 2 punktiga.</span>
+                <span className="text-gray-700 leading-relaxed">Seti võit läheb mängijale, kes esimesena kogub 11 punkti välja arvatud juhul kui mõlemal mängijal on 10 punkti, sellisel juhul võidab mängija, kes läheb juhtima 2 punktiga.</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-[#4C97F1] rounded-full mt-2 flex-shrink-0"></div>
@@ -37,7 +37,7 @@ export default function LauatenniseReeglid() {
               </li>
             </ul>
           </section>
-  
+
           <section className="bg-gray-50/50 border border-gray-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
@@ -46,7 +46,7 @@ export default function LauatenniseReeglid() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-[#4C97F1] rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-gray-700 leading-relaxed">Kohtumise alguses võetakse loosi. Loosi võitja valib poole või otsustab kes servib.</span>
+                <span className="text-gray-700 leading-relaxed">Kohtumise alguses võetakse loosi. Loosi võitja valib poole või otsustab, kes servib.</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-[#4C97F1] rounded-full mt-2 flex-shrink-0"></div>
@@ -66,7 +66,7 @@ export default function LauatenniseReeglid() {
               </li>
             </ul>
           </section>
-  
+
           <section className="bg-gray-50/50 border border-gray-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
@@ -83,10 +83,10 @@ export default function LauatenniseReeglid() {
               </li>
             </ul>
           </section>
-          </div>
-          
-          {/* Right Column */}
-          <div className="space-y-6">
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
           <section className="bg-green-50/50 border border-green-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-green-600 rounded-full"></div>
@@ -103,7 +103,7 @@ export default function LauatenniseReeglid() {
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-gray-700 leading-relaxed">Kui mängija lööb palli lennult, ennem kui pall ületab tema lauapoole.</span>
+                <span className="text-gray-700 leading-relaxed">Kui mängija lööb palli laua kohalt ennem, kui see puudutanud tema lauapoolt</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
@@ -115,15 +115,15 @@ export default function LauatenniseReeglid() {
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-gray-700 leading-relaxed">Kui mängija käsi mis ei hoia reketit, puudutab lauapinda.</span>
+                <span className="text-gray-700 leading-relaxed">Kui mängija käsi, mis ei hoia reketit, puudutab lauapinda.</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-gray-700 leading-relaxed">Kui mängija puudutab võrku. Võrkku ei tohi puudutada mängija riided või reket.</span>
+                <span className="text-gray-700 leading-relaxed">Kui mängija puudutab võrku. Võrku ei tohi puudutada ka mängija riided või reket.</span>
               </li>
             </ul>
           </section>
-  
+
           <section className="bg-orange-50/50 border border-orange-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-orange-600 rounded-full"></div>
@@ -144,7 +144,7 @@ export default function LauatenniseReeglid() {
               </li>
             </ul>
           </section>
-  
+
           <section className="bg-purple-50/50 border border-purple-200/30 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 bg-purple-600 rounded-full"></div>
@@ -165,14 +165,13 @@ export default function LauatenniseReeglid() {
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-gray-700 leading-relaxed">Paarismängus ratastoolismängija poolel võib vastu võtta kes iganes, mitte vaheldumisi.</span>
+                <span className="text-gray-700 leading-relaxed">Paarismängus võib ratastoolismängija poolel servi vastu ükskõik kumb mängija. Seal vaheldumisi vastuvõtmise kohustust ei ole.</span>
               </li>
             </ul>
           </section>
-          </div>
         </div>
       </div>
-    )
-  }
-  
-  
+    </div>
+  )
+}
+

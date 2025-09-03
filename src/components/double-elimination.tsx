@@ -25,30 +25,30 @@ export const DoubleElimination = ({
 }: BracketProps) => {
     const matches = organizeMatchesByRound(data.matches);
     const [internalHoveredPlayerId, setInternalHoveredPlayerId] = useState<string | null>(null);
-    
+
     // Use external state if provided, otherwise fall back to internal state
     const hoveredPlayerId = externalHoveredPlayerId !== undefined ? externalHoveredPlayerId : internalHoveredPlayerId;
     const setHoveredPlayerId = externalOnPlayerHover || setInternalHoveredPlayerId;
 
     const shouldHighlightConnector = (match: typeof data.matches[0]) => {
         if (!hoveredPlayerId) return false;
-        
+
         const isPlayerInCurrentMatch = match.participant_1.id === hoveredPlayerId || match.participant_2.id === hoveredPlayerId;
-        
+
         if (!isPlayerInCurrentMatch) return false;
-        
+
         // Highlight if player won this match and advances
         if (match.match.winner_id === hoveredPlayerId) {
             return true;
         }
-        
+
         // Also highlight if player lost this match but fell to this consolation bracket
         // This would show the path when a player drops from main bracket to consolation
         if (match.match.winner_id && match.match.winner_id !== hoveredPlayerId) {
             // Player lost this match - check if they have a next_loser_bracket path
             return !!match.match.next_loser_bracket;
         }
-        
+
         return false;
     };
 

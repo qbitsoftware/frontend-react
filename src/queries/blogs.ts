@@ -3,7 +3,10 @@ import { axiosInstance } from "./axiosconf";
 import { Blog } from "@/types/blogs";
 
 export interface BlogsResponse {
-    data: Blog[]
+    data: {
+        blogs: Blog[],
+        total_pages: number,
+    }
     message: string
     error: string | null
 }

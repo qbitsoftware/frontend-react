@@ -2079,7 +2079,7 @@
       "invalid_file_format": "Palun valige Excel fail (.xlsx või .xls)",
       "import_success": "Osalejate importimine õnnestus",
       "double_pairing_success": "Paaride määramine õnnestus",
-      "double_pairing_error": "Paaride määramine nurjus"
+      "double_pairing_error": "Paaride määramine nurjus. Veendu, et oleks 8 või enam üksikmängijat"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",
