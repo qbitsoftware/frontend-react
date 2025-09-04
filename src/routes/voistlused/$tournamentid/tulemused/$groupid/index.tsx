@@ -119,7 +119,7 @@ function RouteComponent() {
   return (
     <div className="min-h-screen w-full" style={{ touchAction: 'pan-y' }}>
       {/* Consolidated Navigation */}
-      <div className="space-y-3 mb-2 ">
+      <div className="space-y-3 mb-2">
         {/* Primary Class Navigation */}
         <ResponsiveClassSelector
           variant="tables"

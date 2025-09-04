@@ -25,6 +25,9 @@ const MatchHoverTooltip: React.FC<MatchHoverTooltipProps> = ({
   );
 
   if (!visible) return null;
+  
+  // Disable tooltip on mobile devices (screen width < 768px)
+  if (window.innerWidth < 768) return null;
 
   const tooltipWidth = 280;
   const tooltipHeight = 250;

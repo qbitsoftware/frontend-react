@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { LanguageDropdown } from "@/components/languageSelector";
 import { getAdminNavigationItems } from "./admin-nav-items";
 import { useUser } from "@/providers/userProvider";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const AdminSidebar = () => {
   const { t } = useTranslation();
@@ -26,79 +27,108 @@ const AdminSidebar = () => {
   const menuItems = getAdminNavigationItems(t, user?.role);
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        {isCollapsed ? (
-          <div className="flex justify-center py-2">
-            <SidebarTrigger />
-          </div>
-        ) : (
-          <div className="flex items-center">
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-transparent"
-            >
-              <Link to="/" className="flex">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-white text-sidebar-primary-foreground">
-                  <img src={sidebarLogo} alt="ELTL" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">ELTL</span>
-                  <span className="truncate text-xs">Admin</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
+    <TooltipProvider delayDuration={300}>
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
+          {isCollapsed ? (
+            <div className="flex justify-center py-2">
+              <SidebarTrigger />
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-transparent"
+              >
+                <Link to="/" className="flex">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-white text-sidebar-primary-foreground">
+                    <img src={sidebarLogo} alt="ELTL" />
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">ELTL</span>
+                    <span className="truncate text-xs">Admin</span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
 
-            <SidebarTrigger className="ml-2" />
-          </div>
-        )}
-      </SidebarHeader>
-      <SidebarContent className="overflow-y-auto">
-        <nav
-          className={`p-2 flex flex-col w-full gap-1 ${isCollapsed && "gap-4"}`}
-        >
-          {menuItems.map((item) => (
-            <Link
-              key={item.id}
-              to={item.to}
-              className={`w-full flex items-center rounded-md text-sm transition-colors duration-150 
-                ${isCollapsed
-                  ? "justify-center p-2"
-                  : "justify-start px-3 py-2.5"
-                }
-                ${location.pathname.includes(item.to)
-                  ? "bg-sidebar-accent "
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                }
-              `}
-            >
-              <div
-                className={`flex items-center ${!isCollapsed ? "mr-3" : ""}`}
-              >
-                {item.icon}
-              </div>
-              {!isCollapsed && <span>{item.label}</span>}
-            </Link>
-          ))}
-        </nav>
-      </SidebarContent>
-      <SidebarFooter className="flex-row justify-between items-center">
-        {!isCollapsed && (
-          <>
-            <Link to="/">
-              <Button
-                variant="ghost"
-                className="w-full flex flex-row items-center justify-center mt-1 "
-              >
-                <House />
-              </Button>
-            </Link>
-            <LanguageDropdown />
-          </>
-        )}
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+              <SidebarTrigger className="ml-2" />
+            </div>
+          )}
+        </SidebarHeader>
+        <SidebarContent className="overflow-y-auto">
+          <nav
+            className={`p-2 flex flex-col w-full gap-1 ${isCollapsed && "gap-4"}`}
+          >
+            {menuItems.map((item) => {
+              const linkContent = (
+                <Link
+                  key={item.id}
+                  to={item.to}
+                  className={`w-full flex items-center rounded-md text-sm transition-colors duration-150 
+                    ${isCollapsed
+                      ? "justify-center p-2"
+                      : "justify-start px-3 py-2.5"
+                    }
+                    ${location.pathname.includes(item.to)
+                      ? "bg-sidebar-accent "
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    }
+                  `}
+                >
+                  <div
+                    className={`flex items-center ${!isCollapsed ? "mr-3" : ""}`}
+                  >
+                    {item.icon}
+                  </div>
+                  {!isCollapsed && <span>{item.label}</span>}
+                </Link>
+              );
+
+              return isCollapsed ? (
+                <Tooltip key={item.id}>
+                  <TooltipTrigger asChild>
+                    {linkContent}
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                linkContent
+              );
+            })}
+          </nav>
+        </SidebarContent>
+        <SidebarFooter className="flex-row justify-between items-center">
+          {isCollapsed ? (
+            <div className="flex flex-col items-center gap-2 w-full">
+              <Link to="/">
+                <Button
+                  variant="ghost"
+                  className="w-8 h-8 p-0 flex items-center justify-center"
+                >
+                  <House className="h-4 w-4" />
+                </Button>
+              </Link>
+              <LanguageDropdown />
+            </div>
+          ) : (
+            <>
+              <Link to="/">
+                <Button
+                  variant="ghost"
+                  className="w-full flex flex-row items-center justify-center mt-1 "
+                >
+                  <House />
+                </Button>
+              </Link>
+              <LanguageDropdown />
+            </>
+          )}
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+    </TooltipProvider>
   );
 };
 

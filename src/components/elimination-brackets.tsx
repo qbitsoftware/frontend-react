@@ -175,10 +175,10 @@ export const EliminationBrackets = ({
   };
 
   return (
-    <div className="border-grey-200 border rounded-t-lg">
+    <div className="border-grey-200 border rounded-t-lg -mx-[2.5vw] sm:-mx-0">
       <div className="z-40 top-0 w-full hide-in-pdf">
         <div className="px-0 w-full bg-[#F8F9FA] rounded-t-lg pdf-background">
-          <div className="flex flex-col sm:flex-row sm:items-center px-2 md:py-1 gap-0 sm:gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center px-2 md:px-6 md:py-1 gap-0 sm:gap-4">
             <div className="flex-1 min-w-0 order-2 sm:order-1">
               <Tabs
                 defaultValue={data?.eliminations[0]?.elimination[0].name}
@@ -262,22 +262,18 @@ export const EliminationBrackets = ({
             wheel={{ disabled: true }}
             pinch={{ disabled: false, step: 5 }}
             panning={{
-              disabled: false,
+              disabled: true,
               allowLeftClickPan: false,
               allowRightClickPan: false,
               allowMiddleClickPan: false
             }}
             limitToBounds={false}
-            minPositionX={0}
-            maxPositionX={window.innerWidth >= 640 ? 0 : undefined}
-            minPositionY={0}
-            maxPositionY={undefined}
             doubleClick={{ disabled: true }}
           >
             <ZoomControls />
             <div
               ref={scrollContainerRef}
-              className={`h-full overflow-x-hidden ${allowBracketScroll ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
+              className={`h-full overflow-x-auto ${allowBracketScroll ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
               id="bracket-container"
             >
               <TransformComponent>
