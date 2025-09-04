@@ -6,7 +6,7 @@ import {
   useRouter,
   useRouterState,
 } from "@tanstack/react-router";
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebar from "./-components/admin-sidebar";
 import AdminBottomNav from "./-components/admin-bottom-nav";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -46,25 +46,25 @@ export const Route = createFileRoute("/admin")({
 });
 
 // Component to handle auto-collapse logic inside SidebarProvider
-function SidebarController() {
-  const location = useLocation();
-  const { setOpen } = useSidebar();
-  const previousLocation = useRef<string>("");
-  
-  useEffect(() => {
-    const isTournamentAdminRoute = /^\/admin\/tournaments\/\d+/.test(location.pathname);
-    const wasOnTournamentRoute = /^\/admin\/tournaments\/\d+/.test(previousLocation.current);
-    
-    // Only auto-collapse when entering a tournament route from a non-tournament route
-    if (isTournamentAdminRoute && !wasOnTournamentRoute) {
-      setOpen(false);
-    }
-    
-    previousLocation.current = location.pathname;
-  }, [location.pathname, setOpen]);
-  
-  return null;
-}
+// function SidebarController() {
+//   const location = useLocation();
+//   const { setOpen } = useSidebar();
+//   const previousLocation = useRef<string>("");
+//   
+//   useEffect(() => {
+//     const isTournamentAdminRoute = /^\/admin\/tournaments\/\d+/.test(location.pathname);
+//     const wasOnTournamentRoute = /^\/admin\/tournaments\/\d+/.test(previousLocation.current);
+//     
+//     // Only auto-collapse when entering a tournament route from a non-tournament route
+//     if (isTournamentAdminRoute && !wasOnTournamentRoute) {
+//       setOpen(false);
+//     }
+//     
+//     previousLocation.current = location.pathname;
+//   }, [location.pathname, setOpen]);
+//   
+//   return null;
+// }
 
 function RouteComponent() {
   const router = useRouter();
