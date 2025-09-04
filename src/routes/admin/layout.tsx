@@ -201,7 +201,6 @@ function RouteComponent() {
   return (
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
-<<<<<<< HEAD
         <WSProvider url={import.meta.env.VITE_BACKEND_API_URL_WS + "ws/v1/admin"} onMessage={handleWSMessage}>
           <SidebarProvider defaultOpen={defaultOpen}>
             <AdminSidebar />
@@ -214,19 +213,6 @@ function RouteComponent() {
           </SidebarProvider>
           <AdminBottomNav />
         </WSProvider>
-=======
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <SidebarController />
-          <AdminSidebar />
-          <div className="w-full overflow-x-auto pb-20 lg:pb-0">
-            <Outlet />
-          </div>
-          {isTournamentRoute && (
-            (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
-          )}
-        </SidebarProvider>
-        <AdminBottomNav />
->>>>>>> main
       </div>
     </div>
   );
