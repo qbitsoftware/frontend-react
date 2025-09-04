@@ -6,7 +6,7 @@ import {
   useRouter,
   useRouterState,
 } from "@tanstack/react-router";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import AdminSidebar from "./-components/admin-sidebar";
 import AdminBottomNav from "./-components/admin-bottom-nav";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -45,14 +45,35 @@ export const Route = createFileRoute("/admin")({
   },
 });
 
+// Component to handle auto-collapse logic inside SidebarProvider
+function SidebarController() {
+  const location = useLocation();
+  const { setOpen } = useSidebar();
+  const previousLocation = useRef<string>("");
+  
+  useEffect(() => {
+    const isTournamentAdminRoute = /^\/admin\/tournaments\/\d+/.test(location.pathname);
+    const wasOnTournamentRoute = /^\/admin\/tournaments\/\d+/.test(previousLocation.current);
+    
+    // Only auto-collapse when entering a tournament route from a non-tournament route
+    if (isTournamentAdminRoute && !wasOnTournamentRoute) {
+      setOpen(false);
+    }
+    
+    previousLocation.current = location.pathname;
+  }, [location.pathname, setOpen]);
+  
+  return null;
+}
+
 function RouteComponent() {
   const router = useRouter();
   const location = useLocation();
   const { user } = useUser();
   const navigate = useNavigate()
 
-  const defaultOpen = getCookie("sidebar:state") !== "false";
-
+  const isTournamentAdminRoute = /^\/admin\/tournaments\/\d+/.test(location.pathname);
+  const defaultOpen = getCookie("sidebar:state") !== "false" && !isTournamentAdminRoute;
   const [hasSidebarLoaded, setHasSidebarLoaded] = useState(false);
   const previousTournamentId = useRef<string | null>(null);
 
@@ -180,6 +201,7 @@ function RouteComponent() {
   return (
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
+<<<<<<< HEAD
         <WSProvider url={import.meta.env.VITE_BACKEND_API_URL_WS + "ws/v1/admin"} onMessage={handleWSMessage}>
           <SidebarProvider defaultOpen={defaultOpen}>
             <AdminSidebar />
@@ -192,6 +214,19 @@ function RouteComponent() {
           </SidebarProvider>
           <AdminBottomNav />
         </WSProvider>
+=======
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <SidebarController />
+          <AdminSidebar />
+          <div className="w-full overflow-x-auto pb-20 lg:pb-0">
+            <Outlet />
+          </div>
+          {isTournamentRoute && (
+            (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
+          )}
+        </SidebarProvider>
+        <AdminBottomNav />
+>>>>>>> main
       </div>
     </div>
   );

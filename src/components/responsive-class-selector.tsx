@@ -69,11 +69,11 @@ export const ResponsiveClassSelector = ({
     );
 
     return (
-      <div className="bg-white border border-gray-200 shadow-sm mb-4 sm:mb-6 rounded-lg">
-        <div className="px-4">
+      <div className="bg-white border border-gray-200 shadow-sm mb-0 sm:mb-6 rounded-lg">
+        <div className="px-0">
           <div className="flex items-center justify-between">
             {/* Mobile Dropdown (hidden on md and up) */}
-            <div className="flex-1 md:hidden py-3">
+            <div className="flex-1 md:hidden ">
               <Select
                 value={activeGroupId?.toString()}
                 onValueChange={(value) => onGroupChange?.(parseInt(value))}
@@ -164,10 +164,10 @@ export const ResponsiveClassSelector = ({
 
     return (
       <div className="bg-white border border-gray-200 shadow-sm mb-4 sm:mb-6 rounded-lg">
-        <div className="px-4">
+        <div className="px-0">
           <div className="flex items-center justify-between">
             {/* Mobile Dropdown (hidden on md and up) */}
-            <div className="flex-1 md:hidden py-3">
+            <div className="flex-1 md:hidden py-0">
               <Select
                 value={currentSelection}
                 onValueChange={(value) => onClassChange?.(value)}

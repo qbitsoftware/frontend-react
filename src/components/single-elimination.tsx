@@ -66,18 +66,18 @@ export const SingleElimination = ({
             case 2:
                 return t("competitions.timetable.quarterfinal");
             case 3:
-                return "ROUND OF 16";
+                return t("competitions.timetable.round_of_16");
             case 4:
-                return "ROUND OF 32";
+                return t("competitions.timetable.round_of_32");
             case 5:
-                return "ROUND OF 64";
+                return t("competitions.timetable.round_of_64");
             case 6:
-                return "ROUND OF 128";
+                return t("competitions.timetable.round_of_128");
             case 7:
-                return "ROUND OF 256";
+                return t("competitions.timetable.round_of_256");
             default: {
                 const participantCount = Math.pow(2, roundsFromEnd + 1);
-                return `Round of ${participantCount}`;
+                return t("competitions.timetable.round_of", { count: participantCount });
             }
         }
     };
@@ -137,7 +137,7 @@ export const SingleElimination = ({
                         
                     return (
                         <div key={`header-${roundIndex}`} className={`text-left ${headerWidth} flex-shrink-0`}>
-                            <h3 className="text-lg font-black text-gray-700 hide-in-pdf">
+                            <h3 className="text-lg font-black text-gray-700 mt-5 hide-in-pdf">
                                 {getRoundName(roundIndex, totalRounds)}
                             </h3>
                         </div>
@@ -215,7 +215,6 @@ export const SingleElimination = ({
                                                 marginTop: matchIndex > 0 && matchIndex % 2 === 0 ? `${gap}px` : undefined,
                                             }}
                                         >
-                                            <div className={cn("absolute text-[8px]", isEven ? 'top-4' : "bottom-7")}>{match.match.readable_id > 0 ? match.match.readable_id : ""}</div>
                                             <div className={cn("py-[27px]", isEven ? 'self-start' : 'self-end')}>
                                                 <div className={cn("w-4 self-start", isEven ? 'self-start' : 'self-end', shouldHighlightConnector(match) ? 'h-[2px] bg-blue-400' : 'h-[2px] bg-blue-200')} />
                                             </div>

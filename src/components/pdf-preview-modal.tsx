@@ -169,15 +169,15 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
     if (isParticipant) {
       const nameLength = textContent.length;
-      if (nameLength > 25) htmlEl.className = htmlEl.className.replace("text-xs", "text-[10px]");
-      else if (nameLength <= 12) htmlEl.className = htmlEl.className.replace("text-xs", "text-sm");
+      if (nameLength > 25) htmlEl.className = htmlEl.className.replace("text-xs", "text-[14px]");
+      else if (nameLength <= 20 ) htmlEl.className = htmlEl.className.replace("text-xs", "text-sm");
     }
   });
 
   container.querySelectorAll('.bracket-title').forEach((el) => {
     const htmlEl = el as HTMLElement;
-    htmlEl.style.paddingTop = "4px";
-    htmlEl.style.paddingBottom = "4px";
+    htmlEl.style.paddingTop = "0px";
+    htmlEl.style.paddingBottom = "14px";
   });
 
   container.querySelectorAll('.bracket-title-miinusring, .bracket-title-5-6, .bracket-title-7-8, .bracket-title-25-32, .bracket-title-33-48, .bracket-title-49-64, .bracket-title-65-96').forEach((el) => {
@@ -554,8 +554,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
           });
 
         }
-      } else {
-      }
+      } 
     } else if (bracketSize === 64 && !hasLosersBracket) {
       const finalMatch = mainBracketElements.find(({ element }) => {
         const text = element.textContent || "";
@@ -728,7 +727,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
         const containerTitle = document.createElement('h2');
         containerTitle.textContent = 'Miinusringi jätk';
         containerTitle.style.textAlign = 'start';
-        containerTitle.style.fontSize = '32px';
+        containerTitle.style.fontSize = '24px';
         containerTitle.style.fontWeight = 'bold';
         containerTitle.style.color = '#333';
         matchContainer.appendChild(containerTitle);

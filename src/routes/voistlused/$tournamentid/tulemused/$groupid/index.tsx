@@ -117,9 +117,9 @@ function RouteComponent() {
   const availableTables = tablesQuery.data.data || [];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full" style={{ touchAction: 'pan-y' }}>
       {/* Consolidated Navigation */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-2">
         {/* Primary Class Navigation */}
         <ResponsiveClassSelector
           variant="tables"
@@ -158,7 +158,7 @@ function RouteComponent() {
         )}
       </div>
 
-      <div className="flex justify-center">
+      <div className="w-full">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
@@ -246,9 +246,9 @@ function RouteComponent() {
             </TabsContent>
           )}
 
-          <TabsContent value="placement" className="w-full mt-2">
+          <TabsContent value="placement" className="w-full mt-2 px-0">
             {isFreeForAll ? (
-              <div className="text-center text-stone-700">
+              <div className="text-center text-stone-700 px-4">
                 {t("competitions.errors.no_groups")}
               </div>
             ) : bracketQuery.data?.data?.eliminations &&
@@ -261,7 +261,7 @@ function RouteComponent() {
                 handleSelectMatch={handleSelectMatch}
               />
             ) : (
-              <div className="text-center text-stone-700">
+              <div className="text-center text-stone-700 px-4">
                 {/* No data available yet */}
                 {t('competitions.results.no_results')}
               </div>

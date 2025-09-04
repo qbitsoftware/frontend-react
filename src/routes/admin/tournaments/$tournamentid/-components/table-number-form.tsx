@@ -51,7 +51,7 @@ export function TableNumberForm({ match, initialTableNumber, brackets, showLabel
     <div className="flex items-center gap-3">
       {showLabel && <Label className={cn(brackets ? "text-[8px]" : "")}>{t("admin.tournaments.matches.table.table")}</Label>}
       <Select value={String(tableNumber)} onValueChange={handleChange}>
-        <SelectTrigger className={cn(brackets ? "h-[20px]" : "h-8", "focus:outline-none focus:ring-0")}>
+        <SelectTrigger className={cn(brackets ? "h-[20px] px-2" : "h-8", "focus:outline-none focus:ring-0")}>
           <span className={cn(brackets ? "text-[10px]" : "")}>{tableNumber}</span>
         </SelectTrigger>
         <SelectContent className="">

@@ -57,7 +57,7 @@ export const ClassFilters = ({
 
   return (
     <div className="bg-white border border-gray-200 shadow-sm mb-4 sm:mb-6 rounded-lg">
-      <div className="px-4">
+        <div>
         <div className="flex items-center justify-between">
           {/* Mobile Dropdown (hidden on md and up) */}
           <div className="flex-1 md:hidden py-3">
@@ -103,7 +103,7 @@ export const ClassFilters = ({
                       className="font-medium text-center leading-tight truncate"
                       title={table.class}
                     >
-                      {table.class} ddd
+                      {table.class}
                     </span>
                   </button>
                 );

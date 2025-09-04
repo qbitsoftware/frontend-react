@@ -18,6 +18,7 @@ export const Route = createRootRouteWithContext<{
   component: () => {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
+    const isBracketRoute = location.pathname.includes('/tulemused/');
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -35,6 +36,7 @@ export const Route = createRootRouteWithContext<{
 
     // Show navbar if: not an admin route OR if on mobile (even on admin routes)
     const showNavbar = !isAdminRoute || isMobile;
+    const showFooter = !isBracketRoute;
     return (
       <>
         <SidebarProvider defaultOpen={false}>
@@ -43,7 +45,7 @@ export const Route = createRootRouteWithContext<{
             <main className="flex-grow">
               <Outlet />
             </main>
-            <Footer />
+            {showFooter && <Footer />}
             <Toaster />
           </div>
           <AppSidebar />
