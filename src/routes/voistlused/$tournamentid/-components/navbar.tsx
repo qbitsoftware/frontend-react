@@ -67,19 +67,39 @@ const Navbar = ({ tournament_tables }: Props) => {
             <h1 className="text-xl sm:text-2xl md:text-2xl text-center md:text-left font-bold tracking-tight leading-tight">
               {tournament.name}
             </h1>
-            <div className="text-center md:text-left space-y-1 sm:space-y-2">
-              <div className="flex items-center justify-center md:justify-start gap-2 text-sm md:text-base lg:text-lg text-blue-100 font-medium">
-                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="text-center md:text-left truncate">
-                  {tournament.start_date === tournament.end_date
-                    ? formatDateString(tournament.start_date)
-                    : `${formatDateString(tournament.start_date)} - ${formatDateString(tournament.end_date)}`
-                  }
-                </span>
+            <div className="text-center md:text-left">
+              {/* Mobile: Date and Location on same line */}
+              <div className="flex md:hidden items-center justify-center gap-3 text-sm text-blue-100 font-medium">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">
+                    {tournament.start_date === tournament.end_date
+                      ? formatDateString(tournament.start_date)
+                      : `${formatDateString(tournament.start_date)} - ${formatDateString(tournament.end_date)}`
+                    }
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-blue-200">
+                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">{tournament.location}</span>
+                </div>
               </div>
-              <div className="flex items-center justify-center md:justify-start gap-2 text-blue-200 text-xs sm:text-sm md:text-base">
-                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="truncate">{tournament.location}</span>
+              
+              {/* Desktop: Stacked layout */}
+              <div className="hidden md:block space-y-1 sm:space-y-2">
+                <div className="flex items-center justify-start gap-2 text-sm md:text-base lg:text-lg text-blue-100 font-medium">
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <span className="truncate">
+                    {tournament.start_date === tournament.end_date
+                      ? formatDateString(tournament.start_date)
+                      : `${formatDateString(tournament.start_date)} - ${formatDateString(tournament.end_date)}`
+                    }
+                  </span>
+                </div>
+                <div className="flex items-center justify-start gap-2 text-blue-200 text-xs sm:text-sm md:text-base">
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <span className="truncate">{tournament.location}</span>
+                </div>
               </div>
             </div>
           </div>

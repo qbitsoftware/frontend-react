@@ -5,7 +5,7 @@ import { SingleElimination } from "./single-elimination";
 import { DoubleElimination } from "./double-elimination";
 import { Separator } from "./ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Printer, QrCode, ZoomIn, ZoomOut, ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -126,6 +126,18 @@ export const EliminationBrackets = ({
   const { t } = useTranslation();
   const [showPreview, setShowPreview] = useState(false);
   const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
+  const [allowBracketScroll, setAllowBracketScroll] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const threshold = 100; 
+      setAllowBracketScroll(scrollY >= threshold);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
 
   const handlePrint = () => {
@@ -166,7 +178,7 @@ export const EliminationBrackets = ({
     <div className="border-grey-200 border rounded-t-lg">
       <div className="z-40 top-0 w-full hide-in-pdf">
         <div className="px-0 w-full bg-[#F8F9FA] rounded-t-lg pdf-background">
-          <div className="flex flex-col sm:flex-row sm:items-center px-2 py-3 gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center px-2 md:py-1 gap-0 sm:gap-4">
             <div className="flex-1 min-w-0 order-2 sm:order-1">
               <Tabs
                 defaultValue={data?.eliminations[0]?.elimination[0].name}
@@ -253,20 +265,19 @@ export const EliminationBrackets = ({
               disabled: false,
               allowLeftClickPan: false,
               allowRightClickPan: false,
-              allowMiddleClickPan: false,
-              touchPadDisabled: false
+              allowMiddleClickPan: false
             }}
             limitToBounds={false}
-            minPositionX={window.innerWidth >= 640 ? 0 : -100}
+            minPositionX={0}
             maxPositionX={window.innerWidth >= 640 ? 0 : undefined}
-            minPositionY={window.innerWidth >= 640 ? 0 : -50}
+            minPositionY={0}
             maxPositionY={undefined}
             doubleClick={{ disabled: true }}
           >
             <ZoomControls />
             <div
               ref={scrollContainerRef}
-              className="h-full overflow-y-auto overflow-x-hidden"
+              className={`h-full overflow-x-hidden ${allowBracketScroll ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
               id="bracket-container"
             >
               <TransformComponent>
