@@ -7,11 +7,22 @@ import { Separator } from "./ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Printer, QrCode, ZoomIn, ZoomOut, ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  Printer,
+  QrCode,
+  ZoomIn,
+  ZoomOut,
+  ArrowLeft,
+  ArrowRight,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PDFPreviewModal } from "./pdf-preview-modal";
 import { printQRCodeToBlankSheet } from "@/lib/qr-print";
-import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
+import {
+  TransformWrapper,
+  TransformComponent,
+  useControls,
+} from "react-zoom-pan-pinch";
 
 interface TournamentTableProps {
   admin?: boolean;
@@ -20,40 +31,47 @@ interface TournamentTableProps {
   handleSelectMatch?: (match: MatchWrapper) => void;
 }
 
-const ZoomControls = () => {
+const ZoomControls = ({ scrollContainerRef }: { scrollContainerRef: React.RefObject<HTMLDivElement> }) => {
   const { setTransform, instance } = useControls();
 
   const handleZoomIn = () => {
     const { scale, positionX, positionY } = instance.transformState;
     const newScale = Math.min(scale + 0.05, 1.5);
-    
+
     setTransform(positionX, positionY, newScale);
   };
 
   const handleZoomOut = () => {
     const { scale, positionX, positionY } = instance.transformState;
     const newScale = Math.max(scale - 0.05, 0.4);
-    
+
     setTransform(positionX, positionY, newScale);
   };
 
-  const handlePan = useCallback((direction: 'left' | 'right') => {
-    const { positionX, positionY, scale } = instance.transformState;
-    const panAmount = 200;
-    
-    let newX = positionX;
-    
-    switch (direction) {
-      case 'left':
-        newX = positionX + panAmount;
-        break;
-      case 'right':
-        newX = positionX - panAmount;
-        break;
-    }
-    
-    setTransform(newX, positionY, scale);
-  }, [instance, setTransform]);
+  const handlePan = useCallback(
+    (direction: "left" | "right") => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+      
+      const panAmount = 200;
+      
+      switch (direction) {
+        case "left":
+          container.scrollTo({
+            left: Math.max(0, container.scrollLeft - panAmount),
+            behavior: 'smooth'
+          });
+          break;
+        case "right":
+          container.scrollTo({
+            left: container.scrollLeft + panAmount,
+            behavior: 'smooth'
+          });
+          break;
+      }
+    },
+    []
+  );
 
   return (
     <div className="absolute top-4 right-4 z-40">
@@ -62,7 +80,7 @@ const ZoomControls = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePan('left')}
+          onClick={() => handlePan("left")}
           className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
         >
           <ArrowLeft className="h-3 w-3" />
@@ -70,7 +88,7 @@ const ZoomControls = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePan('right')}
+          onClick={() => handlePan("right")}
           className="flex-shrink-0 bg-white/90 backdrop-blur-sm shadow-lg w-8 h-8 p-0"
         >
           <ArrowRight className="h-3 w-3" />
@@ -92,7 +110,7 @@ const ZoomControls = () => {
           <ZoomOut className="h-3 w-3" />
         </Button>
       </div>
-      
+
       {/* Mobile Layout: Single Column */}
       <div className="sm:hidden flex flex-col gap-2">
         <Button
@@ -131,14 +149,13 @@ export const EliminationBrackets = ({
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      const threshold = 100; 
+      const threshold = 100;
       setAllowBracketScroll(scrollY >= threshold);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
 
   const handlePrint = () => {
     setShowPreview(true);
@@ -259,24 +276,31 @@ export const EliminationBrackets = ({
             initialScale={window.innerWidth < 640 ? 0.8 : 1}
             minScale={0.4}
             maxScale={1.5}
-            wheel={{ disabled: true}}
+            wheel={{ disabled: true }}
             pinch={{ disabled: false, step: 5 }}
             panning={{
               disabled: true,
               allowLeftClickPan: false,
               allowRightClickPan: false,
-              allowMiddleClickPan: false
+              allowMiddleClickPan: false,
             }}
             limitToBounds={false}
+            centerOnInit={false}
+            centerZoomedOut={false}
             doubleClick={{ disabled: true }}
           >
-            <ZoomControls />
+            <ZoomControls scrollContainerRef={scrollContainerRef} />
             <div
               ref={scrollContainerRef}
-              className={`h-full overflow-x-scroll ${admin ? 'overflow-y-scroll' : (allowBracketScroll ? 'overflow-y-scroll' : 'overflow-y-hidden')}`}
+              className={`h-full overflow-x-auto ${admin ? "overflow-y-scroll" : allowBracketScroll ? "overflow-y-scroll" : "overflow-y-hidden"}`}
               id="bracket-container"
             >
-              <TransformComponent>
+              <TransformComponent
+                wrapperStyle={{
+                  overflow: "visible",
+                }}
+                contentStyle={{ width: "100%"}}
+              >
                 <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 pb-6 sm:pb-8 lg:pb-12 pr-20 sm:pr-24">
                   {data.eliminations.map((eliminations, eliminationIndex) => {
                     return eliminations.elimination.map((table, tableIndex) => {
