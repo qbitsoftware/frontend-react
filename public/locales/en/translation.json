@@ -560,6 +560,7 @@
       "type": "Type",
       "play_off": "Play-off",
       "group_match": "Group match",
+      "dates_all": "All Dates",
       "status": "Status",
       "status_completed": "Completed",
       "status_pending": "Ongoing",

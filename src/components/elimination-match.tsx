@@ -148,7 +148,14 @@ const EliminationMatch = ({
     ) == 1
       ? match.match.bracket
       : "";
-  console.log(bracket, "bracket");
+
+  // Check if both participants have individual placements visible
+  const hasIndividualPlacements = 
+    getIndividualPlacement(match, match.participant_1.id) !== null &&
+    getIndividualPlacement(match, match.participant_2.id) !== null;
+
+  // Hide bracket number if match is finished and individual placements are shown
+  const shouldShowBracket = bracket && !hasIndividualPlacements;
 
   const onMatchClick = (match: TableMatch) => {
     if (handleSelectMatch) {
@@ -173,7 +180,7 @@ const EliminationMatch = ({
         onMouseMove={handleMatchMouseMove}
         className="relative w-[198px] h-[60px] bg-white flex flex-col border border-gray-200 rounded-md hover:shadow-md transition-shadow cursor-pointer"
       >
-        {bracket && (
+        {shouldShowBracket && (
           <div className="absolute -right-[40px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded max-w-10 text-left">
             {bracket}
           </div>
