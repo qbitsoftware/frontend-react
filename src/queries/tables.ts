@@ -112,6 +112,8 @@ export const UsePatchTournamentTable = (tournament_id: number, tournament_table_
                 return oldData
             })
             queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
+            // ["tournament_tables_query", tournament_id]
+            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
             queryClient.resetQueries({ queryKey: ['participants', tournament_table_id] })
             queryClient.resetQueries({ queryKey: ['bracket', tournament_table_id] })
             queryClient.resetQueries({ queryKey: ['matches', tournament_table_id] })
@@ -131,7 +133,8 @@ export const UsePostTournamentTable = (tournament_id: number) => {
 
         onSuccess: () => {
             queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-            queryClient.resetQueries({ queryKey: ['tournament_tables_query', tournament_id] })
+            // queryClient.resetQueries({ queryKey: ['tournament_tables_query', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
         }
     })
 }

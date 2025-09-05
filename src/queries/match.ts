@@ -36,6 +36,7 @@ export const UsePatchMatch = (id: number, group_id: number, match_id: string) =>
             // queryClient.resetQueries({ queryKey: ['matches_group', group_id] })
             // queryClient.refetchQueries({ queryKey: ['matches_group', group_id] })
             queryClient.invalidateQueries({ queryKey: ['venues_all', id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_free', id] })
             queryClient.invalidateQueries({ queryKey: ['matches_group', group_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', group_id] })
             queryClient.refetchQueries({ queryKey: ['tournament_table', group_id] })
