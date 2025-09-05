@@ -32,7 +32,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { table_data } = Route.useLoaderData()
-  const { tournamentid, groupid } = useParams({ from: "/admin/tournaments/$tournamentid/grupid/$groupid/" })
+  const { tournamentid, groupid } = useParams({ from: "/admin/tournaments/$tournamentid/grupid/$groupid" })
   if (!table_data || !table_data.data) {
     return <></>
   }
