@@ -87,12 +87,12 @@ export const Filters = ({
 
   const getActiveDayDisplay = (): string => {
     if (activeDay === "all") {
-      return "All Dates";
+      return t("competitions.timetable.dates_all")
     }
     if (typeof activeDay === "number" && gamedays[activeDay]) {
       return formatDate(gamedays[activeDay]);
     }
-    return "All Dates";
+    return t("competitions.timetable.dates_all")
   };
 
   const statusOptions = [
