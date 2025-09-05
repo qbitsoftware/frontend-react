@@ -273,11 +273,11 @@ export const EliminationBrackets = ({
             <ZoomControls />
             <div
               ref={scrollContainerRef}
-              className={`h-full overflow-x-auto ${allowBracketScroll ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
+              className={`h-full overflow-x-auto ${admin ? 'overflow-y-scroll' : (allowBracketScroll ? 'overflow-y-scroll' : 'overflow-y-hidden')}`}
               id="bracket-container"
             >
               <TransformComponent>
-                <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 min-w-max">
+                <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 pb-6 sm:pb-8 lg:pb-12 pr-12 sm:pr-16 lg:pr-50 min-w-max">
                   {data.eliminations.map((eliminations, eliminationIndex) => {
                     return eliminations.elimination.map((table, tableIndex) => {
                       const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;

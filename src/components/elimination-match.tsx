@@ -174,7 +174,7 @@ const EliminationMatch = ({
         className="relative w-[198px] h-[60px] bg-white flex flex-col border border-gray-200 rounded-md hover:shadow-md transition-shadow cursor-pointer"
       >
         {bracket && (
-          <div className="absolute -right-[35px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded">
+          <div className="absolute -right-[40px] top-1/2 -translate-y-1/2 text-[9px] font-medium text-gray-600 bg-white px-1 border border-gray-200 rounded max-w-10 text-left">
             {bracket}
           </div>
         )}
