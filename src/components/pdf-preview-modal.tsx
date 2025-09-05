@@ -278,7 +278,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     // skipping
   } else {
     const containerWidth = 1090;
-    let furthestRightElement: HTMLElement | null = null;
     let furthestRightPosition = 0;
     const elementsToMove: Array<{ element: HTMLElement; position: number }> = [];
     const allElements: Array<{ element: HTMLElement; position: number }> = [];
@@ -317,7 +316,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
       if (actualPosition > furthestRightPosition) {
         furthestRightPosition = actualPosition;
-        furthestRightElement = htmlEl;
       }
 
       if (actualPosition > containerWidth || isPlacementMatch) {
