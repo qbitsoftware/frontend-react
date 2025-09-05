@@ -6,9 +6,12 @@ import { GroupType } from "@/types/matches"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import placeholderImg from "@/assets/blue-profile.png"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { Button } from "./ui/button"
 import { useState } from "react"
 import { filterByAgeClass } from "@/lib/rating-utils"
 import { User } from "@/types/users"
+import { exportStandingsToExcel } from "@/lib/excel-export"
+import { Download } from "lucide-react"
 
 interface Props {
   participants: Participant[]
@@ -90,6 +93,17 @@ const Standings = ({ participants, tournament_table }: Props) => {
     return true
   })
 
+  const handleExportExcel = () => {
+    exportStandingsToExcel({
+      participants: filteredParticipants,
+      tournament_table,
+      ratingFilter,
+      sexFilter,
+      ageClassFilter,
+      t
+    })
+  }
+
   const isRoundRobin = tournament_table.type === GroupType.ROUND_ROBIN || tournament_table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT
 
   if (isRoundRobin) {
@@ -118,7 +132,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <div className="flex flex-col gap-2 w-full md:hidden">
+          <div className="flex flex-col gap-2 flex-1 md:hidden">
             <div className="flex gap-2 w-full">
               <Select value={ratingFilter} onValueChange={setRatingFilter}>
                 <SelectTrigger className="flex-1">
@@ -145,21 +159,24 @@ const Standings = ({ participants, tournament_table }: Props) => {
                 </SelectContent>
               </Select>
             </div>
-            <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
-              </SelectTrigger>
-              <SelectContent>
-                {ageClassFilterOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2 w-full">
+              <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {ageClassFilterOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           
-          <div className="hidden md:flex gap-2">
+          
+          <div className="hidden md:flex gap-2 items-center flex-1">
             <Select value={ratingFilter} onValueChange={setRatingFilter}>
               <SelectTrigger className="w-45">
                 <SelectValue placeholder={t("competitions.standings.filter.rating_placeholder", "Filter by rating")} />
@@ -197,6 +214,15 @@ const Standings = ({ participants, tournament_table }: Props) => {
               </SelectContent>
             </Select>
           </div>
+          
+          <Button
+            onClick={handleExportExcel}
+            variant="outline"
+            className="h-10 hidden md:flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {t("competitions.standings.export", "Export Standings")}
+          </Button>
         </div>
         {sortedGroupIds && sortedGroupIds.map((groupId) => (
           <div key={groupId} className="bg-white rounded-lg shadow-sm border">
@@ -288,7 +314,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         {/* Mobile filters */}
-        <div className="flex flex-col gap-2 w-full md:hidden">
+        <div className="flex flex-col gap-2 flex-1 md:hidden">
           <div className="flex gap-2 w-full">
             <Select value={ratingFilter} onValueChange={setRatingFilter}>
               <SelectTrigger className="flex-1">
@@ -315,21 +341,24 @@ const Standings = ({ participants, tournament_table }: Props) => {
               </SelectContent>
             </Select>
           </div>
-          <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
-            </SelectTrigger>
-            <SelectContent>
-              {ageClassFilterOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2 w-full">
+            <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
+              </SelectTrigger>
+              <SelectContent>
+                {ageClassFilterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         
-        <div className="hidden md:flex gap-2">
+        
+        <div className="hidden md:flex gap-2 items-center flex-1">
           <Select value={ratingFilter} onValueChange={setRatingFilter}>
             <SelectTrigger className="w-45">
               <SelectValue placeholder={t("competitions.standings.filter.rating_placeholder", "Filter by rating")} />
@@ -366,7 +395,16 @@ const Standings = ({ participants, tournament_table }: Props) => {
               ))}
             </SelectContent>
           </Select>
-        </div>
+          </div>
+          
+          <Button
+            onClick={handleExportExcel}
+            variant="outline"
+            className="h-10 hidden md:flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {t("competitions.standings.export", "Export Standings")}
+          </Button>
       </div>
       <div className="bg-white rounded-lg shadow-sm border">
         <Table>

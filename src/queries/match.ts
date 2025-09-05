@@ -30,12 +30,14 @@ export const UsePatchMatch = (id: number, group_id: number, match_id: string) =>
             return data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['bracket', id] })
-            queryClient.refetchQueries({ queryKey: ['bracket', id] })
+            queryClient.invalidateQueries({ queryKey: ['bracket', id, group_id] })
+            // queryClient.refetchQueries({ queryKey: ['bracket', id] })
             queryClient.invalidateQueries({ queryKey: ['matches', id] })
             // queryClient.resetQueries({ queryKey: ['matches_group', group_id] })
-            queryClient.refetchQueries({ queryKey: ['matches_group', group_id] })
-            queryClient.invalidateQueries({ queryKey: ['venues', id] })
+            // queryClient.refetchQueries({ queryKey: ['matches_group', group_id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_all', id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_free', id] })
+            queryClient.invalidateQueries({ queryKey: ['matches_group', group_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', group_id] })
             queryClient.refetchQueries({ queryKey: ['tournament_table', group_id] })
         }
@@ -53,9 +55,9 @@ export const UsePatchMatchReset = (tournament_id: number, group_id: number, matc
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
-            queryClient.refetchQueries({ queryKey: ['bracket', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['matches', group_id] })
-            queryClient.invalidateQueries({ queryKey: ['venues', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_all', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_free', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', group_id] })
             queryClient.refetchQueries({ queryKey: ['tournament_table', group_id] })
         }

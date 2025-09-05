@@ -1,7 +1,7 @@
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import { useMemo, useState, useEffect } from "react";
 import { useParams, useRouter } from "@tanstack/react-router";
-import { UseGetFreeVenues } from "@/queries/venues";
+import { UseGetFreeVenuesAll } from "@/queries/venues";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
@@ -83,14 +83,12 @@ const TableStatusSidebar = () => {
   const router = useRouter();
 
 
-  const { data: tournamentTables } = UseGetFreeVenues(
+  const { data: tournamentTables } = UseGetFreeVenuesAll(
     Number(tournamentid),
-    true,
   );
   const { data: tournamentGroups } = UseGetTournamentTablesQuery(
     Number(tournamentid),
   );
-
 
 
   const tableStatuses = useMemo((): TableStatus[] => {

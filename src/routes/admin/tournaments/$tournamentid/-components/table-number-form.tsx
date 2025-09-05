@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { useParams } from "@tanstack/react-router"
 import { UsePatchMatch } from "@/queries/match"
@@ -22,6 +22,9 @@ export function TableNumberForm({ match, initialTableNumber, brackets, showLabel
   const { t } = useTranslation()
 
   const [tableNumber, setTableNumber] = useState<string>(initialTableNumber)
+  useEffect(() => {
+    setTableNumber(initialTableNumber)
+  }, [initialTableNumber])
 
   const matchMutation = UsePatchMatch(Number(params.tournamentid), match.tournament_table_id, match.id)
 

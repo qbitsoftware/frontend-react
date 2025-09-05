@@ -582,6 +582,7 @@
       "yob": "Sünniaasta",
       "club": "Klubi",
       "subgroup": "Alagrupp",
+      "export": "Lae Alla",
       "filter": {
         "all_ratings": "Kõik reitingud",
         "rating_plus": "{{rating}}+",
@@ -1238,11 +1239,11 @@
         "type_placeholder": "Vali turniiri tüüp",
         "max_team_size": "Maksimaalne tiimi suurus",
         "private": "Privaatne turniir",
-        "private_description": "Muuda turniir ainult adminitele nähtavaks",
+        "private_description": "Muuda turniir ainult administraatoritele nähtavaks",
         "ranking": "Reitinguga turniir",
-        "ranking_description": "Reiting arvutatakse iga esmaspäeva hommikul",
-        "team": "Meeskondadega turniir",
-        "team_description": "Luba meeskondadega turniir",
+        "ranking_description": "Kas see turniir läheb reitingusse?",
+        "team": "Meeskondadega võistlusklass",
+        "team_description": "Paarismäng või võistkondlik",
         "main_bracket": "Põhiturniiri tabel",
         "main_bracket_placeholder": "Vali Põhitabeli formaat",
         "consolation_bracket": "Kas toimub ka lohutusturniir?",
@@ -2058,12 +2059,12 @@
       "deleted_error": "Turniiri kustutamine nurjus. Palun proovige uuesti"
     },
     "tournament_tables": {
-      "created": "Grupp on loodud edukalt",
-      "updated": "Grupp on uuendatud edukalt",
-      "deleted": "Grupp on kustutatud edukalt",
-      "created_error": "Grupi loomine nurjus. Palun proovige uuesti",
-      "updated_error": "Grupi uuendamine nurjus. Palun proovige uuesti",
-      "deleted_error": "Group kustutamine nurjus. Palun proovige uuesti"
+      "created": "Võistlusklass loodud edukalt",
+      "updated": "Võistlusklass uuendatud edukalt",
+      "deleted": "Võistlusklass kustutatud edukalt",
+      "created_error": "Võistlusklassi loomine nurjus. Palun proovige uuesti",
+      "updated_error": "Võistlusklassi uuendamine nurjus. Palun proovige uuesti",
+      "deleted_error": "Võistlusklassi kustutamine nurjus. Palun proovige uuesti"
     },
     "participants": {
       "created": "Osaleja lisatud edukalt",
@@ -2090,7 +2091,7 @@
       "invalid_file_format": "Palun valige Excel fail (.xlsx või .xls)",
       "import_success": "Osalejate importimine õnnestus",
       "double_pairing_success": "Paaride määramine õnnestus",
-      "double_pairing_error": "Paaride määramine nurjus"
+      "double_pairing_error": "Paaride määramine nurjus. Veendu, et oleks 8 või enam üksikmängijat"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",

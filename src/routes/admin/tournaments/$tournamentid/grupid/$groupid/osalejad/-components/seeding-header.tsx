@@ -59,32 +59,16 @@ const SeedingHeader = ({
     return Math.pow(2, Math.ceil(Math.log2(num)));
   };
 
-  // const checkPowerOf2Warning = (): boolean => {
-  //   let participantCount = participants?.length || 0;
-  //   const isStage = participants?.some(participant => participant.rr_order !== "")
-  //   if (isStage) {
-  //     return false
-  //   }
-
-  //   if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-  //     const pairs = participants?.filter((participant) => participant.players.length == 2) || [];
-  //     participantCount = pairs.length;
-  //   }
-
-  //   const closestPowerOf2 = getClosestPowerOf2(participantCount);
-  //   return closestPowerOf2 !== table_data.size;
-  // };
-
   const [disabled, setDisabled] = useState(false);
   const isDisabled = (data: MatchesResponse | undefined): boolean => {
     if (!data || !data.data) {
       return false;
     }
-    const winners = data.data.find((match) => {
-      return match.match.winner_id != "";
+    const have_matches = data.data.find((match) => {
+      return match.match.p1_id != "" && match.match.p2_id != "";
     });
 
-    if (!winners) {
+    if (!have_matches) {
       return false;
     } else {
       return true;

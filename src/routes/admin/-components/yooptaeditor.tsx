@@ -44,13 +44,14 @@ const MARKS = [Bold, Italic, CodeMark, Underline, Strike, Highlight];
 interface Props {
   value: YooptaContentValue | undefined;
   setValue:
-    | Dispatch<SetStateAction<YooptaContentValue | undefined>>
-    | undefined;
+  | Dispatch<SetStateAction<YooptaContentValue | undefined>>
+  | undefined;
   readOnly: boolean;
 }
 
 export default function Editor({ value, setValue, readOnly }: Props) {
   const editor = useMemo(() => createYooptaEditor(), []);
+
   const postImageMutation = usePostImage();
 
   const uploadImage = useCallback(

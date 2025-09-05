@@ -1,5 +1,5 @@
 import { UseGetTournamentMatchesQuery } from '@/queries/match'
-import { UseGetFreeVenues } from '@/queries/venues'
+import { UseGetFreeVenuesAll } from '@/queries/venues'
 import { TimeTableEditMatch, UseChangeTimeSlotTime, UseEditTimeTable, UseGetTournamentTablesQuery } from '@/queries/tables'
 import { useMemo, useState, useCallback, useEffect } from 'react'
 import { MatchWrapper } from '@/types/matches'
@@ -59,7 +59,7 @@ export function Timetable({
         })
     )
 
-    const { data: tournamentTables } = UseGetFreeVenues(tournamentId, true);
+    const { data: tournamentTables } = UseGetFreeVenuesAll(tournamentId);
     const { data: tournamentMatches } = UseGetTournamentMatchesQuery(tournamentId)
     const { data: tournamentClassesData } = UseGetTournamentTablesQuery(tournamentId)
     const editTimeTableMutation = isAdmin ? UseEditTimeTable(tournamentId) : null

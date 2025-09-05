@@ -68,6 +68,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const renderPlayer = (match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
+        const isForfeit = matches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
 
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
@@ -81,7 +82,21 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         title="Player is currently in another ongoing match"
                     />
                 )}
-                <span>{playerName}</span>
+                <span>{playerName}
+                    {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
+                        <span className="text-red-500 text-xs ml-1">
+                            (W-O)
+                        </span>
+                    ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
+                        <span className="text-red-500 text-xs ml-1">
+                            (RET)
+                        </span>
+                    ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
+                        <span className="text-red-500 text-xs ml-1">
+                            (DSQ)
+                        </span>
+                    ) : null)}
+                </span>
             </div>
         )
     }
@@ -169,8 +184,8 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
             // queryClient.resetQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
             queryClient.refetchQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
-            // 'matches_group', group_id
-            queryClient.invalidateQueries({ queryKey: ['venues', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_free', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['venues_all', tournament_id] })
             queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
             queryClient.refetchQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
 
@@ -201,6 +216,31 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         const hasScores = match.match.extra_data.score && match.match.extra_data.score.length > 0
         const pendingScore = getPendingScore(match.match.id, player)
         const displayScore = pendingScore !== null ? pendingScore : (hasScores ? currentScore : null)
+
+        if (match.match.forfeit) {
+            const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
+            const isWinner = match.match.winner_id === playerId
+
+            if (match.match.forfeit_type === "WO") {
+                return (
+                    <div className="w-16 h-8 flex items-center justify-center text-xs font-medium">
+                        {isWinner ? "W" : "O"}
+                    </div>
+                )
+            } else if (match.match.forfeit_type === "RET") {
+                return (
+                    <div className="w-16 h-8 flex items-center justify-center text-xs font-medium">
+                        {isWinner ? "-" : "RET"}
+                    </div>
+                )
+            } else if (match.match.forfeit_type === "DSQ") {
+                return (
+                    <div className="w-16 h-8 flex items-center justify-center text-xs font-medium">
+                        {isWinner ? "-" : "DSQ"}
+                    </div>
+                )
+            }
+        }
 
         const handleScoreChange = (value: string) => {
             const newScore = parseInt(value)

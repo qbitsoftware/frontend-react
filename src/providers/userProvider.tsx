@@ -21,6 +21,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user_data]);
 
+  const logout = () => {
+    setUser(null);
+  };
+
+  useEffect(() => {
+    const handleLogout = () => {
+      logout();
+    }
+
+    window.addEventListener('auth:logout', handleLogout);
+    return () => window.removeEventListener('auth:logout', handleLogout);
+  }, []);
+
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}

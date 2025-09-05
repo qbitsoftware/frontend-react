@@ -21,6 +21,8 @@ export interface RatingEvent {
   is_delta: boolean;
   algo_version: string;
   tournament_id: number;
+  last_name?: string
+  first_name?: string
 }
 
 export type User = {

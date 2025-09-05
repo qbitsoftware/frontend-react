@@ -13,6 +13,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from 'sonner'
 import EditImgModal from "../../../../-components/edit-img-modal"
+import { getFirstAndLastName } from "./participant-utils"
 
 interface Props {
     participant: Participant
@@ -98,22 +99,17 @@ export default function PlayerRow({ participant, index, player, updateField, tou
     }
 
     const handleSubmit = async () => {
-        const nameParts = fullName.trim().split(/\s+/)
         let updatedParticipant = null
-        if (nameParts.length > 0) {
-            const firstName = nameParts[0]
-            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
-
-            updateField(`players.${index}.first_name`, firstName)
-            updateField(`players.${index}.last_name`, lastName)
-            updatedParticipant = {
-                ...participant,
-                players: participant.players.map((player, i) =>
-                    i === index
-                        ? { ...player, first_name: firstName, last_name: lastName }
-                        : player
-                )
-            }
+        const { firstName, lastName } = getFirstAndLastName(searchTerm)
+        updateField(`players.${index}.first_name`, firstName)
+        updateField(`players.${index}.last_name`, lastName)
+        updatedParticipant = {
+            ...participant,
+            players: participant.players.map((player, i) =>
+                i === index
+                    ? { ...player, first_name: firstName, last_name: lastName }
+                    : player
+            )
         }
 
         try {
@@ -218,16 +214,16 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                 </Popover>
             </TableCell>
             <TableCell className="text-center py-2 px-3">
-                <Input className="w-[40px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="ELTL ID" value={participant.players[index].extra_data.eltl_id || 0} onChange={(e) => { updateField(`players.${index}.extra_data.eltl_id`, Number(e.target.value)) }} />
+                <Input className="w-[40px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="ELTL ID" value={participant.players[index].extra_data.eltl_id || 0} onChange={(e) => { updateField(`players.${index}.extra_data.eltl_id`, Number(e.target.value)) }} />
             </TableCell>
             <TableCell className="text-center py-2 px-3">
-                <Input className="w-[60px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Rank" onChange={(e) => updateField(`players.${index}.rank`, Number(e.target.value))} value={participant.players[index].rank || 0} />
+                <Input className="w-[60px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="Rank" onChange={(e) => updateField(`players.${index}.rank`, Number(e.target.value))} value={participant.players[index].rank || 0} />
             </TableCell>
             <TableCell className="text-center py-0.5 px-2">
-                <Input className="w-[35px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="PP" value={participant.players[index].extra_data.rate_points || 0} onChange={(e) => updateField(`players.${index}.extra_data.rate_points`, Number(e.target.value))} />
+                <Input className="w-[35px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="PP" value={participant.players[index].extra_data.rate_points || 0} onChange={(e) => updateField(`players.${index}.extra_data.rate_points`, Number(e.target.value))} />
             </TableCell>
             <TableCell className="text-center py-2 px-3">
-                <Input className="w-[120px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="YOB" onChange={(e) => updateField(`players.${index}.birthdate`, e.target.value)} value={formatDateStringYearMonthDay(participant.players[index].birthdate) || ''} />
+                <Input className="w-[120px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="DOB" onChange={(e) => updateField(`players.${index}.birthdate`, e.target.value)} value={formatDateStringYearMonthDay(participant.players[index].birthdate) || ''} />
             </TableCell>
             <TableCell className="text-center py-2 px-3">
                 <Input className="w-[160px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Club name" onChange={(e) => updateField(`players.${index}.extra_data.club`, e.target.value)} value={participant.players[index].extra_data.club || ''} />

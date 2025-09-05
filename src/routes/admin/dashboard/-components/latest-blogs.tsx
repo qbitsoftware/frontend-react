@@ -67,9 +67,9 @@ export default function AdminDashBoardBlogs() {
                     </div>
                 )}
 
-                {!isLoading && !error && blogData?.data && blogData.data.length > 0 && (
+                {!isLoading && !error && blogData?.data && blogData.data.blogs && blogData.data.blogs.length > 0 && (
                     <div className="flex flex-col gap-4">
-                        {blogData.data.slice(0, 3).map((blog) => (
+                        {blogData.data.blogs.slice(0, 3).map((blog) => (
                             <Link key={blog.id} href={`/admin/blog/${blog.id}`}>
                                 <div className="p-2 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center overflow-hidden">
                                     <div className="">
@@ -100,7 +100,7 @@ export default function AdminDashBoardBlogs() {
                     </div>
                 )}
 
-                {!isLoading && !error && (!blogData?.data || blogData.data.length === 0) && (
+                {!isLoading && !error && (!blogData?.data.blogs || blogData.data.blogs.length === 0) && (
                     <div className="p-4 rounded-lg border border-gray-200 bg-gray-50 text-center">
                         <p className="text-sm text-gray-500">
                             {t("admin.dashboard.no_blogs_yet")}

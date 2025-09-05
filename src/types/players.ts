@@ -1,6 +1,7 @@
 import { PlayerFormValues } from "@/routes/admin/tournaments/$tournamentid/-components/participant-forms/form-utils";
 import { User } from "./users";
 import { formatDateStringYearMonthDay } from "@/lib/utils";
+import { getFirstAndLastName } from "@/routes/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/-components/participant-utils";
 
 export const DEFAULT_PLAYER: PlayerFormValues = {
   first_name: "",
@@ -78,9 +79,7 @@ export const NewPlayer = (user: User): Player => {
 }
 
 export const NewPlayerFromName = (searchTerm: string): Player => {
-  const nameParts = searchTerm.trim().split(/\s+/)
-  const firstName = nameParts[0]
-  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
+  const { firstName, lastName } = getFirstAndLastName(searchTerm)
   const new_player: Player = {
     id: "",
     user_id: 0,

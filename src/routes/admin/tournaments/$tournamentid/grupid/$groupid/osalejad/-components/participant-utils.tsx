@@ -9,6 +9,17 @@ export interface ParticipantUtils {
     addNewRoundRobinGroup: (order: number, tournament_id: number) => Promise<void>
 }
 
+export const getFirstAndLastName = (fullName: string): { firstName: string; lastName: string } => {
+    const parts = fullName.trim().split(' ').filter(part => part.length > 0);
+    if (parts.length === 0) return { firstName: '', lastName: '' };
+    if (parts.length === 1) return { firstName: parts[0], lastName: '' };
+
+    const firstName = parts.slice(0, -1).join(' ');
+    const lastName = parts[parts.length - 1];
+
+    return { firstName, lastName };
+}
+
 export function createParticipantUtils({
     createParticipantMutation,
     updateParticipantMutation,

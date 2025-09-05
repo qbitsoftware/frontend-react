@@ -2,6 +2,7 @@ import {
   createFileRoute,
   Outlet,
   redirect,
+  useParams,
 } from '@tanstack/react-router'
 import { UseGetTournamentTable } from '@/queries/tables'
 import ErrorPage from '@/components/error'
@@ -31,13 +32,15 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { table_data } = Route.useLoaderData()
-
+  const { tournamentid, groupid } = useParams({ from: "/admin/tournaments/$tournamentid/grupid/$groupid" })
   if (!table_data || !table_data.data) {
     return <></>
   }
 
   return (
-    <TournamentTableProvider tournament_table_data={table_data.data}>
+    <TournamentTableProvider
+      key={`${tournamentid}-${groupid}`}
+      tournament_table_data={table_data.data}>
       <div className="pb-8">
         <Outlet />
       </div>

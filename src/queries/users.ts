@@ -110,6 +110,7 @@ export const useGetCurrentUserQuery = () => {
         withCredentials: true,
       });
       return data;
+
     },
     staleTime: Infinity,
     retry: false,

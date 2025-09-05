@@ -17,6 +17,7 @@ import EditImgModal from "../../../../-components/edit-img-modal"
 import { DialogType, TournamentTable } from "@/types/groups"
 import { selectedTeams } from "./new-double"
 import { GroupType } from "@/types/matches"
+import { getFirstAndLastName } from "./participant-utils"
 
 interface Props {
     participant: Participant
@@ -287,6 +288,9 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                             onChange={(e) => {
                                 setSearchTerm(e.target.value)
                                 updateField("name", e.target.value)
+                                const { firstName, lastName } = getFirstAndLastName(e.target.value)
+                                updateField("players.0.first_name", firstName)
+                                updateField("players.0.last_name", lastName)
                             }}
                             value={participantState.name}
                         />
@@ -340,13 +344,13 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                 </Popover>
             </TableCell>
             <TableCell className="text-center py-0.5 px-2">
-                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="ELTL ID" value={participantState.players[0]?.extra_data.eltl_id || 0} onChange={(e) => updateField("players.0.extra_data.eltl_id", Number(e.target.value))} />
+                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="ELTL ID" value={participantState.players[0]?.extra_data.eltl_id || 0} onChange={(e) => updateField("players.0.extra_data.eltl_id", Number(e.target.value))} />
             </TableCell>
             <TableCell className="text-center py-0.5 px-2">
-                <Input className="w-[50px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Rank" onChange={(e) => updateField("rank", Number(e.target.value))} value={participantState.rank || 0} />
+                <Input className="w-[50px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="Rank" onChange={(e) => updateField("rank", Number(e.target.value))} value={participantState.rank || 0} />
             </TableCell>
             <TableCell className="text-center py-0.5 px-2">
-                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="PP" value={participantState.players[0]?.extra_data.rate_points || 0} onChange={(e) => updateField("players.0.extra_data.rate_points", Number(e.target.value))} />
+                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="PP" value={participantState.players[0]?.extra_data.rate_points || 0} onChange={(e) => updateField("players.0.extra_data.rate_points", Number(e.target.value))} />
             </TableCell>
 
             <TableCell className="text-center py-0.5 px-2">

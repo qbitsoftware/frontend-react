@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTournament } from '../-components/tournament-provider'
-import { UseGetFreeVenues } from '@/queries/venues'
+import { UseGetFreeVenuesPublic } from '@/queries/venues'
 import { UseGetTournamentTablesQuery } from '@/queries/tables'
 import { VenueTable } from './-components/venue-table'
 import LoadingScreen from '@/routes/-components/loading-screen'
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/voistlused/$tournamentid/lauad/')({
 
 function RouteComponent() {
     const { tournamentData: tournament } = useTournament()
-    const { data: venues, isLoading, error } = UseGetFreeVenues(Number(tournament.id), true)
+    const { data: venues, isLoading, error } = UseGetFreeVenuesPublic(Number(tournament.id))
     const { data: tournamentGroups } = UseGetTournamentTablesQuery(Number(tournament.id))
     const [isFullscreenOpen, setIsFullscreenOpen] = useState(false)
 

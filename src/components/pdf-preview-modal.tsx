@@ -9,11 +9,14 @@ import {
 import { Button } from "./ui/button";
 import { useTranslation } from "react-i18next";
 
+import { Bracket } from "@/types/brackets";
+
 interface PDFPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   containerId: string;
   title: string;
+  bracketData?: Bracket;
 }
 
 const PDF_STYLES = {
@@ -98,7 +101,7 @@ const PDF_STYLES = {
   `
 };
 
-const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: boolean; title: string }) => {
+const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: boolean; title: string }, bracketData?: Bracket) => {
   const matchElements = container.querySelectorAll(".w-\\[198px\\], .w-\\[240px\\]");
   const hasTable = container.querySelector('table') !== null;
   const hasTableComponents = container.querySelector('[class*="table-fixed"]') !== null ||
@@ -275,7 +278,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     // skipping
   } else {
     const containerWidth = 1090;
-    let furthestRightElement: HTMLElement | null = null;
     let furthestRightPosition = 0;
     const elementsToMove: Array<{ element: HTMLElement; position: number }> = [];
     const allElements: Array<{ element: HTMLElement; position: number }> = [];
@@ -314,7 +316,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
       if (actualPosition > furthestRightPosition) {
         furthestRightPosition = actualPosition;
-        furthestRightElement = htmlEl;
       }
 
       if (actualPosition > containerWidth || isPlacementMatch) {
@@ -324,24 +325,73 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
     const sortedElements = allElements.sort((a, b) => b.position - a.position);
 
-    const mainPlacementMatches = mainBracketElements.filter(({ element }) => {
-      const text = element.textContent || "";
-      return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])5-6(?:[^0-9]|$)/);
-    });
+    const getMatchBracketFromData = (element: HTMLElement): string | null => {
+      if (!bracketData) return null;
+      
+      const readableIdElement = element.querySelector('.absolute.-top-\\[18px\\].right-0');
+      if (!readableIdElement) return null;
+      
+      const readableId = readableIdElement.textContent?.trim();
+      if (!readableId) return null;
+      
+      // Find matching bracket data
+      for (const elimination of bracketData.eliminations) {
+        for (const bracket of elimination.elimination) {
+          const match = bracket.matches.find(m => m.match.readable_id.toString() === readableId);
+          if (match && match.match.bracket) {
+            return match.match.bracket;
+          }
+        }
+      }
+      return null;
+    };
 
-    const miinusringPlacementMatches = miinusringElements.filter(({ element }) => {
+    const hasPlacementBracket = (element: HTMLElement, targetBrackets: string[]) => {
+      const bracketFromData = getMatchBracketFromData(element);
+      if (bracketFromData) {
+        console.log(`Found bracket from data: ${bracketFromData}, checking against:`, targetBrackets);
+        return targetBrackets.includes(bracketFromData);
+      }
+      
+      // Fallback to HTML parsing
+      const bracketElement = element.querySelector('.absolute.-right-\\[35px\\]');
+      if (bracketElement) {
+        const bracketText = bracketElement.textContent || "";
+        console.log(`Found bracket from HTML element: ${bracketText}, checking against:`, targetBrackets);
+        return targetBrackets.includes(bracketText);
+      }
+      
       const text = element.textContent || "";
-      return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) || text.match(/(?:^|[^0-9])5-6(?:[^0-9]|$)/);
-    });
+      const result = targetBrackets.some(bracket => 
+        text.match(new RegExp(`(?:^|[^0-9])${bracket.replace('-', '-')}(?:[^0-9]|$)`))
+      );
+      console.log(`Fallback text match for ${targetBrackets}: ${result}, text content:`, text);
+      return result;
+    };
+
+    const getPlacementMatches = (elements: Array<{ element: HTMLElement; position: number }>, isLoserBracket = false) => {
+      const placementBrackets = ['1-2', '3-4', '5-6'];
+      return elements.filter(({ element }) => {
+        if (hasPlacementBracket(element, placementBrackets)) {
+          const isMatchInLoserBracket = element.closest('.loser-bracket-match') !== null;
+          return isLoserBracket ? isMatchInLoserBracket : !isMatchInLoserBracket;
+        }
+        return false;
+      });
+    };
+
+    const mainPlacementMatches = getPlacementMatches(mainBracketElements, false);
+    console.log("main placement matches", mainPlacementMatches)
+
+    const miinusringPlacementMatches = getPlacementMatches(miinusringElements, true);
 
     if (bracketSize === 32) {
       if (hasLosersBracket) {
         const sortedMiinusringElements = miinusringElements
           .filter(({ element }) => {
-            const text = element.textContent || "";
             // Exclude grand final matches from main bracket and already processed matches
-            if (text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/)) return false; // Always exclude 1-2 matches
-            if (text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
+            if (hasPlacementBracket(element, ['1-2'])) return false; // Always exclude 1-2 matches
+            if (hasPlacementBracket(element, ['3-4']) && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
             if (element.classList.contains("repositioned-match")) return false; // Exclude already processed matches
             return true;
           })
@@ -557,8 +607,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       } 
     } else if (bracketSize === 64 && !hasLosersBracket) {
       const finalMatch = mainBracketElements.find(({ element }) => {
-        const text = element.textContent || "";
-        return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
+        return hasPlacementBracket(element, ['1-2']) && !element.closest('.loser-bracket-match');
       });
 
       if (finalMatch) {
@@ -572,8 +621,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       }
 
       const thirdFourthMatch = mainBracketElements.find(({ element }) => {
-        const text = element.textContent || "";
-        return text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
+        return hasPlacementBracket(element, ['3-4']) && !element.closest('.loser-bracket-match');
       });
 
       if (thirdFourthMatch) {
@@ -590,15 +638,13 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
       if (mainBracketElements.length > 0) {
         grandFinalMatch = mainBracketElements.find(({ element }) => {
-          const text = element.textContent || "";
-          return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
+          return hasPlacementBracket(element, ['1-2']) && !element.closest('.loser-bracket-match');
         });
       }
 
       if (!grandFinalMatch) {
         const oneTwoMatch = allElements.find(({ element }) => {
-          const text = element.textContent || "";
-          return text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
+          return hasPlacementBracket(element, ['1-2']) && !element.closest('.loser-bracket-match');
         });
         grandFinalMatch = oneTwoMatch || null;
       }
@@ -617,15 +663,13 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
       if (mainBracketElements.length > 0) {
         thirdFourthMatch = mainBracketElements.find(({ element }) => {
-          const text = element.textContent || "";
-          return text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
+          return hasPlacementBracket(element, ['3-4']) && !element.closest('.loser-bracket-match');
         });
       }
 
       if (!thirdFourthMatch) {
         const threeFourMatch = allElements.find(({ element }) => {
-          const text = element.textContent || "";
-          return text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match');
+          return hasPlacementBracket(element, ['3-4']) && !element.closest('.loser-bracket-match');
         });
         thirdFourthMatch = threeFourMatch || null;
       }
@@ -642,10 +686,9 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
       const sortedMiinusringElements = miinusringElements
         .filter(({ element }) => {
-          const text = element.textContent || "";
           // Exclude grand final matches from main bracket and already processed matches
-          if (text.match(/(?:^|[^0-9])1-2(?:[^0-9]|$)/)) return false; // Always exclude 1-2 matches
-          if (text.match(/(?:^|[^0-9])3-4(?:[^0-9]|$)/) && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
+          if (hasPlacementBracket(element, ['1-2'])) return false; // Always exclude 1-2 matches
+          if (hasPlacementBracket(element, ['3-4']) && !element.closest('.loser-bracket-match')) return false; // Only exclude 3-4 if NOT in loser bracket
           if (element.classList.contains("repositioned-match")) return false; // Exclude already processed matches
           return true;
         })
@@ -897,9 +940,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
         element.style.backgroundColor = "lightblue";
       });
     }
-
-    if (furthestRightElement) {
-    }
   }
 
   const className = settings.title?.replace(/ Tournament$/, "").trim();
@@ -909,8 +949,8 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
   if (className && className !== "Tournament Bracket" && !isRoundRobinContainer) {
     const header = document.createElement("div");
     Object.assign(header.style, {
-      textAlign: "center", fontWeight: "bold", fontSize: "24px",
-      marginBottom: "125px", padding: "15px", border: "2px solid #000",
+      textAlign: "center", fontWeight: "bold", fontSize: "48px",
+      marginBottom: "115px", padding: "25px", 
       backgroundColor: "#fff", width: "100%"
     });
     header.textContent = className;
@@ -935,6 +975,7 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
   onClose,
   containerId,
   title,
+  bracketData,
 }) => {
   const { t } = useTranslation();
 
@@ -960,7 +1001,7 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
 
       document.body.appendChild(clone);
 
-      applyPrintStyles(clone, { whiteBackground: true, title });
+      applyPrintStyles(clone, { whiteBackground: true, title }, bracketData);
 
       const styledHTML = clone.outerHTML;
 

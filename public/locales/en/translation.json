@@ -532,9 +532,10 @@
       "participants": "Participants",
       "rating": "Rating",
       "sex": "Sex",
-      "yob": "YOB",
+      "yob": "DOB",
       "club": "Club",
       "subgroup": "Subgroup",
+      "export": "Export Standings",
       "filter": {
         "all_ratings": "All ratings",
         "rating_plus": "{{rating}}+",
@@ -719,7 +720,7 @@
       "combined": "Combined"
     },
     "last_updated": "Last updated",
-    "abbreviations": "Abbreviations: NR = rank in rating, PP = placement points, RP = rating points, KA = weights, ID = ELTLID, YOB = year of birth",
+    "abbreviations": "Abbreviations: NR = rank in rating, PP = placement points, RP = rating points, KA = weights, ID = ELTLID, DOB = date of birth",
     "license_info": {
       "title": "License Information",
       "message": "Licenses will be required starting from January 1, 2026, and can be bought",
@@ -764,7 +765,7 @@
       "head": {
         "first_name": "First Name",
         "last_name": "Surname",
-        "birthyear": "YOB",
+        "birthyear": "DOB",
         "profile": "Profile",
         "club": "Club",
         "player": "Player",
@@ -932,7 +933,7 @@
       "fields": {
         "nationality": "Nationality",
         "eltl_id": "ELTL ID",
-        "year_of_birth": "Birthyea  r",
+        "year_of_birth": "Birthyear",
         "rating": "Rating",
         "sex": "Sex",
         "rank": "Rank #",
@@ -1494,7 +1495,7 @@
             "club": "Club",
             "class": "Class",
             "eltl_id": "ELTL ID",
-            "yob": "YOB",
+            "yob": "DOB",
             "rating": "Placement in rating",
             "actions": "Actions",
             "nationality": "Country",
@@ -2061,7 +2062,7 @@
       "invalid_file_format": "Please select an Excel file (.xlsx or .xls)",
       "import_success": "Participants imported successfully",
       "double_pairing_success": "Double pairs assigned successfully",
-      "double_pairing_error": "Error assigning double pairs"
+      "double_pairing_error": "Error assigning double pairs. Check if you have 8 or more players."
     },
     "protocol_modals": {
       "updated_match_score": "Match score updated successfully",
