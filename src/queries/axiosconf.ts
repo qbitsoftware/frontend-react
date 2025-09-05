@@ -24,3 +24,37 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
     }
 )
+
+let activeRequests = 0;
+
+axiosInstance.interceptors.request.use(
+    (config) => {
+        activeRequests++;
+        console.log("Active requests:", activeRequests);
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+axiosInstance.interceptors.response.use(
+    (response) => {
+        activeRequests--;
+        console.log("Active requests:", activeRequests);
+        return response;
+    },
+    (error) => {
+        activeRequests--;
+        console.log("Active requests:", activeRequests);
+        return Promise.reject(error);
+    }
+);
+
+
+// axiosInstance.interceptors.request.use(
+//     (config) => {
+//         console.log('Active requests:', config.maxRate);
+//         return config;
+//     }
+// );
