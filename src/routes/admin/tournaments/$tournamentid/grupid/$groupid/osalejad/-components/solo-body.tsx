@@ -20,6 +20,7 @@ import ParticipantHeader from './table-header'
 import { GroupType, TTState } from '@/types/matches'
 import { selectedTeams } from './new-double'
 import { NewPlayerDialog } from './new-player-dialog'
+import { getFirstAndLastName } from './participant-utils'
 
 interface SoloParticipantsProps {
     participants: Participant[]
@@ -230,28 +231,29 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                         if (searchTerm.trim() === "") {
                                                             return
                                                         }
-                                                        const nameParts = searchTerm.trim().split(/\s+/)
-                                                        if (nameParts.length > 0) {
-                                                            const firstName = nameParts[0]
-                                                            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
-                                                            const newPlayer = NewPlayerFromName(searchTerm)
-                                                            const group_number = 1
-                                                            const group_name = GroupType.ROUND_ROBIN
-                                                            const new_participant: ParticipantFormValues = {
-                                                                name: `${capitalizeWords(firstName)} ${capitalizeWords(lastName)}`,
-                                                                players: [newPlayer],
-                                                                sport_type: "tabletennis",
-                                                                group: group_number,
-                                                                group_name: group_name,
-                                                                order: participants.length + 1,
-                                                                tournament_id,
-                                                                class: "",
-                                                                group_id: group_participant?.id,
-                                                            }
-                                                            setCurrentParticipant(new_participant)
-                                                            setCurrentPlayer(newPlayer)
-                                                            setNewPlayerDialogOpen(true)
+                                                        console.log("we are firign here")
+                                                        // const nameParts = searchTerm.trim().split(/\s+/)
+                                                        const { firstName, lastName } = getFirstAndLastName(searchTerm)
+                                                        // console.log("firstname", first_name, "lastname", last_name)
+                                                        // const firstName = nameParts[0]
+                                                        // const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
+                                                        const newPlayer = NewPlayerFromName(searchTerm)
+                                                        const group_number = 1
+                                                        const group_name = GroupType.ROUND_ROBIN
+                                                        const new_participant: ParticipantFormValues = {
+                                                            name: `${capitalizeWords(firstName)} ${capitalizeWords(lastName)}`,
+                                                            players: [newPlayer],
+                                                            sport_type: "tabletennis",
+                                                            group: group_number,
+                                                            group_name: group_name,
+                                                            order: participants.length + 1,
+                                                            tournament_id,
+                                                            class: "",
+                                                            group_id: group_participant?.id,
                                                         }
+                                                        setCurrentParticipant(new_participant)
+                                                        setCurrentPlayer(newPlayer)
+                                                        setNewPlayerDialogOpen(true)
                                                     }
                                                     }
                                                     className="flex-shrink-0"

@@ -13,6 +13,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from 'sonner'
 import EditImgModal from "../../../../-components/edit-img-modal"
+import { getFirstAndLastName } from "./participant-utils"
 
 interface Props {
     participant: Participant
@@ -98,22 +99,17 @@ export default function PlayerRow({ participant, index, player, updateField, tou
     }
 
     const handleSubmit = async () => {
-        const nameParts = fullName.trim().split(/\s+/)
         let updatedParticipant = null
-        if (nameParts.length > 0) {
-            const firstName = nameParts[0]
-            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
-
-            updateField(`players.${index}.first_name`, firstName)
-            updateField(`players.${index}.last_name`, lastName)
-            updatedParticipant = {
-                ...participant,
-                players: participant.players.map((player, i) =>
-                    i === index
-                        ? { ...player, first_name: firstName, last_name: lastName }
-                        : player
-                )
-            }
+        const { firstName, lastName } = getFirstAndLastName(searchTerm)
+        updateField(`players.${index}.first_name`, firstName)
+        updateField(`players.${index}.last_name`, lastName)
+        updatedParticipant = {
+            ...participant,
+            players: participant.players.map((player, i) =>
+                i === index
+                    ? { ...player, first_name: firstName, last_name: lastName }
+                    : player
+            )
         }
 
         try {

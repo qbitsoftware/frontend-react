@@ -17,6 +17,7 @@ import EditImgModal from "../../../../-components/edit-img-modal"
 import { DialogType, TournamentTable } from "@/types/groups"
 import { selectedTeams } from "./new-double"
 import { GroupType } from "@/types/matches"
+import { getFirstAndLastName } from "./participant-utils"
 
 interface Props {
     participant: Participant
@@ -287,14 +288,9 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                             onChange={(e) => {
                                 setSearchTerm(e.target.value)
                                 updateField("name", e.target.value)
-                                const nameParts = e.target.value.trim().split(/\s+/)
-                                if (nameParts.length > 0) {
-                                    const firstName = nameParts[0]
-                                    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
-                                    updateField("players.0.first_name", firstName)
-                                    updateField("players.0.last_name", lastName)
-
-                                }
+                                const { firstName, lastName } = getFirstAndLastName(e.target.value)
+                                updateField("players.0.first_name", firstName)
+                                updateField("players.0.last_name", lastName)
                             }}
                             value={participantState.name}
                         />
