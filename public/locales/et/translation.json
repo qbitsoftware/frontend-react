@@ -2059,12 +2059,12 @@
       "deleted_error": "Turniiri kustutamine nurjus. Palun proovige uuesti"
     },
     "tournament_tables": {
-      "created": "Grupp on loodud edukalt",
-      "updated": "Grupp on uuendatud edukalt",
-      "deleted": "Grupp on kustutatud edukalt",
-      "created_error": "Grupi loomine nurjus. Palun proovige uuesti",
-      "updated_error": "Grupi uuendamine nurjus. Palun proovige uuesti",
-      "deleted_error": "Group kustutamine nurjus. Palun proovige uuesti"
+      "created": "Võistlusklass loodud edukalt",
+      "updated": "Võistlusklass uuendatud edukalt",
+      "deleted": "Võistlusklass kustutatud edukalt",
+      "created_error": "Võistlusklassi loomine nurjus. Palun proovige uuesti",
+      "updated_error": "Võistlusklassi uuendamine nurjus. Palun proovige uuesti",
+      "deleted_error": "Võistlusklassi kustutamine nurjus. Palun proovige uuesti"
     },
     "participants": {
       "created": "Osaleja lisatud edukalt",
