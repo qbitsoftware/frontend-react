@@ -83,15 +83,15 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                     />
                 )}
                 <span>{playerName}
-                    {isForfeit && (match.match.forfeit_type == "WO" ? (
+                    {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
                         <span className="text-red-500 text-xs ml-1">
                             (W-O)
                         </span>
-                    ) : match.match.forfeit_type == "RET" ? (
+                    ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
                         <span className="text-red-500 text-xs ml-1">
                             (RET)
                         </span>
-                    ) : match.match.forfeit_type == "DSQ" ? (
+                    ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
                         <span className="text-red-500 text-xs ml-1">
                             (DSQ)
                         </span>
