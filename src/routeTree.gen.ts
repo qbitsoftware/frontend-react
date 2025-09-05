@@ -38,6 +38,7 @@ import { Route as ProfileTournamentsIndexImport } from './routes/profile/tournam
 import { Route as ProfileSettingsIndexImport } from './routes/profile/settings/index'
 import { Route as AdminUsersIndexImport } from './routes/admin/users/index'
 import { Route as AdminTournamentsIndexImport } from './routes/admin/tournaments/index'
+import { Route as AdminRatingIndexImport } from './routes/admin/rating/index'
 import { Route as AdminFeedbackIndexImport } from './routes/admin/feedback/index'
 import { Route as AdminDashboardIndexImport } from './routes/admin/dashboard/index'
 import { Route as AdminClubsIndexImport } from './routes/admin/clubs/index'
@@ -237,6 +238,12 @@ const AdminTournamentsIndexRoute = AdminTournamentsIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminTournamentsLayoutRoute,
+} as any)
+
+const AdminRatingIndexRoute = AdminRatingIndexImport.update({
+  id: '/rating/',
+  path: '/rating/',
+  getParentRoute: () => AdminLayoutRoute,
 } as any)
 
 const AdminFeedbackIndexRoute = AdminFeedbackIndexImport.update({
@@ -663,6 +670,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFeedbackIndexImport
       parentRoute: typeof AdminLayoutImport
     }
+    '/admin/rating/': {
+      id: '/admin/rating/'
+      path: '/rating'
+      fullPath: '/admin/rating'
+      preLoaderRoute: typeof AdminRatingIndexImport
+      parentRoute: typeof AdminLayoutImport
+    }
     '/admin/tournaments/': {
       id: '/admin/tournaments/'
       path: '/'
@@ -1053,6 +1067,7 @@ interface AdminLayoutRouteChildren {
   AdminDashboardLayoutRoute: typeof AdminDashboardLayoutRouteWithChildren
   AdminTournamentsLayoutRoute: typeof AdminTournamentsLayoutRouteWithChildren
   AdminFeedbackIndexRoute: typeof AdminFeedbackIndexRoute
+  AdminRatingIndexRoute: typeof AdminRatingIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
 
@@ -1062,6 +1077,7 @@ const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
   AdminDashboardLayoutRoute: AdminDashboardLayoutRouteWithChildren,
   AdminTournamentsLayoutRoute: AdminTournamentsLayoutRouteWithChildren,
   AdminFeedbackIndexRoute: AdminFeedbackIndexRoute,
+  AdminRatingIndexRoute: AdminRatingIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
 
@@ -1157,6 +1173,7 @@ export interface FileRoutesByFullPath {
   '/admin/clubs/': typeof AdminClubsIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/admin/feedback': typeof AdminFeedbackIndexRoute
+  '/admin/rating': typeof AdminRatingIndexRoute
   '/admin/tournaments/': typeof AdminTournamentsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/profile/settings': typeof ProfileSettingsIndexRoute
@@ -1214,6 +1231,7 @@ export interface FileRoutesByTo {
   '/admin/clubs': typeof AdminClubsIndexRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/admin/feedback': typeof AdminFeedbackIndexRoute
+  '/admin/rating': typeof AdminRatingIndexRoute
   '/admin/tournaments': typeof AdminTournamentsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/profile/settings': typeof ProfileSettingsIndexRoute
@@ -1277,6 +1295,7 @@ export interface FileRoutesById {
   '/admin/clubs/': typeof AdminClubsIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/admin/feedback/': typeof AdminFeedbackIndexRoute
+  '/admin/rating/': typeof AdminRatingIndexRoute
   '/admin/tournaments/': typeof AdminTournamentsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/profile/settings/': typeof ProfileSettingsIndexRoute
@@ -1343,6 +1362,7 @@ export interface FileRouteTypes {
     | '/admin/clubs/'
     | '/admin/dashboard/'
     | '/admin/feedback'
+    | '/admin/rating'
     | '/admin/tournaments/'
     | '/admin/users'
     | '/profile/settings'
@@ -1399,6 +1419,7 @@ export interface FileRouteTypes {
     | '/admin/clubs'
     | '/admin/dashboard'
     | '/admin/feedback'
+    | '/admin/rating'
     | '/admin/tournaments'
     | '/admin/users'
     | '/profile/settings'
@@ -1460,6 +1481,7 @@ export interface FileRouteTypes {
     | '/admin/clubs/'
     | '/admin/dashboard/'
     | '/admin/feedback/'
+    | '/admin/rating/'
     | '/admin/tournaments/'
     | '/admin/users/'
     | '/profile/settings/'
@@ -1578,6 +1600,7 @@ export const routeTree = rootRoute
         "/admin/dashboard",
         "/admin/tournaments",
         "/admin/feedback/",
+        "/admin/rating/",
         "/admin/users/"
       ]
     },
@@ -1709,6 +1732,10 @@ export const routeTree = rootRoute
     },
     "/admin/feedback/": {
       "filePath": "admin/feedback/index.tsx",
+      "parent": "/admin"
+    },
+    "/admin/rating/": {
+      "filePath": "admin/rating/index.tsx",
       "parent": "/admin"
     },
     "/admin/tournaments/": {

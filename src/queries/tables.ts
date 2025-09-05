@@ -84,10 +84,11 @@ export const UseGetTournamentTableQuery = (tournament_id: number, tournament_tab
         queryKey: ["tournament_table", tournament_table_id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}`, {
-                withCredentials: true
+                withCredentials: true,
+
             })
             return data;
-        }
+        },
     })
 }
 
