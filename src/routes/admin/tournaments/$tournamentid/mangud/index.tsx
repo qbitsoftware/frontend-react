@@ -264,7 +264,7 @@ function RouteComponent() {
             </div>
             <div>
               <div className="flex gap-4  text-xs text-gray-600">
-                <div className="flex flex-col sm:flex-row">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full bg-white border border-gray-300"></div>
                     <span>{t("admin.tournaments.matches.legend.upcoming")}</span>

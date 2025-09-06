@@ -122,7 +122,8 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     const doubleElimData = [
       { players: 16, games: 40 },
       { players: 32, games: 97 },
-      { players: 64, games: 226 }
+      { players: 64, games: 226 },
+      { players: 128, games: 480}
     ];
 
     bracketSize = doubleElimData.reduce((closest, current) =>
@@ -183,12 +184,17 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     htmlEl.style.paddingBottom = "14px";
   });
 
-  container.querySelectorAll('.bracket-title-miinusring, .bracket-title-5-6, .bracket-title-7-8, .bracket-title-25-32, .bracket-title-33-48, .bracket-title-49-64, .bracket-title-65-96').forEach((el) => {
+  container.querySelectorAll('.bracket-title-miinusring, .bracket-title-5-6, .bracket-title-7-8, .bracket-title-25-32, .bracket-title-33-48, .bracket-title-49-64, .bracket-title-65-96, .bracket-title-69-72').forEach((el) => {
     const htmlEl = el as HTMLElement;
     const targetElement = htmlEl.parentElement || htmlEl;
     (targetElement as HTMLElement).style.pageBreakBefore = "always";
 
-    htmlEl.style.marginTop = "0";
+    if (htmlEl.classList.contains('bracket-title-miinusring')) {
+      htmlEl.style.marginTop = "150px";
+      htmlEl.style.marginBottom = "40px";
+    } else {
+      htmlEl.style.marginTop = "0";
+    }
   });
 
   container.querySelectorAll('.bg-blue-200, .bg-blue-400, [class*="bg-blue-"]').forEach((el) => {
@@ -242,7 +248,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
             header.classList.add('class-name-header');
             Object.assign(header.style, {
               textAlign: "center", fontWeight: "bold", fontSize: "24px",
-              marginBottom: "20px", padding: "15px", border: "2px solid #000",
+              marginBottom: "25px", padding: "20px", border: "2px solid #000",
               backgroundColor: "#fff", width: "100%"
             });
             header.textContent = className;
@@ -323,8 +329,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
       }
     });
 
-    const sortedElements = allElements.sort((a, b) => b.position - a.position);
-
     const getMatchBracketFromData = (element: HTMLElement): string | null => {
       if (!bracketData) return null;
       
@@ -383,7 +387,6 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     const mainPlacementMatches = getPlacementMatches(mainBracketElements, false);
     console.log("main placement matches", mainPlacementMatches)
 
-    const miinusringPlacementMatches = getPlacementMatches(miinusringElements, true);
 
     if (bracketSize === 32) {
       if (hasLosersBracket) {
@@ -900,45 +903,226 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
           }
         });
       }
-    } else {
-      const consolationMatches = sortedElements
+    } else if (bracketSize > 64) {
+      // Apply same miinusring logic as 64-player bracket
+      const sortedMiinusringElements = miinusringElements
         .filter(({ element }) => {
-          const text = element.textContent || "";
-          return !text.match(/\b\d+-\d+\b/);
+          if (hasPlacementBracket(element, ['1-2'])) return false;
+          if (hasPlacementBracket(element, ['3-4']) && !element.closest('.loser-bracket-match')) return false;
+          if (element.classList.contains("repositioned-match")) return false;
+          return true;
         })
-        .slice(0, 5);
+        .sort((a, b) => b.position - a.position);
 
-      mainPlacementMatches.forEach(({ element }) => {
-        if (!element.classList.contains("repositioned-match")) {
-          element.style.backgroundColor = "pink";
+      const columnsToColor = Math.max(7, Math.floor((matchElements.length - 420) * 1.25));
+      console.log(columnsToColor)
+      const matchSpacing = 1000;
 
-          const currentTransform = element.style.transform || "";
-          const newTransform = currentTransform
-            ? `${currentTransform} translateX(-235px) translateY(-45px)`
-            : "translateX(-235px) translateY(-45px)";
-          element.style.transform = newTransform;
-          element.classList.add("repositioned-match");
+      sortedMiinusringElements.slice(0, columnsToColor).forEach(({ element }) => {
+        element.style.backgroundColor = "yellow";
+        element.classList.add("loser-bracket-split");
 
+        const currentTransform = element.style.transform || "";
+        const newTransform = currentTransform
+          ? `${currentTransform} translateY(${matchSpacing}px)`
+          : `translateY(${matchSpacing}px)`;
+        element.style.transform = newTransform;
+        element.style.position = "relative";
+        element.style.zIndex = "999";
+      });
+
+      const loserBracketConnectors = Array.from(container.querySelectorAll('.loser-bracket-connector')) as HTMLElement[];
+      const sortedConnectors = loserBracketConnectors
+        .map(connector => ({
+          element: connector,
+          position: connector.getBoundingClientRect().right
+        }))
+        .sort((a, b) => b.position - a.position);
+
+      // const connectorsToMove = Math.max(18, columnsToColor * 3);
+      const connectorsToMove = 48;
+      console.log(connectorsToMove, "contomove")
+      const actualConnectorsToMove = Math.min(sortedConnectors.length, connectorsToMove);
+
+      sortedConnectors.slice(0, actualConnectorsToMove).forEach(({ element: connectorEl }) => {
+        if (!connectorEl.classList.contains('loser-bracket-split')) {
+          connectorEl.style.backgroundColor = "orange";
+          connectorEl.classList.add("loser-bracket-split");
+
+          const connectorTransform = connectorEl.style.transform || "";
+          const newConnectorTransform = connectorTransform
+            ? `${connectorTransform} translateY(${matchSpacing}px)`
+            : `translateY(${matchSpacing}px)`;
+          connectorEl.style.transform = newConnectorTransform;
+          connectorEl.style.position = "relative";
+          connectorEl.style.zIndex = "998";
         }
       });
 
-      miinusringPlacementMatches.forEach(({ element }) => {
-        if (!element.classList.contains("repositioned-match")) {
-          element.style.backgroundColor = "red";
+      // Create continuation page
+      let placementTitle = container.querySelector('.bracket-title-5-6') as HTMLElement;
+      let sectionName = '5-6';
 
-          const currentTransform = element.style.transform || "";
-          const newTransform = currentTransform
-            ? `${currentTransform} translateX(-235px) translateY(-45px)`
-            : "translateX(-235px) translateY(-45px)";
-          element.style.transform = newTransform;
-          element.classList.add("repositioned-match");
+      if (!placementTitle) {
+        placementTitle = container.querySelector('.bracket-title-7-8') as HTMLElement;
+        sectionName = '7-8';
+      }
 
+      if (placementTitle) {
+        const matchContainer = document.createElement('div');
+        matchContainer.style.padding = '0px';
+        matchContainer.style.minHeight = '2800px';
+        matchContainer.style.width = '100%';
+        matchContainer.style.marginBottom = '20px';
+        matchContainer.style.position = 'relative';
+        matchContainer.style.overflow = 'visible';
+        matchContainer.style.pageBreakBefore = 'always';
+        matchContainer.classList.add('moved-matches-container');
+
+        const containerTitle = document.createElement('h2');
+        containerTitle.textContent = 'Miinusringi jätk';
+        containerTitle.style.textAlign = 'start';
+        containerTitle.style.fontSize = '24px';
+        containerTitle.style.fontWeight = 'bold';
+        containerTitle.style.color = '#333';
+        matchContainer.appendChild(containerTitle);
+
+        placementTitle.parentNode?.insertBefore(matchContainer, placementTitle);
+
+        // Add page break before 5-6 title and remove it from 7-8 title
+        let nextPlacementTitle: HTMLElement | null = null;
+        if (sectionName === '5-6') {
+          nextPlacementTitle = container.querySelector('.bracket-title-7-8') as HTMLElement;
+        } else if (sectionName === '7-8') {
+          nextPlacementTitle = container.querySelector('.bracket-title-9-12') as HTMLElement;
         }
-      });
 
-      consolationMatches.forEach(({ element }) => {
-        element.style.backgroundColor = "lightblue";
-      });
+        if (nextPlacementTitle) {
+          const targetElement = nextPlacementTitle.parentElement || nextPlacementTitle;
+          (targetElement as HTMLElement).style.pageBreakBefore = "always";
+          nextPlacementTitle.style.marginTop = "0";
+        }
+
+        // Reposition moved elements
+        const elementsWithPositions = [
+          ...sortedMiinusringElements.slice(0, columnsToColor).map(({ element }) => {
+            if (element.classList.contains('loser-bracket-split')) {
+              const rect = element.getBoundingClientRect();
+              const containerRect = container.getBoundingClientRect();
+              return {
+                element,
+                originalLeft: rect.left - containerRect.left,
+                originalTop: rect.top - containerRect.top,
+                type: 'match'
+              };
+            }
+            return null;
+          }).filter(Boolean),
+          ...Array.from(container.querySelectorAll('.loser-bracket-connector')).map((connectorEl) => {
+            const htmlEl = connectorEl as HTMLElement;
+            if (htmlEl.classList.contains('loser-bracket-split')) {
+              const rect = htmlEl.getBoundingClientRect();
+              const containerRect = container.getBoundingClientRect();
+              return {
+                element: htmlEl,
+                originalLeft: rect.left - containerRect.left,
+                originalTop: rect.top - containerRect.top,
+                type: 'connector'
+              };
+            }
+            return null;
+          }).filter(Boolean)
+        ];
+
+        let minLeft = Infinity, minTop = Infinity;
+        elementsWithPositions.forEach(item => {
+          if (item && (item.type === 'match' || item.type === 'connector')) {
+            minLeft = Math.min(minLeft, item.originalLeft);
+            minTop = Math.min(minTop, item.originalTop);
+          }
+        });
+
+        elementsWithPositions.forEach(item => {
+          if (item) {
+            item.element.style.transform = '';
+            item.element.style.position = 'absolute';
+            item.element.style.left = `${item.originalLeft - minLeft}px`;
+            item.element.style.top = `${item.originalTop - minTop + 80}px`;
+            matchContainer.appendChild(item.element);
+          }
+        });
+      }
+
+      // Move specific matches to the left
+      if (bracketData) {
+        const matchesToMove = [
+          { id: 352, distanceX: -235, distanceY: 0 },
+          { id: 225, distanceX: -235, distanceY: -90 },
+          { id: 226, distanceX: -235, distanceY: -90 },
+          { id: 227, distanceX: -470, distanceY: -2700 }
+        ];
+
+        for (const matchToMove of matchesToMove) {
+          for (const elimination of bracketData.eliminations) {
+            for (const bracket of elimination.elimination) {
+              const targetMatch = bracket.matches.find(m => m.match.readable_id === matchToMove.id);
+              if (targetMatch) {
+                const readableIdElements = Array.from(container.querySelectorAll('.absolute.-top-\\[18px\\].right-0'));
+                const targetElement = readableIdElements.find(el => el.textContent?.trim() === matchToMove.id.toString());
+                
+                if (targetElement) {
+                  const matchContainer = targetElement.closest('.w-\\[198px\\], .w-\\[240px\\]') as HTMLElement;
+                  if (matchContainer) {
+                    const currentTransform = matchContainer.style.transform || "";
+                    const transforms = [];
+                    if (matchToMove.distanceX !== 0) transforms.push(`translateX(${matchToMove.distanceX}px)`);
+                    if (matchToMove.distanceY !== 0) transforms.push(`translateY(${matchToMove.distanceY}px)`);
+                    
+                    const newTransform = currentTransform
+                      ? `${currentTransform} ${transforms.join(' ')}`
+                      : transforms.join(' ');
+                    matchContainer.style.transform = newTransform;
+                    matchContainer.style.backgroundColor = "lightblue";
+                    
+                    // Add titles above specific matches
+                    if (matchToMove.id === 227) {
+                      const finaalTitle = document.createElement('h2');
+                      finaalTitle.textContent = 'Finaal';
+                      finaalTitle.style.position = 'absolute';
+                      finaalTitle.style.fontSize = '24px';
+                      finaalTitle.style.fontWeight = 'bold';
+                      finaalTitle.style.color = '#333';
+                      finaalTitle.style.textAlign = 'center';
+                      finaalTitle.style.width = '200px';
+                      finaalTitle.style.transform = `translateX(${matchToMove.distanceX}px) translateY(${matchToMove.distanceY - 100}px)`;
+                      finaalTitle.classList.add('finaal-title');
+                      
+                      matchContainer.parentNode?.appendChild(finaalTitle);
+                    } else if (matchToMove.id === 225 || matchToMove.id === 226) {
+                      const poolfinaalTitle = document.createElement('h2');
+                      poolfinaalTitle.textContent = 'Poolfinaal';
+                      poolfinaalTitle.style.position = 'absolute';
+                      poolfinaalTitle.style.fontSize = '24px';
+                      poolfinaalTitle.style.fontWeight = 'bold';
+                      poolfinaalTitle.style.color = '#333';
+                      poolfinaalTitle.style.textAlign = 'center';
+                      poolfinaalTitle.style.width = '200px';
+                      poolfinaalTitle.style.transform = `translateX(${matchToMove.distanceX}px) translateY(${matchToMove.distanceY - 100}px)`;
+                      poolfinaalTitle.classList.add('poolfinaal-title');
+                      
+                      matchContainer.parentNode?.appendChild(poolfinaalTitle);
+                    }
+                    
+                    console.log(`Moved match ${matchToMove.id} left by ${Math.abs(matchToMove.distanceX)}px and up by ${Math.abs(matchToMove.distanceY)}px`);
+                  }
+                }
+                break;
+              }
+            }
+          }
+        }
+      }
+
     }
   }
 
@@ -947,10 +1131,11 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     container.querySelector('.round-robin-page') !== null;
 
   if (className && className !== "Tournament Bracket" && !isRoundRobinContainer) {
+    const headerMarginBottom = bracketSize < 70 ? "90px" : "84px";
     const header = document.createElement("div");
     Object.assign(header.style, {
       textAlign: "center", fontWeight: "bold", fontSize: "48px",
-      marginBottom: "115px", padding: "25px", 
+      marginBottom: headerMarginBottom, padding: "30px", 
       backgroundColor: "#fff", width: "100%"
     });
     header.textContent = className;

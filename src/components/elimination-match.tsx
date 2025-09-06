@@ -185,9 +185,11 @@ const EliminationMatch = ({
             {bracket}
           </div>
         )}
-        <div className="absolute -top-[18px] right-0 text-[9px] font-medium text-gray-600 bg-white px-1 border border-blue-300 rounded">
-          {match.match.readable_id}
-        </div>
+        {!match.match.table_type?.startsWith("single_elimination") && (
+          <div className="absolute -top-[18px] right-0 text-[9px] font-medium text-gray-600 bg-white px-1 border border-blue-300 rounded">
+            {match.match.readable_id}
+          </div>
+        )}
         <div className="absolute text-[10px] -top-[15px]">
           {match.match.state !== MatchState.FINISHED &&
           match.participant_1.id != "" &&

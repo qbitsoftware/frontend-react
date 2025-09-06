@@ -528,7 +528,7 @@
       "no_results": "No results"
     },
     "standings": {
-      "placement": "Placement",
+      "placement": "NR",
       "participants": "Participants",
       "rating": "Rating",
       "sex": "Sex",
@@ -544,7 +544,9 @@
         "men": "Men",
         "women": "Women",
         "sex_placeholder": "Filter by sex",
-        "age_placeholder": "Filter by age"
+        "age_placeholder": "Filter by age",
+        "age_placeholder_manual": "Age (e.g., U18, V40)",
+        "age_format_error": "Invalid format. Use U{age} or V{age}"
       }
     },
     "timetable": {

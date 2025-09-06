@@ -31,7 +31,11 @@ interface TournamentTableProps {
   handleSelectMatch?: (match: MatchWrapper) => void;
 }
 
-const ZoomControls = ({ scrollContainerRef }: { scrollContainerRef: React.RefObject<HTMLDivElement> }) => {
+const ZoomControls = ({
+  scrollContainerRef,
+}: {
+  scrollContainerRef: React.RefObject<HTMLDivElement>;
+}) => {
   const { setTransform, instance } = useControls();
 
   const handleZoomIn = () => {
@@ -48,30 +52,27 @@ const ZoomControls = ({ scrollContainerRef }: { scrollContainerRef: React.RefObj
     setTransform(positionX, positionY, newScale);
   };
 
-  const handlePan = useCallback(
-    (direction: "left" | "right") => {
-      const container = scrollContainerRef.current;
-      if (!container) return;
-      
-      const panAmount = 200;
-      
-      switch (direction) {
-        case "left":
-          container.scrollTo({
-            left: Math.max(0, container.scrollLeft - panAmount),
-            behavior: 'smooth'
-          });
-          break;
-        case "right":
-          container.scrollTo({
-            left: container.scrollLeft + panAmount,
-            behavior: 'smooth'
-          });
-          break;
-      }
-    },
-    []
-  );
+  const handlePan = useCallback((direction: "left" | "right") => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const panAmount = 200;
+
+    switch (direction) {
+      case "left":
+        container.scrollTo({
+          left: Math.max(0, container.scrollLeft - panAmount),
+          behavior: "smooth",
+        });
+        break;
+      case "right":
+        container.scrollTo({
+          left: container.scrollLeft + panAmount,
+          behavior: "smooth",
+        });
+        break;
+    }
+  }, []);
 
   return (
     <div className="absolute top-4 right-4 z-40">
@@ -253,16 +254,18 @@ export const EliminationBrackets = ({
                 </span>
               </Button>
               {admin && (
-                <Button
-                  variant="outline"
-                  className="hidden sm:flex flex-shrink-0 self-end sm:self-auto"
-                  onClick={handlePrint}
-                >
-                  <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="text-xs sm:text-sm">
-                    {t("admin.tournaments.groups.tables.print")}
-                  </span>
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    className="hidden sm:flex flex-shrink-0 self-end sm:self-auto"
+                    onClick={handlePrint}
+                  >
+                    <Printer className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">
+                      {t("admin.tournaments.groups.tables.print")}
+                    </span>
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -299,7 +302,7 @@ export const EliminationBrackets = ({
                 wrapperStyle={{
                   overflow: "visible",
                 }}
-                contentStyle={{ width: "100%"}}
+                contentStyle={{ width: "100%" }}
               >
                 <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 pb-6 sm:pb-8 lg:pb-12 pr-20 sm:pr-24">
                   {data.eliminations.map((eliminations, eliminationIndex) => {
