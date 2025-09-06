@@ -414,8 +414,10 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         )
     }
 
+    const tableHeight = all ? "h-[78vh]" : "h-[68vh]";
+    
     return (
-        <div className="rounded-md border my-2 overflow-x-auto h-[68vh]" >
+        <div className={`rounded-md border my-2 overflow-x-auto ${tableHeight}`} >
             <AutoSizer>
                 {({ height, width }) => (
                     <Table
