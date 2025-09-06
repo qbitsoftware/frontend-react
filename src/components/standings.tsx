@@ -22,7 +22,6 @@ const Standings = ({ participants, tournament_table }: Props) => {
   const [ratingFilter, setRatingFilter] = useState<string>("all")
   const [sexFilter, setSexFilter] = useState<string>("all")
   const [ageClassFilter, setAgeClassFilter] = useState<string>("")
-  console.log("participants", participants)
 
   const ratingFilterOptions = [
     { value: "all", label: t("competitions.standings.filter.all_ratings") },

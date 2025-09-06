@@ -231,7 +231,6 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                         if (searchTerm.trim() === "") {
                                                             return
                                                         }
-                                                        console.log("we are firign here")
                                                         // const nameParts = searchTerm.trim().split(/\s+/)
                                                         const { firstName, lastName } = getFirstAndLastName(searchTerm)
                                                         // console.log("firstname", first_name, "lastname", last_name)

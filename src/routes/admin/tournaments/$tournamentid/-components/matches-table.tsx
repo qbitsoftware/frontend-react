@@ -13,6 +13,7 @@ import { Edit } from "lucide-react"
 import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
 import { getRoundDisplayName } from "@/lib/match-utils"
+import { UseGetTournamentParticipantsQuery } from "@/queries/participants"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
@@ -31,11 +32,13 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     active_participant,
     all = false,
 }: MatchesTableProps) => {
+    const { data } = UseGetTournamentParticipantsQuery(tournament_id)
     const { t } = useTranslation()
     const queryClient = useQueryClient()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
     const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
+
 
     const formatWaitingTime = (finishDate: string) => {
         const finished = new Date(finishDate)
@@ -88,6 +91,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         if (playerId === "") return <div></div>
         const isPlayerTaken = isParticipantTaken(playerId, match.match.state)
         const findLastPlayerMatch = matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
+        const groupParticipant = data && data.data && data.data.find(p => p.id === match.p1.group_id || p.id === match.p2.group_id)
 
         return (
             <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-600 font-medium' : ''}`}>
@@ -100,29 +104,32 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 <div className="flex flex-col">
                     <span>{playerName}
                         {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
-                            <span className="text-red-500 text-xs ml-1">
+                            <span className="text-red-500 text-[10px] ml-1">
                                 (W-O)
                             </span>
                         ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
-                            <span className="text-red-500 text-xs ml-1">
+                            <span className="text-red-500 text-[10px] ml-1">
                                 (RET)
                             </span>
                         ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
-                            <span className="text-red-500 text-xs ml-1">
+                            <span className="text-red-500 text-[10px] ml-1">
                                 (DSQ)
                             </span>
                         ) : null)}
                     </span>
-                    {/* {playerGroupName && playerGroupName !== "round_robin" && (
-                        <span className="text-xs text-gray-500">
-                            {playerGroupName}
-                        </span>
-                    )} */}
-                    {findLastPlayerMatch && findLastPlayerMatch.match.finish_date && match.match.state === MatchState.CREATED && (
-                        <span className="text-xs text-gray-500">
-                            {t('admin.tournaments.matches.waiting')}: {formatWaitingTime(findLastPlayerMatch.match.finish_date)}
-                        </span>
-                    )}
+                    <div className="flex gap-2">
+                        {groupParticipant && (
+                            <span className="text-[10px] text-gray-500">
+                                {groupParticipant.name}
+                            </span>
+                        )}
+                        {findLastPlayerMatch && findLastPlayerMatch.match.finish_date && match.match.state === MatchState.CREATED && (
+                            <span className="text-[10px] text-gray-500">
+                                {t('admin.tournaments.matches.waiting')}: {formatWaitingTime(findLastPlayerMatch.match.finish_date)}
+                            </span>
+                        )}
+
+                    </div>
                 </div>
             </div>
         )
