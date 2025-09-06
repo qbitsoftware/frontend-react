@@ -76,6 +76,7 @@ export type TableTennisExtraData = {
   player_w_id?: string;
   team_1_total?: number;
   team_2_total?: number;
+  group_id?: string;
 };
 
 export type Match = {

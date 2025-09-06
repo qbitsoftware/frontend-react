@@ -68,6 +68,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const renderPlayer = (match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
+        // const playerGroupName = player === ParticipantType.P1 ? match.p1.group_id: match.p2.group_id
         const isForfeit = matches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
 
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
@@ -82,21 +83,28 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         title="Player is currently in another ongoing match"
                     />
                 )}
-                <span>{playerName}
-                    {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (W-O)
+                <div className="flex flex-col">
+                    <span>{playerName}
+                        {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
+                            <span className="text-red-500 text-xs ml-1">
+                                (W-O)
+                            </span>
+                        ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
+                            <span className="text-red-500 text-xs ml-1">
+                                (RET)
+                            </span>
+                        ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
+                            <span className="text-red-500 text-xs ml-1">
+                                (DSQ)
+                            </span>
+                        ) : null)}
+                    </span>
+                    {/* {playerGroupName && playerGroupName !== "round_robin" && (
+                        <span className="text-xs text-gray-500">
+                            {playerGroupName}
                         </span>
-                    ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (RET)
-                        </span>
-                    ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (DSQ)
-                        </span>
-                    ) : null)}
-                </span>
+                    )} */}
+                </div>
             </div>
         )
     }

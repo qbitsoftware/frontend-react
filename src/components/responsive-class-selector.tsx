@@ -83,7 +83,7 @@ export const ResponsiveClassSelector = ({
                     {activeTable ? activeTable.class : "Select class"}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[150]">
                   {sortedTables.map((table) => (
                     <SelectItem key={table.id} value={table.id.toString()}>
                       {table.class}
@@ -179,7 +179,7 @@ export const ResponsiveClassSelector = ({
                       : currentSelection}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[150]">
                   <SelectItem value="all">
                     {t("competitions.timetable.all_groups")}
                   </SelectItem>

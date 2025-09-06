@@ -29,6 +29,10 @@ interface TournamentTableProps {
   data: Bracket;
   tournament_table: TournamentTable;
   handleSelectMatch?: (match: MatchWrapper) => void;
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
+  currentMatchIndex?: number;
+  onNavigateMatches?: (direction: 'next' | 'prev') => void;
 }
 
 const ZoomControls = ({
@@ -72,7 +76,7 @@ const ZoomControls = ({
         });
         break;
     }
-  }, []);
+  }, [scrollContainerRef]);
 
   return (
     <div className="absolute top-4 right-4 z-40">
@@ -140,12 +144,71 @@ export const EliminationBrackets = ({
   data,
   tournament_table,
   handleSelectMatch,
+  searchTerm = "",
+  currentMatchIndex = 0,
+  onNavigateMatches,
 }: TournamentTableProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const [showPreview, setShowPreview] = useState(false);
   const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
   const [allowBracketScroll, setAllowBracketScroll] = useState(false);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const highlighted = container.querySelectorAll('.search-highlight, .search-highlight-current');
+      highlighted.forEach(el => {
+        el.classList.remove('search-highlight', 'search-highlight-current');
+      });
+      
+      if (searchTerm.trim() && searchTerm.trim().length >= 3) {
+        const playerElements = container.querySelectorAll('[data-player-name]');
+        const matchingElements: Element[] = [];
+        playerElements.forEach(element => {
+          const playerName = element.getAttribute('data-player-name');
+          if (playerName && playerName.toLowerCase().includes(searchTerm.toLowerCase())) {
+            element.classList.add('search-highlight');
+            matchingElements.push(element);
+          }
+        });
+        
+        if (matchingElements.length > 0 && onNavigateMatches) {
+          const currentElement = matchingElements[currentMatchIndex % matchingElements.length];
+          if (currentElement) {
+            currentElement.classList.remove('search-highlight');
+            currentElement.classList.add('search-highlight-current');
+            currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      }
+    }
+  }, [searchTerm, currentMatchIndex, onNavigateMatches]);
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .search-highlight {
+        background-color: #dbeafe !important;
+        border: 2px solid #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+        border-radius: 4px !important;
+      }
+      .search-highlight-current {
+        background-color: #4C97F1 !important;
+        color: white !important;
+        border: 2px solid #4C97F1 !important;
+        box-shadow: 0 0 0 3px rgba(76, 151, 241, 0.3) !important;
+        border-radius: 4px !important;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {

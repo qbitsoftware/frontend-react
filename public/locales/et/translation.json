@@ -663,7 +663,8 @@
       "gallery": "Galerii",
       "guide": "Juhend",
       "sponsors": "Sponsorid",
-      "media": "Meedia"
+      "media": "Meedia",
+      "search_player": "Otsi mängijat..."
     },
     "status": {
       "ended": "Turniir Lõppenud",

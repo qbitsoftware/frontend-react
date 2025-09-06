@@ -616,7 +616,8 @@
       "gallery": "Gallery",
       "guide": "Guide",
       "sponsors": "Sponsors",
-      "media": "Media"
+      "media": "Media",
+      "search_player": "Search player..."
     },
     "status": {
       "ended": "Tournament Ended",
