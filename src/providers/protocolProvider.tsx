@@ -138,6 +138,7 @@ export const ProtocolModalProvider = ({
             sport_type: match.match.sport_type,
             location: match.match.location,
             state: match.match.state,
+            finish_date: match.match.finish_date,
             start_date: match.match.start_date,
             bracket: match.match.bracket,
             forfeit: match.match.forfeit,

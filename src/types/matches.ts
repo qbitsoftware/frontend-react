@@ -100,6 +100,7 @@ export type Match = {
   topCoord: number; // for front end purposes
   table_type: string;
   state: MatchState;
+  finish_date: string;
   readable_id: number;
   previous_match_readable_id_1: number;
   previous_match_readable_id_2: number;
