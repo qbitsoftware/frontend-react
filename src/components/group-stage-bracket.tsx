@@ -16,6 +16,7 @@ import { MatchWrapper } from "@/types/matches";
 import { Printer } from "lucide-react";
 import { TournamentTable } from "@/types/groups";
 import { PDFPreviewModal } from "./pdf-preview-modal";
+import { UseGetPlacements } from "@/queries/brackets";
 
 interface GroupStageBracketProps {
   brackets: RoundRobins;
@@ -34,6 +35,7 @@ export default function GroupStageBracket({
   const handlePrint = () => {
     setShowPreview(true);
   };
+  const { data: placementData } = UseGetPlacements(tournament_table.tournament_id, tournament_table.id)
 
   if (!brackets.round_robin || !brackets.round_robin.length) {
     return (
@@ -170,6 +172,7 @@ export default function GroupStageBracket({
     const group_participant = roundRobinBracket.find(
       (bracket) => bracket.participant.group_id === ""
     );
+
     const group_name = group_participant
       ? group_participant.participant.name
       : `Group ${groupIndex + 1}`;
@@ -210,6 +213,9 @@ export default function GroupStageBracket({
                 <TableHead className="text-center bg-gray-100 text-gray-900 font-bold text-sm w-[90px] min-w-[90px] px-3 border-b border-gray-400">
                   {t("competitions.results.total_points")}
                 </TableHead>
+                <TableHead className="text-center bg-gray-100 text-gray-900 font-bold text-sm w-[90px] min-w-[90px] px-3 border-b border-gray-400">
+                  {t("competitions.results.placement")}
+                </TableHead>
 
               </TableRow>
             </TableHeader>
@@ -217,6 +223,15 @@ export default function GroupStageBracket({
               {(() => {
                 return roundRobinBracket.map((team, rowIndex) => {
                   if (team.participant.group_id === "") return null;
+                  let placementIndex = -1;
+                  if (placementData?.data) {
+                    const groupParticipants = placementData?.data!.filter(p => p.group_id === team.participant.group_id) || [];
+                    placementIndex = groupParticipants.findIndex(
+                      (p) => p.id === team.participant.id
+                    );
+                  }
+
+
                   return (
                     <TableRow
                       key={rowIndex}
@@ -265,6 +280,13 @@ export default function GroupStageBracket({
                           <span className="text-base">{team.total_points}</span>
                         ) : (
                           <Skeleton className="h-4 w-8 mx-auto" />
+                        )}
+                      </TableCell>
+                      <TableCell className="font-bold text-center py-2 px-3 border-b border-l border-gray-200 bg-gray-50 text-gray-900 w-[90px] min-w-[90px]">
+                        {placementIndex !== -1 ? (
+                          <span className="text-base">{placementIndex + 1}</span>
+                        ) : (
+                          <span className="text-base">-</span>
                         )}
                       </TableCell>
                     </TableRow>

@@ -1605,6 +1605,7 @@
       "matches": {
         "completed": "Completed",
         "upcoming": "Upcoming",
+        "waiting": "Waiting",
         "table": {
           "bracket": "Bracket",
           "quarterfinal": "Quarterfinal",

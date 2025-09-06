@@ -766,7 +766,6 @@
       "girls_u19": "Neidude U19",
       "boys_u21": "Noormeeste U21",
       "girls_u21": "Neidude U21",
-
       "combined": "Ühine"
     },
     "last_updated": "Viimati uuendatud",
@@ -1635,6 +1634,7 @@
       "matches": {
         "completed": "Lõppenud",
         "upcoming": "Ees ootav",
+        "waiting": "Ootel",
         "table": {
           "bracket": "Tabel",
           "modify": "Uuenda tulemus",

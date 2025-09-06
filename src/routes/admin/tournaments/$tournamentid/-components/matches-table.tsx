@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
@@ -35,7 +35,31 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const queryClient = useQueryClient()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
+    const [currentTime, setCurrentTime] = useState(new Date())
     const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
+
+    // Update timer every second
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date())
+        }, 1000)
+
+        return () => clearInterval(interval)
+    }, [])
+
+    const formatWaitingTime = (finishDate: string) => {
+        const finished = new Date(finishDate)
+        const diffMs = currentTime.getTime() - finished.getTime()
+        const diffMinutes = Math.floor(diffMs / (1000 * 60))
+
+        if (diffMinutes < 60) {
+            return `${diffMinutes}m`
+        } else {
+            const diffHours = Math.floor(diffMinutes / 60)
+            const remainingMinutes = diffMinutes % 60
+            return `${diffHours}h ${remainingMinutes}m`
+        }
+    }
 
     const getScore = (match: MatchWrapper, player: ParticipantType) => {
         if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES) {
@@ -69,10 +93,10 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
         const isForfeit = matches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
-
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
         const isPlayerTaken = isParticipantTaken(playerId, match.match.state)
+        const findLastPlayerMatch = matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
 
         return (
             <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-600 font-medium' : ''}`}>
@@ -82,21 +106,28 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         title="Player is currently in another ongoing match"
                     />
                 )}
-                <span>{playerName}
-                    {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (W-O)
+                <div className="flex flex-col">
+                    <span>{playerName}
+                        {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
+                            <span className="text-red-500 text-xs ml-1">
+                                (W-O)
+                            </span>
+                        ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
+                            <span className="text-red-500 text-xs ml-1">
+                                (RET)
+                            </span>
+                        ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
+                            <span className="text-red-500 text-xs ml-1">
+                                (DSQ)
+                            </span>
+                        ) : null)}
+                    </span>
+                    {findLastPlayerMatch && findLastPlayerMatch.match.finish_date && match.match.state === MatchState.CREATED && (
+                        <span className="text-xs text-gray-500">
+                            {t('admin.tournaments.matches.waiting')}: {formatWaitingTime(findLastPlayerMatch.match.finish_date)}
                         </span>
-                    ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (RET)
-                        </span>
-                    ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (DSQ)
-                        </span>
-                    ) : null)}
-                </span>
+                    )}
+                </div>
             </div>
         )
     }
@@ -415,7 +446,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }
 
     const tableHeight = all ? "h-[90vh]" : "h-[90vh]";
-    
+
     return (
         <div className={`rounded-md border my-2 overflow-x-auto ${tableHeight}`} >
             <AutoSizer>

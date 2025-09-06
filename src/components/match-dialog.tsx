@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { Switch } from "./ui/switch";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { extractSetsFromPoints } from "./utils/utils";
+import { ProtocolDownloadButton } from "@/routes/admin/tournaments/$tournamentid/-components/download-protocol";
 
 interface MatchDialogProps {
   open: boolean;
@@ -97,6 +98,12 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
       } else {
         setMatchOutcome("");
         setOutcomeWinner("");
+      }
+
+      if (match.match.extra_data.score && Array.isArray(match.match.extra_data.score) && match.match.extra_data.score.length > 0) {
+        setUsePoints(!match.match.use_sets || false);
+      } else {
+        setUsePoints(false)
       }
 
       reset({
@@ -195,6 +202,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         location: match.match.location,
         start_date: match.match.start_date,
         bracket: match.match.bracket,
+        finish_date: match.match.finish_date,
         forfeit: false,
         forfeit_type: "",
         state: match.match.state,
@@ -279,8 +287,16 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl p-0 overflow-y-scroll bg-white dark:bg-gray-800 rounded-lg shadow-lg border-none">
-        <DialogHeader className="py-10 pb-2 rounded-t-lg text-2xl font-bold text-center mx-auto">
-          <DialogTitle>{t("protocol.title")}</DialogTitle>
+        <DialogHeader className="py-10 pb-2 rounded-t-lg text-2xl font-bold text-center mx-auto flex">
+          <DialogTitle>
+            {t("protocol.title")}
+          </DialogTitle>
+          <ProtocolDownloadButton
+            tournamentId={tournamentId}
+            groupId={match.match.tournament_table_id}
+            matchId={match.match.id}
+          />
+
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
