@@ -50,6 +50,7 @@ import { Route as VoistlusedTournamentidMeediaIndexImport } from './routes/voist
 import { Route as VoistlusedTournamentidMangudIndexImport } from './routes/voistlused/$tournamentid/mangud/index'
 import { Route as VoistlusedTournamentidMangijadIndexImport } from './routes/voistlused/$tournamentid/mangijad/index'
 import { Route as VoistlusedTournamentidLauadIndexImport } from './routes/voistlused/$tournamentid/lauad/index'
+import { Route as VoistlusedTournamentidKohadIndexImport } from './routes/voistlused/$tournamentid/kohad/index'
 import { Route as VoistlusedTournamentidJuhendIndexImport } from './routes/voistlused/$tournamentid/juhend/index'
 import { Route as VoistlusedTournamentidGaleriiIndexImport } from './routes/voistlused/$tournamentid/galerii/index'
 import { Route as VoistlusedTournamentidAjakavaIndexImport } from './routes/voistlused/$tournamentid/ajakava/index'
@@ -316,6 +317,13 @@ const VoistlusedTournamentidLauadIndexRoute =
   VoistlusedTournamentidLauadIndexImport.update({
     id: '/lauad/',
     path: '/lauad/',
+    getParentRoute: () => VoistlusedTournamentidLayoutRoute,
+  } as any)
+
+const VoistlusedTournamentidKohadIndexRoute =
+  VoistlusedTournamentidKohadIndexImport.update({
+    id: '/kohad/',
+    path: '/kohad/',
     getParentRoute: () => VoistlusedTournamentidLayoutRoute,
   } as any)
 
@@ -775,6 +783,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoistlusedTournamentidJuhendIndexImport
       parentRoute: typeof VoistlusedTournamentidLayoutImport
     }
+    '/voistlused/$tournamentid/kohad/': {
+      id: '/voistlused/$tournamentid/kohad/'
+      path: '/kohad'
+      fullPath: '/voistlused/$tournamentid/kohad'
+      preLoaderRoute: typeof VoistlusedTournamentidKohadIndexImport
+      parentRoute: typeof VoistlusedTournamentidLayoutImport
+    }
     '/voistlused/$tournamentid/lauad/': {
       id: '/voistlused/$tournamentid/lauad/'
       path: '/lauad'
@@ -1106,6 +1121,7 @@ interface VoistlusedTournamentidLayoutRouteChildren {
   VoistlusedTournamentidAjakavaIndexRoute: typeof VoistlusedTournamentidAjakavaIndexRoute
   VoistlusedTournamentidGaleriiIndexRoute: typeof VoistlusedTournamentidGaleriiIndexRoute
   VoistlusedTournamentidJuhendIndexRoute: typeof VoistlusedTournamentidJuhendIndexRoute
+  VoistlusedTournamentidKohadIndexRoute: typeof VoistlusedTournamentidKohadIndexRoute
   VoistlusedTournamentidLauadIndexRoute: typeof VoistlusedTournamentidLauadIndexRoute
   VoistlusedTournamentidMangijadIndexRoute: typeof VoistlusedTournamentidMangijadIndexRoute
   VoistlusedTournamentidMangudIndexRoute: typeof VoistlusedTournamentidMangudIndexRoute
@@ -1124,6 +1140,8 @@ const VoistlusedTournamentidLayoutRouteChildren: VoistlusedTournamentidLayoutRou
       VoistlusedTournamentidGaleriiIndexRoute,
     VoistlusedTournamentidJuhendIndexRoute:
       VoistlusedTournamentidJuhendIndexRoute,
+    VoistlusedTournamentidKohadIndexRoute:
+      VoistlusedTournamentidKohadIndexRoute,
     VoistlusedTournamentidLauadIndexRoute:
       VoistlusedTournamentidLauadIndexRoute,
     VoistlusedTournamentidMangijadIndexRoute:
@@ -1188,6 +1206,7 @@ export interface FileRoutesByFullPath {
   '/voistlused/$tournamentid/ajakava': typeof VoistlusedTournamentidAjakavaIndexRoute
   '/voistlused/$tournamentid/galerii': typeof VoistlusedTournamentidGaleriiIndexRoute
   '/voistlused/$tournamentid/juhend': typeof VoistlusedTournamentidJuhendIndexRoute
+  '/voistlused/$tournamentid/kohad': typeof VoistlusedTournamentidKohadIndexRoute
   '/voistlused/$tournamentid/lauad': typeof VoistlusedTournamentidLauadIndexRoute
   '/voistlused/$tournamentid/mangijad': typeof VoistlusedTournamentidMangijadIndexRoute
   '/voistlused/$tournamentid/mangud': typeof VoistlusedTournamentidMangudIndexRoute
@@ -1245,6 +1264,7 @@ export interface FileRoutesByTo {
   '/voistlused/$tournamentid/ajakava': typeof VoistlusedTournamentidAjakavaIndexRoute
   '/voistlused/$tournamentid/galerii': typeof VoistlusedTournamentidGaleriiIndexRoute
   '/voistlused/$tournamentid/juhend': typeof VoistlusedTournamentidJuhendIndexRoute
+  '/voistlused/$tournamentid/kohad': typeof VoistlusedTournamentidKohadIndexRoute
   '/voistlused/$tournamentid/lauad': typeof VoistlusedTournamentidLauadIndexRoute
   '/voistlused/$tournamentid/mangijad': typeof VoistlusedTournamentidMangijadIndexRoute
   '/voistlused/$tournamentid/mangud': typeof VoistlusedTournamentidMangudIndexRoute
@@ -1310,6 +1330,7 @@ export interface FileRoutesById {
   '/voistlused/$tournamentid/ajakava/': typeof VoistlusedTournamentidAjakavaIndexRoute
   '/voistlused/$tournamentid/galerii/': typeof VoistlusedTournamentidGaleriiIndexRoute
   '/voistlused/$tournamentid/juhend/': typeof VoistlusedTournamentidJuhendIndexRoute
+  '/voistlused/$tournamentid/kohad/': typeof VoistlusedTournamentidKohadIndexRoute
   '/voistlused/$tournamentid/lauad/': typeof VoistlusedTournamentidLauadIndexRoute
   '/voistlused/$tournamentid/mangijad/': typeof VoistlusedTournamentidMangijadIndexRoute
   '/voistlused/$tournamentid/mangud/': typeof VoistlusedTournamentidMangudIndexRoute
@@ -1377,6 +1398,7 @@ export interface FileRouteTypes {
     | '/voistlused/$tournamentid/ajakava'
     | '/voistlused/$tournamentid/galerii'
     | '/voistlused/$tournamentid/juhend'
+    | '/voistlused/$tournamentid/kohad'
     | '/voistlused/$tournamentid/lauad'
     | '/voistlused/$tournamentid/mangijad'
     | '/voistlused/$tournamentid/mangud'
@@ -1433,6 +1455,7 @@ export interface FileRouteTypes {
     | '/voistlused/$tournamentid/ajakava'
     | '/voistlused/$tournamentid/galerii'
     | '/voistlused/$tournamentid/juhend'
+    | '/voistlused/$tournamentid/kohad'
     | '/voistlused/$tournamentid/lauad'
     | '/voistlused/$tournamentid/mangijad'
     | '/voistlused/$tournamentid/mangud'
@@ -1496,6 +1519,7 @@ export interface FileRouteTypes {
     | '/voistlused/$tournamentid/ajakava/'
     | '/voistlused/$tournamentid/galerii/'
     | '/voistlused/$tournamentid/juhend/'
+    | '/voistlused/$tournamentid/kohad/'
     | '/voistlused/$tournamentid/lauad/'
     | '/voistlused/$tournamentid/mangijad/'
     | '/voistlused/$tournamentid/mangud/'
@@ -1651,6 +1675,7 @@ export const routeTree = rootRoute
         "/voistlused/$tournamentid/ajakava/",
         "/voistlused/$tournamentid/galerii/",
         "/voistlused/$tournamentid/juhend/",
+        "/voistlused/$tournamentid/kohad/",
         "/voistlused/$tournamentid/lauad/",
         "/voistlused/$tournamentid/mangijad/",
         "/voistlused/$tournamentid/mangud/",
@@ -1796,6 +1821,10 @@ export const routeTree = rootRoute
     },
     "/voistlused/$tournamentid/juhend/": {
       "filePath": "voistlused/$tournamentid/juhend/index.tsx",
+      "parent": "/voistlused/$tournamentid"
+    },
+    "/voistlused/$tournamentid/kohad/": {
+      "filePath": "voistlused/$tournamentid/kohad/index.tsx",
       "parent": "/voistlused/$tournamentid"
     },
     "/voistlused/$tournamentid/lauad/": {

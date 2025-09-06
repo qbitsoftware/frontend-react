@@ -13,6 +13,7 @@ import { Edit } from "lucide-react"
 import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
 import { getRoundDisplayName } from "@/lib/match-utils"
+import { UseGetTournamentParticipantsQuery } from "@/queries/participants"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
@@ -31,11 +32,27 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     active_participant,
     all = false,
 }: MatchesTableProps) => {
+    const { data } = UseGetTournamentParticipantsQuery(tournament_id)
     const { t } = useTranslation()
     const queryClient = useQueryClient()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
     const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
+
+
+    const formatWaitingTime = (finishDate: string) => {
+        const finished = new Date(finishDate)
+        const diffMs = Date.now() - finished.getTime()
+        const diffMinutes = Math.floor(diffMs / (1000 * 60))
+
+        if (diffMinutes < 60) {
+            return `${diffMinutes}m`
+        } else {
+            const diffHours = Math.floor(diffMinutes / 60)
+            const remainingMinutes = diffMinutes % 60
+            return `${diffHours}h ${remainingMinutes}m`
+        }
+    }
 
     const getScore = (match: MatchWrapper, player: ParticipantType) => {
         if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES) {
@@ -68,11 +85,13 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const renderPlayer = (match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
+        // const playerGroupName = player === ParticipantType.P1 ? match.p1.group_id: match.p2.group_id
         const isForfeit = matches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
-
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
         const isPlayerTaken = isParticipantTaken(playerId, match.match.state)
+        const findLastPlayerMatch = matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
+        const groupParticipant = data && data.data && data.data.find(p => p.id === match.p1.group_id || p.id === match.p2.group_id)
 
         return (
             <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-600 font-medium' : ''}`}>
@@ -82,21 +101,36 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         title="Player is currently in another ongoing match"
                     />
                 )}
-                <span>{playerName}
-                    {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (W-O)
-                        </span>
-                    ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (RET)
-                        </span>
-                    ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
-                        <span className="text-red-500 text-xs ml-1">
-                            (DSQ)
-                        </span>
-                    ) : null)}
-                </span>
+                <div className="flex flex-col">
+                    <span>{playerName}
+                        {isForfeit && (isForfeit.match.forfeit_type == "WO" ? (
+                            <span className="text-red-500 text-[10px] ml-1">
+                                (W-O)
+                            </span>
+                        ) : isForfeit && isForfeit.match.forfeit_type == "RET" ? (
+                            <span className="text-red-500 text-[10px] ml-1">
+                                (RET)
+                            </span>
+                        ) : isForfeit && isForfeit.match.forfeit_type == "DSQ" ? (
+                            <span className="text-red-500 text-[10px] ml-1">
+                                (DSQ)
+                            </span>
+                        ) : null)}
+                    </span>
+                    <div className="flex gap-2">
+                        {groupParticipant && (
+                            <span className="text-[10px] text-gray-500">
+                                {groupParticipant.name}
+                            </span>
+                        )}
+                        {findLastPlayerMatch && findLastPlayerMatch.match.finish_date && match.match.state === MatchState.CREATED && (
+                            <span className="text-[10px] text-gray-500">
+                                {t('admin.tournaments.matches.waiting')}: {formatWaitingTime(findLastPlayerMatch.match.finish_date)}
+                            </span>
+                        )}
+
+                    </div>
+                </div>
             </div>
         )
     }
@@ -415,7 +449,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }
 
     const tableHeight = all ? "h-[90vh]" : "h-[90vh]";
-    
+
     return (
         <div className={`rounded-md border my-2 overflow-x-auto ${tableHeight}`} >
             <AutoSizer>

@@ -38,6 +38,7 @@ export const Matches: React.FC<MatchesProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [activeParticipant, setActiveParticipant] = useState<string[]>([]);
   const search = useSearch({ from: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud/" })
+
   // Change filterValue to array
   const [filterValue, setFilterValue] = useState<FilterOptions[]>(["all"]);
   const [initialTab, setInitialTab] = useState<"regrouping" | "finals">(

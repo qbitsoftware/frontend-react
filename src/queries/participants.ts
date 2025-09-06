@@ -28,6 +28,18 @@ export function UseGetTournamentParticipants(tournament_id: number) {
     })
 }
 
+export function UseGetTournamentParticipantsQuery(tournament_id: number) {
+    return useQuery<ParticipantsResponse>({
+        queryKey: ["participants_query", tournament_id],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/participants`, {
+                withCredentials: true,
+            })
+            return data;
+        }
+    })
+}
+
 
 export function UseGetParticipants(tournament_id: number, table_id: number) {
     return queryOptions<ParticipantsResponse>({

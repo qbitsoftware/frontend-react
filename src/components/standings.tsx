@@ -43,19 +43,19 @@ const Standings = ({ participants, tournament_table }: Props) => {
 
   const parseAgeFromInput = (input: string): { age: number; type: 'under' | 'veteran' } | null => {
     const trimmed = input.trim()
-    
+
     // Match U* format (under age)
     const underMatch = trimmed.match(/^[Uu](\d+)$/)
     if (underMatch) {
       return { age: parseInt(underMatch[1]), type: 'under' }
     }
-    
+
     // Match V* format (veterans/over age) 
     const veteranMatch = trimmed.match(/^[Vv](\d+)$/)
     if (veteranMatch) {
       return { age: parseInt(veteranMatch[1]), type: 'veteran' }
     }
-    
+
     return null
   }
 
@@ -63,11 +63,11 @@ const Standings = ({ participants, tournament_table }: Props) => {
   const getEffectiveRating = (participant: Participant) => {
     const player = participant.players?.[0]
     const baseRating = player?.rank || 0
-    
+
     if (player?.sex === "N" && tournament_table.woman_weight && baseRating > 0) {
       return Math.round(baseRating * tournament_table.woman_weight)
     }
-    
+
     return baseRating
   }
 
@@ -84,7 +84,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
         return false
       }
     }
-    
+
     if (sexFilter !== "all") {
       if (player.sex !== sexFilter) {
         return false
@@ -96,11 +96,11 @@ const Standings = ({ participants, tournament_table }: Props) => {
       if (ageFilter !== null) {
         const playerBirthDate = player.birthdate
         if (!playerBirthDate) return false
-        
+
         const currentYear = new Date().getFullYear()
         const birthYear = new Date(playerBirthDate).getFullYear()
         const playerAge = currentYear - birthYear
-        
+
         if (ageFilter.type === 'under') {
           // U* or plain number: show players under this age
           if (playerAge >= ageFilter.age) return false
@@ -110,7 +110,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
         }
       }
     }
-    
+
     return true
   })
 
@@ -189,8 +189,8 @@ const Standings = ({ participants, tournament_table }: Props) => {
               />
             </div>
           </div>
-          
-          
+
+
           <div className="hidden md:flex gap-2 items-center flex-1">
             <Select value={ratingFilter} onValueChange={setRatingFilter}>
               <SelectTrigger className="w-45">
@@ -225,7 +225,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
               />
             </div>
           </div>
-          
+
           <Button
             onClick={handleExportExcel}
             variant="outline"
@@ -270,9 +270,9 @@ const Standings = ({ participants, tournament_table }: Props) => {
                         const player = participant.players?.[0]
                         const baseRating = player?.rank || 0
                         const effectiveRating = getEffectiveRating(participant)
-                        
+
                         if (baseRating === 0) return "-"
-                        
+
                         if (player?.sex === "N" && tournament_table.woman_weight && baseRating > 0) {
                           if (tournament_table.woman_weight === 1) {
                             return baseRating
@@ -283,7 +283,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
                             </span>
                           )
                         }
-                        
+
                         return baseRating
                       })()}
                     </TableCell>
@@ -361,8 +361,8 @@ const Standings = ({ participants, tournament_table }: Props) => {
             />
           </div>
         </div>
-        
-        
+
+
         <div className="hidden md:flex gap-2 items-center flex-1">
           <Select value={ratingFilter} onValueChange={setRatingFilter}>
             <SelectTrigger className="w-45">
@@ -394,16 +394,16 @@ const Standings = ({ participants, tournament_table }: Props) => {
             onChange={(e) => setAgeClassFilter(e.target.value)}
             className="w-45"
           />
-          </div>
-          
-          <Button
-            onClick={handleExportExcel}
-            variant="outline"
-            className="h-10 hidden md:flex items-center gap-2"
-          >
-            <Download className="h-4 w-4" />
-            {t("competitions.standings.export", "Export Standings")}
-          </Button>
+        </div>
+
+        <Button
+          onClick={handleExportExcel}
+          variant="outline"
+          className="h-10 hidden md:flex items-center gap-2"
+        >
+          <Download className="h-4 w-4" />
+          {t("competitions.standings.export", "Export Standings")}
+        </Button>
       </div>
       <div className="bg-white rounded-lg shadow-sm border">
         <Table>
@@ -420,69 +420,69 @@ const Standings = ({ participants, tournament_table }: Props) => {
           </TableHeader>
           <TableBody>
             {filteredParticipants.map((participant: Participant, index) => (
-            <TableRow key={participant.id || index} className="hover:bg-gray-50">
-              <TableCell className="w-16 font-medium">{index + 1}</TableCell>
-              <TableCell className="flex items-center space-x-3">
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarImage src={participant.players?.[0]?.extra_data?.image_url || ""} alt={`${participant.name}'s profile`} />
-                  <AvatarFallback className="p-0">
-                    <img src={placeholderImg} className="rounded-full h-full w-full object-cover" alt="Profile" />
-                  </AvatarFallback>
-                </Avatar>
-                <span>{participant.name}</span>
-              </TableCell>
-              <TableCell>
-                {(() => {
-                  if (participant.players && participant.players.length > 1) {
-                    return "-"
-                  }
-                  const player = participant.players?.[0]
-                  const baseRating = player?.rank || 0
-                  const effectiveRating = getEffectiveRating(participant)
-                  
-                  if (baseRating === 0) return "-"
-                  
-                  if (player?.sex === "N" && tournament_table.woman_weight && baseRating > 0) {
-                    if (tournament_table.woman_weight === 1) {
-                      return baseRating
+              <TableRow key={participant.id || index} className="hover:bg-gray-50">
+                <TableCell className="w-16 font-medium">{participants.findIndex(p => p.id === participant.id) + 1}</TableCell>
+                <TableCell className="flex items-center space-x-3">
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    <AvatarImage src={participant.players?.[0]?.extra_data?.image_url || ""} alt={`${participant.name}'s profile`} />
+                    <AvatarFallback className="p-0">
+                      <img src={placeholderImg} className="rounded-full h-full w-full object-cover" alt="Profile" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{participant.name}</span>
+                </TableCell>
+                <TableCell>
+                  {(() => {
+                    if (participant.players && participant.players.length > 1) {
+                      return "-"
                     }
-                    return (
-                      <span>
-                        {baseRating} <span className="text-gray-500 text-sm">({effectiveRating})</span>
-                      </span>
-                    )
+                    const player = participant.players?.[0]
+                    const baseRating = player?.rank || 0
+                    const effectiveRating = getEffectiveRating(participant)
+
+                    if (baseRating === 0) return "-"
+
+                    if (player?.sex === "N" && tournament_table.woman_weight && baseRating > 0) {
+                      if (tournament_table.woman_weight === 1) {
+                        return baseRating
+                      }
+                      return (
+                        <span>
+                          {baseRating} <span className="text-gray-500 text-sm">({effectiveRating})</span>
+                        </span>
+                      )
+                    }
+
+                    return baseRating
+                  })()}
+                </TableCell>
+                <TableCell>
+                  {participant.players && participant.players.length > 1
+                    ? participant.players.map(p => p.extra_data?.eltl_id).filter(Boolean).join(' & ')
+                    : participant.players?.[0]?.extra_data?.eltl_id
                   }
-                  
-                  return baseRating
-                })()}
-              </TableCell>
-              <TableCell>
-                {participant.players && participant.players.length > 1
-                  ? participant.players.map(p => p.extra_data?.eltl_id).filter(Boolean).join(' & ')
-                  : participant.players?.[0]?.extra_data?.eltl_id
-                }
-              </TableCell>
-              <TableCell>
-                {participant.players && participant.players.length > 1
-                  ? "-"
-                  : participant.players?.[0]?.sex
-                }
-              </TableCell>
-              <TableCell>
-                {participant.players && participant.players.length > 1
-                  ? "-"
-                  : participant.players?.[0]?.birthdate?.slice(0, 4)
-                }
-              </TableCell>
-              <TableCell>
-                {participant.players && participant.players.length > 1
-                  ? participant.players.map(p => p.extra_data?.club).filter(Boolean).join(' & ')
-                  : participant.players?.[0]?.extra_data?.club
-                }
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+                </TableCell>
+                <TableCell>
+                  {participant.players && participant.players.length > 1
+                    ? "-"
+                    : participant.players?.[0]?.sex
+                  }
+                </TableCell>
+                <TableCell>
+                  {participant.players && participant.players.length > 1
+                    ? "-"
+                    : participant.players?.[0]?.birthdate?.slice(0, 4)
+                  }
+                </TableCell>
+                <TableCell>
+                  {participant.players && participant.players.length > 1
+                    ? participant.players.map(p => p.extra_data?.club).filter(Boolean).join(' & ')
+                    : participant.players?.[0]?.extra_data?.club
+                  }
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       </div>
     </div>

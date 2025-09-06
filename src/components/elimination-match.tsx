@@ -297,6 +297,7 @@ const EliminationMatch = ({
                   )}
                   onMouseEnter={() => handlePlayerHover(match.participant_1.id)}
                   onMouseLeave={() => handlePlayerHover(null)}
+                  data-player-name={match.participant_1.name}
                 >
                   {capitalizeWords(match.participant_1.name)}
                 </p>
@@ -401,6 +402,7 @@ const EliminationMatch = ({
                   )}
                   onMouseEnter={() => handlePlayerHover(match.participant_2.id)}
                   onMouseLeave={() => handlePlayerHover(null)}
+                  data-player-name={match.participant_2.name}
                 >
                   {capitalizeWords(match.participant_2.name)}
                 </p>

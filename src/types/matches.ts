@@ -76,6 +76,7 @@ export type TableTennisExtraData = {
   player_w_id?: string;
   team_1_total?: number;
   team_2_total?: number;
+  group_id?: string;
 };
 
 export type Match = {
@@ -99,6 +100,7 @@ export type Match = {
   topCoord: number; // for front end purposes
   table_type: string;
   state: MatchState;
+  finish_date: string;
   readable_id: number;
   previous_match_readable_id_1: number;
   previous_match_readable_id_2: number;

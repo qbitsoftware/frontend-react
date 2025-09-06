@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,10 +12,28 @@ import { useTranslation } from "react-i18next";
 import { AuthButton } from "./ui/auth-button";
 import { MobileMenuSidebarTrigger } from "./ui/sidebar";
 import { useUser } from "@/providers/userProvider";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const { t } = useTranslation();
   const { user } = useUser();
+  const location = useLocation();
+  const [scrollY, setScrollY] = useState(0);
+  
+  // Check if we're on a bracket route
+  const isBracketRoute = location.pathname.includes('/tulemused/');
+  
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    
+    if (isBracketRoute) {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [isBracketRoute]);
+  
+  // Make navbar non-sticky after 100px scroll on bracket routes
+  const shouldBeSticky = !isBracketRoute || scrollY < 200;
 
   const menuItems = [
     {
@@ -64,7 +82,7 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b border-[#E0E8F1]  sticky top-0 z-50">
+    <header className={`bg-white shadow-sm border-b border-[#E0E8F1] ${shouldBeSticky ? 'sticky top-0' : ''} z-50`}>
       <div className="max-w-[1440px] mx-auto px-4 sm:px-4 ">
         <div className="flex justify-between items-center gap-6 h-16">
           <div className="flex gap-8">

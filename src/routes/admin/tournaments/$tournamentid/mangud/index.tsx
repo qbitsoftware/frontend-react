@@ -108,6 +108,70 @@ function RouteComponent() {
     const created = validMatches.filter(m => m.match.state === MatchState.CREATED);
     const finished = validMatches.filter(m => m.match.state === MatchState.FINISHED);
 
+    const sortWithRoundRobinInterleave = (matches: MatchWrapper[]) => {
+      // Separate round-robin matches based on both match type AND tournament table type
+      const roundRobinMatches = matches.filter(match => {
+        const table = tableMap.get(match.match.tournament_table_id);
+        const isRoundRobinMatchType = match.match.type === "roundrobin";
+        const isRoundRobinTableType = table?.type === GroupType.ROUND_ROBIN || 
+                                      table?.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
+                                      table?.type === GroupType.CHAMPIONS_LEAGUE ||
+                                      table?.type === GroupType.DYNAMIC;
+        
+        return isRoundRobinMatchType && isRoundRobinTableType;
+      });
+      
+      const otherMatches = matches.filter(match => {
+        const table = tableMap.get(match.match.tournament_table_id);
+        const isRoundRobinMatchType = match.match.type === "roundrobin";
+        const isRoundRobinTableType = table?.type === GroupType.ROUND_ROBIN || 
+                                      table?.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
+                                      table?.type === GroupType.CHAMPIONS_LEAGUE ||
+                                      table?.type === GroupType.DYNAMIC;
+        
+        return !(isRoundRobinMatchType && isRoundRobinTableType);
+      });
+
+      if (roundRobinMatches.length === 0) {
+        return sortIfTimetable(matches);
+      }
+
+      const groupedRR = new Map<string, MatchWrapper[]>();
+      roundRobinMatches.forEach(match => {
+        const groupId = match.p1.group_id || match.p2.group_id || 'default';
+        if (!groupedRR.has(groupId)) {
+          groupedRR.set(groupId, []);
+        }
+        groupedRR.get(groupId)!.push(match);
+      });
+
+      groupedRR.forEach(group => {
+        group.sort((a, b) => {
+          return a.match.id.localeCompare(b.match.id);
+        });
+      });
+
+      const interleavedRR: MatchWrapper[] = [];
+      const groupKeys = Array.from(groupedRR.keys());
+      const groupCounters = new Map(groupKeys.map(key => [key, 0]));
+
+      while (interleavedRR.length < roundRobinMatches.length) {
+        for (const groupId of groupKeys) {
+          const counter = groupCounters.get(groupId)!;
+          const groupMatches = groupedRR.get(groupId)!;
+          
+          if (counter < groupMatches.length) {
+            interleavedRR.push(groupMatches[counter]);
+            groupCounters.set(groupId, counter + 1);
+          }
+        }
+      }
+
+      // Combine with other matches sorted normally
+      const sortedOthers = sortIfTimetable(otherMatches);
+      return [...interleavedRR, ...sortedOthers];
+    };
+
     const sortIfTimetable = (matches: MatchWrapper[]) => {
       return matches.slice().sort((a, b) => {
         const tableA = tableMap.get(a.match.tournament_table_id);
@@ -148,12 +212,12 @@ function RouteComponent() {
       });
     };
 
-    const ongoingSorted = sortIfTimetable(ongoing);
-    const createdSorted = sortIfTimetable(created);
+    const ongoingSorted = sortWithRoundRobinInterleave(ongoing);
+    const createdSorted = sortWithRoundRobinInterleave(created);
     const finishedSorted = sortIfTimetable(finished);
 
     return [...ongoingSorted, ...createdSorted, ...finishedSorted];
-  }, [matchData, matchData?.data, filterValue, tableMap]);
+  }, [matchData?.data, filterValue, tableMap]);
 
 
   const handleCardClick = (match: MatchWrapper) => {
