@@ -591,7 +591,9 @@
         "men": "Mehed",
         "women": "Naised",
         "sex_placeholder": "Filtreeri soo järgi",
-        "age_placeholder": "Filtreeri vanuse järgi"
+        "age_placeholder": "Filtreeri vanuse järgi",
+        "age_placeholder_manual": "Vanus (nt. U18, V40 jne)",
+        "age_format_error": "Vale formaat. Kasuta U{vanus} või V{vanus}"
       }
     },
     "timetable": {

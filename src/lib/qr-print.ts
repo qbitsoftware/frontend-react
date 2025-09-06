@@ -67,9 +67,16 @@ export const printQRCodeToBlankSheet = async (url: string, title?: string) => {
               margin-bottom: 12px;
               letter-spacing: -0.025em;
             }
-            
+
+            .subtitle-1 {
+              font-size: 35px;
+              color: #555f6fff;
+              margin-bottom: 16px;
+              font-weight: 500;
+            }
+
             .subtitle {
-              font-size: 20px;
+              font-size: 30px;
               color: #718096;
               margin-bottom: 16px;
               font-weight: 500;
@@ -157,7 +164,7 @@ export const printQRCodeToBlankSheet = async (url: string, title?: string) => {
           <div class="qr-card">
             ${title ? `
               <div class="title">${title}</div>
-              <div class="subtitle">Reaalajas Turniiri Tabel</div>
+              <div class="subtitle-1">Reaalajas Turniiri Tabel Sinu Telefonis</div>
               <div class="subtitle">Live Tournament Bracket</div>
             ` : ''}
             

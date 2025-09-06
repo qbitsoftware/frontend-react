@@ -7,9 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import placeholderImg from "@/assets/blue-profile.png"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Button } from "./ui/button"
+import { Input } from "./ui/input"
 import { useState } from "react"
-import { filterByAgeClass } from "@/lib/rating-utils"
-import { User } from "@/types/users"
 import { exportStandingsToExcel } from "@/lib/excel-export"
 import { Download } from "lucide-react"
 
@@ -22,7 +21,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
   const { t } = useTranslation()
   const [ratingFilter, setRatingFilter] = useState<string>("all")
   const [sexFilter, setSexFilter] = useState<string>("all")
-  const [ageClassFilter, setAgeClassFilter] = useState<string>("all")
+  const [ageClassFilter, setAgeClassFilter] = useState<string>("")
 
   const ratingFilterOptions = [
     { value: "all", label: t("competitions.standings.filter.all_ratings") },
@@ -42,15 +41,24 @@ const Standings = ({ participants, tournament_table }: Props) => {
     { value: "N", label: t("competitions.standings.filter.women") },
   ]
 
-  const ageClassFilterOptions = [
-    { value: "all", label: t("rating.filtering.select.options.all") },
-    { value: "u9", label: t("rating.filtering.select.options.u9", "U9") },
-    { value: "u11", label: t("rating.filtering.select.options.u11", "U11") },
-    { value: "u13", label: t("rating.filtering.select.options.u13", "U13") },
-    { value: "u15", label: t("rating.filtering.select.options.u15", "U15") },
-    { value: "u19", label: t("rating.filtering.select.options.u19", "U19") },
-    { value: "u21", label: t("rating.filtering.select.options.u21", "U21") },
-  ]
+  const parseAgeFromInput = (input: string): { age: number; type: 'under' | 'veteran' } | null => {
+    const trimmed = input.trim()
+    
+    // Match U* format (under age)
+    const underMatch = trimmed.match(/^[Uu](\d+)$/)
+    if (underMatch) {
+      return { age: parseInt(underMatch[1]), type: 'under' }
+    }
+    
+    // Match V* format (veterans/over age) 
+    const veteranMatch = trimmed.match(/^[Vv](\d+)$/)
+    if (veteranMatch) {
+      return { age: parseInt(veteranMatch[1]), type: 'veteran' }
+    }
+    
+    return null
+  }
+
 
   const getEffectiveRating = (participant: Participant) => {
     const player = participant.players?.[0]
@@ -83,10 +91,23 @@ const Standings = ({ participants, tournament_table }: Props) => {
       }
     }
 
-    if (ageClassFilter !== "all") {
-      const playerBirthDate = player.birthdate
-      if (!playerBirthDate || !filterByAgeClass({ birth_date: playerBirthDate, sex: player.sex } as User, ageClassFilter)) {
-        return false
+    if (ageClassFilter.trim()) {
+      const ageFilter = parseAgeFromInput(ageClassFilter)
+      if (ageFilter !== null) {
+        const playerBirthDate = player.birthdate
+        if (!playerBirthDate) return false
+        
+        const currentYear = new Date().getFullYear()
+        const birthYear = new Date(playerBirthDate).getFullYear()
+        const playerAge = currentYear - birthYear
+        
+        if (ageFilter.type === 'under') {
+          // U* or plain number: show players under this age
+          if (playerAge >= ageFilter.age) return false
+        } else if (ageFilter.type === 'veteran') {
+          // V*: show players this age or older
+          if (playerAge < ageFilter.age) return false
+        }
       }
     }
     
@@ -159,19 +180,13 @@ const Standings = ({ participants, tournament_table }: Props) => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex gap-2 w-full">
-              <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {ageClassFilterOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="w-full">
+              <Input
+                placeholder={t("competitions.standings.filter.age_placeholder_manual", "Enter age (e.g., U18, V40)")}
+                value={ageClassFilter}
+                onChange={(e) => setAgeClassFilter(e.target.value)}
+                className="flex-1"
+              />
             </div>
           </div>
           
@@ -201,18 +216,14 @@ const Standings = ({ participants, tournament_table }: Props) => {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-              <SelectTrigger className="w-45">
-                <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
-              </SelectTrigger>
-              <SelectContent>
-                {ageClassFilterOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="w-full">
+              <Input
+                placeholder={t("competitions.standings.filter.age_placeholder_manual", "Enter age (e.g., U18, V40)")}
+                value={ageClassFilter}
+                onChange={(e) => setAgeClassFilter(e.target.value)}
+                className="flex-1"
+              />
+            </div>
           </div>
           
           <Button
@@ -341,19 +352,13 @@ const Standings = ({ participants, tournament_table }: Props) => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex gap-2 w-full">
-            <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-              <SelectTrigger className="flex-1">
-                <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
-              </SelectTrigger>
-              <SelectContent>
-                {ageClassFilterOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="w-full">
+            <Input
+              placeholder={t("competitions.standings.filter.age_placeholder_manual", "Enter age (e.g., U18, V40)")}
+              value={ageClassFilter}
+              onChange={(e) => setAgeClassFilter(e.target.value)}
+              className="flex-1"
+            />
           </div>
         </div>
         
@@ -383,18 +388,12 @@ const Standings = ({ participants, tournament_table }: Props) => {
               ))}
             </SelectContent>
           </Select>
-          <Select value={ageClassFilter} onValueChange={setAgeClassFilter}>
-            <SelectTrigger className="w-45">
-              <SelectValue placeholder={t("competitions.standings.filter.age_placeholder", "Filter by age")} />
-            </SelectTrigger>
-            <SelectContent>
-              {ageClassFilterOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Input
+            placeholder={t("competitions.standings.filter.age_placeholder_manual", "Enter age (e.g., U18, V40)")}
+            value={ageClassFilter}
+            onChange={(e) => setAgeClassFilter(e.target.value)}
+            className="w-45"
+          />
           </div>
           
           <Button

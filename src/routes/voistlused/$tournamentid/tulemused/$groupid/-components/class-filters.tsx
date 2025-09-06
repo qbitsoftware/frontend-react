@@ -82,7 +82,7 @@ export const ClassFilters = ({
 
           {/* Desktop Horizontal Scroll (hidden on mobile) */}
           <div className="hidden md:flex overflow-x-auto scrollbar-hide flex-1">
-            <div className="flex space-x-1 sm:space-x-2 py-3">
+            <div className="flex space-x-1 sm:space-x-2 py-2">
               {sortedTables.map((table) => {
                 const isActive =
                   table.id === activeGroupId ||
