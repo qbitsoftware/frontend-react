@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
@@ -35,21 +35,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const queryClient = useQueryClient()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
-    const [currentTime, setCurrentTime] = useState(new Date())
     const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
-
-    // Update timer every second
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTime(new Date())
-        }, 1000)
-
-        return () => clearInterval(interval)
-    }, [])
 
     const formatWaitingTime = (finishDate: string) => {
         const finished = new Date(finishDate)
-        const diffMs = currentTime.getTime() - finished.getTime()
+        const diffMs = Date.now() - finished.getTime()
         const diffMinutes = Math.floor(diffMs / (1000 * 60))
 
         if (diffMinutes < 60) {
