@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import StandingsProtocol from "../tulemused/$groupid/-components/standings-protocol";
 import Loader from "@/components/loader";
 import { ResponsiveClassSelector } from "@/components/responsive-class-selector";
+import { GroupType } from "@/types/matches";
 
 export const Route = createFileRoute("/voistlused/$tournamentid/kohad/")({
   loader: ({ params }) => {
@@ -42,6 +43,11 @@ function RouteComponent() {
       const firstTable = tablesQuery.data.data[0];
       setSelectedGroupId(firstTable.id);
     }
+    if (tableQuery.data?.data.group?.type === GroupType.DYNAMIC) {
+      if (tableQuery.data.data.stages && tableQuery.data.data.stages.length > 1) {
+        setSelectedGroupId(tableQuery.data.data.stages[1].id);
+      }
+    }
   }, [tablesQuery.data, selectedGroupId]);
 
   if (tablesQuery.isLoading) {
@@ -54,6 +60,18 @@ function RouteComponent() {
 
   if (!tablesQuery.data?.data || tablesQuery.data.data.length === 0) {
     return <div>{t("competitions.errors.standings_missing")}</div>;
+  }
+
+  const translateBracketName = (index: number) => {
+    if (index === 1) {
+      return t('common.winner')
+    }
+
+    if (index === 2) {
+      return t('common.consolation')
+    }
+
+    return t('common.subgroups')
   }
 
   const availableTables = tablesQuery.data.data;
@@ -98,10 +116,38 @@ function RouteComponent() {
         />
       </div>
 
+      {tableQuery.data.data.stages && tableQuery.data.data.stages.length >= 1 && (
+        <div className="border-b border-gray-200 mb-4">
+          <nav className="-mb-px flex space-x-8">
+            {tableQuery.data.data.stages?.map((stage, index) => {
+              if (index === 0) { return null }
+              const translatedName = translateBracketName(index)
+
+              return (
+                <button
+                  key={stage.id}
+                  onClick={() =>
+                    setSelectedGroupId(stage.id)
+                  }
+                  className={`py-2 px-2 border-b-2 font-medium text-sm transition-all duration-300 ${selectedGroupId === stage.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                >
+                  {translatedName}
+                </button>
+              )
+            })}
+          </nav>
+        </div>
+      )}
+
+
+
       <div className="w-full">
-        <StandingsProtocol 
-          group_id={selectedGroupId} 
-          tournament_table={tableQuery.data.data.group} 
+        <StandingsProtocol
+          group_id={selectedGroupId}
+          tournament_table={tableQuery.data.data.group}
         />
       </div>
     </div>

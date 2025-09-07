@@ -11,6 +11,7 @@ import { UseGetPlacements } from '@/queries/brackets'
 import Standings from '@/components/standings'
 import EmptyComponent from '@/routes/-components/empty-component'
 import LoadingScreen from '@/routes/-components/loading-screen'
+import { GroupType } from '@/types/matches'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/kohad/',
@@ -83,6 +84,12 @@ function RouteComponent() {
 
   const availableTables = tablesQuery.data.data || []
   const groupIds = tableData.data.stages?.map((stage) => stage.id) || [groupId]
+  if (tableData.data.group?.type === GroupType.DYNAMIC) {
+    if (groupIds.length > 1) {
+      navigate({ to: '/admin/tournaments/$tournamentid/grupid/$groupid/kohad', params: { tournamentid, groupid: String(groupIds[1]) } })
+    }
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
@@ -98,6 +105,7 @@ function RouteComponent() {
         <div className="border-b border-gray-200 mb-4">
           <nav className="-mb-px flex space-x-8">
             {tableData.data.stages?.map((stage, index) => {
+              if (index === 0) { return null }
               const translatedName = translateBracketName(index)
 
               return (

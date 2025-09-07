@@ -56,6 +56,7 @@ import { Route as VoistlusedTournamentidGaleriiIndexImport } from './routes/vois
 import { Route as VoistlusedTournamentidAjakavaIndexImport } from './routes/voistlused/$tournamentid/ajakava/index'
 import { Route as AdminTournamentsNewIndexImport } from './routes/admin/tournaments/new/index'
 import { Route as AdminTournamentsTournamentidIndexImport } from './routes/admin/tournaments/$tournamentid/index'
+import { Route as AdminRatingTournamentidIndexImport } from './routes/admin/rating/$tournamentid/index'
 import { Route as AdminBlogNewIndexImport } from './routes/admin/blog/new/index'
 import { Route as AdminBlogBlogidIndexImport } from './routes/admin/blog/$blogid/index'
 import { Route as AdminTournamentsTournamentidKohadImport } from './routes/admin/tournaments/$tournamentid/kohad'
@@ -359,6 +360,13 @@ const AdminTournamentsTournamentidIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AdminTournamentsTournamentidLayoutRoute,
+  } as any)
+
+const AdminRatingTournamentidIndexRoute =
+  AdminRatingTournamentidIndexImport.update({
+    id: '/rating/$tournamentid/',
+    path: '/rating/$tournamentid/',
+    getParentRoute: () => AdminLayoutRoute,
   } as any)
 
 const AdminBlogNewIndexRoute = AdminBlogNewIndexImport.update({
@@ -748,6 +756,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogNewIndexImport
       parentRoute: typeof AdminBlogLayoutImport
     }
+    '/admin/rating/$tournamentid/': {
+      id: '/admin/rating/$tournamentid/'
+      path: '/rating/$tournamentid'
+      fullPath: '/admin/rating/$tournamentid'
+      preLoaderRoute: typeof AdminRatingTournamentidIndexImport
+      parentRoute: typeof AdminLayoutImport
+    }
     '/admin/tournaments/$tournamentid/': {
       id: '/admin/tournaments/$tournamentid/'
       path: '/'
@@ -1084,6 +1099,7 @@ interface AdminLayoutRouteChildren {
   AdminFeedbackIndexRoute: typeof AdminFeedbackIndexRoute
   AdminRatingIndexRoute: typeof AdminRatingIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+  AdminRatingTournamentidIndexRoute: typeof AdminRatingTournamentidIndexRoute
 }
 
 const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
@@ -1094,6 +1110,7 @@ const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
   AdminFeedbackIndexRoute: AdminFeedbackIndexRoute,
   AdminRatingIndexRoute: AdminRatingIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
+  AdminRatingTournamentidIndexRoute: AdminRatingTournamentidIndexRoute,
 }
 
 const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
@@ -1201,6 +1218,7 @@ export interface FileRoutesByFullPath {
   '/admin/tournaments/$tournamentid/kohad': typeof AdminTournamentsTournamentidKohadRoute
   '/admin/blog/$blogid': typeof AdminBlogBlogidIndexRoute
   '/admin/blog/new': typeof AdminBlogNewIndexRoute
+  '/admin/rating/$tournamentid': typeof AdminRatingTournamentidIndexRoute
   '/admin/tournaments/$tournamentid/': typeof AdminTournamentsTournamentidIndexRoute
   '/admin/tournaments/new': typeof AdminTournamentsNewIndexRoute
   '/voistlused/$tournamentid/ajakava': typeof VoistlusedTournamentidAjakavaIndexRoute
@@ -1259,6 +1277,7 @@ export interface FileRoutesByTo {
   '/admin/tournaments/$tournamentid/kohad': typeof AdminTournamentsTournamentidKohadRoute
   '/admin/blog/$blogid': typeof AdminBlogBlogidIndexRoute
   '/admin/blog/new': typeof AdminBlogNewIndexRoute
+  '/admin/rating/$tournamentid': typeof AdminRatingTournamentidIndexRoute
   '/admin/tournaments/$tournamentid': typeof AdminTournamentsTournamentidIndexRoute
   '/admin/tournaments/new': typeof AdminTournamentsNewIndexRoute
   '/voistlused/$tournamentid/ajakava': typeof VoistlusedTournamentidAjakavaIndexRoute
@@ -1325,6 +1344,7 @@ export interface FileRoutesById {
   '/admin/tournaments/$tournamentid/kohad': typeof AdminTournamentsTournamentidKohadRoute
   '/admin/blog/$blogid/': typeof AdminBlogBlogidIndexRoute
   '/admin/blog/new/': typeof AdminBlogNewIndexRoute
+  '/admin/rating/$tournamentid/': typeof AdminRatingTournamentidIndexRoute
   '/admin/tournaments/$tournamentid/': typeof AdminTournamentsTournamentidIndexRoute
   '/admin/tournaments/new/': typeof AdminTournamentsNewIndexRoute
   '/voistlused/$tournamentid/ajakava/': typeof VoistlusedTournamentidAjakavaIndexRoute
@@ -1393,6 +1413,7 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid/kohad'
     | '/admin/blog/$blogid'
     | '/admin/blog/new'
+    | '/admin/rating/$tournamentid'
     | '/admin/tournaments/$tournamentid/'
     | '/admin/tournaments/new'
     | '/voistlused/$tournamentid/ajakava'
@@ -1450,6 +1471,7 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid/kohad'
     | '/admin/blog/$blogid'
     | '/admin/blog/new'
+    | '/admin/rating/$tournamentid'
     | '/admin/tournaments/$tournamentid'
     | '/admin/tournaments/new'
     | '/voistlused/$tournamentid/ajakava'
@@ -1514,6 +1536,7 @@ export interface FileRouteTypes {
     | '/admin/tournaments/$tournamentid/kohad'
     | '/admin/blog/$blogid/'
     | '/admin/blog/new/'
+    | '/admin/rating/$tournamentid/'
     | '/admin/tournaments/$tournamentid/'
     | '/admin/tournaments/new/'
     | '/voistlused/$tournamentid/ajakava/'
@@ -1625,7 +1648,8 @@ export const routeTree = rootRoute
         "/admin/tournaments",
         "/admin/feedback/",
         "/admin/rating/",
-        "/admin/users/"
+        "/admin/users/",
+        "/admin/rating/$tournamentid/"
       ]
     },
     "/profile": {
@@ -1802,6 +1826,10 @@ export const routeTree = rootRoute
     "/admin/blog/new/": {
       "filePath": "admin/blog/new/index.tsx",
       "parent": "/admin/blog"
+    },
+    "/admin/rating/$tournamentid/": {
+      "filePath": "admin/rating/$tournamentid/index.tsx",
+      "parent": "/admin"
     },
     "/admin/tournaments/$tournamentid/": {
       "filePath": "admin/tournaments/$tournamentid/index.tsx",

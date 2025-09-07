@@ -115,7 +115,7 @@ function RouteComponent() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-            <div className="container p-8">
+            <div className="p-8">
                 <AdminHeader
                     title={t('admin.rating.title', 'Rating Management')}
                     description={t('admin.rating.subtitle', 'Monitor and manage rating calculations')}

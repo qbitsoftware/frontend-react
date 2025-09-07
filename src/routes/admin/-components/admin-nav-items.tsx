@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   MessagesSquare,
   PersonStanding,
+  TrendingUp,
   Trophy,
 } from "lucide-react";
 
@@ -49,6 +50,13 @@ export const getAdminNavigationItems = (t: any, userRole?: string) => {
       label: t("admin.layout.sidebar.export"),
       icon: <Download className="h-5 w-5" />,
       to: "/admin/users",
+      requiredRole: [UserRoles.ROLE_ROOT_ADMIN],
+    },
+    {
+      id: "rating",
+      label: t("admin.layout.sidebar.rating"),
+      icon: <TrendingUp className="h-5 w-5" />,
+      to: "/admin/rating",
       requiredRole: [UserRoles.ROLE_ROOT_ADMIN],
     },
   ];
