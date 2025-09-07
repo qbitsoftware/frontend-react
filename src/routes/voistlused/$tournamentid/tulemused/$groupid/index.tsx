@@ -143,7 +143,7 @@ function RouteComponent() {
   const availableTables = tablesQuery.data.data || [];
 
   return (
-    <div className="min-h-screen w-full" style={{ touchAction: 'pan-y' }}>
+    <div className="min-h-screen w-full">
       {/* Consolidated Navigation */}
       <div className="space-y-3 mb-2">
         {/* Primary Class Navigation */}
@@ -202,6 +202,7 @@ function RouteComponent() {
                       onChange={(e) => setSearchTerm(e.target.value)}
                       onKeyDown={handleSearchKeyDown}
                       className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm pr-8"
+                      style={{ fontSize: '16px' }}
                     />
                     {searchTerm.trim() && (
                       <Button

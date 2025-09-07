@@ -55,7 +55,7 @@ export function PlayerSearchInput({
             placeholder={placeholder || t(`${translationPrefix}.placeholder`)}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full ${inputClassName}`}
+            className={`w-full text-base ${inputClassName}`}
             autoComplete="off"
             disabled={disabled}
           />

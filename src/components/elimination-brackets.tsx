@@ -343,7 +343,7 @@ export const EliminationBrackets = ({
             minScale={0.4}
             maxScale={1.5}
             wheel={{ disabled: true }}
-            pinch={{ disabled: false, step: 5 }}
+            pinch={{ disabled: true }}
             panning={{
               disabled: true,
               allowLeftClickPan: false,
