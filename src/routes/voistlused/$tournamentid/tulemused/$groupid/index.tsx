@@ -129,6 +129,11 @@ function RouteComponent() {
     }
   };
 
+  const hasEliminations = bracketQuery.data?.data?.eliminations &&
+    Array.isArray(bracketQuery.data.data.eliminations) &&
+    bracketQuery.data.data.eliminations.length > 0 &&
+    bracketQuery.data.data.eliminations[0]?.elimination;
+
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -192,6 +197,7 @@ function RouteComponent() {
           defaultValue={activeTab}
         >
           <div className="flex flex-col items-start">
+            {hasEliminations && (
               <div className="sticky top-0 z-[100] pb-2 w-full max-w-full sm:max-w-md">
                 <div className="flex gap-2 items-center pt-2">
                   <div className="flex-1 relative">
@@ -238,6 +244,7 @@ function RouteComponent() {
                   )}
                 </div>
               </div>
+            )}
             {/* <TabsList className="h-9 space-x-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
               {isMeistrikad && (
                 <>
