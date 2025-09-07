@@ -13,10 +13,11 @@ import { useState } from "react";
 import { RoundRobinBracket, RoundRobins } from "@/types/brackets";
 import { Button } from "./ui/button";
 import { MatchWrapper } from "@/types/matches";
-import { Printer } from "lucide-react";
+import { Printer, QrCode } from "lucide-react";
 import { TournamentTable } from "@/types/groups";
 import { PDFPreviewModal } from "./pdf-preview-modal";
 import { UseGetPlacements } from "@/queries/brackets";
+import { printQRCodeToBlankSheet } from "@/lib/qr-print";
 
 interface GroupStageBracketProps {
   brackets: RoundRobins;
@@ -34,6 +35,36 @@ export default function GroupStageBracket({
   const [showPreview, setShowPreview] = useState(false);
   const handlePrint = () => {
     setShowPreview(true);
+  };
+
+  const handlePrintQR = async () => {
+    const currentUrl = window.location.href;
+    const groupName = tournament_table.class || "Round Robin Tournament";
+
+    const url = new URL(currentUrl);
+    const pathSegments = url.pathname.split("/");
+
+    if (pathSegments[1] === "admin" && pathSegments[2] === "tournaments") {
+      const tournamentId = pathSegments[3];
+      const groupId = pathSegments[5];
+
+      if (tournamentId && groupId) {
+        const publicUrl = `${url.origin}/voistlused/${tournamentId}/tulemused/${groupId}`;
+
+        try {
+          await printQRCodeToBlankSheet(publicUrl, groupName);
+          return;
+        } catch (error) {
+          console.error("Failed to print QR code:", error);
+        }
+      }
+    }
+
+    try {
+      await printQRCodeToBlankSheet(currentUrl, groupName);
+    } catch (error) {
+      console.error("Failed to print QR code:", error);
+    }
   };
   const { data: placementData } = UseGetPlacements(tournament_table.tournament_id, tournament_table.id)
 
@@ -303,7 +334,15 @@ export default function GroupStageBracket({
 
   return (
     <div className="w-full px-2 sm:px-4 lg:px-6">
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-end gap-2 mb-6">
+        <Button
+          variant="outline"
+          className="hidden sm:flex items-center gap-2 bg-white hover:bg-gray-50 border-gray-300"
+          onClick={handlePrintQR}
+        >
+          <QrCode className="h-4 w-4" />
+          <span>{t("competitions.print_qr_code")}</span>
+        </Button>
         <Button
           variant="outline"
           className="hidden sm:flex items-center gap-2 bg-white hover:bg-gray-50 border-gray-300"
