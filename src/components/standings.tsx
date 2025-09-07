@@ -72,6 +72,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
   }
 
   const filteredParticipants = participants.filter(participant => {
+    if (tournament_table.type === GroupType.DYNAMIC) { return false }
     const player = participant.players?.[0]
     if (!player) return false
 
