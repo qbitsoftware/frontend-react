@@ -178,7 +178,7 @@ export const EliminationBrackets = ({
           if (currentElement) {
             currentElement.classList.remove('search-highlight');
             currentElement.classList.add('search-highlight-current');
-            currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            currentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
         }
       }
@@ -213,7 +213,7 @@ export const EliminationBrackets = ({
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      const threshold = 100;
+      const threshold = 70;
       setAllowBracketScroll(scrollY >= threshold);
     };
 
