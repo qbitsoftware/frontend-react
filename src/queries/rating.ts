@@ -46,6 +46,7 @@ export const UseGetRatingLatestChanges = () => {
         queryKey: ["rating_changes"],
         queryFn: async () => {
             const { data } = await axiosInstance.get(`/api/v1/rating/changes`, {
+                params: { limit: 50 },
                 withCredentials: true,
             });
             return data;

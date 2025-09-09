@@ -1958,6 +1958,42 @@
         "player_removed_successfully": "{{player_name}} eemaldatud edukalt klubist {{club_name}}"
       }
     },
+    "rating": {
+      "title": "Reitingu Haldus",
+      "subtitle": "Jälgi ja halda reitingu arvutamist",
+      "last_calculation": "Viimane Arvutus",
+      "next_calculation": "Järgmine Arvutus",
+      "quick_actions": "Kiirtoimingud",
+      "export_current": "Ekspordi Praegune Reiting",
+      "rollback": "Taasta Reiting",
+      "export_date": "Ekspordi Kuupäeva Järgi",
+      "pending_tournaments": "Arvutamist Ootavad Turniirid",
+      "calculated_tournaments": "Hiljuti Arvutatud Turniirid",
+      "latest_changes": "Viimased Reitingu Muutused",
+      "no_pending": "Reitingu arvutamist ootavaid turniire pole",
+      "no_changes": "Reitingu muutused pole saadaval",
+      "tournament_name": "Turniir",
+      "tournament_date": "Turniiri Kuupäev",
+      "date": "Kuupäev",
+      "participants": "Asukoht",
+      "calculated_at": "Arvutatud",
+      "player_name": "Mängija",
+      "player_id": "ID",
+      "first_name": "Eesnimi",
+      "last_name": "Perekonnanimi", 
+      "algorithm": "Algoritm", 
+      "new_rating": "Reitingukoht",
+      "change": "Muutus",
+      "tournament": "Turniir",
+      "status": {
+        "success": "Edukas",
+        "failed": "Ebaõnnestunud",
+        "ongoing": "Käimas",
+        "pending": "Ootel"
+      },
+      "progress": "Edenemine",
+      "tournaments_pending": "turniiri ootel"
+    },
     "media": {
       "title": "Meedia",
       "save_button": "Salvesta",

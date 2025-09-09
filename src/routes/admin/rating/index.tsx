@@ -329,31 +329,28 @@ function RouteComponent() {
                                         <TableHeader className="sticky top-0 bg-white">
                                             <TableRow className="border-gray-200">
                                                 <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.player_name', 'ID')}
+                                                    User ID
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.player_name', 'User ID')}
+                                                    {t('admin.rating.first_name', 'Eesnimi')}
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.player_name', 'First name')}
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.player_name', 'Last Name')}
+                                                    {t('admin.rating.last_name', 'Perenimi')}
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700 text-center">
-                                                    {t('admin.rating.old_rating', 'Algo Version')}
+                                                    {t('admin.rating.algorithm', 'Algo Version')}
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700 text-center">
                                                     {t('admin.rating.new_rating', 'Rate Order')}
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700 text-center">
-                                                    {t('admin.rating.change', 'Rate PL Points')}
+                                                PP
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.tournament', 'Rate Weight')}
+                                                KL
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.tournament', 'Rate Points')}
+                                                RP
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700">
                                                     {t('admin.rating.date', 'Date')}
@@ -369,20 +366,12 @@ function RouteComponent() {
                                                 return (
                                                     <TableRow key={`${change.user_id}-${index}`} className="border-gray-100 hover:bg-gray-50">
                                                         <TableCell className="font-medium text-sm">
-                                                            {/* {change.first_name} {change.last_name} */}
-                                                            {change.id}
-                                                        </TableCell>
-
-                                                        <TableCell className="font-medium text-sm">
-                                                            {/* {change.first_name} {change.last_name} */}
                                                             {change.user_id}
                                                         </TableCell>
                                                         <TableCell className="font-medium text-sm">
-                                                            {/* {change.first_name} {change.last_name} */}
                                                             {change.first_name}
                                                         </TableCell>
                                                         <TableCell className="font-medium text-sm">
-                                                            {/* {change.first_name} {change.last_name} */}
                                                             {change.last_name}
                                                         </TableCell>
                                                         <TableCell className="text-center text-sm text-gray-600">
