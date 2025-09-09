@@ -158,14 +158,15 @@ export function Reiting() {
     }
 
     const tuesday = new Date(today.setDate(diff));
-    tuesday.setHours(11, 0, 0, 0);
+    tuesday.setHours(11, 42, 0, 0);
 
     const dd = String(tuesday.getDate()).padStart(2, "0");
     const mm = String(tuesday.getMonth() + 1).padStart(2, "0");
     const yyyy = tuesday.getFullYear();
     const hours = tuesday.getHours();
+    const minutes = tuesday.getMinutes();
 
-    return `${dd}.${mm}.${yyyy}, ${hours}:00`;
+    return `${dd}.${mm}.${yyyy}, ${hours}:${String(minutes).padStart(2, "0")}`;
   };
 
 
