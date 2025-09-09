@@ -1930,6 +1930,42 @@
         "player_removed_successfully": "Successfully removed {{player_name}} from {{club_name}}"
       }
     },
+    "rating": {
+      "title": "Rating Management",
+      "subtitle": "Monitor and manage rating calculations",
+      "last_calculation": "Last Calculation",
+      "next_calculation": "Next Calculation",
+      "quick_actions": "Quick Actions",
+      "export_current": "Export Current Ratings",
+      "rollback": "Rollback Ratings",
+      "export_date": "Export by Date",
+      "pending_tournaments": "Tournaments Awaiting Calculation",
+      "calculated_tournaments": "Recently Calculated Tournaments",
+      "latest_changes": "Latest Rating Changes",
+      "no_pending": "No tournaments pending calculation",
+      "no_changes": "No rating changes available",
+      "tournament_name": "Tournament",
+      "tournament_date": "Tournament Date",
+      "date": "Date",
+      "participants": "Location",
+      "calculated_at": "Calculated At",
+      "player_name": "Player",
+      "player_id": "ID",
+      "first_name": "First Name", 
+      "last_name": "Last Name",
+      "algorithm": "Algorithm",
+      "old_rating": "Rating",
+      "new_rating": "Rating",
+      "tournament": "Tournament",
+      "status": {
+        "success": "Success",
+        "failed": "Failed",
+        "ongoing": "In Progress",
+        "pending": "Pending"
+      },
+      "progress": "Progress",
+      "tournaments_pending": "tournaments pending"
+    },
     "media": {
       "title": "Media",
       "save_button": "Save changes",
