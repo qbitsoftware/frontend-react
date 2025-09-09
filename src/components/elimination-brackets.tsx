@@ -178,7 +178,7 @@ export const EliminationBrackets = ({
           if (currentElement) {
             currentElement.classList.remove('search-highlight');
             currentElement.classList.add('search-highlight-current');
-            currentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }
       }
