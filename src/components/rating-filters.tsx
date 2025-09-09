@@ -85,14 +85,14 @@ export function RatingFilters({
           placeholder={t("rating.filtering.search_placeholder")}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-10 sm:h-12 w-full pl-4 pr-10 py-2 border rounded-lg text-xs sm:text-sm bg-[#F7F6F7] focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="h-10 sm:h-12 w-full pl-4 pr-10 py-2 border rounded-lg text-[16px] sm:text-sm bg-[#F7F6F7] focus:outline-none focus:ring-1 focus:ring-gray-300"
         />
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
       </div>
 
       <div className={`w-full ${showCalculator || showInfo ? 'lg:col-span-3' : 'lg:col-span-4'}`}>
         <Select value={ageClass} onValueChange={onAgeClassChange}>
-          <SelectTrigger className="w-full h-10 sm:h-12 flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm bg-[#F7F6F7]">
+          <SelectTrigger className="w-full h-10 sm:h-12 flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg border text-[16px] sm:text-sm bg-[#F7F6F7]">
             <SelectValue
               placeholder={t("rating.filtering.select.options.all")}
             />
@@ -126,7 +126,7 @@ export function RatingFilters({
       <div className="w-full flex gap-2 lg:hidden">
         <div className="flex-1">
           <Select value={gender} onValueChange={onGenderChange}>
-            <SelectTrigger className="w-full h-10 flex items-center space-x-2 px-3 py-2 rounded-lg border text-xs bg-[#F7F6F7]">
+            <SelectTrigger className="w-full h-10 flex items-center space-x-2 px-3 py-2 rounded-lg border text-[16px] md:text-xs bg-[#F7F6F7]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
