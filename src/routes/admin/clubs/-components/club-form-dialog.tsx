@@ -13,6 +13,9 @@ import { Label } from "@/components/ui/label";
 import { Club } from "@/types/clubs";
 import { CreateClubInput } from "@/queries/clubs";
 import { useTranslation } from "react-i18next";
+import ClubImageUpload, { ClubImageUploadRef } from "./club-image-upload";
+import { Separator } from "@/components/ui/separator";
+import { useRef } from "react";
 
 interface ClubFormDialogProps {
   isOpen: boolean;
@@ -23,20 +26,34 @@ interface ClubFormDialogProps {
   onFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: () => void;
   isLoading: boolean;
+  onImageUploaded?: (imageUrl: string) => void;
 }
 
 export function ClubFormDialog({
   isOpen,
   onClose,
   mode,
+  club,
   formData,
   onFormChange,
   onSubmit,
   isLoading,
+  onImageUploaded,
 }: ClubFormDialogProps) {
   const { t } = useTranslation();
+  const imageUploadRef = useRef<ClubImageUploadRef>(null);
 
   const isEdit = mode === "edit";
+
+  const handleSubmit = async () => {
+    // First handle the main form submission
+    onSubmit();
+    
+    // Then upload image if there's one selected
+    if (imageUploadRef.current?.hasSelectedImage()) {
+      await imageUploadRef.current.uploadImage();
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -123,25 +140,25 @@ export function ClubFormDialog({
               className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor={`${mode}-image_url`} className="text-right">
-              {t("admin.clubs.table.image")}
+          <Separator className="my-4" />
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label className="text-right mt-2">
+              {t("admin.clubs.image.upload")}
             </Label>
-            <Input
-              id={`${mode}-image_url`}
-              name="image_url"
-              value={formData.image_url}
-              onChange={onFormChange}
-              className="col-span-3"
-              placeholder="https://example.com/image.jpg"
-            />
+            <div className="col-span-3">
+              <ClubImageUpload
+                ref={imageUploadRef}
+                club_id={club?.id}
+                onImageUploaded={onImageUploaded}
+              />
+            </div>
           </div>
         </div>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">{t("admin.clubs.cancel")}</Button>
           </DialogClose>
-          <Button onClick={onSubmit} disabled={isLoading}>
+          <Button onClick={handleSubmit} disabled={isLoading}>
             {isLoading
               ? (isEdit ? t("admin.clubs.updating") : t("admin.clubs.creating"))
               : (isEdit ? t("admin.clubs.update") : t("admin.clubs.create"))}

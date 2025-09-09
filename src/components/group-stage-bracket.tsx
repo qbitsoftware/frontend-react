@@ -317,7 +317,7 @@ export default function GroupStageBracket({
                         {placementIndex !== -1 ? (
                           <span className="text-base">{placementIndex + 1}</span>
                         ) : (
-                          <span className="text-base">-</span>
+                        <span className="text-base">-</span>
                         )}
                       </TableCell>
                     </TableRow>

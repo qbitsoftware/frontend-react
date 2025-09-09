@@ -1797,6 +1797,14 @@
         "website": "Veebileht",
         "actions": "Tegevused"
       },
+      "image": {
+        "select_image": "Vali pilt",
+        "upload_new": "Lae uus pilt üles",
+        "upload": "Lae üles",
+        "uploading": "Pildi üleslaadimine...",
+        "upload_success": "Pilt laeti edukalt üles",
+        "upload_error": "Pildi üleslaadimine ebaõnnestus. Palun proovi uuesti."
+      },
       "dropdown": {
         "edit": "Muuda",
         "delete": "Kustuta"

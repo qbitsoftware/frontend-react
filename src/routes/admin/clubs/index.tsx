@@ -73,6 +73,12 @@ function RouteComponent() {
     }
   };
 
+  const handleImageUploaded = (imageUrl: string) => {
+    if (selectedClub) {
+      setSelectedClub({ ...selectedClub, image_url: imageUrl });
+    }
+  };
+
   const handleCreateClub = async () => {
     try {
       await createClubMutation.mutateAsync(newClub, {
@@ -217,6 +223,7 @@ function RouteComponent() {
             onFormChange={handleEditClubChange}
             onSubmit={handleUpdateClub}
             isLoading={updateClubMutation.isPending}
+            onImageUploaded={handleImageUploaded}
           />
         )}
 

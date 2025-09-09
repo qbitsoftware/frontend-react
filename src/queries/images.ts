@@ -217,3 +217,23 @@ export function addParticipantImage() {
         }
     })
 }
+
+export function addClubImage() {
+    return useMutation({
+        mutationFn: async ({ club_id, image_file }: { club_id: number, image_file: File }) => {
+
+            const formData = new FormData()
+
+            formData.append('image', image_file)
+            formData.append('club_id', club_id.toString())
+
+            const { data } = await axiosInstance.post('/api/v1/image/clubs', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                withCredentials: true,
+            });
+            return data;
+        }
+    })
+}

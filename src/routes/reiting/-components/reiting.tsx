@@ -158,7 +158,7 @@ export function Reiting() {
     }
 
     const tuesday = new Date(today.setDate(diff));
-    tuesday.setHours(9, 0, 0, 0);
+    tuesday.setHours(11, 0, 0, 0);
 
     const dd = String(tuesday.getDate()).padStart(2, "0");
     const mm = String(tuesday.getMonth() + 1).padStart(2, "0");
