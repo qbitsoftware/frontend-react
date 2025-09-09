@@ -332,10 +332,10 @@ function RouteComponent() {
                                                     User ID
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700">
-                                                    First name
+                                                    {t('admin.rating.first_name', 'Eesnimi')}
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700">
-                                                    Last Name
+                                                    {t('admin.rating.last_name', 'Perenimi')}
                                                 </TableHead>
                                                 <TableHead className="text-xs font-semibold text-gray-700 text-center">
                                                     {t('admin.rating.algorithm', 'Algo Version')}
