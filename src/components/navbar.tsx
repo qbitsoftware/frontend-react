@@ -157,7 +157,10 @@ export default function Navbar() {
             <LanguageDropdown />
           </div>
 
-          <MobileMenuSidebarTrigger className="lg:hidden my-auto text-secondary" />
+          <div className="flex lg:hidden items-center gap-0">
+            <LanguageDropdown />
+            <MobileMenuSidebarTrigger className="my-auto text-secondary" />
+          </div>
         </div>
       </div>
     </header>

@@ -4,22 +4,11 @@ import ErrorPage from "@/components/error";
 import { UseGetTournamentAdminQuery } from "@/queries/tournaments";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid/")({
-  // loader: async ({ context: { queryClient }, params }) => {
-  //   const tournamentId = Number(params.tournamentid);
-  //   let tournament = queryClient.getQueryData(
-  //     UseGetTournamentAdmin(tournamentId).queryKey,
-  //   );
-  //   if (!tournament) {
-  //     tournament = await queryClient.fetchQuery(UseGetTournamentAdmin(tournamentId));
-  //   }
-  //   return { tournament };
-  // },
   errorComponent: () => <ErrorPage />,
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  // const { tournament } = Route.useLoaderData();
   const { data: tournament } = UseGetTournamentAdminQuery(
     Number(Route.useParams().tournamentid)
   );

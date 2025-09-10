@@ -1916,6 +1916,7 @@
         "failed_to_remove_player": "Failed to remove player from club",
         "missing_required_fields": "Please fill in all required fields: {{fields}}"
       },
+      "no_club_affiliation": "NO CLUB",
       "api_errors": {
         "player_not_found": "Player with ID {{player_id}} not found",
         "club_not_found": "Club with ID {{club_id}} not found",
@@ -1927,7 +1928,8 @@
         "unauthorized": "Authentication required",
         "forbidden": "You don't have permission to perform this action",
         "player_added_successfully": "Successfully added {{player_name}} to {{club_name}}",
-        "player_removed_successfully": "Successfully removed {{player_name}} from {{club_name}}"
+        "player_removed_successfully": "Successfully removed {{player_name}} from {{club_name}}",
+        "duplicate_player_exists": "A player with these details already exists: {{first_name}} {{last_name}} (ELTL ID: {{existing_eltl_id}}) is already registered with {{existing_club_name}}"
       }
     },
     "rating": {

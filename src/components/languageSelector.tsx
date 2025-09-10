@@ -11,7 +11,18 @@ export function LanguageDropdown() {
         if (storedLanguage) {
             setCurrentLanguage(storedLanguage);
         }
-    }, []);
+
+        // Listen for language changes from other instances
+        const handleLanguageChange = (lng: string) => {
+            setCurrentLanguage(lng);
+        };
+
+        i18n.on('languageChanged', handleLanguageChange);
+
+        return () => {
+            i18n.off('languageChanged', handleLanguageChange);
+        };
+    }, [i18n]);
 
     const changeLanguage = (lng: string) => {
         i18n.changeLanguage(lng);

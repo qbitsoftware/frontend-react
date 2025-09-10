@@ -459,6 +459,7 @@ const EliminationMatch = ({
             match={match}
             visible={showTooltip}
             position={mousePosition}
+            onClose={() => setShowTooltip(false)}
           />,
           document.body
         )}
@@ -469,6 +470,7 @@ const EliminationMatch = ({
           match={match}
           visible={showTooltip}
           position={mousePosition}
+          onClose={() => setShowTooltip(false)}
         />
       )}
     </>

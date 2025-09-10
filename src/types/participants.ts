@@ -24,6 +24,7 @@ export type Participant = {
   rr_order: string;
   players: Player[];
   tournament_table_id: number;
+  version: number;
   extra_data: PartipantExtraData;
   is_active?: boolean;
 };

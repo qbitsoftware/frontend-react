@@ -31,4 +31,5 @@ export type TournamentTable = {
   break_duration: number;
   time_table: boolean;
   concurrency_priority: boolean;
+  version: number;
 }

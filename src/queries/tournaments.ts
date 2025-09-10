@@ -14,6 +14,7 @@ import {
 import { Bracket } from "@/types/brackets";
 import { TournamentFormValues } from "@/routes/admin/tournaments/-components/tournament-form";
 import { Category } from "@/types/blogs";
+import { useWS } from "@/providers/wsProvider";
 
 export type TournamentsResponse = {
   data: Tournament[] | null;
@@ -173,19 +174,6 @@ export function UseGetProfileTournaments(upcoming = false) {
   });
 }
 
-export const UseGetTournamentAdmin = (id: number) => {
-  return queryOptions<TournamentResponse>({
-    queryKey: ["tournament_admin", id],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get(`/api/v1/tournaments/${id}`, {
-        params: { public: false },
-        withCredentials: true,
-      });
-      return data;
-    },
-  });
-};
-
 export const UseGetTournamentAdminQuery = (id: number) => {
   return useQuery<TournamentResponse>({
     queryKey: ["tournament_admin_query", id],
@@ -220,6 +208,7 @@ export const UseGetTournamentQuery = (id: number) => {
 
 export const UsePostTournament = () => {
   const queryClient = useQueryClient();
+  const { connected } = useWS()
   return useMutation({
     mutationFn: async (formData: TournamentFormValues) => {
       const { data } = await axiosInstance.post(
@@ -232,24 +221,26 @@ export const UsePostTournament = () => {
       return data;
     },
     onSuccess: (data: TournamentResponse) => {
-      queryClient.setQueryData(
-        ["tournaments_admin"],
-        (oldData: TournamentsResponse) => {
-          if (oldData?.data && data.data) {
-            oldData.data = [...oldData.data, data.data];
-            oldData.message = data.message;
-            oldData.error = data.error;
-          } else {
-            const newData: TournamentsResponse = {
-              message: data.message,
-              error: data.error,
-              data: data.data ? [data.data] : null,
-            };
-            return newData;
-          }
-          return oldData;
-        },
-      );
+      if (!connected) {
+        queryClient.setQueryData(
+          ["tournaments_admin"],
+          (oldData: TournamentsResponse) => {
+            if (oldData?.data && data.data) {
+              oldData.data = [...oldData.data, data.data];
+              oldData.message = data.message;
+              oldData.error = data.error;
+            } else {
+              const newData: TournamentsResponse = {
+                message: data.message,
+                error: data.error,
+                data: data.data ? [data.data] : null,
+              };
+              return newData;
+            }
+            return oldData;
+          },
+        );
+      }
     },
   });
 };
@@ -281,6 +272,7 @@ export const UseStartTournament = (tournament_id: number) => {
 
 export const UsePatchTournament = (id: number) => {
   const queryClient = useQueryClient();
+  const { connected } = useWS()
   return useMutation({
     mutationFn: async (formData: TournamentFormValues) => {
       const { data } = await axiosInstance.patch(
@@ -293,30 +285,20 @@ export const UsePatchTournament = (id: number) => {
       return data;
     },
 
-    onSuccess: (data: TournamentResponse) => {
-      queryClient.invalidateQueries({ queryKey: ["tournaments_admin_query"] });
-      queryClient.setQueryData(
-        ["tournament_admin", id],
-        (oldData: TournamentResponse) => {
-          if (oldData) {
-            oldData.data = data.data;
-            oldData.message = data.message;
-            oldData.error = data.error;
-          }
-          return oldData;
-        },
-      );
-      // queryClient.resetQueries({ queryKey: ["bracket", id] });
-      // queryClient.resetQueries({ queryKey: ["matches", id] });
-
-      queryClient.invalidateQueries({ queryKey: ["bracket", id] });
-      queryClient.invalidateQueries({ queryKey: ["matches", id] });
+    onSuccess: () => {
+      if (!connected) {
+        queryClient.invalidateQueries({ queryKey: ["tournaments_admin_query"] });
+        queryClient.invalidateQueries({ queryKey: ['tournament_admin_query', id] })
+        queryClient.invalidateQueries({ queryKey: ["bracket", id] });
+        queryClient.invalidateQueries({ queryKey: ["matches", id] });
+      }
     },
   });
 };
 
 export const UseDeleteTournament = (id: number | undefined) => {
   const queryClient = useQueryClient();
+  const { connected } = useWS()
   return useMutation({
     mutationFn: async () => {
       const { data } = await axiosInstance.delete(`/api/v1/tournaments/${id}`, {
@@ -325,18 +307,9 @@ export const UseDeleteTournament = (id: number | undefined) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.setQueryData(
-        ["tournaments_admin"],
-        (oldData: TournamentsResponse) => {
-          if (oldData?.data) {
-            oldData.data = oldData.data.filter(
-              (tournament: Tournament) => tournament.id !== id,
-            );
-          }
-          return oldData;
-        },
-      );
-      // queryClient.resetQueries({ queryKey: ['tournaments'] })
+      if (!connected) {
+        queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
+      }
     },
   });
 };

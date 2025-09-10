@@ -15,14 +15,6 @@ function RouteComponent() {
   const params = useParams({ from: "/admin/tournaments/$tournamentid/grupid/" })
   const { data: tournament_tables } = UseGetTournamentTablesQuery(Number(params.tournamentid))
   const tournament = useTournament()
-  // const useRatingMutation = UseCalcTournamentRating(tournament.id);
-  // const handleRatingCalculation = async () => {
-  //   try {
-  //     await useRatingMutation.mutateAsync();
-  //   } catch (error) {
-  //     console.log("Error", error);
-  //   }
-  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
