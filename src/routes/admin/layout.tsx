@@ -110,7 +110,6 @@ function RouteComponent() {
   }, []);
 
   const handleWSMessage = useCallback((data: WSMessage) => {
-    console.log("ws message received", data);
     if (data.type === WSMsgType.ParticipantUpdated || data.type === WSMsgType.ParticipantCreated || data.type === WSMsgType.ParticipantDeleted) {
       const { tournament_id, table_id } = data.data;
       const path = window.location.pathname;
@@ -150,11 +149,14 @@ function RouteComponent() {
     } else if (data.type === WSMsgType.TournamentTableUpdated) {
       const { tournament_id, table_id } = data.data;
       const path = window.location.pathname;
-      if (path.includes(tournament_id) && path.includes(table_id)) {
-        queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-        queryClient.invalidateQueries({ queryKey: ['participants', Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ['bracket', Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ['matches', Number(table_id)] })
+      if (path.includes(tournament_id)) {
+        queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
+        if (path.includes(table_id)) {
+          queryClient.invalidateQueries({ queryKey: ['participants', Number(table_id)] })
+          queryClient.invalidateQueries({ queryKey: ['bracket', Number(table_id)] })
+          queryClient.invalidateQueries({ queryKey: ['matches', Number(table_id)] })
+          queryClient.invalidateQueries({ queryKey: ["tournament_table", Number(table_id)] })
+        }
       }
     } else if (data.type === WSMsgType.TournamentTableDeleted) {
       const { tournament_id, table_id } = data.data;

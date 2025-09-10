@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
@@ -40,6 +40,26 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
     const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
+
+    const tableRef = useRef<Table>(null)
+    const [scrollTop, setScrollTop] = useState(0)
+
+    // Create a stable key that only changes when matches structure changes significantly
+    const stableKey = useMemo(() => {
+        return `${matches.length}-${matches.map(m => m.match.id).join('-')}`
+    }, [matches.length, matches.map(m => m.match.id).join('-')])
+
+    // Force table to recompute rows when data changes but preserve scroll
+    useEffect(() => {
+        if (tableRef.current) {
+            tableRef.current.forceUpdateGrid()
+        }
+    }, [matches])
+
+    const handleScroll = ({ scrollTop: newScrollTop }: { scrollTop: number }) => {
+        setScrollTop(newScrollTop)
+    }
+
 
 
     const formatWaitingTime = (finishDate: string) => {
@@ -456,13 +476,16 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             <AutoSizer>
                 {({ height, width }) => (
                     <Table
-                        key={JSON.stringify(matches.map(m => m.match.id + JSON.stringify(m.match)))}
+                        key={stableKey}
+                        ref={tableRef}
                         width={Math.max(width, 750)}
                         height={height}
                         headerHeight={40}
                         rowHeight={40}
                         rowCount={matches.length}
                         rowGetter={({ index }) => matches[index]}
+                        onScroll={handleScroll}
+                        scrollTop={scrollTop}
                         rowClassName={({ index }) =>
                             index !== -1 ? `border-b ${getRowClassName(matches[index])}` : "bg-gray-50"
                         }

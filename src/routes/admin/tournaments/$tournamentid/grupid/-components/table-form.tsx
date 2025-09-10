@@ -117,6 +117,34 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
   const deleteMutation = UseDeleteTournamentTable(Number(tournamentid), initial_data?.id)
   const router = useRouter()
 
+  useEffect(() => {
+    if (initial_data) {
+      form.reset({
+        ...initial_data,
+      })
+      setWomanWeightInputValue(String(initial_data.woman_weight || 1))
+    } else {
+      form.reset({
+        class: "",
+        type: "",
+        solo: false,
+        dialog_type: "",
+        min_team_size: 2,
+        max_team_size: 2,
+        size: 16,
+        woman_weight: 1,
+        start_time: "",
+        avg_match_duration: 15,
+        time_table: false,
+        second_class: "",
+        has_consolation: false,
+        consolation_class: "",
+      }
+      )
+      setWomanWeightInputValue('1')
+    }
+  }, [initial_data])
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: initial_data
@@ -250,7 +278,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("admin.tournaments.create_tournament.type")}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder={t("admin.tournaments.create_tournament.type_placeholder")} />
@@ -291,7 +319,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                         </FormLabel>
                         <Select
                           onValueChange={(value) => form.setValue("size", Number.parseInt(value, 10))}
-                          defaultValue={String(form.getValues().size || "")}
+                          value={String(form.watch("size") || "")}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -321,7 +349,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>{t("admin.tournaments.create_tournament.main_bracket")}</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder={t("admin.tournaments.create_tournament.main_bracket_placeholder")} />
@@ -373,7 +401,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>{t("admin.tournaments.create_tournament.consolation_bracket_type")}</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder={t("admin.tournaments.create_tournament.consolation_bracket_placeholder")} />
@@ -402,7 +430,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                       <FormLabel>{t("admin.tournaments.create_tournament.tournament_size")}</FormLabel>
                       <Select
                         onValueChange={(value) => form.setValue("size", Number.parseInt(value, 10))}
-                        defaultValue={String(form.getValues().size || "")}
+                        value={String(form.watch("size") || "")}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -461,7 +489,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
                     render={({ field }) => (
                       <FormItem className='mb-4'>
                         <FormLabel>{t("admin.tournaments.create_tournament.dialog_type")}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder={t("admin.tournaments.create_tournament.dialog_type_placeholder")} />
