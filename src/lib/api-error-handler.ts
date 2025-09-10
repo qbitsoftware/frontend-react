@@ -32,6 +32,15 @@ export function translateApiError(
 ): string | null {
   const translationKey = `admin.clubs.api_errors.${errorCode}`;
   
+  if (errorCode === 'duplicate_player_exists') {
+    const modifiedContext = { ...context };
+    if (!modifiedContext.existing_club_name || modifiedContext.existing_club_name === '') {
+      modifiedContext.existing_club_name = t('admin.clubs.no_club_affiliation');
+    }
+    const translated = t(translationKey, modifiedContext);
+    return translated !== translationKey ? translated : null;
+  }
+  
   const translated = t(translationKey, context);
   
   if (translated === translationKey) {

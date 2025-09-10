@@ -1944,6 +1944,7 @@
         "failed_to_remove_player": "Mängija eemaldamine klubist ebaõnnestus",
         "missing_required_fields": "Palun täida kõik nõutavad väljad: {{fields}}"
       },
+      "no_club_affiliation": "KLUBITU",
       "api_errors": {
         "player_not_found": "Mängijat ID {{player_id}} ei leitud",
         "club_not_found": "Klubi ID {{club_id}} ei leitud",
@@ -1955,7 +1956,8 @@
         "unauthorized": "Sisselogimine on nõutav",
         "forbidden": "Teil pole selle toimingu sooritamiseks õigusi",
         "player_added_successfully": "{{player_name}} lisatud edukalt klubisse {{club_name}}",
-        "player_removed_successfully": "{{player_name}} eemaldatud edukalt klubist {{club_name}}"
+        "player_removed_successfully": "{{player_name}} eemaldatud edukalt klubist {{club_name}}",
+        "duplicate_player_exists": "Selliste andmetega mängija on juba olemas: {{first_name}} {{last_name}} (ELTL ID: {{existing_eltl_id}}) on juba registreeritud klubis {{existing_club_name}}"
       }
     },
     "rating": {

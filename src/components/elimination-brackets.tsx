@@ -153,6 +153,7 @@ export const EliminationBrackets = ({
   const [showPreview, setShowPreview] = useState(false);
   const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
   const [allowBracketScroll, setAllowBracketScroll] = useState(false);
+  const [isSearchNavigating, setIsSearchNavigating] = useState(false);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -178,7 +179,18 @@ export const EliminationBrackets = ({
           if (currentElement) {
             currentElement.classList.remove('search-highlight');
             currentElement.classList.add('search-highlight-current');
-            currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setIsSearchNavigating(true);
+            
+            const containerRect = container.getBoundingClientRect();
+            const elementRect = currentElement.getBoundingClientRect();
+            const scrollTop = elementRect.top - containerRect.top + container.scrollTop - (container.clientHeight / 2);
+            
+            container.scrollTo({
+              top: scrollTop,
+              behavior: 'smooth'
+            });
+            
+            setTimeout(() => setIsSearchNavigating(false), 500);
           }
         }
       }
@@ -220,6 +232,31 @@ export const EliminationBrackets = ({
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if ((allowBracketScroll && !admin && window.innerWidth < 768) || isSearchNavigating) {
+      const preventDownScroll = (e: WheelEvent) => {
+        if (e.deltaY > 0) {
+          e.preventDefault();
+        }
+      };
+
+      const preventDownKeys = (e: KeyboardEvent) => {
+        const downKeys = ['ArrowDown', 'PageDown', 'End', 'Space'];
+        if (downKeys.includes(e.key)) {
+          e.preventDefault();
+        }
+      };
+
+      document.addEventListener('wheel', preventDownScroll, { passive: false });
+      document.addEventListener('keydown', preventDownKeys);
+
+      return () => {
+        document.removeEventListener('wheel', preventDownScroll);
+        document.removeEventListener('keydown', preventDownKeys);
+      };
+    }
+  }, [allowBracketScroll, admin, isSearchNavigating]);
 
   const handlePrint = () => {
     setShowPreview(true);
