@@ -184,9 +184,11 @@ export const EliminationBrackets = ({
             const containerRect = container.getBoundingClientRect();
             const elementRect = currentElement.getBoundingClientRect();
             const scrollTop = elementRect.top - containerRect.top + container.scrollTop - (container.clientHeight / 2);
+            const scrollLeft = elementRect.left - containerRect.left + container.scrollLeft - (container.clientWidth / 2);
             
             container.scrollTo({
               top: scrollTop,
+              left: scrollLeft,
               behavior: 'smooth'
             });
             
