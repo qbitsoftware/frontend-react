@@ -30,6 +30,7 @@ import UserRow from "./user-row";
 import { Club } from "@/types/clubs";
 import UserRowSkeleton from "./user-row-skeleton";
 import { RatingFilters } from "@/components/rating-filters";
+import { UseGetRatingInfo } from "@/queries/rating";
 
 
 export function Reiting() {
@@ -44,8 +45,11 @@ export function Reiting() {
   const [isRatingInfoOpen, setIsRatingInfoOpen] = useState(false);
   const [showForeigners, setShowForeigners] = useState(false);
 
+  // Data fetching
+  const { data: ratingInfo } = UseGetRatingInfo()
   const { data, isLoading } = UseGetUsersQuery("")
   const { data: clubsData } = UseGetClubsQuery();
+
   const [users, setUsers] = useState<User[]>([]);
   const [clubs, setClubs] = useState<Club[]>([]);
   useEffect(() => {
@@ -133,44 +137,15 @@ export function Reiting() {
       if (a.rate_order > 0 && b.rate_order > 0) {
         return a.rate_order - b.rate_order;
       }
-      
+
       if (a.rate_order === 0 && b.rate_order === 0) {
         return b.rate_points - a.rate_points;
       }
-      
+
       return b.rate_points - a.rate_points;
     });
 
   const selectedPlayer = users.find((user) => user.id === SelectedPlayerId);
-
-  const getTuesdayOfCurrentWeek = () => {
-    const today = new Date();
-    const day = today.getDay();
-    const hour = today.getHours();
-
-    let diff;
-    if (day === 1 || day === 0) { 
-      diff = day === 1 ? today.getDate() - 6 : today.getDate() - 5;
-    } else if (day === 2 && hour < 9) { 
-      diff = today.getDate() - 7;
-    } else { 
-      diff = today.getDate() - day + 2;
-    }
-
-    const tuesday = new Date(today.setDate(diff));
-    tuesday.setHours(11, 42, 0, 0);
-
-    const dd = String(tuesday.getDate()).padStart(2, "0");
-    const mm = String(tuesday.getMonth() + 1).padStart(2, "0");
-    const yyyy = tuesday.getFullYear();
-    const hours = tuesday.getHours();
-    const minutes = tuesday.getMinutes();
-
-    return `${dd}.${mm}.${yyyy}, ${hours}:${String(minutes).padStart(2, "0")}`;
-  };
-
-
-
 
   return (
     <div className="py-2 sm:py-4">
@@ -185,7 +160,7 @@ export function Reiting() {
           <p className="font-medium pb-1 text-sm sm:text-base">
             {t("rating.last_updated")}:{" "}
             <span className="bg-[#FBFBFB] px-2 sm:px-3 py-1 rounded-full border border-[#EAEAEA] text-xs sm:text-sm">
-              {getTuesdayOfCurrentWeek()}
+              {ratingInfo?.data?.last_calculated_at ? new Date(ratingInfo.data.last_calculated_at).toISOString().slice(0, 16).replace("T", " ") : t("rating.unknown_date", "-")}
             </span>
           </p>
           <p className="pb-4 text-xs sm:text-sm text-gray-600">

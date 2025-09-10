@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { useTranslation } from 'react-i18next'
 import {
     Clock,
@@ -22,6 +21,8 @@ import { useState, useEffect } from 'react'
 import AdminHeader from '../-components/admin-header'
 import { UseGetRatingInfo, UseGetRatingLatestChanges, UseGetReadyTournamentsForRatingCalc } from '@/queries/rating'
 import { axiosInstance } from '@/queries/axiosconf'
+import { AutoSizer, Column, Table as VirtualizedTable } from "react-virtualized"
+import 'react-virtualized/styles.css'
 
 export const Route = createFileRoute('/admin/rating/')({
     component: RouteComponent,
@@ -323,86 +324,135 @@ function RouteComponent() {
                     </CardHeader>
                     <CardContent className="p-0">
                         {ratingChanges && ratingChanges.data && ratingChanges.data.length > 0 ? (
-                            <ScrollArea className="h-[400px] w-full">
-                                <div className="p-4">
-                                    <Table>
-                                        <TableHeader className="sticky top-0 bg-white">
-                                            <TableRow className="border-gray-200">
-                                                <TableHead className="text-xs font-semibold text-gray-700">
-                                                    User ID
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.first_name', 'Eesnimi')}
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.last_name', 'Perenimi')}
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700 text-center">
-                                                    {t('admin.rating.algorithm', 'Algo Version')}
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700 text-center">
-                                                    {t('admin.rating.new_rating', 'Rate Order')}
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700 text-center">
-                                                PP
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700">
-                                                KL
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700">
-                                                RP
-                                                </TableHead>
-                                                <TableHead className="text-xs font-semibold text-gray-700">
-                                                    {t('admin.rating.date', 'Date')}
-                                                </TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {ratingChanges.data.map((change, index) => {
-                                                // const ratingChange = change.new_rating - change.old_rating
-                                                // const isPositive = ratingChange > 0
-                                                // const isNegative = ratingChange < 0
+                            <div className="h-[400px] w-full border rounded-md">
+                                <AutoSizer>
+                                    {({ height, width }) => (
+                                        <VirtualizedTable
+                                            width={width}
+                                            height={height}
+                                            headerHeight={40}
+                                            rowHeight={35}
+                                            rowCount={ratingChanges.data.length}
+                                            rowGetter={({ index }) => ratingChanges.data[index]}
+                                            rowClassName={({ index }) =>
+                                                index !== -1 ? "border-b border-gray-100 hover:bg-gray-50" : "bg-gray-50"
+                                            }
+                                            headerClassName="bg-gray-50 font-semibold text-xs border-b"
+                                        >
+                                            <Column
+                                                label="User ID"
+                                                dataKey="user_id"
+                                                width={80}
+                                                flexGrow={0}
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center h-full px-2 font-medium text-sm">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
 
-                                                return (
-                                                    <TableRow key={`${change.user_id}-${index}`} className="border-gray-100 hover:bg-gray-50">
-                                                        <TableCell className="font-medium text-sm">
-                                                            {change.user_id}
-                                                        </TableCell>
-                                                        <TableCell className="font-medium text-sm">
-                                                            {change.first_name}
-                                                        </TableCell>
-                                                        <TableCell className="font-medium text-sm">
-                                                            {change.last_name}
-                                                        </TableCell>
-                                                        <TableCell className="text-center text-sm text-gray-600">
-                                                            {/* {change.old_rating} */}
-                                                            {change.algo_version}
-                                                        </TableCell>
-                                                        <TableCell className="text-center text-sm font-medium">
-                                                            {/* {change.new_rating} */}
-                                                            {change.rate_order}
-                                                        </TableCell>
-                                                        <TableCell className="text-center">
-                                                            {change.rate_pl_points}
-                                                        </TableCell>
-                                                        <TableCell className="text-sm text-gray-600 max-w-[200px] truncate">
-                                                            {/* {change.tournament_name} */}
-                                                            {change.rate_weight}
-                                                        </TableCell>
-                                                        <TableCell className="text-sm text-gray-600">
-                                                            {/* {formatDateString(change.calculated_at)} */}
-                                                            {change.rate_points}
-                                                        </TableCell>
-                                                        <TableCell className="text-sm text-gray-600">
-                                                            {formatDateString(change.timestamp)}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )
-                                            })}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </ScrollArea>
+                                            <Column
+                                                label={t('admin.rating.first_name', 'Eesnimi')}
+                                                dataKey="first_name"
+                                                width={100}
+                                                flexGrow={1}
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center h-full px-2 font-medium text-sm">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
+
+                                            <Column
+                                                label={t('admin.rating.last_name', 'Perenimi')}
+                                                dataKey="last_name"
+                                                width={100}
+                                                flexGrow={1}
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center h-full px-2 font-medium text-sm">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
+
+                                            <Column
+                                                label={t('admin.rating.algorithm', 'Algo Version')}
+                                                dataKey="algo_version"
+                                                width={90}
+                                                flexGrow={0}
+                                                headerClassName="text-center"
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center justify-center h-full px-2 text-sm text-gray-600">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
+
+                                            <Column
+                                                label={t('admin.rating.new_rating', 'Rate Order')}
+                                                dataKey="rate_order"
+                                                width={90}
+                                                flexGrow={0}
+                                                headerClassName="text-center"
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center justify-center h-full px-2 text-sm font-medium">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
+
+                                            <Column
+                                                label="PP"
+                                                dataKey="rate_pl_points"
+                                                width={60}
+                                                flexGrow={0}
+                                                headerClassName="text-center"
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center justify-center h-full px-2 text-sm">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
+
+                                            <Column
+                                                label="KL"
+                                                dataKey="rate_weight"
+                                                width={80}
+                                                flexGrow={0}
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center h-full px-2 text-sm text-gray-600 max-w-[80px] truncate">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
+
+                                            <Column
+                                                label="RP"
+                                                dataKey="rate_points"
+                                                width={80}
+                                                flexGrow={0}
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center h-full px-2 text-sm text-gray-600">
+                                                        {cellData}
+                                                    </div>
+                                                )}
+                                            />
+
+                                            <Column
+                                                label={t('admin.rating.date', 'Date')}
+                                                dataKey="timestamp"
+                                                width={120}
+                                                flexGrow={0}
+                                                cellRenderer={({ cellData }) => (
+                                                    <div className="flex items-center h-full px-2 text-sm text-gray-600">
+                                                        {formatDateString(cellData)}
+                                                    </div>
+                                                )}
+                                            />
+                                        </VirtualizedTable>
+                                    )}
+                                </AutoSizer>
+                            </div>
                         ) : (
                             <div className="text-center py-8 text-gray-500">
                                 <Database className="h-12 w-12 mx-auto mb-2 text-gray-400" />

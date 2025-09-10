@@ -14,6 +14,7 @@ import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
 import { getRoundDisplayName } from "@/lib/match-utils"
 import { UseGetTournamentParticipantsQuery } from "@/queries/participants"
+import { useWS } from "@/providers/wsProvider"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
@@ -35,6 +36,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const { data } = UseGetTournamentParticipantsQuery(tournament_id)
     const { t } = useTranslation()
     const queryClient = useQueryClient()
+    const { connected } = useWS()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
     const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
@@ -213,15 +215,14 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 { withCredentials: true }
             )
 
-            queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
-            queryClient.refetchQueries({ queryKey: ['bracket', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
-            // queryClient.resetQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
-            queryClient.refetchQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
-            queryClient.invalidateQueries({ queryKey: ['venues_free', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['venues_all', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
-            queryClient.refetchQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
+            if (!connected) {
+                queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
+                queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
+                queryClient.invalidateQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
+                queryClient.invalidateQueries({ queryKey: ['venues_free', tournament_id] })
+                queryClient.invalidateQueries({ queryKey: ['venues_all', tournament_id] })
+                queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
+            }
 
             setPendingScores(prev => {
                 const newScores = { ...prev }

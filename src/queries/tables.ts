@@ -3,6 +3,7 @@ import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/r
 import { axiosInstance } from "./axiosconf";
 import TournamentTableForm from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
 import { TimeTableFormValues } from "@/routes/admin/tournaments/$tournamentid/ajakava/seaded/-components/timetable-configurations-form";
+import { useWS } from "@/providers/wsProvider";
 
 export interface TournamentTableResponse {
     data: TournamentTable | null
@@ -111,18 +112,19 @@ export const UsePatchTournamentTable = (tournament_id: number, tournament_table_
                 }
                 return oldData
             })
-            queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
+            // queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
             // ["tournament_tables_query", tournament_id]
             queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-            queryClient.resetQueries({ queryKey: ['participants', tournament_table_id] })
-            queryClient.resetQueries({ queryKey: ['bracket', tournament_table_id] })
-            queryClient.resetQueries({ queryKey: ['matches', tournament_table_id] })
+            queryClient.invalidateQueries({ queryKey: ['participants', tournament_table_id] })
+            queryClient.invalidateQueries({ queryKey: ['bracket', tournament_table_id] })
+            queryClient.invalidateQueries({ queryKey: ['matches', tournament_table_id] })
         }
     })
 }
 
 export const UsePostTournamentTable = (tournament_id: number) => {
     const queryClient = useQueryClient()
+    const { connected } = useWS()
     return useMutation({
         mutationFn: async (formData: TournamentTableForm) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables`, formData, {
@@ -132,9 +134,10 @@ export const UsePostTournamentTable = (tournament_id: number) => {
         },
 
         onSuccess: () => {
-            queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-            // queryClient.resetQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
+            if (!connected) {
+                queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
+                queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
+            }
         }
     })
 }
@@ -149,8 +152,7 @@ export const UseDeleteTournamentTable = (tournament_id: number, tournament_table
             return data;
         },
         onSuccess: () => {
-            queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-            queryClient.resetQueries({ queryKey: ['tournament_tables_query', tournament_id] })
+            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
         },
     })
 }

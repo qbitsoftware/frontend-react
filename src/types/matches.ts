@@ -99,6 +99,7 @@ export type Match = {
   next_loser_bracket?: string;
   topCoord: number; // for front end purposes
   table_type: string;
+  version: number;
   state: MatchState;
   finish_date: string;
   readable_id: number;

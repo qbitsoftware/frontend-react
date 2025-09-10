@@ -203,6 +203,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
         start_date: match.match.start_date,
         bracket: match.match.bracket,
         finish_date: match.match.finish_date,
+        version: match.match.version,
         forfeit: false,
         forfeit_type: "",
         state: match.match.state,
