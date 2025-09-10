@@ -401,7 +401,7 @@ export const EliminationBrackets = ({
                                 data={table}
                                 handleSelectMatch={handleSelectMatch}
                                 hoveredPlayerId={hoveredPlayerId}
-                                onPlayerHover={setHoveredPlayerId}
+                              onPlayerHover={setHoveredPlayerId}
                               />
                             </div>
                           )}

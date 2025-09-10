@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 import { AuthButton } from "./ui/auth-button"
-import { LanguageDropdown } from "./languageSelector"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, useSidebar } from "./ui/sidebar"
 import { useUser } from "@/providers/userProvider"
 import { ChevronDown, ChevronRight } from "lucide-react"
@@ -63,15 +62,14 @@ export function AppSidebar() {
 
     return (
         <Sidebar
-            className="bg-white border-r w-60 border-gray-200 flex flex-col lg:hidden"
+            className="bg-white border-r w-60 border-gray-200 flex flex-col lg:hidden z-[200]"
             side="right"
         >
             <SidebarHeader className="p-4 border-b border-gray-200">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-start items-center">
                     <Link href="/">
                         <img className="h-8 w-auto" src="/RLogo.png" alt="ELTL Logo" />
                     </Link>
-                    <LanguageDropdown />
                 </div>
             </SidebarHeader>
 
