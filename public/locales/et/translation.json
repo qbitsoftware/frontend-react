@@ -2176,7 +2176,7 @@
     "match": "Mäng",
     "set_scores": "Setide tulemused",
     "set": "Set",
-    "match_scored_by_sets_only": "Tulemuse sisestatud settides",
+    "match_scored_by_sets_only": "Tulemus sisestatud settides",
     "no_detailed_scores_available": "Tulemust pole veel sisestatud"
   }
 }
