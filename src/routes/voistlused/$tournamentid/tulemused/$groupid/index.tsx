@@ -198,8 +198,8 @@ function RouteComponent() {
         >
           <div className="flex flex-col items-start">
             {hasEliminations && (
-              <div className="sticky top-24 sm:top-16 pb-2 w-full max-w-full sm:max-w-md border-gray-200/50">
-                <div className="flex gap-2 items-center pt-2 px-2">
+              <div className="sticky top-24 sm:top-16 md:pb-2 w-full max-w-full sm:max-w-md border-gray-200/50">
+                <div className="flex gap-2 items-center">
                   <div className="flex-1 relative">
                     <input
                       type="text"
