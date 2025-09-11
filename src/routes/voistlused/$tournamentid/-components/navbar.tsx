@@ -19,11 +19,11 @@ const Navbar = ({ tournament_tables }: Props) => {
 
   const NavLinks = [
     { name: t("competitions.navbar.info"), href: "/" },
-    { name: t("competitions.navbar.matches"), href: "/mangud" },
     { name: t("competitions.navbar.results"), href: resultsHref },
+    { name: t("competitions.navbar.matches"), href: "/mangud" },
     { name: t("competitions.navbar.standings"), href: "/kohad" },
-    { name: t("competitions.navbar.participants"), href: "/mangijad" },
     { name: t("competitions.navbar.tables"), href: "/lauad" },
+    { name: t("competitions.navbar.participants"), href: "/mangijad" },
     { name: t("competitions.navbar.gallery"), href: "/galerii" },
     { name: t("competitions.timetable.timetable"), href: "/ajakava" },
     { name: t("competitions.navbar.guide"), href: "/juhend" },
@@ -80,7 +80,7 @@ const Navbar = ({ tournament_tables }: Props) => {
                     }
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-blue-200">
+                <div className="hidden md:flex items-center gap-1 text-blue-200">
                   <MapPin className="h-3 w-3 flex-shrink-0" />
                   <span className="truncate">{tournament.location}</span>
                 </div>

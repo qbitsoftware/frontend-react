@@ -1404,7 +1404,7 @@
           "pages_count": "{{count}} lehte prinditakse"
         },
         "img_modal": {
-          "title": "Muuda pilti",
+          "title": "Pilt",
           "description": "Vali või muuda pilti. Vajuta salvesta, et salvestada muudatused.",
           "choose_img": "Vali pilt",
           "file_types": "Sobivad formaadid: JPG, JPEG, PNG, WebP, GIF (max 10MB)",
