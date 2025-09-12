@@ -15,6 +15,7 @@ import { FilterOptions } from '../-components/matches'
 import { useTranslation } from 'react-i18next'
 import LoadingScreen from '@/routes/-components/loading-screen'
 import { useNavigationHelper } from '@/providers/navigationProvider'
+import PlacementCompletionModal from '../-components/placement-completion-modal'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/mangud/',
@@ -381,7 +382,11 @@ function RouteComponent() {
             )
           )}
         </CardContent>
-
+        <PlacementCompletionModal
+          matches={filteredData}
+          isOpen={true}
+          onClose={() => { }}
+        />
       </Card>
     </div>
   )
