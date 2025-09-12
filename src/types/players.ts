@@ -34,6 +34,7 @@ export type Player = {
   nationality: string;
   birthdate: string;
   extra_data: PlayerExtraData;
+  registration_id?: number;
   created_at: string;
   deleted_at: string | null;
   updated_at: string;

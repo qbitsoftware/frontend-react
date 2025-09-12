@@ -30,7 +30,7 @@ let activeRequests = 0;
 axiosInstance.interceptors.request.use(
     (config) => {
         activeRequests++;
-        // console.log("Active requests:", activeRequests);
+        console.log("Active requests:", activeRequests);
         return config;
     },
     (error) => {
@@ -41,12 +41,12 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => {
         activeRequests--;
-        // console.log("Active requests:", activeRequests);
+        console.log("Active requests:", activeRequests);
         return response;
     },
     (error) => {
         activeRequests--;
-        // console.log("Active requests:", activeRequests);
+        console.log("Active requests:", activeRequests);
         return Promise.reject(error);
     }
 );

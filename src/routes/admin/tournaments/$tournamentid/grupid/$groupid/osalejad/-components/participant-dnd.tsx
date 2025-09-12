@@ -13,11 +13,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import EditImgModal from "../../../../-components/edit-img-modal"
 import { DialogType, TournamentTable } from "@/types/groups"
 import { selectedTeams } from "./new-double"
 import { GroupType } from "@/types/matches"
 import { getFirstAndLastName } from "./participant-utils"
+import RegisterButton from "./register-button"
 
 interface Props {
     participant: Participant
@@ -392,7 +392,8 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                 <Input className="w-[50px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Riik" onChange={(e) => updateField("players.0.nationality", e.target.value)} value={participantState.players[0]?.nationality || ""} />
             </TableCell>
             <TableCell className="text-center py-0.5 px-2">
-                <EditImgModal id={participantState.players[0]?.id} playerName={`${participantState.players[0]?.first_name} ${participantState.players[0]?.last_name}`} img={participantState.players[0]?.extra_data.image_url} type="player" />
+                {/* <EditImgModal id={participantState.players[0]?.id} playerName={`${participantState.players[0]?.first_name} ${participantState.players[0]?.last_name}`} img={participantState.players[0]?.extra_data.image_url} type="player" /> */}
+                <RegisterButton participant_id={participantState.id} player_id={participantState.players[0]?.id} register_id={participantState.players[0]?.registration_id} />
             </TableCell>
 
         </TableRow>

@@ -300,3 +300,25 @@ export function UsePostParticipantMove(tournament_id: number, table_id: number) 
         },
     })
 }
+
+export function UsePostParticipantRegister(tournament_id: number, table_id: number, participant_id: string, player_id: string) {
+    return useMutation({
+        mutationFn: async () => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/${participant_id}/player/${player_id}/register`, {}, {
+                withCredentials: true,
+            })
+            return data;
+        },
+    })
+}
+
+export function UsePostParticipantUnregister(tournament_id: number, table_id: number, participant_id: string, player_id: string) {
+    return useMutation({
+        mutationFn: async (registration_id: number) => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/${participant_id}/player/${player_id}/unregister/${registration_id}`, {}, {
+                withCredentials: true,
+            })
+            return data;
+        },
+    })
+}
