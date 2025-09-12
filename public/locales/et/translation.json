@@ -553,6 +553,7 @@
       "team_players": "Tiimi mängijad",
       "table": {
         "image": "Pilt",
+        "reg_status": "Kohalolek",
         "name": "Nimi",
         "team": "Meeskond",
         "player_count": "Mängijate arv",
@@ -1534,6 +1535,7 @@
             "actions": "Tegevused",
             "nationality": "Riik",
             "image": "Pilt",
+            "reg_status": "Kohalolek",
             "foreign_player": "Välismängija"
           },
           "doubles": {

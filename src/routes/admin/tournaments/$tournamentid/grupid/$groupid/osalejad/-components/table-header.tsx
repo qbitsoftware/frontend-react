@@ -64,7 +64,7 @@ export default function ParticipantHeader({ team }: Props) {
                 </TableHead>
                 <TableHead className="">
                     {t(
-                        "admin.tournaments.groups.participants.table.image"
+                        "admin.tournaments.groups.participants.table.reg_status"
                     )}
                 </TableHead>
             </TableRow>

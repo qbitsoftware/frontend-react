@@ -216,7 +216,7 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
     }
 
     return (
-        <TableRow ref={setNodeRef} style={style} onClick={handleRowClick} className={cn("h-7 bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40 hover:border", tournament_table.dialog_type == DialogType.DT_DOUBLES || tournament_table.dialog_type == DialogType.DT_FIXED_DOUBLES || (tournament_table.type === GroupType.DYNAMIC && !renderRR) ? "hover:border-blue-500 cursor-pointer" : "", selectedTeams && (selectedTeams.p1_id == participantState.id || selectedTeams.p2_id == participantState.id) ? "bg-blue-100 hover:bg-blue-100" : "")}>
+        <TableRow ref={setNodeRef} style={style} onClick={handleRowClick} className={cn("h-7 bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40 hover:border", tournament_table.dialog_type == DialogType.DT_DOUBLES || tournament_table.dialog_type == DialogType.DT_FIXED_DOUBLES || (tournament_table.type === GroupType.DYNAMIC && !renderRR) ? "hover:border-blue-500 cursor-pointer" : "", selectedTeams && (selectedTeams.p1_id == participantState.id || selectedTeams.p2_id == participantState.id) ? "bg-blue-100 hover:bg-blue-100" : "", participantState.players[0]?.registration_id ? "bg-green-50 hover:bg-green-100" : "")}>
             <TableCell className='text-center py-0.5 px-2'>
                 { }
                 {disableOrdering || forceDisableOrdering ? <div className="flex items-center justify-center hover:bg-indigo-50 gap-1 p-1 rounded-sm">

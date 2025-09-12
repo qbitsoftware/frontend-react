@@ -51,7 +51,7 @@ export default function RegisterButton({ participant_id, player_id, register_id 
                     size="sm"
                     onClick={handleUnregister}
                     disabled={isLoading}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300"
+                    className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300"
                 >
                     Tühista 
                 </Button>
@@ -61,9 +61,9 @@ export default function RegisterButton({ participant_id, player_id, register_id 
                     size="sm"
                     onClick={handleRegister}
                     disabled={isLoading}
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    className="text-xs text-blue-300 hover:text-blue-700 hover:bg-blue-50"
                 >
-                    Registreeri
+                Kinnita kohalolu
                 </Button>
             )}
         </div>
