@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import { useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { axiosInstance } from "@/queries/axiosconf"
@@ -44,12 +44,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const tableRef = useRef<Table>(null)
     const [scrollTop, setScrollTop] = useState(0)
 
-    // Create a stable key that only changes when matches structure changes significantly
+    const matchIds = useMemo(() => matches.map(m => m.match.id), [matches])
     const stableKey = useMemo(() => {
-        return `${matches.length}-${matches.map(m => m.match.id).join('-')}`
-    }, [matches.length, matches.map(m => m.match.id).join('-')])
+        return `${matches.length}-${matchIds.join('-')}`
+    }, [matches.length, matchIds])
 
-    // Force table to recompute rows when data changes but preserve scroll
     useEffect(() => {
         if (tableRef.current) {
             tableRef.current.forceUpdateGrid()
@@ -59,8 +58,6 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const handleScroll = ({ scrollTop: newScrollTop }: { scrollTop: number }) => {
         setScrollTop(newScrollTop)
     }
-
-
 
     const formatWaitingTime = (finishDate: string) => {
         const finished = new Date(finishDate)
@@ -76,7 +73,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         }
     }
 
-    const getScore = (match: MatchWrapper, player: ParticipantType) => {
+    const getScore = useCallback((match: MatchWrapper, player: ParticipantType) => {
         if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES) {
             return player === ParticipantType.P1 ? match.match.extra_data.team_1_total || 0 : match.match.extra_data.team_2_total || 0
         }
@@ -89,22 +86,22 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             const opponentScore = player === 'p1' ? s.p2_score : s.p1_score
             return playerScore >= 11 && playerScore - opponentScore >= 2
         }).length
-    }
+    }, [tableMap])
 
-    const getRowClassName = (match: MatchWrapper) => {
+    const getRowClassName = useCallback((match: MatchWrapper) => {
         const state = match.match.state
         if (state === 'finished') return 'opacity-60 bg-gray-50'
         if (state === 'ongoing') {
             return 'bg-green-50 border-green-200'
         }
         return ''
-    }
+    }, [])
 
-    const isParticipantTaken = (participantId: string, currentMatchState: MatchState) => {
+    const isParticipantTaken = useCallback((participantId: string, currentMatchState: MatchState) => {
         return active_participant.includes(participantId) && currentMatchState !== MatchState.ONGOING && currentMatchState != MatchState.FINISHED
-    }
+    }, [active_participant])
 
-    const renderPlayer = (match: MatchWrapper, player: ParticipantType) => {
+    const renderPlayer = useCallback((match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
         // const playerGroupName = player === ParticipantType.P1 ? match.p1.group_id: match.p2.group_id
@@ -155,15 +152,15 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 </div>
             </div>
         )
-    }
+    }, [matches, active_participant, data, t])
 
-    const getPendingScore = (matchId: string, player: ParticipantType) => {
+    const getPendingScore = useCallback((matchId: string, player: ParticipantType) => {
         const pending = pendingScores[matchId]
         if (!pending) return null
         return player === ParticipantType.P1 ? pending.p1 : pending.p2
-    }
+    }, [pendingScores])
 
-    const updatePendingScore = (matchId: string, player: ParticipantType, score: number) => {
+    const updatePendingScore = useCallback((matchId: string, player: ParticipantType, score: number) => {
         setPendingScores(prev => ({
             ...prev,
             [matchId]: {
@@ -171,15 +168,15 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 p2: player === ParticipantType.P2 ? score : (prev[matchId]?.p2 ?? null)
             }
         }))
-    }
+    }, [])
 
-    const clearPendingScore = (matchId: string) => {
+    const clearPendingScore = useCallback((matchId: string) => {
         setPendingScores(prev => {
             const newScores = { ...prev }
             delete newScores[matchId]
             return newScores
         })
-    }
+    }, [])
 
 
     const submitScore = async (match: MatchWrapper) => {
@@ -325,7 +322,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }
 
     // Cell renderers for each column
-    const actionsCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+    const actionsCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full justify-center">
             <Button
                 disabled={rowData.p1.id === "" || rowData.p2.id === ""}
@@ -336,46 +333,80 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 <Edit className="h-2 w-2" />
             </Button>
         </div>
-    )
+    ), [handleRowClick])
 
-    const groupCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+    const groupCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-[10px]">
             {tableMap.get(rowData.match.tournament_table_id)?.class || "N/A"}
         </div>
-    )
+    ), [tableMap])
 
-    const tableCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+    // Memoize TableNumberForm to prevent re-renders
+    const MemoizedTableNumberForm = React.memo(TableNumberForm)
+
+    const tableCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2">
-            <TableNumberForm
+            <MemoizedTableNumberForm
                 brackets={false}
                 match={rowData.match}
                 initialTableNumber={rowData.match.extra_data ? rowData.match.extra_data.table : "0"}
             />
         </div>
-    )
+    ), [])
 
-    const participant1CellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+    const participant1CellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-sm">
             {renderPlayer(rowData, ParticipantType.P1)}
         </div>
-    )
+    ), [renderPlayer])
 
-    const participant1ScoreCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
-        <div className="flex items-center h-full px-2">
-            {rowData.match.table_type === "champions_league" || tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
-                getScore(rowData, ParticipantType.P1)
-            ) : (
-                <ScoreSelector
-                    match={rowData}
-                    player={ParticipantType.P1}
-                    currentScore={getScore(rowData, ParticipantType.P1)}
-                    isDisabled={rowData.p1.id === "" || rowData.p2.id === "" || rowData.match.state === MatchState.FINISHED}
-                />
-            )}
-        </div>
-    )
+    const MemoizedScoreSelector = React.memo(ScoreSelector)
 
-    const actionsCenterCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => {
+    // Replace the existing cell renderers with these memoized versions:
+    const participant1ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
+        const isChampionsLeague = rowData.match.table_type === "champions_league" ||
+            tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES
+
+        return (
+            <div className="flex items-center h-full px-2">
+                {isChampionsLeague ? (
+                    getScore(rowData, ParticipantType.P1)
+                ) : (
+                    <MemoizedScoreSelector
+                        key={`${rowData.match.id}-p1-${pendingScores[rowData.match.id]?.p1 || 'none'}`}
+                        match={rowData}
+                        player={ParticipantType.P1}
+                        currentScore={getScore(rowData, ParticipantType.P1)}
+                        isDisabled={rowData.p1.id === "" || rowData.p2.id === "" || rowData.match.state === MatchState.FINISHED}
+                    />
+                )}
+            </div>
+        )
+    }, [getScore, tableMap, pendingScores])
+
+    const participant2ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
+        const isChampionsLeague = rowData.match.table_type === "champions_league" ||
+            tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES
+
+        return (
+            <div className="flex items-center h-full px-2">
+                {isChampionsLeague ? (
+                    getScore(rowData, ParticipantType.P2)
+                ) : (
+                    <MemoizedScoreSelector
+                        key={`${rowData.match.id}-p2-${pendingScores[rowData.match.id]?.p2 || 'none'}`}
+                        match={rowData}
+                        player={ParticipantType.P2}
+                        currentScore={getScore(rowData, ParticipantType.P2)}
+                        isDisabled={rowData.p1.id === "" || rowData.p2.id === "" || rowData.match.state === MatchState.FINISHED}
+                    />
+                )}
+            </div>
+        )
+    }, [getScore, tableMap, pendingScores])
+
+
+    const actionsCenterCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
         const hasPendingScores = pendingScores[rowData.match.id] &&
             (pendingScores[rowData.match.id].p1 !== null || pendingScores[rowData.match.id].p2 !== null)
         const isLoading = loadingUpdates.has(rowData.match.id)
@@ -405,30 +436,15 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 )}
             </div>
         )
-    }
+    }, [pendingScores, loadingUpdates, submitScore, clearPendingScore])
 
-    const participant2ScoreCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
-        <div className="flex items-center h-full px-2">
-            {rowData.match.table_type === "champions_league" || tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
-                getScore(rowData, ParticipantType.P2)
-            ) : (
-                <ScoreSelector
-                    match={rowData}
-                    player={ParticipantType.P2}
-                    currentScore={getScore(rowData, ParticipantType.P2)}
-                    isDisabled={rowData.p1.id === "" || rowData.p2.id === "" || rowData.match.state === MatchState.FINISHED}
-                />
-            )}
-        </div>
-    )
-
-    const participant2CellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+    const participant2CellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-sm">
             {renderPlayer(rowData, ParticipantType.P2)}
         </div>
-    )
+    ), [renderPlayer])
 
-    const bracketCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => (
+    const bracketCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-[10px]">
             {rowData.match.type === "winner"
                 ? t("admin.tournaments.matches.table.winner_bracket")
@@ -438,9 +454,9 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         ? t("admin.tournaments.matches.table.bracket_bracket")
                         : "-"}
         </div>
-    )
+    ), [t])
 
-    const roundCellRenderer = ({ rowData }: { rowData: MatchWrapper }) => {
+    const roundCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
         const table = tableMap.get(rowData.match.tournament_table_id)
         const roundDisplayName = getRoundDisplayName(
             rowData.match.type,
@@ -456,7 +472,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 {roundDisplayName}
             </div>
         )
-    }
+    }, [tableMap, t])
 
     if (matches.length === 0) {
         return (
@@ -469,7 +485,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         )
     }
 
-    const tableHeight = all ? "h-[90vh]" : "h-[90vh]";
+    const tableHeight = all ? "h-[65vh]" : "h-[65vh]";
 
     return (
         <div className={`rounded-md border my-2 overflow-x-auto ${tableHeight}`} >
