@@ -204,10 +204,12 @@ const SeedingHeader = ({
 
   const handleParticipantMoving = async () => {
     try {
+      setDisabled(true)
       await moveParticipant.mutateAsync()
       toast.message(t('toasts.participants.advance_success'))
       // Trigger glow effect on bracket tabs after successful advancement
       onGlowBracketTabs?.()
+      setDisabled(false)
     } catch (error) {
       void error
       toast.error(t('toasts.participants.advance_error'))
