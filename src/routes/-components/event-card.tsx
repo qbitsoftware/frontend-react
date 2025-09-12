@@ -11,7 +11,7 @@ interface Props {
 export default function EventCard({ event, isUpcoming }: Props) {
     const { t } = useTranslation()
     return (
-        <Link to={`/voistlused/${event.tournament.id}`} key={event.tournament.id}>
+        <Link to={`/voistlused/$tournamentid`} params={{ tournamentid: String(event.tournament.id) }} key={event.tournament.id}>
             <div className="group mb-2 sm:mb-3 relative">
                 <div className={`
             flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border transition-all duration-300
@@ -34,9 +34,9 @@ export default function EventCard({ event, isUpcoming }: Props) {
                                     {getAbbreviatedMonth(event.gameday_date)}
                                 </div>
                                 <div className="text-sm sm:text-base md:text-sm lg:text-lg font-bold leading-none">
-                                    {new Intl.DateTimeFormat('et-EE', { 
-                                        day: 'numeric', 
-                                        timeZone: 'Europe/Tallinn' 
+                                    {new Intl.DateTimeFormat('et-EE', {
+                                        day: 'numeric',
+                                        timeZone: 'Europe/Tallinn'
                                     }).format(new Date(event.gameday_date))}
                                 </div>
                             </div>
@@ -69,16 +69,16 @@ export default function EventCard({ event, isUpcoming }: Props) {
                       `}>
                                             <div className="text-xs font-medium opacity-90">
                                                 {(() => {
-                                                    const startMonth = new Intl.DateTimeFormat('et-EE', { 
-                                                        month: 'numeric', 
-                                                        timeZone: 'Europe/Tallinn' 
+                                                    const startMonth = new Intl.DateTimeFormat('et-EE', {
+                                                        month: 'numeric',
+                                                        timeZone: 'Europe/Tallinn'
                                                     }).format(new Date(event.tournament.start_date));
-                                                    
-                                                    const endMonth = new Intl.DateTimeFormat('et-EE', { 
-                                                        month: 'numeric', 
-                                                        timeZone: 'Europe/Tallinn' 
+
+                                                    const endMonth = new Intl.DateTimeFormat('et-EE', {
+                                                        month: 'numeric',
+                                                        timeZone: 'Europe/Tallinn'
                                                     }).format(new Date(event.tournament.end_date));
-                                                    
+
                                                     return startMonth !== endMonth
                                                         ? getAbbreviatedMonth(event.tournament.end_date)
                                                         : getAbbreviatedMonth(event.tournament.start_date);

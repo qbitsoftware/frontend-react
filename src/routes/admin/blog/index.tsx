@@ -128,7 +128,7 @@ function RouteComponent() {
         <p className="text-gray-500 text-center max-w-md">
           {t("admin.blogs.not_found_subtitle")}
         </p>
-        <Link href="/admin/blog/new">
+        <Link to="/admin/blog/new">
           <Button className="mt-2 px-6">{t("admin.blogs.add_new")}</Button>
         </Link>
       </div>
@@ -226,7 +226,7 @@ function RouteComponent() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem asChild>
-                                  <Link to={`/admin/blog/${blog.id}`} className="flex items-center">
+                                  <Link to={`/admin/blog/$blogid`} params={{ blogid: String(blog.id) }} className="flex items-center">
                                     <Edit className="h-4 w-4 mr-2" />
                                     {t("admin.blogs.edit")}
                                   </Link>

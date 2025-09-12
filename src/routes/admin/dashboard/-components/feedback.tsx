@@ -18,7 +18,7 @@ export default function AdminDashBoardFeedback() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Link href="/admin/feedback">
+                <Link to="/admin/feedback">
                     <Button className="w-full bg-[#4C97F1] hover:bg-blue-500">
                         <MessageSquare className="w-4 h-4 mr-2" />
                         {t("admin.dashboard.view_feedback")}

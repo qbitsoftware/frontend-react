@@ -264,7 +264,8 @@ export default function Calendar3MonthView({ selectedYear, isLoading, error, tou
                             return (
                                 <div
                                     key={index}
-                                    ref={el => monthRefs.current[index] = el}
+                                    // ref={el => monthRefs.current[index] = el}
+                                    ref={el => { monthRefs.current[index] = el; }}
                                     className={`${index === currentMonth && selectedYear === currentYear ? "scroll-mt-4" : ""}`}
                                 >
                                     <div className="flex items-center gap-3 mb-4">

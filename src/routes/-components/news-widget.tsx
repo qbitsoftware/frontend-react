@@ -85,7 +85,8 @@ const NewsWidget = () => {
       {blogs.slice(0, 3).map((post) => (
         <Link
           key={post.id}
-          href={`/uudised/${post.id}`}
+          to={`/uudised/$blogid`}
+          params={{ blogid: String(post.id) }}
           className="group block"
         >
           <article className="bg-white border border-gray-200 rounded-lg sm:rounded-xl p-2 sm:p-2.5 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">

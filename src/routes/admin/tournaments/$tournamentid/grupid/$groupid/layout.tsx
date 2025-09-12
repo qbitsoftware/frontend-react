@@ -24,7 +24,7 @@ export const Route = createFileRoute(
         ),
       )
     } catch (error) {
-      throw redirect({ to: `/admin/tournaments/${params.tournamentid}/grupid` })
+      throw redirect({ to: `/admin/tournaments/$tournamentid/grupid`, params: { tournamentid: params.tournamentid } })
     }
     return { table_data }
   },

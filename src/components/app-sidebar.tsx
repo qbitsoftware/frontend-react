@@ -67,7 +67,7 @@ export function AppSidebar() {
         >
             <SidebarHeader className="p-4 border-b border-gray-200">
                 <div className="flex justify-start items-center">
-                    <Link href="/">
+                    <Link to="/">
                         <img className="h-8 w-auto" src="/RLogo.png" alt="ELTL Logo" />
                     </Link>
                 </div>
@@ -94,7 +94,7 @@ export function AppSidebar() {
                                 </button>
                             ) : (
                                 <Link
-                                    href={item.href}
+                                    to={item.href}
                                     onClick={() => handleNavigation(item.name)}
                                     className={cn(
                                         "block px-4 py-2 hover:bg-gray-50 transition-colors",
@@ -109,7 +109,7 @@ export function AppSidebar() {
                                     {item.dropdownItems.map((subItem) => (
                                         <li key={subItem.name}>
                                             <Link
-                                                href={subItem.href}
+                                                to={subItem.href}
                                                 onClick={() => {
                                                     setActiveItem(subItem.name)
                                                     setOpenDropdown(null)
@@ -134,7 +134,7 @@ export function AppSidebar() {
                     {user?.role.includes("admin") && (
                         <li className="border-b">
                             <Link
-                                href={"/admin/dashboard"}
+                                to={"/admin/dashboard"}
                                 onClick={() => {
                                     setActiveItem("Admin")
                                     setOpenDropdown(null)

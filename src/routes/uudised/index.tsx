@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { UseGetBlogsOption } from '@/queries/blogs'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
@@ -300,7 +300,8 @@ function BlogPage(): JSX.Element {
               {blogs.map((post, index) => (
                 <Link
                   key={post.id}
-                  to={`/uudised/${post.id}`}
+                  to={`/uudised/$blogid`}
+                  params={{ blogid: String(post.id) }}
                   className="group block"
                 >
                   <article className="bg-white border border-gray-200 rounded-xl p-3 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300">
@@ -359,7 +360,8 @@ function BlogPage(): JSX.Element {
               {blogs.map((post, index) => (
                 <Link
                   key={post.id}
-                  to={`/uudised/${post.id}`}
+                  to={`/uudised/$blogid`}
+                  params={{ blogid: String(post.id) }}
                   className="group focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-2xl"
                 >
                   <Card className="h-full flex flex-col bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02] rounded-2xl overflow-hidden">

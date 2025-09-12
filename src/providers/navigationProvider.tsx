@@ -23,7 +23,7 @@ interface ProviderProps {
 }
 
 export const NavigationProvider: React.FC<ProviderProps> = ({ groupId: initialGroupId = null, children }) => {
-    const params = useParams({ from: "/admin" }) as { groupid?: string }
+    const params = useParams({ strict: false }) as { groupid?: string }
     const [groupId, setGroupId] = useState<number | null>(initialGroupId)
     useEffect(() => {
         if (params.groupid) {

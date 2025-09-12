@@ -31,7 +31,7 @@ export function UpcomingTournaments() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tournament.date}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tournament.location}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <Link href={`/voistlused/${tournament.id}`} className="text-blue-600 hover:text-blue-900">{t('homepage.details')}</Link>
+                                    <Link to={`/voistlused/$tournamentid`} params={{ tournamentid: String(tournament.id) }} className="text-blue-600 hover:text-blue-900">{t('homepage.details')}</Link>
                                 </td>
                             </tr>
                         ))}

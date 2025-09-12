@@ -26,7 +26,7 @@ export default function AdminHeader({ title, description, href, add_new, input_p
                     <p className="text-gray-600 mt-1">{description}</p>
                 </div>
                 {!feedback && typeof href === "string" ? (
-                    <Link href={href}>
+                    <Link to={href}>
                         <Button className="flex items-center text-white w-full sm:w-auto bg-[#4C97F1]">
                             <PlusCircle className="w-4 h-4 mr-1" />
                             {add_new}

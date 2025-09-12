@@ -22,7 +22,7 @@ export default function AdminDashBoardBlogs() {
                             {t("admin.dashboard.latest_blogs_description")}
                         </CardDescription>
                     </div>
-                    <Link href="/admin/blog">
+                    <Link to="/admin/blog">
                         <Button variant="outline" size="sm" className="text-xs sm:text-sm">
                             {t("admin.dashboard.view_all")}
                             <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
@@ -70,7 +70,7 @@ export default function AdminDashBoardBlogs() {
                 {!isLoading && !error && blogData?.data && blogData.data.blogs && blogData.data.blogs.length > 0 && (
                     <div className="flex flex-col gap-4">
                         {blogData.data.blogs.slice(0, 3).map((blog) => (
-                            <Link key={blog.id} href={`/admin/blog/${blog.id}`}>
+                            <Link key={blog.id} to={`/admin/blog/$blogid`} params={{ blogid: String(blog.id) }}>
                                 <div className="p-2 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer flex justify-between items-center overflow-hidden">
                                     <div className="">
                                         <h4 className="font-medium text-sm sm:text-base truncate">

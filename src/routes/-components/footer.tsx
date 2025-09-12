@@ -56,7 +56,7 @@ export default function Footer() {
               <ul className="space-y-3">
                 <li>
                   <Link
-                    href="/uudised"
+                    to="/uudised"
                     className="text-sm text-muted-foreground hover:text-[#4C97F1] transition-colors duration-300 group flex items-center justify-center md:justify-start font-['Inter']"
                   >
                     <div className="w-1 h-1 bg-[#4C97F1] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -65,7 +65,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/voistlused"
+                    to="/voistlused"
                     className="text-sm text-muted-foreground hover:text-[#4C97F1] transition-colors duration-300 group flex items-center justify-center md:justify-start font-['Inter']"
                   >
                     <div className="w-1 h-1 bg-[#4C97F1] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -74,7 +74,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/klubid"
+                    to="/klubid"
                     className="text-sm text-muted-foreground hover:text-[#4C97F1] transition-colors duration-300 group flex items-center justify-center md:justify-start font-['Inter']"
                   >
                     <div className="w-1 h-1 bg-[#4C97F1] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -83,7 +83,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/kontakt"
+                    to="/kontakt"
                     className="text-sm text-muted-foreground hover:text-[#4C97F1] transition-colors duration-300 group flex items-center justify-center md:justify-start font-['Inter']"
                   >
                     <div className="w-1 h-1 bg-[#4C97F1] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

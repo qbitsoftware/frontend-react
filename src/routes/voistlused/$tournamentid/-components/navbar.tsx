@@ -85,7 +85,7 @@ const Navbar = ({ tournament_tables }: Props) => {
                   <span className="truncate">{tournament.location}</span>
                 </div>
               </div>
-              
+
               {/* Desktop: Stacked layout */}
               <div className="hidden md:block space-y-1 sm:space-y-2">
                 <div className="flex items-center justify-start gap-2 text-sm md:text-base lg:text-lg text-blue-100 font-medium">
@@ -116,7 +116,8 @@ const Navbar = ({ tournament_tables }: Props) => {
                 {filteredNavLinks.map((link) => (
                   <Link
                     className="flex-shrink-0"
-                    to={`/voistlused/${params.tournamentid}${link.href}`}
+                    to={`/voistlused/$tournamentid` + link.href}
+                    params={{ tournamentid: `${params.tournamentid}` }}
                     key={link.name}
                   >
                     <TabsTrigger

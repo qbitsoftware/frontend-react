@@ -31,7 +31,7 @@ export default function AdminDashBoardQuickActions({ quickActions }: Props) {
             <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
                     {quickActions.map((action, index) => (
-                        <Link key={index} href={action.href}>
+                        <Link key={index} to={action.href}>
                             <Card className={`cursor-pointer transition-all duration-200 ${action.color} h-full`}>
                                 <CardContent className="p-2 sm:p-4">
                                     <div className="flex items-start gap-3">

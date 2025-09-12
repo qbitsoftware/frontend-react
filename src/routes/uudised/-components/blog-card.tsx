@@ -27,14 +27,14 @@ export const BlogCard = ({ blog, className = "" }: { blog: Blog, className?: str
                 <div className="text-sm font-medium text-blue-600 mb-2">{categories.map((category, idx) => {
                     if (idx === categories.length - 1) {
                         return (
-                            <Link key={idx} href={`/uudised?category=${replaceSpecialCharacters(category)}`}>
+                                <Link key={idx} to={`/uudised`} search={{ category: replaceSpecialCharacters(category) }}>
                                 <span key={idx}>{category}</span>
                             </Link>
                         )
                     } else {
                         return (
                             <div key={idx}>
-                                <Link key={idx} href={`/uudised?category=${replaceSpecialCharacters(category)}`}>
+                                <Link key={idx} to={`/uudised`} search={{ category: replaceSpecialCharacters(category) }}>
                                     <span key={category} className="mr-2">{category}</span>
                                 </Link>
                                 <span className='mr-2'>/</span>
@@ -45,7 +45,7 @@ export const BlogCard = ({ blog, className = "" }: { blog: Blog, className?: str
                 <CardTitle className="mt-2 line-clamp-2">{blog.title}</CardTitle>
             </CardHeader>
             <CardFooter>
-                <Link to={`/uudised/${blog.id}`}>
+                <Link to={`/uudised/$blogid`} params={{ blogid: String(blog.id) }}>
                     <Button variant="outline" className="border-blue-500 hover:bg-blue-100">Read More</Button>
                 </Link>
             </CardFooter>

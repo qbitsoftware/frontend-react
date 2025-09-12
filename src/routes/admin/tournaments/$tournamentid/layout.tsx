@@ -132,7 +132,7 @@ function RouteComponent() {
                       className={`w-full ${showGroupsDropdown ? "overflow-visible" : "overflow-x-auto overflow-y-visible"}`}
                     >
                       <TabsList className="p-1 md:p-0 flex flex-row justify-start items-center gap-1 px-1 min-w-max">
-                        <Link to={`/admin/tournaments/${tournamentid}`}>
+                        <Link to={`/admin/tournaments/$tournamentid`} params={{ tournamentid: String(tournamentid) }}>
                           <TabsTrigger
                             value="info"
                             className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
@@ -146,7 +146,7 @@ function RouteComponent() {
                           onMouseEnter={handleGroupsMouseEnter}
                           onMouseLeave={handleGroupsMouseLeave}
                         >
-                          <Link to={`/admin/tournaments/${tournamentid}/grupid`}>
+                          <Link to={`/admin/tournaments/$tournamentid/grupid`} params={{ tournamentid: String(tournamentid) }}>
                             <TabsTrigger
                               value="groups"
                               className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
@@ -158,11 +158,8 @@ function RouteComponent() {
                         <Tooltip open={!first_tournament_table ? undefined : false}>
                           <TooltipTrigger asChild>
                             <Link
-                              to={
-                                groupId
-                                  ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/osalejad`
-                                  : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/osalejad`
-                              }
+                              to={`/admin/tournaments/$tournamentid/grupid/$groupid/osalejad`}
+                              params={{ tournamentid: String(tournamentid), groupid: String(groupId ? groupId : first_tournament_table) }}
                               onClick={(e) => {
                                 if (!first_tournament_table) {
                                   e.preventDefault();
@@ -200,9 +197,11 @@ function RouteComponent() {
                             <Link
                               to={
                                 groupId
-                                  ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/mangud`
-                                  : `/admin/tournaments/${tournamentid}/mangud`
+                                  ? `/admin/tournaments/$tournamentid/grupid/$groupid/mangud`
+                                  : `/admin/tournaments/$tournamentid/mangud`
                               }
+                              search={{ filter: "all", openMatch: undefined }}
+                              params={{ tournamentid: String(tournamentid), groupid: String(groupId || "") }}
                               onClick={(e) => {
                                 if (!first_tournament_table) {
                                   e.preventDefault();
@@ -238,11 +237,8 @@ function RouteComponent() {
                         <Tooltip open={!first_tournament_table ? undefined : false}>
                           <TooltipTrigger asChild>
                             <Link
-                              to={
-                                groupId
-                                  ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/tabelid`
-                                  : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/tabelid`
-                              }
+                              to={`/admin/tournaments/$tournamentid/grupid/$groupid/tabelid`}
+                              params={{ tournamentid: String(tournamentid), groupid: String(groupId ? groupId : first_tournament_table) }}
                               onClick={(e) => {
                                 if (!first_tournament_table) {
                                   e.preventDefault();
@@ -279,9 +275,10 @@ function RouteComponent() {
                             <Link
                               to={
                                 groupId
-                                  ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/kohad`
-                                  : `/admin/tournaments/${tournamentid}/kohad`
+                                  ? `/admin/tournaments/$tournamentid/grupid/$groupid/kohad`
+                                  : `/admin/tournaments/$tournamentid/kohad`
                               }
+                              params={{ tournamentid: String(tournamentid), groupid: String(groupId || "") }}
                               onClick={(e) => {
                                 if (!first_tournament_table) {
                                   e.preventDefault();
@@ -311,7 +308,7 @@ function RouteComponent() {
                           )}
                         </Tooltip>
 
-                        <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
+                        <Link to={`/admin/tournaments/$tournamentid/ajakava`} params={{ tournamentid: String(tournamentid) }}>
                           <TabsTrigger
                             value="schedule"
                             className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"
@@ -319,7 +316,7 @@ function RouteComponent() {
                             {t("admin.layout.schedule")}
                           </TabsTrigger>
                         </Link>
-                        <Link to={`/admin/tournaments/${tournamentid}/pildid`}>
+                        <Link to={`/admin/tournaments/$tournamentid/pildid`} params={{ tournamentid: String(tournamentid) }}>
                           <TabsTrigger
                             value="images"
                             className="py-[6px] flex-shrink-0 text-xs sm:text-sm bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-[#03326B] data-[state=active]:text-[#03326B] text-gray-600 hover:text-[#03326B] transition-colors rounded-none"

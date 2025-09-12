@@ -10,12 +10,12 @@ interface Props {
 
 export default function GroupDropdown({ groups, tournament_id }: Props) {
     const { t } = useTranslation()
-    
+
     const truncateClassName = (className: string, maxLength: number = 15) => {
         if (className.length <= maxLength) return className
         return className.substring(0, maxLength) + '...'
     }
-    
+
     return (
         <>
             <div className="flex-1 overflow-y-auto min-h-0">
@@ -23,7 +23,8 @@ export default function GroupDropdown({ groups, tournament_id }: Props) {
                     {groups.map((group) => (
                         <Link
                             key={group.id}
-                            to={`/admin/tournaments/${tournament_id}/grupid/${group.id}`}
+                            to={`/admin/tournaments/$tournamentid/grupid/$groupid`}
+                            params={{ tournamentid: String(tournament_id), groupid: String(group.id) }}
                             className="group flex items-center justify-between px-5 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-400"
                         >
                             <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -33,7 +34,7 @@ export default function GroupDropdown({ groups, tournament_id }: Props) {
                                     <span className="text-sm font-bold text-blue-700">{group.size}</span>
                                 </div>
                                 <div className="flex flex-col min-w-0 flex-1">
-                                    <span 
+                                    <span
                                         className="text-sm font-medium text-gray-900 group-hover:text-blue-900"
                                         title={group.class}
                                     >
@@ -57,7 +58,8 @@ export default function GroupDropdown({ groups, tournament_id }: Props) {
 
             <div className="border-t border-gray-100 bg-gray-50 rounded-b-xl flex-shrink-0">
                 <Link
-                    to={`/admin/tournaments/${tournament_id}/grupid`}
+                    to={`/admin/tournaments/$tournamentid/grupid`}
+                    params={{ tournamentid: String(tournament_id) }}
                     className="group flex items-center justify-between px-5 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200"
                 >
                     <div className="flex items-center gap-3 flex-1 min-w-0">

@@ -104,7 +104,7 @@ export default function Cal1YearView({ selectedYear, isLoading, error, tournamen
                                                             </div>
                                                             <div className="space-y-2">
                                                                 {eventsOnDay.map((event) => (
-                                                                    <Link key={`${event.tournament.id}-${event.is_gameday ? event.gameday_date : ''}`} to={event.is_gameday ? `/voistlused/${event.parent_tournament_id}` : `/voistlused/${event.tournament.id}`}>
+                                                                    <Link key={`${event.tournament.id}-${event.is_gameday ? event.gameday_date : ''}`} to={`/voistlused/$tournamentid`} params={event.is_gameday ? { tournamentid: String(event.parent_tournament_id) } : { tournamentid: String(event.tournament.id) }}>
                                                                         <div className="flex items-start gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors">
                                                                             <div
                                                                                 className="w-3 h-3 mt-1 rounded-sm flex-shrink-0 shadow-sm"

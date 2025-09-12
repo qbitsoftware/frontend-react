@@ -108,11 +108,10 @@ function RouteComponent() {
                         {/* Left side - Back button */}
                         <div className="flex items-center">
                             <Link
-                                href='/admin/blog'
+                                to='/admin/blog'
                                 className="inline-flex items-center px-3 py-3 rounded-md text-sm font-medium text-gray-800  transition-colors"
                             >
                                 <ArrowLeft className="w-6 h-6 mr-1 sm:mr-2" />
-                                {/* <span className="hidden sm:inline">Back</span> */}
                             </Link>
                         </div>
 

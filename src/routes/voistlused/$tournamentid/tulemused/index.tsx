@@ -82,7 +82,7 @@ function RouteComponent() {
           <h4 className='font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700'>{t('competitions.results.groups')}</h4>
           <ul className='pb-8 flex flex-col gap-2'>
             {tablesWithParticipants.map((table) => (
-              <Link key={table.id} href={`/voistlused/${tournament.id}/tulemused/${table.id}`} className="md:w-2/3">
+              <Link key={table.id} to={`/voistlused/$tournamentid/tulemused/$groupid`} params={{ tournamentid: String(tournament.id), groupid: String(table.id) }} className="md:w-2/3">
                 <li className=' bg-white flex flex-row items-center justify-between border border-stone-100 px-4 md:pr-12 md:pl-6 py-4 rounded-sm shadow-scheduleCard cursor-pointer hover:bg-[#F9F9FB]'>
                   <div className='flex flex-row items-center'>
                     <div className='flex flex-row items-center gap-2 border border-stone-100 rounded-sm p-1'>

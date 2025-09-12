@@ -268,7 +268,10 @@ export function TournamentsCalendar({ tournaments }: Props) {
                                 </div>
                                 <div className="space-y-1">
                                   {eventsOnDay.map((event) => (
-                                    <Link key={event.id} to={event.isGameday ? `/voistlused/${event.parentTournamentId}` : `/voistlused/${event.id}`}>
+                                    <Link key={event.id}
+                                      to={event.isGameday ? `/voistlused/$tournamentid` : `/voistlused/$tournamentid`}
+                                      params={{ tournamentid: String(event.isGameday ? event.parentTournamentId : event.id) }}
+                                    >
                                       <div className="flex items-start gap-1 hover:bg-gray-100 p-1 rounded-sm">
                                         <div
                                           className="w-3 h-3 mt-1 rounded-none flex-shrink-0"
@@ -535,7 +538,7 @@ export function TournamentsCalendar({ tournaments }: Props) {
                 return (
                   <div
                     key={index}
-                    ref={el => monthRefs.current[index] = el}
+                    ref={el => { monthRefs.current[index] = el }}
                     className={`${index === currentMonth && selectedYear === currentYear ? "scroll-mt-4" : ""}`}
                   >
                     <h6 className="font-semibold mb-2">{t('calendar.months.' + month.toLowerCase())}</h6>

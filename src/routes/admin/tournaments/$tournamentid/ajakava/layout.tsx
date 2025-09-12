@@ -20,7 +20,7 @@ function RouteComponent() {
       <div className="w-full">
         <div className="bg-white border-b px-4 py-2">
           <div className="flex items-center gap-6 max-w-md">
-            <Link to={`/admin/tournaments/${tournamentid}/ajakava`}>
+            <Link to={`/admin/tournaments/$tournamentid/ajakava`} params={{ tournamentid: String(tournamentid) }}>
               <div className={`pl-2 text-sm font-medium transition-colors border-l-2 ${currentTab === "schedule"
                 ? "text-[#03326B] border-[#03326B]"
                 : "text-gray-500 border-transparent hover:text-[#03326B]"
@@ -28,7 +28,7 @@ function RouteComponent() {
                 {t("admin.tournaments.timetable.schedule")}
               </div>
             </Link>
-            <Link to={`/admin/tournaments/${tournamentid}/ajakava/seaded`}>
+            <Link to={`/admin/tournaments/$tournamentid/ajakava/seaded`} params={{ tournamentid: String(tournamentid) }}>
               <div className={`pl-2 text-sm font-medium transition-colors border-l-2 ${currentTab === "configurations"
                 ? "text-[#03326B] border-[#03326B]"
                 : "text-gray-500 border-transparent hover:text-[#03326B]"

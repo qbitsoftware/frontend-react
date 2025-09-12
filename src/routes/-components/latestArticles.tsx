@@ -27,14 +27,14 @@ export const LatestArticles: React.FC<LatestArticlesProps> = ({ articles }) => {
                                 <p className="text-sm font-medium text-blue-600 mb-1">{categories.map((category, idx) => {
                                     if (idx === categories.length - 1) {
                                         return (
-                                            <Link key={idx} href={`/uudised?category=${replaceSpecialCharacters(category)}`}>
+                                            <Link to={`/uudised`} search={{ category: replaceSpecialCharacters(category) }}>
                                                 <span key={category}>{category}</span>
                                             </Link>
                                         )
                                     } else {
                                         return (
                                             <div key={idx}>
-                                                <Link href={`/uudised?category=${replaceSpecialCharacters(category)}`}>
+                                                <Link to={`/uudised`} search={{ category: replaceSpecialCharacters(category) }}>
                                                     <span key={category} className="mr-2">{category}</span>
                                                 </Link>
                                                 <span className='mr-2'>/</span>
@@ -44,7 +44,7 @@ export const LatestArticles: React.FC<LatestArticlesProps> = ({ articles }) => {
                                 })}</p>
                                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{article.title}</h3>
                                 <p className="text-gray-500 mb-4">{article.created_at}</p>
-                                <Link href={`/uudised/${article.id}`}>
+                                <Link to={`/uudised/$blogid`} params={{ blogid: String(article.id) }}>
                                     <Button variant="outline" className="w-full border border-blue-500">{t('homepage.news.read_more')}</Button>
                                 </Link>
                             </div>

@@ -26,7 +26,7 @@ export const TournamentTables: React.FC<TournamentTablesProps> = ({ tables }) =>
         <h5 className="font-medium text-lg sm:text-xl md:text-base">
           {t("admin.tournaments.groups.title")}
         </h5>
-        <Link className="mt-0 mb-0 w-full md:w-auto" to={`/admin/tournaments/${tournamentid}/grupid/uus`}>
+        <Link className="mt-0 mb-0 w-full md:w-auto" to={`/admin/tournaments/$tournamentid/grupid/uus`} params={{ tournamentid: String(tournamentid) }}>
           <Button className="w-full md:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             {t("admin.tournaments.groups.add_new")}

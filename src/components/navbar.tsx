@@ -87,7 +87,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center gap-6 h-16">
           <div className="flex gap-8">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/">
+              <Link to="/">
                 <img
                   className="h-9 sm:h-10 w-auto object-contain"
                   src="/RLogo.png"
@@ -114,7 +114,7 @@ export default function Navbar() {
                                 <li key={dropdownItem.name}>
                                   <NavigationMenuLink asChild>
                                     <Link
-                                      href={dropdownItem.href}
+                                      to={dropdownItem.href}
                                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                     >
                                       <div className="text-sm font-medium leading-none">
@@ -131,7 +131,7 @@ export default function Navbar() {
                     </NavigationMenu>
                   ) : (
                     <Link
-                      href={item.href}
+                      to={item.href}
                       className="text-sm font-medium px-2 transition-colors hover:text-primary text-gray-700 hover:text-blue-600"
                     >
                       {item.name}
@@ -142,7 +142,7 @@ export default function Navbar() {
               {user?.role.includes("admin") && (
                 <div className="ml-4">
                   <Link
-                    href={"/admin/dashboard"}
+                    to={"/admin/dashboard"}
                     className="text-sm font-medium px-2 xl:px-3 py-2 transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg border border-blue-200 whitespace-nowrap"
                   >
                     {t("navbar.menu.admin")}

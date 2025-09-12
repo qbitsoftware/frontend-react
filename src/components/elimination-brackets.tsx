@@ -38,7 +38,7 @@ interface TournamentTableProps {
 const ZoomControls = ({
   scrollContainerRef,
 }: {
-  scrollContainerRef: React.RefObject<HTMLDivElement>;
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   const { setTransform, instance } = useControls();
 
@@ -162,7 +162,7 @@ export const EliminationBrackets = ({
       highlighted.forEach(el => {
         el.classList.remove('search-highlight', 'search-highlight-current');
       });
-      
+
       if (searchTerm.trim() && searchTerm.trim().length >= 3) {
         const playerElements = container.querySelectorAll('[data-player-name]');
         const matchingElements: Element[] = [];
@@ -173,25 +173,25 @@ export const EliminationBrackets = ({
             matchingElements.push(element);
           }
         });
-        
+
         if (matchingElements.length > 0 && onNavigateMatches) {
           const currentElement = matchingElements[currentMatchIndex % matchingElements.length];
           if (currentElement) {
             currentElement.classList.remove('search-highlight');
             currentElement.classList.add('search-highlight-current');
             setIsSearchNavigating(true);
-            
+
             const containerRect = container.getBoundingClientRect();
             const elementRect = currentElement.getBoundingClientRect();
             const scrollTop = elementRect.top - containerRect.top + container.scrollTop - (container.clientHeight / 2);
             const scrollLeft = elementRect.left - containerRect.left + container.scrollLeft - (container.clientWidth / 2);
-            
+
             container.scrollTo({
               top: scrollTop,
               left: scrollLeft,
               behavior: 'smooth'
             });
-            
+
             setTimeout(() => setIsSearchNavigating(false), 500);
           }
         }
@@ -440,7 +440,7 @@ export const EliminationBrackets = ({
                                 data={table}
                                 handleSelectMatch={handleSelectMatch}
                                 hoveredPlayerId={hoveredPlayerId}
-                              onPlayerHover={setHoveredPlayerId}
+                                onPlayerHover={setHoveredPlayerId}
                               />
                             </div>
                           )}
