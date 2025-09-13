@@ -1148,7 +1148,8 @@
         "generate_seeding": "Alusta mängudega",
         "generate_tables": "Genereeri tabelid",
         "advance_players": "Liiguta mängijad edasi",
-        "reset_seeding": "Lähtesta mängud"
+        "reset_seeding": "Lähtesta mängud",
+        "export_participants": "Ekspordi osalejad"
       },
       "tournaments": {
         "title": "Tournaments",
@@ -1574,6 +1575,12 @@
         "winner_declared": "Lõppenud mängud",
         "ongoing_games": "Käimas mängud",
         "upcoming_games": "Tulevased mängud"
+      },
+      "progress": {
+        "title": "Turniiri Progress",
+        "finished": "Lõpetatud",
+        "remaining": "Järel",
+        "total": "Kokku"
       },
       "confirmations": {
         "delete": {
@@ -2150,6 +2157,9 @@
       "import_success": "Osalejate importimine õnnestus",
       "double_pairing_success": "Paaride määramine õnnestus",
       "double_pairing_error": "Määramine nurjus. Veendu, et oleks 8 või enam üksikmängijat"
+    },
+    "export": {
+      "error": "Eksportimine nurjus. Palun proovige uuesti"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",

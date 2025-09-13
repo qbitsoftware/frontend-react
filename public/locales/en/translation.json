@@ -1126,7 +1126,8 @@
         "generate_seeding": "Generate Matches",
         "generate_tables": "Generate Tables",
         "advance_players": "Advance Players",
-        "reset_seeding": "Reset Seeding"
+        "reset_seeding": "Reset Seeding",
+        "export_participants": "Export Participants"
       },
       "warnings": {
         "bracket_size_mismatch": {
@@ -1545,6 +1546,12 @@
         "winner_declared": "Ended games",
         "ongoing_games": "Ongoing games",
         "upcoming_games": "Upcoming games"
+      },
+      "progress": {
+        "title": "Tournament Progress",
+        "finished": "Finished",
+        "remaining": "Remaining",
+        "total": "Total"
       },
       "confirmations": {
         "delete": {
@@ -2122,6 +2129,9 @@
       "import_success": "Participants imported successfully",
       "double_pairing_success": "Double pairs assigned successfully",
       "double_pairing_error": "Error assigning double pairs. Check if you have 8 or more players."
+    },
+    "export": {
+      "error": "Export failed. Please try again"
     },
     "protocol_modals": {
       "updated_match_score": "Match score updated successfully",
