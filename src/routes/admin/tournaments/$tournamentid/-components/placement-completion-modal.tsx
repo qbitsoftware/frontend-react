@@ -20,15 +20,15 @@ interface PlacementResult {
 const extractPlacementFromMatch = (match: MatchWrapper): { places: string; isPlacementMatch: boolean } => {
   const matchName = match.class || "";
   const bracket = match.match.bracket || "";
-  
+
   const placementPatterns = [
-    /(\d+)-(\d+)/,  
+    /(\d+)-(\d+)/,
   ];
 
   for (const pattern of placementPatterns) {
     const nameMatch = matchName.match(pattern);
     const bracketMatch = bracket.match(pattern);
-    
+
     if (nameMatch || bracketMatch) {
       const match = nameMatch || bracketMatch;
       if (match && match[1] && match[2]) {
@@ -45,14 +45,14 @@ const extractPlacementFromMatch = (match: MatchWrapper): { places: string; isPla
 
 const determinePlacementResults = (match: MatchWrapper): PlacementResult[] => {
   const { places } = extractPlacementFromMatch(match);
-  
+
   if (!places) return [];
 
   const [lowerPlace, higherPlace] = places.split("-").map(Number);
   const winner = match.match.winner_id;
-  
+
   const results: PlacementResult[] = [];
-  
+
   if (winner === match.p1.id) {
     results.push({
       playerName: match.p1.name,
@@ -91,17 +91,27 @@ const PlacementCompletionModal: React.FC<PlacementCompletionModalProps> = ({
   const previousMatchStatesRef = useRef<Map<string, MatchState>>(new Map());
 
   useEffect(() => {
+    if (completedPlacementMatch && placementResults.length > 0) {
+      const timer = setTimeout(() => {
+        handleClose();
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [completedPlacementMatch, placementResults]);
+
+  useEffect(() => {
     matches.forEach(match => {
       const matchId = match.match.id;
       const currentState = match.match.state;
       const previousState = previousMatchStatesRef.current.get(matchId);
-      
+
       if (currentState === MatchState.FINISHED && previousState && previousState !== MatchState.FINISHED) {
         const { places, isPlacementMatch } = extractPlacementFromMatch(match);
-        
+
         if (isPlacementMatch && match.match.winner_id) {
           const [lowerPlace, higherPlace] = places.split("-").map(Number);
-          
+
           if (higherPlace - lowerPlace === 1) {
             const results = determinePlacementResults(match);
             if (results.length > 0) {
@@ -111,7 +121,7 @@ const PlacementCompletionModal: React.FC<PlacementCompletionModalProps> = ({
           }
         }
       }
-      
+
       previousMatchStatesRef.current.set(matchId, currentState);
     });
   }, [matches]);
@@ -125,7 +135,7 @@ const PlacementCompletionModal: React.FC<PlacementCompletionModalProps> = ({
   const getPlaceOrdinal = (place: string) => {
     const num = parseInt(place);
     if (num === 1) return t("admin.tournaments.placement.first");
-    if (num === 2) return t("admin.tournaments.placement.second"); 
+    if (num === 2) return t("admin.tournaments.placement.second");
     if (num === 3) return t("admin.tournaments.placement.third");
     return `${place}${t("admin.tournaments.placement.th")}`;
   };
@@ -141,17 +151,16 @@ const PlacementCompletionModal: React.FC<PlacementCompletionModalProps> = ({
             {t("admin.tournaments.placement.tournament_complete")}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div className="text-center space-y-3">
             {placementResults.map((result, index) => (
               <div
                 key={index}
-                className={`p-4 rounded-lg border-2 ${
-                  result.isWinner 
-                    ? "border-yellow-200 bg-yellow-50" 
-                    : "border-gray-200 bg-gray-50"
-                }`}
+                className={`p-4 rounded-lg border-2 ${result.isWinner
+                  ? "border-yellow-200 bg-yellow-50"
+                  : "border-gray-200 bg-gray-50"
+                  }`}
               >
                 <div className="flex items-center justify-center gap-2 mb-2">
                   {result.isWinner ? (
@@ -169,7 +178,7 @@ const PlacementCompletionModal: React.FC<PlacementCompletionModalProps> = ({
               </div>
             ))}
           </div>
-          
+
           <div className="text-center text-sm text-gray-600">
             {completedPlacementMatch && (
               <p>
