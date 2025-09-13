@@ -12,6 +12,10 @@
     "consolation": "Lohutusturniir",
     "subgroups": "Alagrupid"
   },
+  "brackets": {
+    "plussring": "Plussring",
+    "miinusring": "Miinusring"
+  },
   "navbar": {
     "language": {
       "estonian": "Eesti",
@@ -2145,7 +2149,7 @@
       "invalid_file_format": "Palun valige Excel fail (.xlsx või .xls)",
       "import_success": "Osalejate importimine õnnestus",
       "double_pairing_success": "Paaride määramine õnnestus",
-      "double_pairing_error": "Paaride määramine nurjus. Veendu, et oleks 8 või enam üksikmängijat"
+      "double_pairing_error": "Määramine nurjus. Veendu, et oleks 8 või enam üksikmängijat"
     },
     "protocol_modals": {
       "updated_match_score": "Mängu skoore on muudetud",

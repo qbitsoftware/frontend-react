@@ -335,7 +335,11 @@ export const EliminationBrackets = ({
                         }}
                       >
                         <span className="truncate">
-                          {item.elimination[0].name}
+                          {item.elimination[0].name === "Plussring" 
+                            ? t("brackets.plussring")
+                            : item.elimination[0].name === "Miinusring"
+                            ? t("brackets.miinusring")
+                            : item.elimination[0].name}
                         </span>
                       </TabsTrigger>
                     ))}

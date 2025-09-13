@@ -125,14 +125,13 @@ export const printQRCodeToBlankSheet = async (url: string, title?: string) => {
               font-size: 18px;
               color: #4a5568;
               line-height: 1.6;
-              padding: 16px 0;
-              border-top: 1px solid #e2e8f0;
-              margin-top: 24px;
+              padding: 0px 0;
+              margin-top: 12px;
             }
             
             .scan-icon {
-              width: 20px;
-              height: 20px;
+              width: 18px;
+              height: 18px;
               display: inline-block;
               margin-right: 8px;
               vertical-align: middle;
@@ -165,7 +164,7 @@ export const printQRCodeToBlankSheet = async (url: string, title?: string) => {
             ${title ? `
               <div class="title">${title}</div>
               <div class="subtitle-1">Reaalajas Turniiri Tabel Sinu Telefonis</div>
-              <div class="subtitle">Live Tournament Bracket</div>
+              <div class="subtitle-1">Live Tournament Bracket On Your Phone</div>
             ` : ''}
             
             <div class="qr-wrapper">
@@ -179,8 +178,12 @@ export const printQRCodeToBlankSheet = async (url: string, title?: string) => {
             </div>
             
             <div class="instructions">
-              Skänni oma nutivahendiga QR-koodi, et näha turniiritabelit. Scan this QR code with your mobile device camera to access the tournament bracket
+              Skänni oma nutivahendiga QR-koodi, et näha turniiritabelit. 
             </div>
+            <div class="instructions">
+              Scan this QR code with your mobile device camera to access the tournament bracket
+            </div>
+
           </div>
         </body>
       </html>

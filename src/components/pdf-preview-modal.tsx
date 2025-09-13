@@ -1250,6 +1250,7 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t("homepage.pdf.preview.title")} - {title}</DialogTitle>
+            <p className="font-light">NB: Soovitame pabertabelite asemel kasutada QR-kood printimist</p>
         </DialogHeader>
 
         <div className="space-y-4 p-4">

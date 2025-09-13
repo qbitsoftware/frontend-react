@@ -12,6 +12,10 @@
     "consolation": "Consolation",
     "subgroups": "Subgroups"
   },
+  "brackets": {
+    "plussring": "Main Bracket",
+    "miinusring": "Consolation"
+  },
   "navbar": {
     "language": {
       "estonian": "Estonian",
