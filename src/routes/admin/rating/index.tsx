@@ -72,27 +72,6 @@ function RouteComponent() {
     }, [ratingInfo?.data.next_calculation])
 
     const downloadRatingsXML = async () => {
-        try {
-            const response = await axiosInstance.get("/api/v1/ratings/export_xml", {
-                responseType: "blob",
-                withCredentials: true,
-
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "ratings.xml");
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Download failed", error);
-        }
-    };
-
-    const downloadRatingsByDateXML = async () => {
         setIsExportingRatings(true)
         try {
             const response = await axiosInstance.get("/api/v1/ratings/export_xml", {
@@ -271,7 +250,7 @@ function RouteComponent() {
                                         variant="outline"
                                         size="sm"
                                         className="w-full h-8 text-xs"
-                                        onClick={downloadRatingsByDateXML}
+                                        onClick={downloadRatingsXML}
                                         disabled={isExportingRatings || !selectedDate}
                                     >
                                         {isExportingRatings ? (
