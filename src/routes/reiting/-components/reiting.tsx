@@ -190,10 +190,11 @@ export function Reiting() {
             {t("rating.last_updated")}:{" "}
             <span className="bg-[#FBFBFB] px-2 sm:px-3 py-1 rounded-full border border-[#EAEAEA] text-xs sm:text-sm">
               {ratingInfo?.data?.last_calculated_at
-                ? new Date(new Date(ratingInfo.data.last_calculated_at).getTime() + 3 * 60 * 60 * 1000)
-                    .toISOString()
-                    .slice(0, 16)
-                    .replace("T", " ")
+                ? (() => {
+                    const date = new Date(new Date(ratingInfo.data.last_calculated_at).getTime() + 5 * 60 * 60 * 1000);
+                    date.setMinutes(0, 0, 0);
+                    return date.toISOString().slice(0, 16).replace("T", " ");
+                  })()
                 : t("rating.unknown_date", "-")}
             </span>
           </p>
