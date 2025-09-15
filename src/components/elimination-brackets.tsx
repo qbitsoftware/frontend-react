@@ -18,11 +18,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { PDFPreviewModal } from "./pdf-preview-modal";
 import { printQRCodeToBlankSheet } from "@/lib/qr-print";
-import {
-  TransformWrapper,
-  TransformComponent,
-  useControls,
-} from "react-zoom-pan-pinch";
 
 interface TournamentTableProps {
   admin?: boolean;
@@ -37,23 +32,21 @@ interface TournamentTableProps {
 
 const ZoomControls = ({
   scrollContainerRef,
+  scale,
+  onZoomChange,
 }: {
   scrollContainerRef: React.RefObject<HTMLDivElement>;
+  scale: number;
+  onZoomChange: (newScale: number) => void;
 }) => {
-  const { setTransform, instance } = useControls();
-
   const handleZoomIn = () => {
-    const { scale, positionX, positionY } = instance.transformState;
-    const newScale = Math.min(scale + 0.05, 1.5);
-
-    setTransform(positionX, positionY, newScale);
+    const newScale = Math.min(scale + 0.1, 1.5);
+    onZoomChange(newScale);
   };
 
   const handleZoomOut = () => {
-    const { scale, positionX, positionY } = instance.transformState;
-    const newScale = Math.max(scale - 0.05, 0.4);
-
-    setTransform(positionX, positionY, newScale);
+    const newScale = Math.max(scale - 0.1, 0.4);
+    onZoomChange(newScale);
   };
 
   const handlePan = useCallback((direction: "left" | "right") => {
@@ -149,11 +142,169 @@ export const EliminationBrackets = ({
   onNavigateMatches,
 }: TournamentTableProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const [showPreview, setShowPreview] = useState(false);
   const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
   const [allowBracketScroll, setAllowBracketScroll] = useState(false);
-  const [isSearchNavigating, setIsSearchNavigating] = useState(false);
+  const [scale, setScale] = useState(window.innerWidth < 640 ? 0.8 : 1);
+  const pinchState = useRef({
+    initialDistance: 0,
+    initialScale: 1,
+    zoomCenterX: 0,
+    zoomCenterY: 0,
+    lastUpdateTime: 0,
+    lastScale: 1,
+    targetScale: 1,
+    velocity: 0,
+    isAnimating: false,
+    animationId: null as number | null
+  });
+
+
+
+
+  // Ultra-simple pinch detection with center point
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    if (!admin && !allowBracketScroll) return;
+
+    if (e.touches.length === 2) {
+      pinchState.current.initialDistance = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      pinchState.current.initialScale = scale;
+      pinchState.current.lastScale = scale;
+
+      // Store zoom center point (middle between fingers)
+      const containerRect = scrollContainerRef.current?.getBoundingClientRect();
+      if (containerRect) {
+        pinchState.current.zoomCenterX = ((e.touches[0].clientX + e.touches[1].clientX) / 2) - containerRect.left;
+        pinchState.current.zoomCenterY = ((e.touches[0].clientY + e.touches[1].clientY) / 2) - containerRect.top;
+      }
+    }
+  }, [admin, allowBracketScroll, scale]);
+
+  // Smooth animation loop with easing
+  const animateScale = useCallback(() => {
+    if (!pinchState.current.isAnimating) return;
+
+    const state = pinchState.current;
+    const diff = state.targetScale - state.lastScale;
+
+    // Use easing curve similar to native browser (ease-out)
+    const easing = 0.15;
+    const newScale = state.lastScale + diff * easing;
+
+    // Stop animation when close enough
+    if (Math.abs(diff) < 0.001) {
+      state.lastScale = state.targetScale;
+      state.isAnimating = false;
+      state.animationId = null;
+      setScale(state.targetScale);
+      return;
+    }
+
+    state.lastScale = newScale;
+
+    if (contentRef.current && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const content = contentRef.current;
+
+      // Calculate current scroll position
+      const currentScrollX = container.scrollLeft;
+      const currentScrollY = container.scrollTop;
+
+      // Calculate what point in the content is currently at the zoom center
+      const contentPointX = (state.zoomCenterX + currentScrollX) / state.lastScale;
+      const contentPointY = (state.zoomCenterY + currentScrollY) / state.lastScale;
+
+      // Apply scale with top-left origin
+      content.style.transformOrigin = '0 0';
+      content.style.transform = `scale(${newScale})`;
+
+      // Calculate where that content point should be after scaling
+      const newPointX = contentPointX * newScale;
+      const newPointY = contentPointY * newScale;
+
+      // Calculate scroll position to keep the zoom center point stationary
+      const newScrollX = newPointX - state.zoomCenterX;
+      const newScrollY = newPointY - state.zoomCenterY;
+
+      // Apply scroll position smoothly (browser will handle boundaries)
+      container.scrollLeft = Math.max(0, newScrollX);
+      container.scrollTop = Math.max(0, newScrollY);
+    }
+
+    // Continue animation
+    state.animationId = requestAnimationFrame(animateScale);
+  }, []);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!admin && !allowBracketScroll) return;
+
+    if (e.touches.length === 2) {
+      e.preventDefault(); // Prevent browser zoom
+
+      const currentDistance = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+
+      if (pinchState.current.initialDistance > 0) {
+        const now = performance.now();
+        const deltaTime = now - pinchState.current.lastUpdateTime;
+
+        // Only update every 8ms for 120fps max (smoother than 60fps)
+        if (deltaTime < 8) return;
+        pinchState.current.lastUpdateTime = now;
+
+        // Calculate raw scale with higher precision
+        const rawScaleRatio = currentDistance / pinchState.current.initialDistance;
+        const dampedRatio = 1 + (rawScaleRatio - 1) * 0.8; // Slightly more responsive
+        const targetScale = Math.max(0.5, Math.min(3, pinchState.current.initialScale * dampedRatio));
+
+        // Update target scale directly without velocity for smoother real-time tracking
+        pinchState.current.targetScale = targetScale;
+
+        // Start smooth animation if not already running
+        if (!pinchState.current.isAnimating) {
+          pinchState.current.isAnimating = true;
+          pinchState.current.animationId = requestAnimationFrame(animateScale);
+        }
+      }
+    }
+  }, [admin, allowBracketScroll, animateScale]);
+
+  const handleTouchEnd = useCallback(() => {
+    pinchState.current.initialDistance = 0;
+  }, []);
+
+  // Setup touch event listeners
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd, { passive: false });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+    return () => {
+      // Clean up animation - copy ref value to avoid stale closure
+      const state = pinchState.current;
+      if (state.animationId) {
+        cancelAnimationFrame(state.animationId);
+        state.animationId = null;
+        state.isAnimating = false;
+      }
+
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -179,25 +330,27 @@ export const EliminationBrackets = ({
           if (currentElement) {
             currentElement.classList.remove('search-highlight');
             currentElement.classList.add('search-highlight-current');
-            setIsSearchNavigating(true);
-            
-            const containerRect = container.getBoundingClientRect();
-            const elementRect = currentElement.getBoundingClientRect();
-            const scrollTop = elementRect.top - containerRect.top + container.scrollTop - (container.clientHeight / 2);
-            const scrollLeft = elementRect.left - containerRect.left + container.scrollLeft - (container.clientWidth / 2);
-            
-            container.scrollTo({
-              top: scrollTop,
-              left: scrollLeft,
-              behavior: 'smooth'
-            });
-            
-            setTimeout(() => setIsSearchNavigating(false), 500);
+
+            // Get the element's position within its parent container
+            const targetY = (currentElement as HTMLElement).offsetTop - 50;
+
+            // Account for current scale when calculating position
+            const scaledTargetY = targetY * scale;
+
+            // Use native scrolling to navigate to the target
+            const container = scrollContainerRef.current;
+            if (container) {
+              container.scrollTo({
+                left: 0,
+                top: scaledTargetY,
+                behavior: 'smooth'
+              });
+            }
           }
         }
       }
     }
-  }, [searchTerm, currentMatchIndex, onNavigateMatches]);
+  }, [searchTerm, currentMatchIndex, onNavigateMatches, scale]);
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -215,6 +368,15 @@ export const EliminationBrackets = ({
         box-shadow: 0 0 0 3px rgba(76, 151, 241, 0.3) !important;
         border-radius: 4px !important;
       }
+      .pinch-zooming {
+        will-change: transform;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+      }
     `;
     document.head.appendChild(style);
     return () => {
@@ -227,7 +389,7 @@ export const EliminationBrackets = ({
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      const threshold = 70;
+      const threshold = 80;
       setAllowBracketScroll(scrollY >= threshold);
     };
 
@@ -235,8 +397,9 @@ export const EliminationBrackets = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Remove search navigating since it's not used
   useEffect(() => {
-    if ((allowBracketScroll && !admin && window.innerWidth < 768) || isSearchNavigating) {
+    if ((allowBracketScroll && !admin && window.innerWidth < 768)) {
       const preventDownScroll = (e: WheelEvent) => {
         if (e.deltaY > 0) {
           e.preventDefault();
@@ -258,7 +421,7 @@ export const EliminationBrackets = ({
         document.removeEventListener('keydown', preventDownKeys);
       };
     }
-  }, [allowBracketScroll, admin, isSearchNavigating]);
+  }, [allowBracketScroll, admin]);
 
   const handlePrint = () => {
     setShowPreview(true);
@@ -312,34 +475,27 @@ export const EliminationBrackets = ({
                         value={item.elimination[0].name}
                         className="flex-shrink-0 px-3 sm:px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white data-[state=active]:shadow-md bg-gray-100 text-gray-700 hover:bg-gray-200 border-0 min-w-[70px] text-center"
                         onClick={() => {
-                          const container = scrollContainerRef.current;
                           const targetElement = document.getElementById(
                             item.elimination[0].name
                           );
 
-                          if (container && targetElement) {
-                            const containerRect =
-                              container.getBoundingClientRect();
-                            const targetRect =
-                              targetElement.getBoundingClientRect();
-                            const scrollTop =
-                              targetRect.top -
-                              containerRect.top +
-                              container.scrollTop -
-                              50;
-                            container.scrollTo({
-                              top: scrollTop,
-                              behavior: "smooth",
-                            });
+                          if (targetElement) {
+                            const targetY = targetElement.offsetTop - 50;
+                            const scaledTargetY = targetY * scale;
+
+                            const container = scrollContainerRef.current;
+                            if (container) {
+                              container.scrollTo({
+                                left: 0,
+                                top: scaledTargetY,
+                                behavior: 'smooth'
+                              });
+                            }
                           }
                         }}
                       >
                         <span className="truncate">
-                          {item.elimination[0].name === "Plussring" 
-                            ? t("brackets.plussring")
-                            : item.elimination[0].name === "Miinusring"
-                            ? t("brackets.miinusring")
-                            : item.elimination[0].name}
+                          {item.elimination[0].name}
                         </span>
                       </TabsTrigger>
                     ))}
@@ -381,81 +537,84 @@ export const EliminationBrackets = ({
 
       <div className="bg-[#F8F9FA] relative h-[85vh] flex flex-col">
         <div className="relative h-full">
-          <TransformWrapper
-            initialScale={window.innerWidth < 640 ? 0.8 : 1}
-            minScale={0.4}
-            maxScale={1.5}
-            wheel={{ disabled: true }}
-            pinch={{ disabled: true }}
-            panning={{
-              disabled: true,
-              allowLeftClickPan: false,
-              allowRightClickPan: false,
-              allowMiddleClickPan: false,
+          <ZoomControls
+            scrollContainerRef={scrollContainerRef}
+            scale={scale}
+            onZoomChange={(newScale) => {
+              setScale(newScale);
             }}
-            limitToBounds={false}
-            centerOnInit={false}
-            centerZoomedOut={false}
-            doubleClick={{ disabled: true }}
+          />
+          <div
+            ref={scrollContainerRef}
+            className={`h-full ${admin || allowBracketScroll ? "overflow-auto" : "overflow-hidden"}`}
+            id="bracket-container"
+            style={{
+              position: 'relative',
+              WebkitOverflowScrolling: 'touch',
+              touchAction: admin || allowBracketScroll ? 'manipulation' : 'pan-y',
+              scrollBehavior: 'smooth',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              WebkitTouchCallout: 'none',
+            }}
           >
-            <ZoomControls scrollContainerRef={scrollContainerRef} />
             <div
-              ref={scrollContainerRef}
-              className={`h-full overflow-x-auto ${admin ? "overflow-y-scroll" : allowBracketScroll ? "overflow-y-scroll" : "overflow-y-hidden"}`}
-              id="bracket-container"
+              ref={contentRef}
+              className=""
+              style={{
+                transformOrigin: '0 0',
+                cursor: admin || allowBracketScroll ? 'grab' : 'default',
+                willChange: 'transform',
+                // Scale applied via touch handlers, scroll position manages zoom center
+              }}
             >
-              <TransformComponent
-                wrapperStyle={{
-                  overflow: "visible",
-                }}
-                contentStyle={{ width: "100%" }}
-              >
-                <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 pb-6 sm:pb-8 lg:pb-12 pr-20 sm:pr-24">
-                  {data.eliminations.map((eliminations, eliminationIndex) => {
-                    return eliminations.elimination.map((table, tableIndex) => {
-                      const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;
-                      const uniqueId = `${eliminations.elimination[0].name}`;
+              <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 px-1 sm:px-4 lg:px-10 pb-6 sm:pb-8 lg:pb-12 pr-20 sm:pr-24">
+                {data.eliminations.map((eliminations, eliminationIndex) => {
+                  return eliminations.elimination.map((table, tableIndex) => {
+                    const uniqueKey = `elimination-${eliminationIndex}-table-${tableIndex}`;
+                    const uniqueId = tableIndex === 0 ? `${eliminations.elimination[0].name}` : `${table.name}-${tableIndex}`;
 
-                      return (
-                        <div key={uniqueKey}>
-                          {table.name !== "Plussring" && (
-                            <div
-                              className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
-                            >
-                              {table.name}
-                            </div>
-                          )}
-                          {table.name !== BracketType.MIINUSRING ? (
-                            <div className="" id={uniqueId}>
-                              <SingleElimination
-                                admin={admin}
-                                tournament_table={tournament_table}
-                                data={table}
-                                handleSelectMatch={handleSelectMatch}
-                                hoveredPlayerId={hoveredPlayerId}
-                                onPlayerHover={setHoveredPlayerId}
-                              />
-                            </div>
-                          ) : (
-                            <div className="" id={uniqueId}>
-                              <DoubleElimination
-                                admin={admin}
-                                tournament_table={tournament_table}
-                                data={table}
-                                handleSelectMatch={handleSelectMatch}
-                                hoveredPlayerId={hoveredPlayerId}
+                    return (
+                      <div key={uniqueKey}>
+                        {table.name !== "Plussring" && (
+                          <div
+                            className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
+                          >
+                            {table.name}
+                          </div>
+                        )}
+                        {table.name !== BracketType.MIINUSRING ? (
+                          <div className="" id={uniqueId}>
+                            <SingleElimination
+                              admin={admin}
+                              tournament_table={tournament_table}
+                              data={table}
+                              handleSelectMatch={handleSelectMatch}
+                              hoveredPlayerId={hoveredPlayerId}
                               onPlayerHover={setHoveredPlayerId}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    });
-                  })}
-                </div>
-              </TransformComponent>
+                            />
+                          </div>
+                        ) : (
+                          <div className="" id={uniqueId}>
+                            <DoubleElimination
+                              admin={admin}
+                              tournament_table={tournament_table}
+                              data={table}
+                              handleSelectMatch={handleSelectMatch}
+                              hoveredPlayerId={hoveredPlayerId}
+                              onPlayerHover={setHoveredPlayerId}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  });
+                })}
+              </div>
             </div>
-          </TransformWrapper>
+          </div>
         </div>
       </div>
 
