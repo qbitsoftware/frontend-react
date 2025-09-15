@@ -4,7 +4,6 @@ import {
   UseGetTournamentTablesQuery,
 } from '@/queries/tables'
 import ErrorPage from '@/components/error'
-import { CompactClassFilters } from '@/routes/admin/tournaments/-components/compact-class-filters'
 import { Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { UseGetPlacements } from '@/queries/brackets'
@@ -50,16 +49,6 @@ function RouteComponent() {
     return t('common.subgroups')
   }
 
-  const handleGroupChange = (newGroupId: number) => {
-    navigate({
-      to: '/admin/tournaments/$tournamentid/grupid/$groupid/kohad',
-      params: {
-        tournamentid: tournamentid,
-        groupid: newGroupId.toString(),
-      },
-    })
-  }
-
   if (isLoadingTable || tablesQuery.isLoading || isLoadingPlacements) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
@@ -82,7 +71,6 @@ function RouteComponent() {
     )
   }
 
-  const availableTables = tablesQuery.data.data || []
   const groupIds = tableData.data.stages?.map((stage) => stage.id) || [groupId]
   if (tableData.data.group?.type === GroupType.DYNAMIC) {
     if (groupIds.length > 1) {
@@ -93,14 +81,6 @@ function RouteComponent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-      <div className="px-2">
-        <CompactClassFilters
-          availableTables={availableTables}
-          activeGroupId={groupIds}
-          onGroupChange={handleGroupChange}
-        />
-      </div>
-
       {tableData.data.stages && tableData.data.stages.length >= 1 && (
         <div className="border-b border-gray-200 mb-4">
           <nav className="-mb-px flex space-x-8">

@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
 import ErrorPage from "@/components/error";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdminQuery } from "@/queries/tournaments";
@@ -42,28 +42,31 @@ function RouteComponent() {
   });
   const groupsHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  let first_tournament_table: number | undefined = undefined;
-  if (!isLoading && data && data.data && data.data.length > 0) {
-    first_tournament_table = data.data[0].id;
-  }
+  const first_tournament_table = useMemo(() => {
+    if (!isLoading && data && data.data && data.data.length > 0) {
+      return data.data[0].id;
+    }
+    return undefined;
+  }, [isLoading, data]);
+
   useEffect(() => {
     if (!isLoadingTournament && (!tournament_data || !tournament_data.data)) {
       navigate({ to: "/admin/tournaments" });
     }
   }, [isLoadingTournament, tournament_data, navigate]);
 
-  const handleGroupsMouseEnter = () => {
+  const handleGroupsMouseEnter = useCallback(() => {
     if (groupsHoverTimeoutRef.current) {
       clearTimeout(groupsHoverTimeoutRef.current);
     }
     setShowGroupsDropdown(true);
-  };
+  }, []);
 
-  const handleGroupsMouseLeave = () => {
+  const handleGroupsMouseLeave = useCallback(() => {
     groupsHoverTimeoutRef.current = setTimeout(() => {
       setShowGroupsDropdown(false);
     }, 200);
-  };
+  }, []);
 
   useEffect(() => {
     if (showGroupsDropdown && dropdownRef.current) {
@@ -86,21 +89,16 @@ function RouteComponent() {
     }
   }, [showGroupsDropdown]);
 
-  const currentTab = location.pathname.includes("/osalejad")
-    ? "participants"
-    : location.pathname.includes("/mangud")
-      ? "matches"
-      : location.pathname.includes("/tabelid")
-        ? "brackets"
-        : location.pathname.includes("/ajakava")
-          ? "schedule"
-          : location.pathname.includes("/kohad")
-            ? "finalplacement"
-            : location.pathname.includes("/grupid")
-              ? "groups"
-              : location.pathname.includes("/pildid")
-                ? "images"
-                : "info";
+  const currentTab = useMemo(() => {
+    if (location.pathname.includes("/osalejad")) return "participants";
+    if (location.pathname.includes("/mangud")) return "matches";
+    if (location.pathname.includes("/tabelid")) return "brackets";
+    if (location.pathname.includes("/ajakava")) return "schedule";
+    if (location.pathname.includes("/kohad")) return "finalplacement";
+    if (location.pathname.includes("/grupid")) return "groups";
+    if (location.pathname.includes("/pildid")) return "images";
+    return "info";
+  }, [location.pathname]);
 
 
   return (
@@ -280,7 +278,8 @@ function RouteComponent() {
                               to={
                                 groupId
                                   ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/kohad`
-                                  : `/admin/tournaments/${tournamentid}/kohad`
+                                  : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/kohad`
+
                               }
                               onClick={(e) => {
                                 if (!first_tournament_table) {

@@ -25,7 +25,7 @@ function RouteComponent() {
     const filteredMatches = useMemo(() => {
         if (!matches) return []
 
-        return matches?.data?.filter((match: MatchWrapper) => {
+        return matches?.data?.matches?.filter((match: MatchWrapper) => {
             const matchesState = stateFilter === 'all' || match.match.state === stateFilter
             const matchesSearch = searchTerm === '' ||
                 match.match.readable_id.toString().includes(searchTerm) ||
@@ -105,7 +105,7 @@ function RouteComponent() {
 
                 {/* Results Count */}
                 <div className="mb-4 text-sm text-gray-600">
-                    Showing {filteredMatches?.length} of {matches?.data?.length || 0} matches
+                    Showing {filteredMatches?.length} of {matches?.data?.matches?.length || 0} matches
                 </div>
 
                 <Card className="border-gray-200 shadow-sm">

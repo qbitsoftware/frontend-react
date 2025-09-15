@@ -1,9 +1,9 @@
-import { UseGetTournamentMatches } from "@/queries/match";
 import { useEffect, useState } from "react";
 import { QueryClient } from "@tanstack/react-query";
 import { Tournament } from "@/types/tournaments";
 import { UseGetTournamentTables } from "@/queries/tables";
 import i18n from "@/i18n";
+import { UseGetTournamentMatchesQuery } from "@/queries/match";
 
 export const getDaysInMonth = (year: number) => {
   const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -146,11 +146,7 @@ export const useTournamentEvents = (
         });
 
         const matchesPromises = meistrikad.map(tournament =>
-          queryClient.ensureQueryData(UseGetTournamentMatches(Number(tournament.id)))
-            .catch(error => {
-              void error;
-              return { data: [], error };
-            })
+          UseGetTournamentMatchesQuery(Number(tournament.id))
         );
 
         const allMatchesData = await Promise.all(matchesPromises);
@@ -191,7 +187,7 @@ export const useTournamentEvents = (
           if (matchesData && matchesData.data) {
             const uniqueGamedays = new Map<string, ProcessedEvent>();
 
-            matchesData.data.forEach((match) => {
+            matchesData.data.data.matches.forEach((match) => {
               const matchDate = match.match.start_date
                 ? new Date(match.match.start_date)
                 : null;

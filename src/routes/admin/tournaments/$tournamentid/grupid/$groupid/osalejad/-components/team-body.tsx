@@ -3,7 +3,7 @@ import { DialogType, TournamentTable } from "@/types/groups"
 import { Participant } from "@/types/participants"
 import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ParticipantFormValues } from "../../../../-components/participant-forms/form-utils"
 import { toast } from 'sonner'
@@ -26,14 +26,23 @@ interface NewTeamProps {
 export default function TeamParticipants({ tournament_id, tournament_table, participants, setParticipantsState, group_participant, highLightInput }: NewTeamProps) {
     const { addOrUpdateParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
     const [globalEdit, setGlobalEdit] = useState(false)
-    const [forceDisableOrdering, setForceDisableOrdering] = useState(false)
+    const [forceDisableOrdering, setForceDisableOrdering] = useState(tournament_table.state >= TTState.TT_STATE_STARTED)
+    const [inputHidden, setInputHidden] = useState(false)
 
-    const [newParticipantName, setNewParticipantName] = useState<string>("")
+    const inputElem = useRef<HTMLInputElement>(null)
     const { t } = useTranslation()
+
 
     useEffect(() => {
         if (tournament_table.state >= TTState.TT_STATE_STARTED) {
             setForceDisableOrdering(true)
+        } else {
+            setForceDisableOrdering(false)
+        }
+        if ((tournament_table.size > participants.length) && tournament_table.state < TTState.TT_STATE_MATCHES_ASSIGNED && tournament_table.dialog_type !== DialogType.DT_DOUBLES && tournament_table.dialog_type !== DialogType.DT_FIXED_DOUBLES) {
+            setInputHidden(false)
+        } else {
+            setInputHidden(true)
         }
     }, [tournament_table])
 
@@ -46,11 +55,11 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
     )
 
     const handleAddParticipant = async () => {
-        if (newParticipantName.trim() === "") {
+        if (!inputElem || !inputElem.current || inputElem.current.value.trim() === "") {
             return
         }
         const new_participant: ParticipantFormValues = {
-            name: newParticipantName,
+            name: inputElem.current.value,
             tournament_id,
             sport_type: "tabletennis",
             order: participants.length + 1,
@@ -61,7 +70,7 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
         try {
             await addOrUpdateParticipant(new_participant)
             toast.message(t("toasts.participants.created"))
-            setNewParticipantName("")
+            inputElem.current.value = ""
         } catch (error) {
             toast.error(t("toasts.participants.created_error"))
         }
@@ -113,7 +122,7 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
     }
 
     return (
-        <div className="mt-10">
+        <div className="mt-6">
             <div className='flex flex-col mt-6'>
                 <DndContext
                     sensors={sensors}
@@ -131,43 +140,49 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
 
                     </SortableContext>
                 </DndContext>
-                {((tournament_table.type != GroupType.ROUND_ROBIN && tournament_table.type != GroupType.ROUND_ROBIN_FULL_PLACEMENT) && tournament_table.size > participants.length) && tournament_table.dialog_type !== DialogType.DT_DOUBLES && tournament_table.dialog_type !== DialogType.DT_FIXED_DOUBLES && <div className="flex gap-3">
-                    <Input
-                        type="text"
-                        autoComplete='off'
-                        placeholder={t("admin.tournaments.groups.participants.actions.add_team")}
-                        value={newParticipantName}
-                        onChange={(e) => setNewParticipantName(e.target.value)}
-                        className={`w-full transition-all duration-300 ${highLightInput
-                            ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg'
-                            : ''
-                            }`}
+                {((tournament_table.type != GroupType.ROUND_ROBIN && tournament_table.type != GroupType.ROUND_ROBIN_FULL_PLACEMENT) && !inputHidden && <div className="flex gap-2 mt-2 max-w-xs">
+                    <div className="flex-1 min-w-0">
+                        <Input
+                            type="text"
+                            autoComplete='off'
+                            placeholder={t("admin.tournaments.groups.participants.actions.add_team")}
+                            ref={inputElem}
+                            className={`w-full transition-all duration-300 ${highLightInput
+                                ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg'
+                                : ''
+                                }`}
 
-                    />
+                        />
+                    </div>
                     <Button
                         onClick={handleAddParticipant}
+                        className="flex-shrink-0"
+                        size="sm"
                     >
                         {t("admin.tournaments.groups.participants.actions.submit")}{" "}
                         <PlusCircle />
                     </Button>
 
                 </div>
-                }
-                {(tournament_table.type == GroupType.ROUND_ROBIN || tournament_table.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) &&
-                    <div className="flex gap-3">
-                        <Input
-                            type="text"
-                            autoComplete='off'
-                            placeholder={t("admin.tournaments.groups.participants.actions.add_team")}
-                            value={newParticipantName}
-                            onChange={(e) => setNewParticipantName(e.target.value)}
-                            className={`w-full transition-all duration-300 ${highLightInput
-                                ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg'
-                                : ''
-                                }`}
-                        />
+                )}
+                {(tournament_table.type == GroupType.ROUND_ROBIN || tournament_table.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) && tournament_table.state < TTState.TT_STATE_MATCHES_CREATED &&
+                    <div className="flex gap-2 mt-2 max-w-xs">
+                        <div className="flex-1 min-w-0">
+                            <Input
+                                type="text"
+                                autoComplete='off'
+                                placeholder={t("admin.tournaments.groups.participants.actions.add_team")}
+                                ref={inputElem}
+                                className={`w-full transition-all duration-300 ${highLightInput
+                                    ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg'
+                                    : ''
+                                    }`}
+                            />
+                        </div>
                         <Button
                             onClick={handleAddParticipant}
+                            className="flex-shrink-0"
+                            size="sm"
                         >
                             {t("admin.tournaments.groups.participants.actions.submit")}{" "}
                             <PlusCircle />

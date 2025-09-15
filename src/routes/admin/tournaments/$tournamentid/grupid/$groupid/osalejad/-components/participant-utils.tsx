@@ -1,5 +1,5 @@
 import { ParticipantFormValues } from "../../../../-components/participant-forms/form-utils";
-import { ParticipantResponse, ParticipantsResponse } from "@/queries/participants";
+import { ParticipantsResponse } from "@/queries/participants";
 import { Participant } from "@/types/participants";
 import { UseMutationResult } from "@tanstack/react-query";
 
@@ -25,9 +25,9 @@ export function createParticipantUtils({
     updateParticipantMutation,
     deleteParticipantMutation,
 }: {
-    createParticipantMutation: UseMutationResult<ParticipantResponse, Error, ParticipantFormValues>;
+    createParticipantMutation: UseMutationResult<ParticipantsResponse, Error, ParticipantFormValues>;
     updateParticipantMutation: UseMutationResult<ParticipantsResponse, Error, { formData: ParticipantFormValues, participantId: string }>;
-    deleteParticipantMutation: UseMutationResult<ParticipantResponse, Error, string>;
+    deleteParticipantMutation: UseMutationResult<ParticipantsResponse, Error, string>;
 }): ParticipantUtils {
 
     const addOrUpdateParticipant = async (

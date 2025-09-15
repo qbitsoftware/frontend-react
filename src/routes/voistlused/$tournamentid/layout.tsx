@@ -7,7 +7,6 @@ import NotFoundPage from '@/routes/-components/notfound'
 import { UseGetTournamentTables } from '@/queries/tables'
 import { ErrorResponse } from '@/types/errors'
 import { UseGetTournamentPublic } from '@/queries/tournaments'
-import { UseGetTournamentMatches } from '@/queries/match'
 
 export const Route = createFileRoute('/voistlused/$tournamentid')({
   component: RouteComponent,
@@ -20,8 +19,7 @@ export const Route = createFileRoute('/voistlused/$tournamentid')({
       )
 
       let tournament_tables = null
-      let tournament_matches = null
-      
+
       try {
         tournament_tables = await queryClient.ensureQueryData(
           UseGetTournamentTables(Number(params.tournamentid)),
@@ -35,20 +33,7 @@ export const Route = createFileRoute('/voistlused/$tournamentid')({
         }
       }
 
-      try {
-        tournament_matches = await queryClient.ensureQueryData(
-          UseGetTournamentMatches(Number(params.tournamentid)),
-        )
-      } catch (error) {
-        const err = error as ErrorResponse
-        if (err.response?.status === 404) {
-          tournament_matches = null
-        } else {
-          throw error
-        }
-      }
-
-      return { tournament_tables, tournamentData, tournament_matches }
+      return { tournament_tables, tournamentData }
     } catch (error) {
       throw error
     }

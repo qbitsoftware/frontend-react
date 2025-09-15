@@ -26,13 +26,13 @@ export function TableNumberForm({ match, initialTableNumber, brackets, showLabel
     setTableNumber(initialTableNumber)
   }, [initialTableNumber])
 
-  const matchMutation = UsePatchMatch(Number(params.tournamentid), match.tournament_table_id, match.id)
+  const matchMutation = UsePatchMatch(Number(params.tournamentid))
 
   const handleChange = async (value: string) => {
     setTableNumber(value)
     try {
       const data: Match = { ...match, extra_data: { ...match.extra_data, table: value.trim() } }
-      await matchMutation.mutateAsync(data)
+      await matchMutation.mutateAsync({ group_id: match.tournament_table_id, match_id: match.id, match: data })
     } catch (error) {
       void error
       toast.error(t('toasts.protocol_modals.table_number_change_error'))

@@ -246,29 +246,10 @@ export const UsePostTournament = () => {
 };
 
 export interface BracketReponse {
-  data: Bracket | null;
+  data: Bracket;
   message: string;
   error: string | null;
 }
-
-export const UseStartTournament = (tournament_id: number) => {
-  const queryClient = useQueryClient();
-  return useMutation<BracketReponse, unknown, boolean>({
-    mutationFn: async (start: boolean) => {
-      const { data } = await axiosInstance.post(
-        `/api/v1/tournaments/${tournament_id}`,
-        JSON.stringify({ start }),
-        {
-          withCredentials: true,
-        },
-      );
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.resetQueries({ queryKey: ["tournaments_admin"] });
-    },
-  });
-};
 
 export const UsePatchTournament = (id: number) => {
   const queryClient = useQueryClient();
@@ -355,25 +336,6 @@ export const UseGetHomePageTournamentsQuery = (forHomepage: boolean) => {
     },
   });
 }
-
-export const UseCalcTournamentRating = (tournament_id: number) => {
-  // const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosInstance.post(
-        `/api/v1/tournaments/${tournament_id}/calc_rating`,
-        {},
-        {
-          withCredentials: true,
-        },
-      );
-      return data;
-    },
-    // onSuccess: () => {
-    //   queryClient.resetQueries({ queryKey: ["tournaments_admin"] });
-    // },
-  });
-};
 
 export interface TimetableVisibilityRequest {
   visibility: boolean;

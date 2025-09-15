@@ -12,8 +12,10 @@ import { Check, Pencil, Trash, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from 'sonner'
-import EditImgModal from "../../../../-components/edit-img-modal"
 import { getFirstAndLastName } from "./participant-utils"
+import { TournamentTable } from "@/types/groups"
+import { TTState } from "@/types/matches"
+import RegisterButton from "./register-button"
 
 interface Props {
     participant: Participant
@@ -21,11 +23,11 @@ interface Props {
     updateField: (field: string, value: any) => void
     index: number
     tournament_id: number
-    tournament_table_id: number
+    tournament_table: TournamentTable
 }
 
-export default function PlayerRow({ participant, index, player, updateField, tournament_id, tournament_table_id }: Props) {
-    const { addOrUpdateParticipant } = useParticipantUtils(tournament_id, tournament_table_id)
+export default function PlayerRow({ participant, index, player, updateField, tournament_id, tournament_table }: Props) {
+    const { addOrUpdateParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
     const [editing, setIsEditing] = useState(false)
 
     const [searchTerm, setSearchTerm] = useState("")
@@ -128,26 +130,28 @@ export default function PlayerRow({ participant, index, player, updateField, tou
     }
 
     return (
-        <TableRow className="h-10 bg-card rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40">
-            <TableCell className="text-center py-2 px-3">
+        <TableRow className="h-7 bg-blue-50/20 rounded-lg shadow-sm hover:shadow-md hover:bg-stone-100/40 hover:border border-l-4 border-l-blue-200">
+            <TableCell className="text-center py-0.5 px-2">
                 {editing ?
-                    <div className="flex gap-2">
-                        <div className="h-6 w-6 flex items-center justify-center bg-green-100 cursor-pointer rounded-sm" onClick={handleSubmit} >
-                            <Check className="h-3 w-3" />
+                    <div className="flex gap-1">
+                        <div className="h-4 w-4 flex items-center justify-center bg-green-100 cursor-pointer rounded-sm" onClick={handleSubmit} >
+                            <Check className="h-2.5 w-2.5" />
                         </div>
-                        <div className="h-6 w-6 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm" onClick={handleCancel}>
-                            <X className="h-3 w-3 cursor-pointer" />
+                        <div className="h-4 w-4 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm" onClick={handleCancel}>
+                            <X className="h-2.5 w-2.5 cursor-pointer" />
                         </div>
-                        <div className="h-6 w-6 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm" onClick={handleDelete}>
-                            <Trash className="h-3 w-3 cursor-pointer" />
-                        </div>
+                        {tournament_table.state < TTState.TT_STATE_MATCHES_ASSIGNED &&
+                            <div className="h-4 w-4 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm" onClick={handleDelete}>
+                                <Trash className="h-2.5 w-2.5 cursor-pointer" />
+                            </div>
+                        }
                     </div> :
-                    <div className="w-6 h-6 flex items-center justify-center bg-stone-100 rounded-sm" onClick={handleStartEditing} >
-                        <Pencil className="h-3 w-3 cursor-pointer" />
+                    <div className="w-4 h-4 flex items-center justify-center bg-stone-100 rounded-sm" onClick={handleStartEditing} >
+                        <Pencil className="h-2.5 w-2.5 cursor-pointer" />
                     </div>
                 }
             </TableCell>
-            <TableCell className="font-medium py-2 px-3">
+            <TableCell className="font-medium py-0.5 px-2">
                 <Popover
                     open={popoverOpen}
                     onOpenChange={(open) => {
@@ -155,7 +159,7 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                     }}
                 >
                     <PopoverTrigger asChild>
-                        <Input className="w-[180px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900"
+                        <Input className="w-[150px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900"
                             type="text"
                             disabled={!editing}
                             placeholder="Participant name"
@@ -213,24 +217,28 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                     }
                 </Popover>
             </TableCell>
-            <TableCell className="text-center py-2 px-3">
-                <Input className="w-[40px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="ELTL ID" value={participant.players[index].extra_data.eltl_id || 0} onChange={(e) => { updateField(`players.${index}.extra_data.eltl_id`, Number(e.target.value)) }} />
-            </TableCell>
-            <TableCell className="text-center py-2 px-3">
-                <Input className="w-[60px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="Rank" onChange={(e) => updateField(`players.${index}.rank`, Number(e.target.value))} value={participant.players[index].rank || 0} />
+            <TableCell className="text-center py-0.5 px-2">
+                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="ELTL ID" value={participant.players[index].extra_data.eltl_id || 0} onChange={(e) => { updateField(`players.${index}.extra_data.eltl_id`, Number(e.target.value)) }} />
             </TableCell>
             <TableCell className="text-center py-0.5 px-2">
-                <Input className="w-[35px] h-8 text-sm p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="PP" value={participant.players[index].extra_data.rate_points || 0} onChange={(e) => updateField(`players.${index}.extra_data.rate_points`, Number(e.target.value))} />
+                <Input className="w-[50px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="Rank" onChange={(e) => updateField(`players.${index}.rank`, Number(e.target.value))} value={participant.players[index].rank || 0} />
             </TableCell>
-            <TableCell className="text-center py-2 px-3">
-                <Input className="w-[120px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" type="date" disabled={!editing} placeholder="DOB" onChange={(e) => updateField(`players.${index}.birthdate`, e.target.value)} value={formatDateStringYearMonthDay(participant.players[index].birthdate) || ''} />
+            <TableCell className="text-center py-0.5 px-2">
+                <Input className="w-[35px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled placeholder="PP" value={participant.players[index].extra_data.rate_points || 0} onChange={(e) => updateField(`players.${index}.extra_data.rate_points`, Number(e.target.value))} />
             </TableCell>
-            <TableCell className="text-center py-2 px-3">
-                <Input className="w-[160px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Club name" onChange={(e) => updateField(`players.${index}.extra_data.club`, e.target.value)} value={participant.players[index].extra_data.club || ''} />
+            <TableCell className="text-center py-0.5 px-2">
+                {editing ? (
+                    <Input className="w-[100px] h-5 text-xs" type="date" placeholder="YOB" onChange={(e) => updateField(`players.${index}.birthdate`, e.target.value)} value={formatDateStringYearMonthDay(participant.players[index].birthdate) || ''} />
+                ) : (
+                    <span className="text-xs">{participant.players[index].birthdate ? new Date(participant.players[index].birthdate).getFullYear() : ''}</span>
+                )}
             </TableCell>
-            <TableCell className="text-center py-2 px-3">
+            <TableCell className="text-center py-0.5 px-2">
+                <Input className="w-[130px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Club name" onChange={(e) => updateField(`players.${index}.extra_data.club`, e.target.value)} value={participant.players[index].extra_data.club || ''} />
+            </TableCell>
+            <TableCell className="text-center py-0.5 px-2">
                 <Select value={participant.players[index].sex} disabled={!editing} onValueChange={(value) => updateField(`players.${index}.sex`, value)}>
-                    <SelectTrigger className="w-[80px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900">
+                    <SelectTrigger className="w-[70px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900">
                         <SelectValue placeholder="Sex" />
                     </SelectTrigger>
                     <SelectContent>
@@ -242,7 +250,7 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                     </SelectContent>
                 </Select>
             </TableCell>
-            <TableCell className="text-center py-2 px-3">
+            <TableCell className="py-0.5 px-2">
                 <Checkbox
                     checked={participant.players[index].extra_data.foreign_player === true}
                     disabled={!editing}
@@ -254,12 +262,13 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                 />
             </TableCell>
 
-            <TableCell className="text-center py-2 px-3">
-                <Input className="w-[50px] h-8 text-sm disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Riik" onChange={(e) => updateField(`players.${index}.nationality`, e.target.value)} value={participant.players[index].nationality || ''} />
+            <TableCell className="text-center py-0.5 px-2">
+                <Input className="w-[50px] h-5 text-xs disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing} placeholder="Riik" onChange={(e) => updateField(`players.${index}.nationality`, e.target.value)} value={participant.players[index].nationality || ''} />
             </TableCell>
 
-            <TableCell className="text-center py-2 px-3">
-                <EditImgModal id={participant.players[index].id} playerName={`${participant.players[index].first_name} ${participant.players[index].last_name}`} img={participant.players[index].extra_data.image_url} type="player" />
+            <TableCell className="text-center py-0.5 px-2">
+                {/* <EditImgModal id={participant.players[index].id} playerName={`${participant.players[index].first_name} ${participant.players[index].last_name}`} img={participant.players[index].extra_data.image_url} type="player" /> */}
+                <RegisterButton participant_id={participant.id} player_id={participant.players[index].id} register_id={participant.players[index].registration_id} />
             </TableCell>
 
         </TableRow>

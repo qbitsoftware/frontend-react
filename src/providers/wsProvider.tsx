@@ -41,7 +41,7 @@ export const WSProvider: React.FC<WSProviderProps> = ({ url, children, onMessage
 
             if (shouldReconnectRef.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
                 reconnectAttemptsRef.current++;
-                console.log(`WebSocket disconnected. Reconnecting in ${reconnectInterval}ms... (Attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`);
+                // console.log(`WebSocket disconnected. Reconnecting in ${reconnectInterval}ms... (Attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`);
 
                 reconnectTimeoutRef.current = setTimeout(() => {
                     connect();

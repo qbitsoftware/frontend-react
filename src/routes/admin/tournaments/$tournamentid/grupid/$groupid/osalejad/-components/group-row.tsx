@@ -1,4 +1,3 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 import { useParticipantUtils } from "@/hooks/useParticipantUtils"
@@ -19,6 +18,7 @@ import ParticipantHeader from "./table-header"
 import EditImgModal from "../../../../-components/edit-img-modal"
 import { DialogType, TournamentTable } from "@/types/groups"
 import { NewPlayerDialog } from "./new-player-dialog"
+import { TTState } from "@/types/matches"
 
 interface GroupRowProps {
     participant: Participant
@@ -149,120 +149,105 @@ export default function GroupRow({ participant, index, tournament_id, tournament
         UseGetUsersDebounce(debouncedSearchTerm);
 
 
+    const [isExpanded, setIsExpanded] = useState(!(tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES))
+
     return (
         <>
-            <Accordion type="single" collapsible className="w-full mb-2" ref={setNodeRef} style={style}>
-                <AccordionItem value={participant.id} className="border rounded-md ">
-                    <AccordionTrigger className="hover:no-underline px-4 py-2 [&>svg]:ml-auto [&>svg]:mr-0 flex w-full items-center justify-between"
-                    >
-                        <div className="flex items-center space-x-4">
-                            {!globalEdit && !forceDisableOrdering ? <div
-                                className="flex items-center justify-center hover:bg-indigo-50 gap-3 p-2 rounded-sm cursor-grab"
-                                {...attributes}
-                                {...listeners}
-                            >
-                                <GripVertical className="h-4 w-4" />
-                                {index + 1}
-
+            <div className="w-full mb-4 border rounded-md shadow-sm bg-white" ref={setNodeRef} style={style}>
+                {/* Team Header Row */}
+                <div className="flex items-center justify-between px-3 bg-gray-50/50 border-b hover:bg-gray-100/50 transition-colors">
+                    <div className="flex items-center space-x-2">
+                        {!globalEdit && !forceDisableOrdering ? <div
+                            className="flex items-center justify-center hover:bg-indigo-50 gap-1 p-1 rounded-sm cursor-grab"
+                            {...attributes}
+                            {...listeners}
+                        >
+                            <GripVertical className="h-3 w-3" />
+                            <span className="text-xs font-medium">{index + 1}</span>
+                        </div>
+                            :
+                            <div className="flex items-center justify-center hover:bg-indigo-50 gap-1 p-1 rounded-sm cursor-default">
+                                <GripVertical className="h-3 w-3" />
+                                <Input className="w-[30px] h-5 text-xs p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing || forceDisableOrdering} placeholder="Pos" value={participantState.order}
+                                    onChange={(e) => {
+                                        const newValue = Number(e.target.value);
+                                        const participants_len = 10
+                                        if (newValue <= 0) {
+                                            updateField("order", "");
+                                        }
+                                        if (newValue > participants_len) {
+                                            updateField("order", participants_len);
+                                        }
+                                        if (!isNaN(newValue) && newValue > 0 && newValue <= participants_len) {
+                                            updateField("order", newValue);
+                                        }
+                                    }}
+                                />
                             </div>
-                                :
-                                <div
-                                    className="flex items-center justify-center hover:bg-indigo-50 gap-3 p-2 rounded-sm cursor-default"
-                                >
-                                    <GripVertical className="h-4 w-4" />
-                                    <Input className="w-[40px] p-0 disabled:p-0 disabled:bg-transparent disabled:border-none disabled:opacity-100 disabled:cursor-default disabled:text-stone-900" disabled={!editing || forceDisableOrdering} placeholder="Pos" value={participantState.order}
-                                        onClick={(e) => e.stopPropagation()}
-                                        onChange={(e) => {
-                                            const newValue = Number(e.target.value);
-                                            const participants_len = 10
-                                            if (newValue <= 0) {
-                                                updateField("order", "");
-                                            }
-                                            if (newValue > participants_len) {
-                                                updateField("order", participants_len);
-                                            }
-                                            if (!isNaN(newValue) && newValue > 0 && newValue <= participants_len) {
-                                                updateField("order", newValue);
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            }
-                            <Input
-                                className={`w-[180px] cursor-pointer no-underline `}
-                                type="text"
-                                readOnly={!editing}
-                                placeholder="Participant name"
-                                onChange={(e) => {
-                                    if (editing) {
-                                        e.stopPropagation()
+                        }
+                        <Input
+                            className={`w-[200px] h-6 text-sm font-medium bg-transparent border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-white ${!editing ? 'cursor-default' : ''}`}
+                            type="text"
+                            readOnly={!editing}
+                            placeholder="Team name"
+                            onChange={(e) => updateField("name", e.target.value)}
+                            value={participantState.name}
+                        />
+                        <div className="ml-2">
+                            {editing ?
+                                <div className="flex gap-1">
+                                    <div className="h-5 w-5 flex items-center justify-center bg-green-100 cursor-pointer rounded-sm" onClick={handleUpdateParticipant}>
+                                        <Check className="h-3 w-3" />
+                                    </div>
+                                    <div className="h-5 w-5 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm" onClick={handleCancelEditing}>
+                                        <X className="h-3 w-3 cursor-pointer" />
+                                    </div>
+                                    {tournament_table.state < TTState.TT_STATE_MATCHES_ASSIGNED &&
+                                        <div className="h-5 w-5 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm" onClick={handleDeleteParticipant}>
+                                            <Trash className="h-3 w-3 cursor-pointer" />
+                                        </div>
                                     }
-                                    updateField("name", e.target.value)
-                                }}
-                                onClick={(e) => { if (editing) e.stopPropagation() }}
-                                onKeyDown={(e) => {
-                                    if (editing && e.key === " ") {
-                                        updateField("name", participantState.name + " ")
-                                        e.preventDefault()
-                                    }
-                                }}
-                                value={participantState.name}
-                            />
-                            <div className="ml-4" >
-                                {editing ?
-                                    <div className="flex gap-2">
-                                        <div className="h-8 w-8 flex items-center justify-center bg-green-100 cursor-pointer rounded-sm" onClick={(e) => {
-                                            handleUpdateParticipant()
-                                            e.stopPropagation()
-                                        }}>
-                                            <Check className="h-4 w-4" />
-                                        </div>
-                                        <div className="h-8 w-8 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm" onClick={(e) => {
-                                            handleCancelEditing()
-                                            e.stopPropagation()
-                                        }} >
-                                            <X className="h-4 w-4 cursor-pointer" />
-                                        </div>
-                                        <div className="h-8 w-8 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm" onClick={(e) => {
-                                            handleDeleteParticipant()
-                                            e.stopPropagation()
-                                        }}>
-                                            <Trash className="h-4 w-4 cursor-pointer" />
-                                        </div>
-                                    </div> :
-                                    <div className="h-8 w-8 cursor-pointer flex items-center justify-center bg-stone-100 rounded-sm"
-                                        onClick={(e) => {
+                                </div> : !globalEdit ?
+                                    <div className="h-5 w-5 cursor-pointer flex items-center justify-center bg-stone-100 rounded-sm"
+                                        onClick={() => {
                                             if (!globalEdit) {
                                                 handleStartEditing()
-                                                e.stopPropagation()
                                             }
                                         }}
                                     >
-                                        {globalEdit ? null : <Pencil className="h-4 w-4 cursor-pointer hover:text-blue-500" />}
-                                    </div>
-                                }
-                            </div>
-                            {tournament_table.dialog_type !== DialogType.DT_DOUBLES && tournament_table.dialog_type !== DialogType.DT_FIXED_DOUBLES && (
-                                <div onClick={(e) => { e.stopPropagation() }}>
-                                    <EditImgModal id={participantState.id} playerName={participantState.name} img={participant.extra_data.image_url} type="participant" />
-                                </div>
-                            )}
+                                        <Pencil className="h-3 w-3 cursor-pointer hover:text-blue-500" />
+                                    </div> : null
+                            }
                         </div>
+                        {tournament_table.dialog_type !== DialogType.DT_DOUBLES && tournament_table.dialog_type !== DialogType.DT_FIXED_DOUBLES && (
+                            <EditImgModal id={participantState.id} playerName={participantState.name} img={participant.extra_data.image_url} type="participant" />
+                        )}
+                    </div>
 
-                    </AccordionTrigger>
+                    {/* Collapse/Expand Button */}
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="h-6 w-6 p-0"
+                    >
+                        {isExpanded ? <X className="h-3 w-3" /> : <PlusCircle className="h-3 w-3" />}
+                    </Button>
+                </div>
 
-                    <AccordionContent className="px-4 pt-2 pb-4">
-                        <div className="px-4 overflow-x-auto">
-                            <Table>
-                                <ParticipantHeader team={true} />
-                                <TableBody>
-                                    {participantState.players && participantState.players.map((player, idx) => (
-                                        <PlayerRow key={idx} player={player} participant={participantState} index={idx} updateField={(field, value) => updateField(field, value)} tournament_id={tournament_id} tournament_table_id={tournament_table.id} />
-                                    ))}
-                                    {(tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) && participantState.players && participantState.players.length >= 2 ? <div></div> : (<TableRow>
-                                        <TableCell>
-                                        </TableCell>
-                                        <TableCell className="">
+                {/* Players Section - Show by default */}
+                {isExpanded && (
+                    <div className="px-3 py-2">
+                        <Table>
+                            <ParticipantHeader team={true} />
+                            <TableBody>
+                                {participantState.players && participantState.players.map((player, idx) => (
+                                    <PlayerRow key={idx} player={player} participant={participantState} index={idx} updateField={(field, value) => updateField(field, value)} tournament_id={tournament_id} tournament_table={tournament_table} />
+                                ))}
+                                {(tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) && participantState.players && participantState.players.length >= 2 ? null : (
+                                    <TableRow className="border-l-4 border-l-gray-200 bg-gray-50/20 h-7">
+                                        <TableCell className="py-0.5 px-2 pl-5"></TableCell>
+                                        <TableCell className="py-0.5 px-2">
                                             <Popover
                                                 open={popoverOpen}
                                                 onOpenChange={(open) => {
@@ -273,10 +258,10 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                                     <Input
                                                         type="text"
                                                         autoComplete='off'
-                                                        placeholder={"Nimi"}
+                                                        placeholder={"Add player name"}
                                                         value={searchTerm}
                                                         onChange={(e) => { setSearchTerm(e.target.value) }}
-                                                        className="min-w-[120px]"
+                                                        className="min-w-[120px] max-w-[200px] h-8 text-xs"
                                                     />
                                                 </PopoverTrigger>
                                                 {playerSuggestions && playerSuggestions.data &&
@@ -304,7 +289,6 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                                                     const new_player = NewPlayer(user)
                                                                     const currentPlayers = participantState.players || []
                                                                     const updatedPlayers = [...currentPlayers, new_player]
-
 
                                                                     setSearchTerm('')
                                                                     try {
@@ -336,11 +320,11 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                                     </PopoverContent>
                                                 }
                                             </Popover>
-
                                         </TableCell>
-                                        <TableCell colSpan={6}></TableCell>
-                                        <TableCell className="sticky right-0 p-3">
+                                        <TableCell colSpan={6} className="py-0.5 px-2"></TableCell>
+                                        <TableCell className="py-0.5 px-2">
                                             <Button
+                                                className="text-sm"
                                                 onClick={async () => {
                                                     if (searchTerm.trim() === "") {
                                                         return
@@ -351,22 +335,20 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                                                         setNewPlayer(new_player)
                                                         setNewPlayerDialogOpen(true)
                                                     }
-                                                }
-                                                }
+                                                }}
+                                                size="sm"
                                             >
                                                 {t("admin.tournaments.groups.participants.actions.submit")}{" "}
                                                 <PlusCircle />
                                             </Button>
                                         </TableCell>
                                     </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                )}
+            </div>
             {newPlayer && <NewPlayerDialog
                 isOpen={newPlayerDialogOpen}
                 onOpenChange={setNewPlayerDialogOpen}

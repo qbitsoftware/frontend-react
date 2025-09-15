@@ -1,14 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
-import { MatchesResponse, UseGetMatchesQuery } from "@/queries/match";
 import { UsePostOrder, UsePostSeeding, UsePostOrderReset, UseImportParticipants, UsePostParticipantJoin, UsePostParticipantMove } from "@/queries/participants";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "@tanstack/react-router";
-import { DialogType, TournamentTable } from "@/types/groups";
+import { DialogType } from "@/types/groups";
 import { toast } from 'sonner';
 import { GroupType, TTState } from "@/types/matches";
-import { Participant } from "@/types/participants";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,30 +18,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Upload, Download, TrendingUp, CheckCircle, Users, Settings, Play, ChevronRight, Grid2x2, Zap, UserPlus } from "lucide-react";
 import * as XLSX from 'xlsx';
+import { TournamentTableWithStages } from "@/queries/tables";
 
 interface SeedingHeaderProps {
   tournament_id: number;
-  table_data: TournamentTable;
-  participants: Participant[]
+  data: TournamentTableWithStages;
   onHighlightInput?: () => void;
   onGlowBracketTabs?: () => void;
 }
 
 const SeedingHeader = ({
   tournament_id,
-  table_data,
-  participants,
+  data,
   onHighlightInput,
   onGlowBracketTabs,
 }: SeedingHeaderProps) => {
-  const { data: matches_data } = UseGetMatchesQuery(
-    tournament_id,
-    table_data.id
-  );
-
+  const table_data = data.group
   const updateSeeding = UsePostSeeding(tournament_id, table_data.id);
   const updateOrder = UsePostOrder(tournament_id, table_data.id);
   const resetSeedingMutation = UsePostOrderReset(tournament_id, table_data.id);
@@ -51,42 +43,24 @@ const SeedingHeader = ({
   const assignRoundRobin = UsePostParticipantJoin(tournament_id, table_data.id, 'dynamic')
   const moveParticipant = UsePostParticipantMove(tournament_id, table_data.id);
   const importMutation = UseImportParticipants(tournament_id, table_data.id)
-  const [showWarningModal, setShowWarningModal] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const getClosestPowerOf2 = (num: number): number => {
-    if (num <= 4) return 4;
-    return Math.pow(2, Math.ceil(Math.log2(num)));
-  };
-
-  const [disabled, setDisabled] = useState(false);
-  const isDisabled = (data: MatchesResponse | undefined): boolean => {
-    if (!data || !data.data) {
-      return false;
-    }
-    const have_matches = data.data.find((match) => {
-      return match.match.p1_id != "" && match.match.p2_id != "";
-    });
-
-    if (!have_matches) {
-      return false;
-    } else {
-      return true;
-    }
-  };
+  const [disabled, setDisabled] = useState(table_data.state > TTState.TT_STATE_MATCHES_CREATED);
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    setDisabled(isDisabled(matches_data));
-  }, [matches_data]);
+    setDisabled(table_data.state > TTState.TT_STATE_MATCHES_CREATED);
+  }, [table_data.state])
 
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const executeSeeding = async (order: string) => {
+    setIsLoading(true);
     try {
       await updateSeeding.mutateAsync({ order });
       toast.message(t('toasts.participants.seeding_success'));
-      // Redirect to matches page after successful seeding
       navigate({
         to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
         params: {
@@ -102,41 +76,20 @@ const SeedingHeader = ({
       void error;
       toast.error(t('toasts.participants.seeding_error'));
     }
+    setIsLoading(false);
   };
 
   const handleSeeding = async (order: string | undefined) => {
+    setIsLoading(true);
     if (!order) {
       return;
     }
-    // const showWarning = !(table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT || table_data.type == GroupType.DYNAMIC) && checkPowerOf2Warning();
-    // if (showWarning) {
-    //   setShowWarningModal(true);
-    // } else {
     await executeSeeding(order);
-    // }
-  };
-
-  const handleWarningConfirm = async () => {
-    setShowWarningModal(false);
-    await executeSeeding("rating");
-  };
-
-  const handleWarningCancel = () => {
-    setShowWarningModal(false);
-  };
-
-  const getWarningMessage = () => {
-    let participantCount = participants?.length || 0;
-    if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-      const pairs = participants?.filter((participant) => participant.players.length == 2) || [];
-      participantCount = pairs.length;
-    }
-
-    const closestPowerOf2 = getClosestPowerOf2(participantCount);
-    return t('admin.tournaments.warnings.bracket_size_mismatch.body', { participants: participantCount, closestPowerOf2, tableSize: table_data.size });
+    setIsLoading(false)
   };
 
   const handleOrder = async () => {
+    setIsLoading(true)
     try {
       await updateOrder.mutateAsync();
       toast.message(t('toasts.participants.order_success'))
@@ -144,9 +97,11 @@ const SeedingHeader = ({
       void error;
       toast.error(t("toasts.participants.order_error"))
     }
+    setIsLoading(false)
   }
 
   const handleReset = async () => {
+    setIsLoading(true)
     try {
       await resetSeedingMutation.mutateAsync();
       toast.message(t('toasts.participants.reset_success'))
@@ -154,6 +109,7 @@ const SeedingHeader = ({
       void error;
       toast.error(t("toasts.participants.reset_error"))
     }
+    setIsLoading(false)
   };
 
   const handleImportClick = () => {
@@ -183,6 +139,7 @@ const SeedingHeader = ({
   };
 
   const handleDoublePairing = async () => {
+    setIsLoading(true)
     try {
       await assignPairs.mutateAsync()
       toast.message(t('toasts.participants.double_pairing_success'));
@@ -190,9 +147,11 @@ const SeedingHeader = ({
       void error
       toast.error(t('toasts.participants.double_pairing_error'));
     }
+    setIsLoading(false)
   }
 
   const handleRoundRobinPairing = async () => {
+    setIsLoading(true)
     try {
       await assignRoundRobin.mutateAsync()
       toast.message(t('toasts.participants.double_pairing_success'));
@@ -200,20 +159,21 @@ const SeedingHeader = ({
       void error
       toast.error(t('toasts.participants.double_pairing_error'));
     }
+    setIsLoading(false)
   }
 
   const handleParticipantMoving = async () => {
+    setIsLoading(true)
     try {
-      setDisabled(true)
       await moveParticipant.mutateAsync()
       toast.message(t('toasts.participants.advance_success'))
       // Trigger glow effect on bracket tabs after successful advancement
       onGlowBracketTabs?.()
-      setDisabled(false)
     } catch (error) {
       void error
       toast.error(t('toasts.participants.advance_error'))
     }
+    setIsLoading(false)
   }
 
   const handleDownloadTemplate = () => {
@@ -245,9 +205,8 @@ const SeedingHeader = ({
   };
 
   const getSteps = () => {
-    const hasParticipants = participants.length > 0;
+    const hasParticipants = data.participants ? data.participants.length > 0 : false;
     const isDoubles = table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES;
-    // const isRoundRobin = table_data.type === GroupType.ROUND_ROBIN || table_data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT;
     const isDynamic = table_data.type === GroupType.DYNAMIC;
     const isFinished = table_data.state === TTState.TT_STATE_FINISHED;
 
@@ -307,21 +266,22 @@ const SeedingHeader = ({
             <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] text-sm">
               {(() => {
                 if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-                  const pairs = participants.filter((participant) => participant.players.length > 1);
+                  const pairs = data.participants.filter((participant) => participant.players.length > 1);
                   return pairs.length;
                 }
                 if (table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
-                  return participants.filter((participant) => participant.type === "round_robin").length;
+                  return data.participants.filter((participant) => participant.type === "round_robin").length;
                 }
                 if (table_data.type == GroupType.DYNAMIC) {
-                  return participants.filter((participant) => participant.type !== "round_robin").length;
+                  return data.participants.filter((participant) => participant.type !== "round_robin").length;
                 }
-                return participants.length;
+                return data.participants.length;
               })()} / {table_data.size}{" "}
             </p>
             {(table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) && (
               <p className="bg-blue-50 font-medium px-3 py-1 rounded-full border border-blue-200 text-blue-700 text-sm">
-                {participants.filter((participant) => participant.players.length == 1).length} {t('admin.tournaments.participants.players')}
+                {data.participants.filter((participant) => participant.players.length == 1).length} {t('admin.tournaments.participants.players')}
+                {t('admin.tournaments.participants.players')}
               </p>
             )}
           </div>
@@ -329,27 +289,27 @@ const SeedingHeader = ({
       </div>
 
       {/* Step-by-step workflow */}
-      <div className="w-full space-y-3">
+      <div className="w-full space-y-2">
         {steps.map((step, index) => {
           const StepIcon = step.icon;
           const isCurrentStep = !step.completed && (index === 0 || steps[index - 1]?.completed);
 
           return (
-            <div key={step.id} className={`border rounded-lg p-3 transition-all ${step.completed ? 'bg-green-50 border-green-200' :
+            <div key={step.id} className={`border rounded-md p-2.5 transition-all ${step.completed ? 'bg-green-50 border-green-200' :
               isCurrentStep ? 'bg-blue-50 border-blue-200' :
                 'bg-gray-50 border-gray-200'
               }`}>
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-2.5">
                 <div className={`flex-shrink-0 mt-0.5 ${step.completed ? 'text-green-600' :
                   isCurrentStep ? 'text-blue-600' :
                     'text-gray-400'
                   }`}>
-                  {step.completed ? <CheckCircle className="h-5 w-5" /> : <StepIcon className="h-5 w-5" />}
+                  {step.completed ? <CheckCircle className="h-4 w-4" /> : <StepIcon className="h-4 w-4" />}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h6 className={`font-medium text-sm ${step.completed ? 'text-green-800' :
+                  <div className="flex items-center justify-between mb-0.5">
+                    <h6 className={`font-medium text-xs ${step.completed ? 'text-green-800' :
                       isCurrentStep ? 'text-blue-800' :
                         'text-gray-600'
                       }`}>
@@ -360,7 +320,7 @@ const SeedingHeader = ({
                     )}
                   </div>
 
-                  <p className="text-xs text-gray-600 mb-2">{step.description}</p>
+                  <p className="text-xs text-gray-600 mb-1.5">{step.description}</p>
 
                   {/* Action buttons for current/available steps */}
                   {(step.actions === 'import' || isCurrentStep || (step.actions === 'advance' && step.id === 3)) && (
@@ -413,10 +373,10 @@ const SeedingHeader = ({
                         <div className="flex flex-wrap items-center gap-2">
                           <Button
                             onClick={handleOrder}
-                            disabled={disabled}
+                            disabled={isLoading || disabled}
                             variant="outline"
                             size="sm"
-                            className="h-8 text-xs flex items-center gap-1.5"
+                            className="h-7 text-xs flex items-center gap-1.5"
                           >
                             <TrendingUp className="h-3 w-3" />
                             {t('admin.tournaments.setup.order_rating')}
@@ -426,10 +386,10 @@ const SeedingHeader = ({
                             <>
                               <ChevronRight className="hidden md:block h-4 w-4 text-gray-400 flex-shrink-0" />
                               <Button
-                                disabled={disabled}
+                                disabled={isLoading || disabled}
                                 onClick={handleDoublePairing}
                                 size="sm"
-                                className="h-8 text-xs flex items-center gap-1.5"
+                                className="h-7 text-xs flex items-center gap-1.5"
                               >
                                 {t('admin.tournaments.setup.generate_pairs')}
                               </Button>
@@ -440,10 +400,10 @@ const SeedingHeader = ({
                             <>
                               <ChevronRight className="hidden md:block h-4 w-4 text-gray-400 flex-shrink-0" />
                               <Button
-                                disabled={disabled}
+                                disabled={isLoading || disabled}
                                 onClick={handleRoundRobinPairing}
                                 size="sm"
-                                className="h-8 text-xs flex items-center gap-1.5"
+                                className="h-7 text-xs flex items-center gap-1.5"
                               >
                                 <Grid2x2 className="h-3 w-3" />
                                 {t('admin.tournaments.setup.generate_subgroups')}
@@ -456,8 +416,9 @@ const SeedingHeader = ({
                               <ChevronRight className="hidden md:block h-4 w-4 text-gray-400 flex-shrink-0" />
                               <Button
                                 onClick={() => handleSeeding("rating")}
+                                disabled={isLoading}
                                 size="sm"
-                                className="h-8 text-xs flex items-center gap-1.5"
+                                className="h-7 text-xs flex items-center gap-1.5"
                               >
                                 <Zap className="h-3 w-3" />
                                 {disabled && table_data.type === GroupType.DYNAMIC
@@ -474,7 +435,8 @@ const SeedingHeader = ({
                         <Button
                           onClick={handleParticipantMoving}
                           size="sm"
-                          className="h-8 text-xs flex items-center gap-1.5"
+                          disabled={isLoading || disabled}
+                          className="h-7 text-xs flex items-center gap-1.5"
                         >
                           <Zap className="h-3 w-3" />
                           {t('admin.tournaments.setup.advance_players')}
@@ -485,13 +447,13 @@ const SeedingHeader = ({
 
                   {/* Reset option for completed tournaments */}
                   {disabled && step.actions === 'seeding' && (
-                    <div className="mt-2 pt-2 border-t border-gray-200">
+                    <div className="mt-1.5 pt-1.5 border-t border-gray-200">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="h-6 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             {t('admin.tournaments.setup.reset_seeding')}
                           </Button>
@@ -523,25 +485,6 @@ const SeedingHeader = ({
           );
         })}
       </div>
-
-      <Dialog open={showWarningModal} onOpenChange={setShowWarningModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("admin.tournaments.groups.order.title")}</DialogTitle>
-            <DialogDescription>
-              {getWarningMessage()}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleWarningCancel}>
-              {t("admin.tournaments.groups.participants.actions.cancel")}
-            </Button>
-            <Button onClick={handleWarningConfirm}>
-              {t("admin.tournaments.groups.participants.actions.continue_anyway")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </CardHeader>
   );
 };

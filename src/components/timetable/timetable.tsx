@@ -73,7 +73,7 @@ export function Timetable({
         })
 
         const daysSet = new Set<string>()
-        tournamentMatches.data.forEach(match => {
+        tournamentMatches.data.matches.forEach(match => {
             if (match.match.start_date && new Date(match.match.start_date).getTime() > 0) {
                 const tt = classMap.get(match.match.tournament_table_id)
                 if (tt && !tt.time_table) {
@@ -101,7 +101,7 @@ export function Timetable({
             classMap.set(table.id, table)
         })
 
-        return tournamentMatches.data.filter(match => {
+        return tournamentMatches.data.matches.filter(match => {
             const tt = classMap.get(match.match.tournament_table_id)
             if (tt && !tt.time_table) {
                 return false

@@ -4,17 +4,15 @@ import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { useQueryClient } from "@tanstack/react-query"
-import { axiosInstance } from "@/queries/axiosconf"
 import { DialogType, TournamentTable } from "@/types/groups"
 import { Edit } from "lucide-react"
 import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
 import { getRoundDisplayName } from "@/lib/match-utils"
 import { UseGetTournamentParticipantsQuery } from "@/queries/participants"
-import { useWS } from "@/providers/wsProvider"
+import { UsePatchMatch } from "@/queries/match"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
@@ -35,11 +33,10 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 }: MatchesTableProps) => {
     const { data } = UseGetTournamentParticipantsQuery(tournament_id)
     const { t } = useTranslation()
-    const queryClient = useQueryClient()
-    const { connected } = useWS()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
     const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
+    const matchUpdate = UsePatchMatch(tournament_id)
 
     const tableRef = useRef<Table>(null)
     const [scrollTop, setScrollTop] = useState(0)
@@ -49,15 +46,9 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         return `${matches.length}-${matchIds.join('-')}`
     }, [matches.length, matchIds])
 
-    useEffect(() => {
-        if (tableRef.current) {
-            tableRef.current.forceUpdateGrid()
-        }
-    }, [matches])
-
-    const handleScroll = ({ scrollTop: newScrollTop }: { scrollTop: number }) => {
+    const handleScroll = useCallback(({ scrollTop: newScrollTop }: { scrollTop: number }) => {
         setScrollTop(newScrollTop)
-    }
+    }, [])
 
     const formatWaitingTime = (finishDate: string) => {
         const finished = new Date(finishDate)
@@ -226,27 +217,17 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 }
             }
 
-            await axiosInstance.patch(
-                `/api/v1/tournaments/${tournament_id}/tables/${match.match.tournament_table_id}/match/${match.match.id}`,
-                updatedMatch,
-                { withCredentials: true }
-            )
-
-            if (!connected) {
-                queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
-                queryClient.invalidateQueries({ queryKey: ['venues_free', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['venues_all', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
-            }
+            await matchUpdate.mutateAsync({
+                group_id: match.match.tournament_table_id,
+                match_id: match.match.id,
+                match: updatedMatch
+            })
 
             setPendingScores(prev => {
                 const newScores = { ...prev }
                 delete newScores[match.match.id]
                 return newScores
             })
-
             toast.success(t("admin.tournaments.matches.score_updated_success"))
         } catch (error) {
             toast.error(t("admin.tournaments.matches.score_update_error"))

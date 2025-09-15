@@ -4,6 +4,7 @@ import { axiosInstance } from "./axiosconf";
 import TournamentTableForm from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
 import { TimeTableFormValues } from "@/routes/admin/tournaments/$tournamentid/ajakava/seaded/-components/timetable-configurations-form";
 import { useWS } from "@/providers/wsProvider";
+import { Participant } from "@/types/participants";
 
 export interface TournamentTableResponse {
     data: TournamentTable | null
@@ -18,8 +19,9 @@ export interface TournamentTableWithStagesResponse {
 }
 
 export interface TournamentTableWithStages {
-    group: TournamentTable | null;
+    group: TournamentTable;
     stages: TournamentTable[] | null;
+    participants: Participant[];
 }
 
 interface TournamentTablesResponse {
@@ -75,8 +77,31 @@ export const UseGetTournamentTable = (tournament_id: number, tournament_table_id
             })
             return data;
         },
-        staleTime: 5 * 60 * 1000,
-        gcTime: 30 * 60 * 1000,
+        select: (data) => {
+            const orderedParticipants = data.data.participants.map(participant => {
+                if (!participant.players) {
+                    return participant
+                }
+                const sortedPlayers = [...participant.players].sort((a, b) => {
+                    if (a.rank === 0 && b.rank !== 0) return 1
+                    if (b.rank === 0 && a.rank !== 0) return -1
+                    if (a.rank === 0 && b.rank === 0) return 0
+                    return a.rank - b.rank
+                })
+                return {
+                    ...participant,
+                    players: sortedPlayers
+                }
+            })
+
+            return {
+                ...data,
+                data: {
+                    ...data.data,
+                    participants: orderedParticipants
+                }
+            }
+        }
     })
 }
 

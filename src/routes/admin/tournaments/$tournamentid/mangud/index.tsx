@@ -14,7 +14,6 @@ import { TableTennisProtocolModal } from '../-components/tt-modal/tt-modal'
 import { FilterOptions } from '../-components/matches'
 import { useTranslation } from 'react-i18next'
 import LoadingScreen from '@/routes/-components/loading-screen'
-import { useNavigationHelper } from '@/providers/navigationProvider'
 import PlacementCompletionModal from '../-components/placement-completion-modal'
 
 export const Route = createFileRoute(
@@ -40,7 +39,6 @@ function RouteComponent() {
   const search = useSearch({ from: "/admin/tournaments/$tournamentid/mangud/" });
   const { data: tablesQuery, isLoading: isLoadingTables } = UseGetTournamentTablesQuery(Number(params.tournamentid))
   const { t } = useTranslation()
-  const { groupId } = useNavigationHelper();
   const { data: matchData, isLoading: isLoadingMatches } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
 
   const tableMap = useMemo(() => {
@@ -56,25 +54,13 @@ function RouteComponent() {
     setFilterValue(urlFilterValue);
   }, [search.filter]);
 
-  const handleGroupChange = (newGroupId: number) => {
-    navigate({
-      to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
-      params: {
-        tournamentid: String(params.tournamentid),
-        groupid: groupId ? String(groupId) : String(newGroupId),
-      },
-      search: {
-        filter: filterValue.join(','),
-        openMatch: undefined,
-      },
-      replace: true,
-    });
-  }
 
-  useEffect(() => {
+  const filteredData = useMemo(() => {
+    if (!matchData) return [];
+
     const activeParticipantIds: string[] = [];
 
-    matchData?.data?.forEach((match) => {
+    matchData?.data?.matches.forEach((match) => {
       if (match.match.state === MatchState.ONGOING) {
         if (match.p1.id !== "") {
           activeParticipantIds.push(match.p1.id);
@@ -86,17 +72,13 @@ function RouteComponent() {
     });
 
     setActiveParticipant(activeParticipantIds);
-  }, [matchData?.data]);
 
-
-  const filteredData = useMemo(() => {
-    if (!matchData?.data) return [];
 
     let filtered;
     if (filterValue.includes("all")) {
-      filtered = matchData.data || [];
+      filtered = matchData.data.matches || [];
     } else {
-      filtered = matchData.data.filter(
+      filtered = matchData.data.matches.filter(
         (match) => filterValue.includes(match.match.state)
       );
     }
@@ -114,22 +96,22 @@ function RouteComponent() {
       const roundRobinMatches = matches.filter(match => {
         const table = tableMap.get(match.match.tournament_table_id);
         const isRoundRobinMatchType = match.match.type === "roundrobin";
-        const isRoundRobinTableType = table?.type === GroupType.ROUND_ROBIN || 
-                                      table?.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
-                                      table?.type === GroupType.CHAMPIONS_LEAGUE ||
-                                      table?.type === GroupType.DYNAMIC;
-        
+        const isRoundRobinTableType = table?.type === GroupType.ROUND_ROBIN ||
+          table?.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
+          table?.type === GroupType.CHAMPIONS_LEAGUE ||
+          table?.type === GroupType.DYNAMIC;
+
         return isRoundRobinMatchType && isRoundRobinTableType;
       });
-      
+
       const otherMatches = matches.filter(match => {
         const table = tableMap.get(match.match.tournament_table_id);
         const isRoundRobinMatchType = match.match.type === "roundrobin";
-        const isRoundRobinTableType = table?.type === GroupType.ROUND_ROBIN || 
-                                      table?.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
-                                      table?.type === GroupType.CHAMPIONS_LEAGUE ||
-                                      table?.type === GroupType.DYNAMIC;
-        
+        const isRoundRobinTableType = table?.type === GroupType.ROUND_ROBIN ||
+          table?.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT ||
+          table?.type === GroupType.CHAMPIONS_LEAGUE ||
+          table?.type === GroupType.DYNAMIC;
+
         return !(isRoundRobinMatchType && isRoundRobinTableType);
       });
 
@@ -160,7 +142,7 @@ function RouteComponent() {
         for (const groupId of groupKeys) {
           const counter = groupCounters.get(groupId)!;
           const groupMatches = groupedRR.get(groupId)!;
-          
+
           if (counter < groupMatches.length) {
             interleavedRR.push(groupMatches[counter]);
             groupCounters.set(groupId, counter + 1);
@@ -213,7 +195,27 @@ function RouteComponent() {
       });
     };
 
-    const ongoingSorted = sortWithRoundRobinInterleave(ongoing);
+    const sortOngoingByTable = (matches: MatchWrapper[]) => {
+      return matches.slice().sort((a, b) => {
+        const tableStrA = a.match.extra_data?.table || "0";
+        const tableStrB = b.match.extra_data?.table || "0";
+
+        const tableA = Number(tableStrA);
+        const tableB = Number(tableStrB);
+
+        const numA = isNaN(tableA) ? 0 : tableA;
+        const numB = isNaN(tableB) ? 0 : tableB;
+
+        if (numA !== numB) {
+          return numA - numB;
+        }
+
+
+        return a.match.id.localeCompare(b.match.id);
+      });
+    };
+
+    const ongoingSorted = sortOngoingByTable(ongoing);
     const createdSorted = sortWithRoundRobinInterleave(created);
     const finishedSorted = sortIfTimetable(finished);
 
@@ -271,7 +273,6 @@ function RouteComponent() {
         < CompactClassFilters
           availableTables={tablesQuery?.data || []}
           activeGroupId={[0]}
-          onGroupChange={handleGroupChange}
         />
         <LoadingScreen />
       </div>
@@ -282,7 +283,6 @@ function RouteComponent() {
       < CompactClassFilters
         availableTables={tablesQuery?.data || []}
         activeGroupId={[0]}
-        onGroupChange={handleGroupChange}
       />
 
       <Card>

@@ -186,7 +186,29 @@ export const Matches: React.FC<MatchesProps> = ({
       });
     };
 
-    const ongoing = sortMatches(validMatches.filter(m => m.match.state === MatchState.ONGOING));
+    const sortOngoingByTable = (matches: MatchWrapper[]) => {
+      return matches.slice().sort((a, b) => {
+        const tableStrA = a.match.extra_data?.table || "0";
+        const tableStrB = b.match.extra_data?.table || "0";
+
+        // Convert to numbers with explicit base 10
+        const tableA = Number(tableStrA);
+        const tableB = Number(tableStrB);
+
+        // Ensure they're valid numbers
+        const numA = isNaN(tableA) ? 0 : tableA;
+        const numB = isNaN(tableB) ? 0 : tableB;
+
+        if (numA !== numB) {
+          return numA - numB;
+        }
+
+
+        return a.match.id.localeCompare(b.match.id);
+      });
+    };
+
+    const ongoing = sortOngoingByTable(validMatches.filter(m => m.match.state === MatchState.ONGOING));
     const created = sortMatches(validMatches.filter(m => m.match.state === MatchState.CREATED));
     const finished = sortMatches(validMatches.filter(m => m.match.state === MatchState.FINISHED));
 

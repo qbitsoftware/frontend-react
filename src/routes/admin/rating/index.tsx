@@ -40,6 +40,8 @@ function RouteComponent() {
     const [withRating, setWithRating] = useState(false);
     const [selectedDate, setSelectedDate] = useState('2025-09-09');
 
+    console.log("rerendering")
+
 
     useEffect(() => {
         const updateTimer = () => {

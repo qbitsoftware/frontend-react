@@ -1,9 +1,9 @@
-import { UseGetTournamentMatches } from "@/queries/match";
 import { useEffect, useState } from "react";
 import { QueryClient } from "@tanstack/react-query";
 import { UseGetTournamentTables } from "@/queries/tables";
 import i18n from "@/i18n";
 import { Tournament } from "@/types/tournaments";
+import { UseGetTournamentMatchesQuery } from "@/queries/match";
 
 export const getDaysInMonth = (year: number) => {
   const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -67,30 +67,30 @@ export const formatDate = (year: number, month: number, day: number) => {
 export const formatDateRange = (startDate: string, endDate: string) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   // Get the day in Estonian timezone
-  const startDay = new Intl.DateTimeFormat('et-EE', { 
-    day: 'numeric', 
-    timeZone: 'Europe/Tallinn' 
+  const startDay = new Intl.DateTimeFormat('et-EE', {
+    day: 'numeric',
+    timeZone: 'Europe/Tallinn'
   }).format(start);
-  
-  const endDay = new Intl.DateTimeFormat('et-EE', { 
-    day: 'numeric', 
-    timeZone: 'Europe/Tallinn' 
+
+  const endDay = new Intl.DateTimeFormat('et-EE', {
+    day: 'numeric',
+    timeZone: 'Europe/Tallinn'
   }).format(end);
-  
+
   return `${startDay.padStart(2, "0")} - ${endDay.padStart(2, "0")}`;
 };
 
 export const getAbbreviatedMonth = (dateString: string) => {
   const date = new Date(dateString);
-  
+
   // Get the month in Estonian timezone
-  const monthIndex = new Intl.DateTimeFormat('et-EE', { 
+  const monthIndex = new Intl.DateTimeFormat('et-EE', {
     month: 'numeric',
-    timeZone: 'Europe/Tallinn' 
+    timeZone: 'Europe/Tallinn'
   }).format(date);
-  
+
   const abbreviations = [
     'Jan.',
     'Feb.',
@@ -162,10 +162,7 @@ export const useTournamentEvents = (
         });
 
         const matchesPromises = meistrikad.map(tournament =>
-          queryClient.ensureQueryData(UseGetTournamentMatches(Number(tournament.id)))
-            .catch(error => {
-              return { data: [], error };
-            })
+          UseGetTournamentMatchesQuery(Number(tournament.id))
         );
 
         const allMatchesData = await Promise.all(matchesPromises);
@@ -206,7 +203,7 @@ export const useTournamentEvents = (
           if (matchesData && matchesData.data) {
             const uniqueGamedays = new Map<string, ProcessedEvent>();
 
-            matchesData.data.forEach((match) => {
+            matchesData.data.data.matches.forEach((match) => {
               const matchDate = match.match.start_date
                 ? new Date(match.match.start_date)
                 : null;

@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DialogType, TournamentTable } from "@/types/groups"
 import { selectedTeams } from "./new-double"
-import { GroupType } from "@/types/matches"
+import { GroupType, TTState } from "@/types/matches"
 import { getFirstAndLastName } from "./participant-utils"
 import RegisterButton from "./register-button"
 
@@ -259,11 +259,13 @@ export default function ParticipantDND({ participant, index, disableOrdering, se
                         >
                             <X className="h-2.5 w-2.5 cursor-pointer" />
                         </div>
-                        <div className="h-4 w-4 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm"
-                            onClick={handleDeleteParticipant}
-                        >
-                            <Trash className="h-2.5 w-2.5 cursor-pointer" />
-                        </div>
+                        {tournament_table.state < TTState.TT_STATE_MATCHES_ASSIGNED &&
+                            <div className="h-4 w-4 flex items-center justify-center bg-red-100 cursor-pointer rounded-sm"
+                                onClick={handleDeleteParticipant}
+                            >
+                                <Trash className="h-2.5 w-2.5 cursor-pointer" />
+                            </div>
+                        }
                     </div> :
                     <div className="w-4 h-4 flex items-center justify-center bg-stone-100 cursor-pointer rounded-sm"
                         onClick={handleStartEditing}

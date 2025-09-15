@@ -14,7 +14,7 @@ interface MatchSetProps {
 export const MatchSets: React.FC<MatchSetProps> = ({ match }) => {
     const [setScores, setSetScores] = useState<Score[]>([])
     const { tournamentid } = useParams({ strict: false })
-    const updateMatchMutation = UsePatchMatch(Number(tournamentid), match.p1.tournament_table_id, match.match.id)
+    const updateMatchMutation = UsePatchMatch(Number(tournamentid))
 
     const { t } = useTranslation()
 
@@ -51,7 +51,7 @@ export const MatchSets: React.FC<MatchSetProps> = ({ match }) => {
                 },
             }
             try {
-                await updateMatchMutation.mutateAsync(updatedMatch)
+                await updateMatchMutation.mutateAsync({ group_id: match.match.tournament_table_id, match_id: match.match.id, match: updatedMatch })
             } catch (error) {
                 void error
                 toast.error(t('toasts.protocol_modals.updated_match_score_error'))

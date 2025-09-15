@@ -1,5 +1,4 @@
-import { UseGetTournamentMatches } from '@/queries/match'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useParams } from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { UseGetTournamentTables } from '@/queries/tables'
 import ErrorPage from '@/components/error'
@@ -15,19 +14,17 @@ import {
 } from './-components/schedule-utils'
 import { Filters } from './-components/filters'
 import { ResponsiveClassSelector } from '@/components/responsive-class-selector'
+import { UseGetTournamentMatchesQuery } from '@/queries/match'
 
 export const Route = createFileRoute('/voistlused/$tournamentid/mangud/')({
   errorComponent: () => <ErrorPage />,
   loader: async ({ context: { queryClient }, params }) => {
     try {
-      const matchesData = await queryClient.ensureQueryData(
-        UseGetTournamentMatches(Number(params.tournamentid)),
-      )
       const tournamentTables = await queryClient.ensureQueryData(
         UseGetTournamentTables(Number(params.tournamentid)),
       )
 
-      return { matchesData, tournamentTables }
+      return { tournamentTables }
     } catch (error) {
       const err = error as ErrorResponse
       if (err.response?.status === 404) {
@@ -40,13 +37,15 @@ export const Route = createFileRoute('/voistlused/$tournamentid/mangud/')({
 })
 
 function RouteComponent() {
-  const { matchesData, tournamentTables } = Route.useLoaderData()
+  const { tournamentTables } = Route.useLoaderData()
   const [activeDay, setActiveDay] = useState<number | string>('all')
   const [activeClass, setActiveClass] = useState<string>('all')
   const [activeStatus, setActiveStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const { t } = useTranslation()
   const initialSetupDone = useRef(false)
+  const params = useParams({ strict: false })
+  const { data: matchesData } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
 
   const tableMap = useMemo(() => {
     const map = new Map()

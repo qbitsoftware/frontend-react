@@ -57,6 +57,8 @@ export default function SoloParticipants({ participants, group_participant, tour
     useEffect(() => {
         if (tournament_table.state >= TTState.TT_STATE_STARTED || (tournament_table.type === GroupType.DYNAMIC && renderRR)) {
             setForceDisableOrdering(true)
+        } else {
+            setForceDisableOrdering(false)
         }
     }, [tournament_table])
 
@@ -120,7 +122,6 @@ export default function SoloParticipants({ participants, group_participant, tour
         })
     )
 
-
     return (
         <div className="mt-6">
             <div className='flex flex-col mt-6'>
@@ -141,14 +142,17 @@ export default function SoloParticipants({ participants, group_participant, tour
                                     <ParticipantDND key={participant.id} participant={participant} index={key} disableOrdering={disableOrderring} setDisableOrdering={setDisableOrdering} tournament_id={tournament_id} tournament_table={tournament_table} participants_len={participants.length} forceDisableOrdering={forceDisableOrdering} selectedTeams={selectedTeams} setSelectedTeams={setSelectedTeams} renderRR={renderRR} isSecondary={isSecondary} />
                                 ))}
                                 {(() => {
-                                    if (tournament_table.type === GroupType.DYNAMIC || tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+                                    if ((tournament_table.type === GroupType.DYNAMIC && !isSecondary) || tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) {
                                         return !disableInputForDynamic
+                                    }
+                                    if (tournament_table.state >= TTState.TT_STATE_MATCHES_ASSIGNED) {
+                                        return false
                                     }
 
                                     return tournament_table.size > participants.length || group_participant || tournament_table.type == GroupType.DYNAMIC;
                                 })() && <TableRow>
                                         <TableCell colSpan={2}></TableCell>
-                                        <TableCell colSpan={6} className="p-4">
+                                        <TableCell colSpan={6} className="p-4 w-full">
                                             <div className="flex gap-3 items-center max-w-xs">
                                                 <div className="flex-1 min-w-0">
                                                     <Popover
@@ -231,11 +235,7 @@ export default function SoloParticipants({ participants, group_participant, tour
                                                         if (searchTerm.trim() === "") {
                                                             return
                                                         }
-                                                        // const nameParts = searchTerm.trim().split(/\s+/)
                                                         const { firstName, lastName } = getFirstAndLastName(searchTerm)
-                                                        // console.log("firstname", first_name, "lastname", last_name)
-                                                        // const firstName = nameParts[0]
-                                                        // const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : ''
                                                         const newPlayer = NewPlayerFromName(searchTerm)
                                                         const group_number = 1
                                                         const group_name = GroupType.ROUND_ROBIN
