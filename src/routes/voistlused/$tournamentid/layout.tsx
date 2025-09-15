@@ -49,7 +49,7 @@ function RouteComponent() {
 
   if (tournamentData.data) {
     return (
-      <TournamentProvider tournamentData={tournamentData.data}>
+      <TournamentProvider tournamentData={tournamentData.data} tournamentTables={tournament_tables?.data || []}>
         <div className="max-w-[95%] mx-auto min-h-screen flex flex-col">
           <Navbar tournament_tables={tournament_tables?.data || []} />
           <div className="pt-4">

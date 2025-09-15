@@ -3,12 +3,13 @@ import {
   Outlet,
   useParams,
 } from '@tanstack/react-router'
-import { UseGetTournamentTable, UseGetTournamentTablesQuery } from '@/queries/tables'
+import { UseGetTournamentTable } from '@/queries/tables'
 import ErrorPage from '@/components/error'
 import { TournamentTableProvider } from '@/routes/voistlused/$tournamentid/-components/tt-provider'
 import { CompactClassFilters } from '../../../-components/compact-class-filters'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import { useTournament } from '@/routes/voistlused/$tournamentid/-components/tournament-provider'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid',
@@ -19,16 +20,16 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const params = useParams({ strict: false })
-  const { data: tables_data } = UseGetTournamentTablesQuery(Number(params.tournamentid));
-  console.log("rendering layout component")
   const { data: table_data } = useQuery(UseGetTournamentTable(
     Number(params.tournamentid),
     Number(params.groupid),
   ))
 
+  const { tournamentTables } = useTournament()
+
   const memoizedAvailableTables = useMemo(() =>
-    tables_data?.data || [],
-    [tables_data?.data]
+    tournamentTables || [],
+    [tournamentTables]
   );
 
   const memoizedGroupIds = useMemo(() =>

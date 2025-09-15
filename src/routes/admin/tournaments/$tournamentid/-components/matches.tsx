@@ -291,8 +291,10 @@ export const Matches: React.FC<MatchesProps> = ({
       // Apply round-robin sorting to each state group
       const finalResult: MatchWrapper[] = [];
       [MatchState.ONGOING, MatchState.CREATED, MatchState.FINISHED].forEach(state => {
-        if (grouped[state]) {
+        if (grouped[state] && state !== MatchState.ONGOING) {
           finalResult.push(...sortRoundRobinMatches(grouped[state]));
+        } else if (grouped[state]) {
+          finalResult.push(...sortOngoingByTable(grouped[state]));
         }
       });
 

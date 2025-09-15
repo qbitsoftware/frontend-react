@@ -3,7 +3,6 @@ import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/r
 import { axiosInstance } from "./axiosconf";
 import TournamentTableForm from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
 import { TimeTableFormValues } from "@/routes/admin/tournaments/$tournamentid/ajakava/seaded/-components/timetable-configurations-form";
-import { useWS } from "@/providers/wsProvider";
 import { Participant } from "@/types/participants";
 
 export interface TournamentTableResponse {
@@ -149,7 +148,6 @@ export const UsePatchTournamentTable = (tournament_id: number, tournament_table_
 
 export const UsePostTournamentTable = (tournament_id: number) => {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
         mutationFn: async (formData: TournamentTableForm) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables`, formData, {
@@ -158,11 +156,13 @@ export const UsePostTournamentTable = (tournament_id: number) => {
             return data;
         },
 
-        onSuccess: () => {
-            if (!connected) {
-                queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-            }
+        onSuccess: (data: TournamentTableWithStagesResponse) => {
+            queryClient.setQueryData(["tournament_table", data.data.group.id], (oldData: TournamentTableWithStagesResponse) => {
+                if (data) {
+                    return data
+                }
+                return oldData
+            })
         }
     })
 }
@@ -176,9 +176,15 @@ export const UseDeleteTournamentTable = (tournament_id: number, tournament_table
             })
             return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-        },
+
+        onSuccess: (data: TournamentTableWithStagesResponse) => {
+            queryClient.setQueryData(["tournament_table", data.data.group.id], (oldData: TournamentTableWithStagesResponse) => {
+                if (data) {
+                    return data
+                }
+                return oldData
+            })
+        }
     })
 }
 

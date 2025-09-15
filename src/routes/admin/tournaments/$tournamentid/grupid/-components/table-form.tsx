@@ -171,6 +171,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
 
   let postMutation = UsePostTournamentTable(Number(tournamentid))
   if (initial_data) {
+    //@ts-ignore
     postMutation = UsePatchTournamentTable(Number(tournamentid), initial_data.id)
   }
 
@@ -196,7 +197,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
       } else {
         toast.message(t('toasts.tournament_tables.created'))
         router.navigate({
-          to: `/admin/tournaments/${tournamentid}/grupid/${res.data.id}/`,
+          to: `/admin/tournaments/${tournamentid}/grupid/${res.data.group.id}/`,
         })
       }
     } catch {

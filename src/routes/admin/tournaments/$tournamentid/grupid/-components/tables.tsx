@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Plus } from "lucide-react"
 import { Link, useNavigate, useParams } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
-import { TournamentTable } from "@/types/groups"
 import { Tournament } from "@/types/tournaments"
 import { GroupType } from "@/types/matches"
+import { TournamentTableWithStages } from "@/queries/tables"
 
 
 interface TournamentTablesProps {
-  tables: TournamentTable[] | null | undefined
+  tables: TournamentTableWithStages[] | null | undefined
   tournament: Tournament
 }
 
@@ -49,23 +49,23 @@ export const TournamentTables: React.FC<TournamentTablesProps> = ({ tables }) =>
             <TableBody>
               {tables ? tables.map((table) => {
                 let participants = table.participants.length
-                if (table.type === GroupType.ROUND_ROBIN || table.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
+                if (table.group.type === GroupType.ROUND_ROBIN || table.group.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
                   participants = table.participants.filter((participant) => participant.type === "round_robin").length
 
                 }
                 return (
-                  <TableRow key={table.id} onClick={() => (navigate({ to: `${table.id}` }))} className="cursor-pointer">
+                  <TableRow key={table.group.id} onClick={() => (navigate({ to: `${table.group.id}` }))} className="cursor-pointer">
                     <TableCell className="font-medium text-xs sm:text-sm px-1 sm:px-4 max-w-[80px] sm:max-w-none truncate">
-                      {table.class}
+                      {table.group.class}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4">
-                      <span className="font-semibold">{participants}</span>/{table.size}
+                      <span className="font-semibold">{participants}</span>/{table.group.size}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4 truncate max-w-[90px] sm:max-w-none">
-                      {t(`admin.tournaments.create_tournament.tournament_tables.${table.type}`)}
+                      {t(`admin.tournaments.create_tournament.tournament_tables.${table.group.type}`)}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4">
-                      {table.solo ? t('admin.tournaments.groups.solo') : t('admin.tournaments.groups.team')}
+                      {table.group.solo ? t('admin.tournaments.groups.solo') : t('admin.tournaments.groups.team')}
                     </TableCell>
 
                   </TableRow>

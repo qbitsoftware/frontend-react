@@ -92,27 +92,16 @@ export function UseUpdateParticipant(tournament_id: number, table_id: number) {
         onSuccess: (data: ParticipantsResponse) => {
             queryClient.setQueryData(["tournament_table", table_id],
                 (oldData: TournamentTableWithStagesResponse) => {
-                    if (!oldData || !oldData.data) return oldData;
-                    const updatedParticipantsMap = new Map(
-                        data.data?.map(participant => [participant.id, participant])
-                    );
-
-                    const updatedData = oldData.data.participants.map(participant =>
-                        updatedParticipantsMap.has(participant.id)
-                            ? updatedParticipantsMap.get(participant.id)!
-                            : participant
-                    );
-
-
-                    const sortedData = [...updatedData].sort((a, b) => a.order - b.order);
-
-                    return {
-                        ...oldData,
-                        data: {
-                            ...oldData.data,
-                            participants: sortedData
+                    if (oldData.data && data.data) {
+                        return {
+                            ...oldData,
+                            data: {
+                                ...oldData.data,
+                                participants: data.data
+                            }
                         }
                     }
+                    return oldData
                 }
             )
         }

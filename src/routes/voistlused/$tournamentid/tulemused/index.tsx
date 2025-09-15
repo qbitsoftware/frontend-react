@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { UseGetTournamentTables } from '@/queries/tables'
 import { parseTableType } from '@/lib/utils'
 import { useTournament } from '../-components/tournament-provider'
 import { formatDateString } from '@/lib/utils'
@@ -7,32 +6,15 @@ import { UsersRound } from 'lucide-react';
 import { Link } from '@tanstack/react-router'
 import ErrorPage from '@/components/error'
 import { useTranslation } from 'react-i18next'
-import { ErrorResponse } from '@/types/errors'
 
 
 export const Route = createFileRoute('/voistlused/$tournamentid/tulemused/')({
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    let tournament_tables = null;
-    try {
-      tournament_tables = await queryClient.ensureQueryData(
-        UseGetTournamentTables(Number(params.tournamentid)),
-      )
-      return { tournament_tables }
-    } catch (error) {
-      const err = error as ErrorResponse
-      if (err.response?.status === 404) {
-        return { tournament_tables: null }
-      }
-      throw error
-    }
-  },
 })
 
 function RouteComponent() {
-  const { tournament_tables } = Route.useLoaderData()
-  const { tournamentData: tournament } = useTournament();
+  const { tournamentData: tournament, tournamentTables } = useTournament();
   const { t } = useTranslation()
   const startDate = formatDateString(tournament.start_date);
 
@@ -68,7 +50,7 @@ function RouteComponent() {
     default: <p className='font-medium text-[#26314D]'>{startDate}</p>
   }
 
-  const tablesWithParticipants = tournament_tables?.data?.filter(table =>
+  const tablesWithParticipants = tournamentTables.filter(table =>
     table.participants && table.participants.length > 0
   ) || [];
 

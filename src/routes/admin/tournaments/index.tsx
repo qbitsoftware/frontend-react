@@ -22,8 +22,7 @@ function RouteComponent() {
             <div className='p-2 py-8 md:p-8'>
                 {tournaments_data?.data && (
                     <TournamentTable tournaments={tournaments_data.data} />
-                )
-                }
+                )}
             </div>
         </div>
     )

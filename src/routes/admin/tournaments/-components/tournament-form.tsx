@@ -242,6 +242,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
 
   let postMutation = UsePostTournament();
   if (initial_data) {
+    //@ts-ignore
     postMutation = UsePatchTournament(initial_data.id);
   }
 
@@ -292,6 +293,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
   }, [initial_data]);
 
   const onSubmit = async (values: TournamentFormValues) => {
+    console.log("total tables", values.total_tables)
     try {
       values.information = JSON.stringify(value);
       if (values.registration_type === "onsite") {
@@ -549,6 +551,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                             placeholder={t(
                               "admin.tournaments.create_tournament.number_of_tables_placeholder"
                             )}
+                            onWheel={(e) => e.currentTarget.blur()}
                             className="h-10"
                             {...field}
                             onChange={(e) => {
@@ -562,6 +565,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                                     ? 0
                                     : Number.parseInt(cleanedValue)
                                 );
+                                console.log("cleaned value", cleanedValue)
                               }
                             }}
                             value={field.value === 0 ? "" : field.value}

@@ -1,10 +1,10 @@
-import { TournamentTable } from '@/types/groups'
+import { TournamentTableWithStages } from '@/queries/tables'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 
 interface Props {
-    groups: TournamentTable[]
+    groups: TournamentTableWithStages[]
     tournament_id: number
 }
 
@@ -22,22 +22,22 @@ export default function GroupDropdown({ groups, tournament_id }: Props) {
                 <div className="py-2">
                     {groups.map((group) => (
                         <Link
-                            key={group.id}
-                            to={`/admin/tournaments/${tournament_id}/grupid/${group.id}`}
+                            key={group.group.id}
+                            to={`/admin/tournaments/${tournament_id}/grupid/${group.group.id}`}
                             className="group flex items-center justify-between px-5 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-400"
                         >
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div className="flex items-center justify-center w-9 h-9 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg group-hover:from-blue-200 group-hover:to-indigo-200 transition-colors flex-shrink-0">
                                     {/* <span className="text-sm font-bold text-blue-700">{String.fromCharCode(65 + index)}</span> */}
 
-                                    <span className="text-sm font-bold text-blue-700">{group.size}</span>
+                                    <span className="text-sm font-bold text-blue-700">{group.group.size}</span>
                                 </div>
                                 <div className="flex flex-col min-w-0 flex-1">
                                     <span 
                                         className="text-sm font-medium text-gray-900 group-hover:text-blue-900"
-                                        title={group.class}
+                                        title={group.group.class}
                                     >
-                                        {truncateClassName(group.class)}
+                                        {truncateClassName(group.group.class)}
                                     </span>
                                 </div>
                             </div>

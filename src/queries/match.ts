@@ -7,6 +7,7 @@ import { TournamentTable } from "@/types/groups"
 import { VenuesResponse } from "./venues"
 import { Bracket } from "@/types/brackets"
 import { BracketReponse } from "./tournaments"
+import { TournamentTableWithStagesResponse } from "./tables"
 
 export interface TableInfoResponse {
     data: MatchesInfo
@@ -92,6 +93,17 @@ export const UsePatchMatch = (id: number) => {
 
                     return output
                 }
+            })
+            queryClient.setQueryData(["tournament_table", data.data.tournament_table.id], (oldData: TournamentTableWithStagesResponse) => {
+                if (!oldData) return oldData;
+                const output = {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        group: data.data.tournament_table,
+                    }
+                }
+                return output
             })
             queryClient.setQueryData(['venues_all', id], (oldData: VenuesResponse) => {
                 return {
