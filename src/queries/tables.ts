@@ -142,10 +142,7 @@ export const UsePatchTournamentTable = (tournament_id: number, tournament_table_
                 }
                 return oldData
             })
-            queryClient.setQueryData(["tournament_tables_query", tournament_id], (oldData: TournamentTablesResponse) => {
-                if (!oldData) {
-                    console.log("old data missing")
-                }
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], () => {
                 return data
             })
         }
@@ -215,10 +212,7 @@ export const UseDeleteTournamentTable = (tournament_id: number, tournament_table
                     data: null
                 }
             })
-            queryClient.setQueryData(["tournament_tables_query", tournament_id], (oldData: TournamentTablesResponse) => {
-                if (!oldData) {
-                    console.log("old data missing")
-                }
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], () => {
                 return data
             })
         }

@@ -48,10 +48,19 @@ const SeedingHeader = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [disabled, setDisabled] = useState(table_data.state > TTState.TT_STATE_MATCHES_CREATED);
+  const [canMove, setCanMove] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     setDisabled(table_data.state > TTState.TT_STATE_MATCHES_CREATED);
+    if (table_data.state >= TTState.TT_STATE_FINISHED) {
+      setCanMove(false);
+    }
+    if (data.stages && data.stages.length > 1) {
+      if (data.stages[1].state >= TTState.TT_STATE_MATCHES_ASSIGNED) {
+        setCanMove(true);
+      }
+    }
   }, [table_data.state])
 
   const { t } = useTranslation();
@@ -389,7 +398,7 @@ const SeedingHeader = ({
                             <Upload className="h-3 w-3" />
                             {t('admin.tournaments.setup.import_excel')}
                           </Button>
-                          
+
                           {table_data.solo && (
                             <Button
                               onClick={downloadRatingsXML}
@@ -470,7 +479,7 @@ const SeedingHeader = ({
                         <Button
                           onClick={handleParticipantMoving}
                           size="sm"
-                          disabled={isLoading || disabled}
+                          disabled={isLoading || canMove}
                           className="h-7 text-xs flex items-center gap-1.5"
                         >
                           <Zap className="h-3 w-3" />

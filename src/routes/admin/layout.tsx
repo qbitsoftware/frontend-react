@@ -129,9 +129,15 @@ function RouteComponent() {
                     participants: new_data.participants
                   }
                 }
+              } else if (oldData) {
+                return {
+                  ...oldData,
+                  data: {
+                    ...oldData.data,
+                    participants: [],
+                  }
+                }
               }
-              console.log("new data", new_data.participants)
-
             })
           }
         }
@@ -216,7 +222,6 @@ function RouteComponent() {
           queryClient.setQueryData(
             ["tournaments_admin_query"],
             (oldData: TournamentsResponse) => {
-              console.log("oldData", oldData)
               if (oldData?.data && data.data && data_trnment.tournament) {
                 return {
                   ...oldData,
@@ -329,11 +334,7 @@ function RouteComponent() {
         }
 
         queryClient.setQueryData(["tournament_tables_query", data.tournament_id], (oldData: TournamentTablesResponse) => {
-          console.log("returning new dat", data)
-          if (!oldData) {
-            console.log("old data missing")
-          }
-          return {...oldData, data: data_tts.tournament_tables}
+          return { ...oldData, data: data_tts.tournament_tables }
         })
 
         break

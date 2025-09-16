@@ -152,8 +152,6 @@ export const UsePatchMatchReset = (tournament_id: number, group_id: number, matc
             })
             if (data.data.brackets) {
                 queryClient.setQueryData(['bracket', tournament_id, data.data.tournament_table.id], (oldData: BracketReponse) => {
-                    console.log("data", data.data.brackets)
-                    console.log("oldData", oldData)
                     if (!oldData) return { data: data.data.brackets, message: data.message, error: null };
                     const output = {
                         ...oldData,

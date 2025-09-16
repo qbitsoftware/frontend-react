@@ -13,7 +13,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from 'sonner'
 import { getFirstAndLastName } from "./participant-utils"
-import { TournamentTable } from "@/types/groups"
+import { DialogType, TournamentTable } from "@/types/groups"
 import { TTState } from "@/types/matches"
 import RegisterButton from "./register-button"
 
@@ -145,10 +145,10 @@ export default function PlayerRow({ participant, index, player, updateField, tou
                                 <Trash className="h-2.5 w-2.5 cursor-pointer" />
                             </div>
                         }
-                    </div> :
-                    <div className="w-4 h-4 flex items-center justify-center bg-stone-100 rounded-sm" onClick={handleStartEditing} >
-                        <Pencil className="h-2.5 w-2.5 cursor-pointer" />
-                    </div>
+                    </div> : tournament_table.dialog_type !== DialogType.DT_DOUBLES && tournament_table.dialog_type !== DialogType.DT_FIXED_DOUBLES ?
+                        <div className="w-4 h-4 flex items-center justify-center bg-stone-100 rounded-sm" onClick={handleStartEditing} >
+                            <Pencil className="h-2.5 w-2.5 cursor-pointer" />
+                        </div> : null
                 }
             </TableCell>
             <TableCell className="font-medium py-0.5 px-2">

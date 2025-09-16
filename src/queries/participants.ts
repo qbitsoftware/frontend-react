@@ -4,6 +4,7 @@ import { ParticipantFormValues } from "@/routes/admin/tournaments/$tournamentid/
 import { Participant } from "@/types/participants";
 import { selectedTeams } from "@/routes/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/-components/new-double";
 import { TournamentTableWithStagesResponse } from "./tables";
+import { TableInfoResponse } from "./match";
 
 export type ParticipantResponse = {
     data: Participant | null
@@ -140,6 +141,7 @@ export type Order = {
 }
 
 export function UsePostSeeding(tournament_id: number, table_id: number) {
+    const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (order: Order) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/seed`, order, {
@@ -147,6 +149,18 @@ export function UsePostSeeding(tournament_id: number, table_id: number) {
             })
             return data;
         },
+        onSuccess: (data: TableInfoResponse) => {
+            queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (!oldData) return data;
+                return {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        group: data.data ? data.data.tournament_table : oldData.data.group,
+                    }
+                }
+            })
+        }
     })
 }
 
