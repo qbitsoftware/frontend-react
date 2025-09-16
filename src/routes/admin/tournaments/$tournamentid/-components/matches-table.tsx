@@ -29,7 +29,6 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     handleRowClick,
     tournament_id,
     tournament_table,
-    active_participant,
     all = false,
 }: MatchesTableProps) => {
     const { data } = UseGetTournamentParticipantsQuery(tournament_id)
@@ -80,6 +79,24 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         }).length
     }, [tableMap])
 
+    const isParticipantTaken = useCallback((userId: number, currentMatchState: MatchState) => {
+        if (currentMatchState === MatchState.ONGOING || currentMatchState === MatchState.FINISHED) {
+            return false
+        }
+
+        return matches.some(match => {
+            if (match.match.state === MatchState.ONGOING) {
+                // Check all players in both participants (handles singles and doubles)
+                const p1PlayerIds = match.p1.players?.map(player => player.user_id) || []
+                const p2PlayerIds = match.p2.players?.map(player => player.user_id) || []
+                const allActivePlayerIds = [...p1PlayerIds, ...p2PlayerIds]
+
+                return allActivePlayerIds.includes(userId)
+            }
+            return false
+        })
+    }, [matches])
+
     const getRowClassName = useCallback((match: MatchWrapper) => {
         const state = match.match.state
         if (state === 'finished') return 'opacity-60 bg-gray-50'
@@ -89,26 +106,27 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         return ''
     }, [])
 
-    const isParticipantTaken = useCallback((participantId: string, currentMatchState: MatchState) => {
-        return active_participant.includes(participantId) && currentMatchState !== MatchState.ONGOING && currentMatchState != MatchState.FINISHED
-    }, [active_participant])
-
     const renderPlayer = useCallback((match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
+        const participantPlayers = player === ParticipantType.P1 ? match.p1.players : match.p2.players
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
         // const playerGroupName = player === ParticipantType.P1 ? match.p1.group_id: match.p2.group_id
         const isForfeit = matches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
-        const isPlayerTaken = isParticipantTaken(playerId, match.match.state)
+
+        // Check if any player in this participant is taken (handles both singles and doubles)
+        const isPlayerTaken = participantPlayers?.some(p =>
+            isParticipantTaken(p.user_id, match.match.state)
+        ) || false
         const findLastPlayerMatch = matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
         const groupParticipant = data && data.data && data.data.find(p => p.id === match.p1.group_id || p.id === match.p2.group_id)
 
         return (
-            <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-600 font-medium' : ''}`}>
+            <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-400 font-medium' : ''}`}>
                 {isPlayerTaken && (
                     <div
-                        className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"
+                        className="w-2 h-2 rounded-full bg-red-300 flex-shrink-0"
                         title="Player is currently in another ongoing match"
                     />
                 )}
@@ -154,7 +172,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 </div>
             </div>
         )
-    }, [matches, active_participant, data, t])
+    }, [matches, data, t, isParticipantTaken])
 
     const getPendingScore = useCallback((matchId: string, player: ParticipantType) => {
         const pending = pendingScores[matchId]
@@ -336,15 +354,25 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     // Memoize TableNumberForm to prevent re-renders
     const MemoizedTableNumberForm = React.memo(TableNumberForm)
 
-    const tableCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
-        <div className="flex items-center h-full px-2">
-            <MemoizedTableNumberForm
-                brackets={false}
-                match={rowData.match}
-                initialTableNumber={rowData.match.extra_data ? rowData.match.extra_data.table : "0"}
-            />
-        </div>
-    ), [])
+    const tableCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
+        // Check if any player in this match is taken
+        const p1Players = rowData.p1.players || []
+        const p2Players = rowData.p2.players || []
+        const isAnyPlayerTaken = [...p1Players, ...p2Players].some(player =>
+            isParticipantTaken(player.user_id, rowData.match.state)
+        )
+
+        return (
+            <div className="flex items-center h-full px-2">
+                <MemoizedTableNumberForm
+                    brackets={false}
+                    match={rowData.match}
+                    initialTableNumber={rowData.match.extra_data ? rowData.match.extra_data.table : "0"}
+                    disabled={isAnyPlayerTaken}
+                />
+            </div>
+        )
+    }, [isParticipantTaken])
 
     const participant1CellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-sm">
@@ -480,7 +508,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const tableHeight = all ? "h-[65vh]" : "h-[65vh]";
 
     return (
-        <div className={`rounded-md border my-2 overflow-x-auto ${tableHeight}`} >
+        <div className={`rounded-md border my-2 ${tableHeight}`} >
             <AutoSizer>
                 {({ height, width }) => (
                     <Table

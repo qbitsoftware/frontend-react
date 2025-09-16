@@ -301,6 +301,7 @@ function RouteComponent() {
                   onChange={() => handleFilterChange(MatchState.FINISHED)}
                   className="w-3 h-3"
                 />
+                <div className="w-2 h-2 rounded-full bg-gray-100 border border-gray-300"></div>
                 <span className="text-xs">{t("admin.tournaments.filters.winner_declared")}</span>
               </label>
               <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
@@ -310,6 +311,7 @@ function RouteComponent() {
                   onChange={() => handleFilterChange(MatchState.ONGOING)}
                   className="w-3 h-3"
                 />
+                <div className="w-2 h-2 rounded-full bg-green-100 border border-green-200"></div>
                 <span className="text-xs">{t("admin.tournaments.filters.ongoing_games")}</span>
               </label>
               <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
@@ -319,26 +321,9 @@ function RouteComponent() {
                   onChange={() => handleFilterChange(MatchState.CREATED)}
                   className="w-3 h-3"
                 />
+                <div className="w-2 h-2 rounded-full bg-white border border-gray-300"></div>
                 <span className="text-xs">{t("admin.tournaments.filters.upcoming_games")}</span>
               </label>
-            </div>
-            <div>
-              <div className="flex gap-4  text-xs text-gray-600">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-white border border-gray-300"></div>
-                    <span>{t("admin.tournaments.matches.legend.upcoming")}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-green-100 border border-green-200"></div>
-                    <span>{t("admin.tournaments.matches.legend.ongoing")}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-gray-100 border border-gray-300"></div>
-                    <span>{t("admin.tournaments.matches.legend.finished")}</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 

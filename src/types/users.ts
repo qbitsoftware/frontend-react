@@ -60,6 +60,10 @@ export type User = {
   isikukood?: string;
   selectedLicenseType?: LicenseType;
   combinedIndex?: number;
+  genderCombinedIndex?: number;
+  originalRateOrder?: number;
+  menCombinedIndex?: number;
+  womenCombinedIndex?: number;
 };
 
 export type UserLogin = {

@@ -14,9 +14,10 @@ interface Props {
     displayIndex?: number;
     combinedOrder?: number;
     showCombinedOrder?: boolean;
+    isGenderCombined?: boolean;
 }
 
-export default function UserRow({ user, clubs, index, handleModalOpen, displayIndex, combinedOrder, showCombinedOrder }: Props) {
+export default function UserRow({ user, clubs, index, handleModalOpen, displayIndex, combinedOrder, showCombinedOrder, isGenderCombined }: Props) {
     const { t } = useTranslation()
     const getClubName = (user: User) => {
         return user.club?.name || "KLUBITU";
@@ -81,8 +82,17 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                     </>
                 ) : showCombinedOrder && combinedOrder === undefined ? (
                     "-"
+                ) : isGenderCombined && displayIndex ? (
+                    <>
+                        {displayIndex}
+                        {user.sex === 'N' && user.originalRateOrder && <span className="text-gray-500"> ({user.originalRateOrder})</span>}
+                    </>
+                ) : displayIndex ? (
+                    displayIndex
+                ) : user.rate_order > 0 ? (
+                    user.rate_order
                 ) : (
-                    user.rate_order > 0 ? user.rate_order : (displayIndex ? displayIndex : "-")
+                    "-"
                 )}
             </TableCell>
             <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">

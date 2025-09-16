@@ -14,8 +14,10 @@ import { LicenseType } from "@/types/license";
 import { useCreatePayment, useCheckPaymentStatus } from "@/queries/licenses";
 import { PlayerSearchInput } from "@/components/shared/PlayerSearchInput";
 import { PlayerManualEntryForm } from "@/components/shared/PlayerManualEntryForm";
-import { 
-  extractGenderFromIsikukood, 
+import { SalesTermsModal } from "@/components/licenses/SalesTermsModal";
+import { LicenseTermsModal } from "@/components/licenses/LicenseTermsModal";
+import {
+  extractGenderFromIsikukood,
   PlayerFormData,
 } from "@/lib/player-validation";
 
@@ -49,6 +51,11 @@ function RouteComponent() {
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [agreedToSalesTerms, setAgreedToSalesTerms] = useState(false);
+  const [agreedToLicenseTerms, setAgreedToLicenseTerms] = useState(false);
+  const [agreedToGuardianConsent, setAgreedToGuardianConsent] = useState(false);
+  const [showSalesTermsModal, setShowSalesTermsModal] = useState(false);
+  const [showLicenseTermsModal, setShowLicenseTermsModal] = useState(false);
   const createPaymentMutation = useCreatePayment();
   const checkPaymentStatusMutation = useCheckPaymentStatus();
 
@@ -388,6 +395,10 @@ function RouteComponent() {
   };
 
   const handleCompletePayment = async () => {
+    if (!agreedToSalesTerms || !agreedToLicenseTerms || !agreedToGuardianConsent) {
+      toast.error(t("licenses.terms.must_agree_to_terms"));
+      return;
+    }
     toast.message(t("licenses.payment.september_notice"));
   };
 
@@ -632,9 +643,64 @@ function RouteComponent() {
                 </p>
               </div>
 
+              <div className="mb-4 sm:mb-6 space-y-3">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="salesTerms"
+                    checked={agreedToSalesTerms}
+                    onChange={(e) => setAgreedToSalesTerms(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
+                  />
+                  <label htmlFor="salesTerms" className="text-sm text-gray-700 flex-1">
+                    {t("licenses.terms.agree_to")}{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowSalesTermsModal(true)}
+                      className="text-green-600 hover:text-green-700 underline font-medium"
+                    >
+                      {t("licenses.terms.sales_terms")}
+                    </button>
+                  </label>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="licenseTerms"
+                    checked={agreedToLicenseTerms}
+                    onChange={(e) => setAgreedToLicenseTerms(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
+                  />
+                  <label htmlFor="licenseTerms" className="text-sm text-gray-700 flex-1">
+                    {t("licenses.terms.agree_to")}{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowLicenseTermsModal(true)}
+                      className="text-green-600 hover:text-green-700 underline font-medium"
+                    >
+                      {t("licenses.terms.license_purchase_terms")}
+                    </button>
+                  </label>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="guardianConsent"
+                    checked={agreedToGuardianConsent}
+                    onChange={(e) => setAgreedToGuardianConsent(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
+                  />
+                  <label htmlFor="guardianConsent" className="text-sm text-gray-700 flex-1">
+                    {t("licenses.terms.under_18_guardian_consent")}
+                  </label>
+                </div>
+              </div>
+
               <button
                 onClick={handleCompletePayment}
-                disabled={createPaymentMutation.isPending}
+                disabled={createPaymentMutation.isPending || !agreedToSalesTerms || !agreedToLicenseTerms || !agreedToGuardianConsent}
                 className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-sm sm:text-base"
               >
                 {createPaymentMutation.isPending ? (
@@ -692,6 +758,16 @@ function RouteComponent() {
           </div>
         </div>
       </div>
+
+      <SalesTermsModal
+        isOpen={showSalesTermsModal}
+        onClose={() => setShowSalesTermsModal(false)}
+      />
+
+      <LicenseTermsModal
+        isOpen={showLicenseTermsModal}
+        onClose={() => setShowLicenseTermsModal(false)}
+      />
     </div>
   );
 }

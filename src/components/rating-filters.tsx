@@ -21,6 +21,7 @@ export interface RatingFiltersProps {
   onGenderChange: (gender: string) => void;
   showForeigners: boolean;
   onShowForeignersChange: (show: boolean) => void;
+  disableForeigners?: boolean;
   showCalculator?: boolean;
   onCalculatorClick?: () => void;
   showInfo?: boolean;
@@ -36,6 +37,7 @@ export function RatingFilters({
   onGenderChange,
   showForeigners,
   onShowForeignersChange,
+  disableForeigners = false,
   showCalculator = false,
   onCalculatorClick,
   showInfo = false,
@@ -143,16 +145,17 @@ export function RatingFilters({
           </Select>
         </div>
         
-        <div className="flex items-center space-x-2 px-3 py-2 rounded-lg border bg-[#F7F6F7] text-xs sm:text-sm hover:bg-gray-100 transition-colors">
-          <Checkbox 
+        <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${disableForeigners ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'bg-[#F7F6F7] hover:bg-gray-100'}`}>
+          <Checkbox
             id="show-foreigners-mobile"
             checked={showForeigners}
-            onCheckedChange={(checked) => onShowForeignersChange(checked === true)}
-            className="data-[state=checked]:bg-[#4C97F1] data-[state=checked]:border-[#4C97F1]"
+            disabled={disableForeigners}
+            onCheckedChange={(checked) => !disableForeigners && onShowForeignersChange(checked === true)}
+            className="data-[state=checked]:bg-[#4C97F1] data-[state=checked]:border-[#4C97F1] disabled:opacity-50"
           />
-          <label 
-            htmlFor="show-foreigners-mobile" 
-            className="text-xs cursor-pointer whitespace-nowrap select-none"
+          <label
+            htmlFor="show-foreigners-mobile"
+            className={`text-xs whitespace-nowrap select-none ${disableForeigners ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           >
             {t("rating.filtering.show_foreigners", "Show foreigners")}
           </label>
@@ -160,16 +163,17 @@ export function RatingFilters({
       </div>
 
       <div className={`w-full ${showCalculator || showInfo ? 'lg:col-span-3' : 'lg:col-span-2'} hidden lg:flex gap-2`}>              
-        <div className="flex items-center space-x-2 h-12 px-4 py-2 rounded-lg border bg-[#F7F6F7] text-sm hover:bg-gray-100 transition-colors w-fit">
-          <Checkbox 
+        <div className={`flex items-center space-x-2 h-12 px-4 py-2 rounded-lg border text-sm transition-colors w-fit ${disableForeigners ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'bg-[#F7F6F7] hover:bg-gray-100'}`}>
+          <Checkbox
             id="show-foreigners-desktop"
             checked={showForeigners}
-            onCheckedChange={(checked) => onShowForeignersChange(checked === true)}
-            className="data-[state=checked]:bg-[#4C97F1] data-[state=checked]:border-[#4C97F1]"
+            disabled={disableForeigners}
+            onCheckedChange={(checked) => !disableForeigners && onShowForeignersChange(checked === true)}
+            className="data-[state=checked]:bg-[#4C97F1] data-[state=checked]:border-[#4C97F1] disabled:opacity-50"
           />
-          <label 
-            htmlFor="show-foreigners-desktop" 
-            className="text-sm cursor-pointer whitespace-nowrap select-none"
+          <label
+            htmlFor="show-foreigners-desktop"
+            className={`text-sm whitespace-nowrap select-none ${disableForeigners ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           >
             {t("rating.filtering.show_foreigners", "Show foreigners")}
           </label>

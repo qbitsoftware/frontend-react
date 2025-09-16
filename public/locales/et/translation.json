@@ -534,6 +534,13 @@
       "name_id_mismatch": "Sisestatud nimi ei kattu isikukoodi registriga.",
       "verification_unavailable": "Isikukoodi kontrollimise teenus on ajutiselt kättesaamatu.",
       "verification_success": "Eesti isikukood edukalt kontrollitud."
+    },
+    "terms": {
+      "sales_terms": "Müügitingimustega",
+      "license_purchase_terms": "Litsentsi ostu tingimustega",
+      "under_18_guardian_consent": "Sportlase või sportlaste – alla 18-aastase(te) puhul kinnitab ja allkirjastab kõik litsentsitingimused alaealise lapsevanem, seaduslik esindaja või spordiklubi.",
+      "must_agree_to_terms": "Jätkamiseks peate nõustuma tingimustega",
+      "agree_to": "Nõustun"
     }
   },
   "competitions": {
@@ -1359,12 +1366,12 @@
         "no_tables": "Võistlusklasse pole veel lisatud",
         "title": "Turniiri klassid",
         "errors": {
-          "class": "Grupi nimi on kohustuslik",
+          "class": "Klassi nimi on kohustuslik",
           "type": "Turniiri tüüp on kohustuslik",
           "min_team_size": "Minimaalne tiimi suurus on 2",
           "dialog_type": "Tiimi tüübi valik on nõutud",
-          "second_class": "Põhitabeli formaat on nöutud",
-          "consolation_class": "Lohutusturniiri tabeli formaat on nöutud"
+          "second_class": "Tabeli tüüp on kohustuslik",
+          "consolation_class": "Tabeli tüüp on kohustuslik"
         },
         "solo": "Üksik",
         "team": "Meeskondadega",

@@ -487,6 +487,13 @@
       "name_id_mismatch": "The provided name does not match the Estonian ID records.",
       "verification_unavailable": "ID verification service is temporarily unavailable.",
       "verification_success": "Estonian ID verified successfully."
+    },
+    "terms": {
+      "sales_terms": "Sales Terms",
+      "license_purchase_terms": "License Purchase Terms",
+      "under_18_guardian_consent": "I confirm that for athletes under 18 years of age, all license terms are confirmed and signed by the parent, legal guardian, or sports club.",
+      "must_agree_to_terms": "You must agree to the terms to continue",
+      "agree_to": "I agree to the"
     }
   },
   "competitions": {
@@ -1334,8 +1341,8 @@
           "type": "Tournament type is required",
           "min_team_size": "Minimum team size is 2",
           "dialog_type": "Team type is required",
-          "second_class": "Main bracket type is required",
-          "consolation_class": "Consolation bracket type is required"
+          "second_class": "Bracket type required",
+          "consolation_class": "Bracket type required"
         },
         "solo": "Solo",
         "team": "Teams",

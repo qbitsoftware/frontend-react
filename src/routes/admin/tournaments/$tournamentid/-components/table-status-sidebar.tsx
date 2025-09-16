@@ -157,13 +157,13 @@ const TableStatusSidebar = () => {
             <SidebarTrigger />
           </div>
         ) : (
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-start gap-2 w-full">
+            <SidebarTrigger />
             <h3 className="text-lg font-semibold">
               {t("admin.tournaments.tables.title")}{" "}
               {tableStatuses.filter((t) => t.isOccupied).length}/
               {tableStatuses.length}
             </h3>
-            <SidebarTrigger />
           </div>
         )}
       </SidebarHeader>

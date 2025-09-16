@@ -36,6 +36,22 @@ const createFormSchema = (t: TFunction) => z.object({
   second_class: z.string().optional(),
   has_consolation: z.boolean().optional(),
   consolation_class: z.string().optional(),
+}).refine((data) => {
+  if (data.type === GroupType.DYNAMIC && (!data.second_class || data.second_class === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: t('admin.tournaments.groups.errors.second_class'),
+  path: ['second_class']
+}).refine((data) => {
+  if (data.type === GroupType.DYNAMIC && data.has_consolation && (!data.consolation_class || data.consolation_class === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: t('admin.tournaments.groups.errors.consolation_class'),
+  path: ['consolation_class']
 }).superRefine((data, ctx) => {
   if (data.solo) return;
 
@@ -58,22 +74,6 @@ const createFormSchema = (t: TFunction) => z.object({
       code: z.ZodIssueCode.custom,
       message: t('admin.tournaments.groups.errors.min_team_size'),
       path: ['min_team_size']
-    });
-  }
-
-  if (data.type === GroupType.DYNAMIC && data.second_class === "") {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('admin.tournaments.groups.errors.second_class'),
-      path: ['second_class']
-    });
-  }
-
-  if (data.type === GroupType.DYNAMIC && data.has_consolation && data.consolation_class === "") {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('admin.tournaments.groups.errors.consolation_class'),
-      path: ['consolation_class']
     });
   }
 
