@@ -1,6 +1,7 @@
 import { MatchesInfo } from "@/queries/match";
 import { Participant } from "./participants";
 import { Tournament } from "./tournaments";
+import { TournamentTableWithStages } from "@/queries/tables";
 
 export enum WSMsgType {
 
@@ -8,6 +9,8 @@ export enum WSMsgType {
     WSMsgTypeParticipants = "participants",
     WSMsgTypeTournamentCreated = "tournament_created",
     WSMsgTypeTournamentUpdated = "tournament_updated",
+    WSMsgTypeTournamentTableCreated = "tournament_table_created",
+    WSMsgTypeTournamentTableUpdated = "tournament_table_updated",
 
 }
 
@@ -38,3 +41,12 @@ export interface WSTournamentData extends WSEventData {
 export interface WSTournamentsData extends WSEventData {
     tournaments?: Tournament[]
 }
+
+export interface WSTournamentTablesData extends WSEventData {
+    tournament_tables?: TournamentTableWithStages[]
+}
+
+export interface WSTournamentTableData extends WSEventData {
+    tournament_table?: TournamentTableWithStages
+}
+

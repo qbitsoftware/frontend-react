@@ -38,7 +38,7 @@ function RouteComponent() {
 
     tournamentTables.forEach((table) => {
       // Add the main table
-      map.set(table.id, table)
+      map.set(table.group.id, table)
 
       // Add each stage if its id is not already in the map
       if (Array.isArray(table.stages)) {
@@ -64,8 +64,8 @@ function RouteComponent() {
     const relevantTableIds = new Set<string | number>()
     if (tournamentTables) {
       tournamentTables.forEach((table) => {
-        if (table.class === activeClass) {
-          relevantTableIds.add(table.id)
+        if (table.group.class === activeClass) {
+          relevantTableIds.add(table.group.id)
           if (Array.isArray(table.stages)) {
             table.stages.forEach((stage) => {
               relevantTableIds.add(stage.id)
@@ -221,10 +221,10 @@ function RouteComponent() {
     }
 
     const table = tournamentTables.find(
-      (tbl) => tbl.class === activeClass,
+      (tbl) => tbl.group.class === activeClass,
     )
 
-    if (table?.type === GroupType.CHAMPIONS_LEAGUE) {
+    if (table?.group.type === GroupType.CHAMPIONS_LEAGUE) {
       setActiveDay(bestDayIndex)
     } else {
       setActiveDay('all')

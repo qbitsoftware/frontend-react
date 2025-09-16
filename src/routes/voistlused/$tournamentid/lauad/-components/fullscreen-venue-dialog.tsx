@@ -3,13 +3,13 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Monitor, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { TournamentTable } from '@/types/groups'
 import { Venue } from '@/types/venues'
 import { getRoundDisplayName } from '@/lib/match-utils'
+import { TournamentTableWithStages } from '@/queries/tables'
 
 interface FullscreenVenueDialogProps {
     venues: Venue[]
-    groups: TournamentTable[] | null | undefined
+    groups: TournamentTableWithStages[] | null | undefined
     isOpen: boolean
     onOpenChange: (open: boolean) => void
 }
@@ -19,7 +19,7 @@ export const FullscreenVenueDialog = ({ venues, groups, isOpen, onOpenChange }: 
 
     const getGroup = (venue: Venue) => {
         return groups && venue.match?.match?.tournament_table_id
-            ? groups.find((group) => group.id === venue.match?.match?.tournament_table_id)
+            ? groups.find((group) => group.group.id === venue.match?.match?.tournament_table_id)
             : undefined
     }
 
@@ -41,7 +41,7 @@ export const FullscreenVenueDialog = ({ venues, groups, isOpen, onOpenChange }: 
             venue.match.match.round,
             venue.match.match.bracket,
             venue.match.match.next_loser_bracket,
-            group.size || 0,
+            group.group.size || 0,
             t
         );
     }
@@ -117,9 +117,9 @@ export const FullscreenVenueDialog = ({ venues, groups, isOpen, onOpenChange }: 
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="py-1 text-sm">
-                                                    {!isFree && group?.class ? (
-                                                        <span className="block max-w-[100px]" title={group.class}>
-                                                            {group.class}
+                                                    {!isFree && group?.group.class ? (
+                                                        <span className="block max-w-[100px]" title={group.group.class}>
+                                                            {group.group.class}
                                                         </span>
                                                     ) : (
                                                         <span className="text-muted-foreground">-</span>

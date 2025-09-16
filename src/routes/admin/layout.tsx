@@ -17,9 +17,9 @@ import { useUser } from "@/providers/userProvider";
 import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
 import TableStatusSidebarSkeleton from "./tournaments/$tournamentid/-components/table-status-skeleton";
 import { useQueryClient } from "@tanstack/react-query";
-import { WSMessage, WSMsgType, WSParticipantsData, WSTableInfo, WSTournamentData, WSTournamentsData } from "@/types/ws_message";
+import { WSMessage, WSMsgType, WSParticipantsData, WSTableInfo, WSTournamentData, WSTournamentsData, WSTournamentTableData, WSTournamentTablesData } from "@/types/ws_message";
 import { WSProvider } from "@/providers/wsProvider";
-import { TournamentTableWithStagesResponse } from "@/queries/tables";
+import { TournamentTablesResponse, TournamentTableWithStagesResponse } from "@/queries/tables";
 import { TableInfoResponse } from "@/queries/match";
 import { VenuesResponse } from "@/queries/venues";
 import { BracketReponse, TournamentResponse, TournamentsResponse } from "@/queries/tournaments";
@@ -276,7 +276,53 @@ function RouteComponent() {
           }
         }
         break;
+      case WSMsgType.WSMsgTypeTournamentTableCreated:
+        const data_tt = data.data as WSTournamentTableData
+        if (params.tournamentid && Number(params.tournamentid) === data.tournament_id) {
+          if (data_tt.tournament_table) {
+            queryClient.setQueryData(["tournament_tables_query", data.tournament_id], (oldData: TournamentTablesResponse) => {
+              if (oldData) {
+                if (oldData.data) {
+                  return {
+                    ...oldData,
+                    data: [...oldData.data, data_tt.tournament_table]
+                  }
+                } else {
+                  return {
+                    ...oldData,
+                    data: [data_tt.tournament_table]
+                  }
+                }
+              }
+            })
+          }
+        }
+        break;
+      case WSMsgType.WSMsgTypeTournamentTableUpdated:
+        const data_tts = data.data as WSTournamentTablesData
+        if (data_tts.tournament_tables) {
+          let seen = false
+          data_tts.tournament_tables.map((tt) => {
+            if (params.groupid && Number(params.groupid) == Number(tt.group.id)) {
+              queryClient.setQueryData(["tournament_table", tt.group.id], (oldData: TournamentTableWithStagesResponse) => {
+                return { ...oldData, data: tt }
+              })
+              seen = true
+            }
+          })
+          if (!seen) {
+            navigate({ to: `/admin/tournaments/${params.tournamentid}/grupid` })
+          }
+        }
 
+        queryClient.setQueryData(["tournament_tables_query", data.tournament_id], (oldData: TournamentTablesResponse) => {
+          if (!oldData) {
+            console.log("old data missing")
+          }
+          return data
+        })
+
+        break
       default:
         console.log("Unhandled WS message type:", data.type);
         break;

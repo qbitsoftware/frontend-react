@@ -89,7 +89,7 @@ function RouteComponent() {
             player_count={tt.group.min_team_size}
             data={matches.data.matches ?? []}
             all_matches={matches.data.all_matches ?? []}
-            tournament_table={tt.group}
+            tournament_table={tt}
             openMatchId={openMatch}
           />
         </div>

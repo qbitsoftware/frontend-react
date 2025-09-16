@@ -41,7 +41,7 @@ function RouteComponent() {
   useEffect(() => {
     if (tablesQuery.data?.data && tablesQuery.data.data.length > 0 && selectedGroupId === null) {
       const firstTable = tablesQuery.data.data[0];
-      setSelectedGroupId(firstTable.id);
+      setSelectedGroupId(firstTable.group.id);
     }
     if (tableQuery.data?.data.group?.type === GroupType.DYNAMIC) {
       if (tableQuery.data.data.stages && tableQuery.data.data.stages.length > 1) {
@@ -88,7 +88,7 @@ function RouteComponent() {
           <ResponsiveClassSelector
             variant="tables"
             availableTables={availableTables}
-            activeGroupId={selectedGroupId || availableTables[0]?.id}
+            activeGroupId={selectedGroupId || availableTables[0]?.group.id}
             onGroupChange={handleGroupChange}
           />
         </div>

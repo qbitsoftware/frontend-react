@@ -8,12 +8,12 @@ import clubPlaceholder from "@/assets/clubPlaceholder.svg"
 import { useTranslation } from "react-i18next"
 import { ImageModal } from "./image-modal"
 import { Participant } from "@/types/participants"
-import { TournamentTable } from "@/types/groups"
 import { GroupType } from "@/types/matches"
+import { TournamentTableWithStages } from "@/queries/tables"
 
 interface TeamTableProps {
   participants: Participant[] | null
-  table_data: TournamentTable
+  table_data: TournamentTableWithStages
 }
 
 const TeamTable: React.FC<TeamTableProps> = ({ participants, table_data }) => {
@@ -113,7 +113,7 @@ const TeamTable: React.FC<TeamTableProps> = ({ participants, table_data }) => {
                 {selectedTeam.players
                   .slice()
                   .filter(player =>
-                    table_data.type == GroupType.CHAMPIONS_LEAGUE ?
+                    table_data.group.type == GroupType.CHAMPIONS_LEAGUE ?
                       player.extra_data.image_url :
                       true)
                   .sort((a, b) => {

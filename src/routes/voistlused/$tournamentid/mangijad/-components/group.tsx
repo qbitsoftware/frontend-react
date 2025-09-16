@@ -1,11 +1,11 @@
 import { UsersRound, ChevronDown } from "lucide-react"
 import SoloTable from "./solo-table"
 import TeamTable from "./team-table"
-import { TournamentTable } from "@/types/groups"
 import { GroupType } from "@/types/matches"
+import { TournamentTableWithStages } from "@/queries/tables"
 
 interface GroupProps {
-    group: TournamentTable
+    group: TournamentTableWithStages
     isOpen: boolean
     onToggle: () => void
 }
@@ -27,10 +27,10 @@ const Group: React.FC<GroupProps> = ({ group, isOpen, onToggle }) => {
                 }}
             >
                 <div className="flex items-center gap-3">
-                    <h5 className="font-semibold text-gray-800">{group.class}</h5>
+                    <h5 className="font-semibold text-gray-800">{group.group.class}</h5>
                     <div className='flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-md px-2 py-1'>
                         <UsersRound className='h-4 w-4 text-blue-600' />
-                        <span className='text-sm font-medium text-blue-700'>{(group.type === GroupType.DYNAMIC || group.type === GroupType.ROUND_ROBIN || group.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? group.participants.filter((p) => p.group_id !== "").length : group.participants.length}</span>
+                        <span className='text-sm font-medium text-blue-700'>{(group.group.type === GroupType.DYNAMIC || group.group.type === GroupType.ROUND_ROBIN || group.group.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) ? group.participants.filter((p) => p.group_id !== "").length : group.participants.length}</span>
                     </div>
                 </div>
                 <ChevronDown
@@ -45,7 +45,7 @@ const Group: React.FC<GroupProps> = ({ group, isOpen, onToggle }) => {
                 {isOpen && (
                     <div className="border-t border-gray-100 bg-gray-50/30">
                         <div className="p-4">
-                            {group.solo ?
+                            {group.group.solo ?
                                 <SoloTable participants={group.participants} table_data={group} /> :
                                 <TeamTable participants={group.participants} table_data={group} />
                             }

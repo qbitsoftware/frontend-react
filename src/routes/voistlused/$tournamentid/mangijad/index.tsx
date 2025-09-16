@@ -38,7 +38,7 @@ function RouteComponent() {
   let filteredData = originalData;
 
   if (activeClass !== "all") {
-    filteredData = filteredData.filter((table) => table.class === activeClass);
+    filteredData = filteredData.filter((table) => table.group.class === activeClass);
   }
 
   if (searchQuery && filteredData.length > 0) {
@@ -97,7 +97,7 @@ function RouteComponent() {
 
       const newOpenGroups = new Set<string>();
       for (let i = 0; i < Math.min(groupsToOpen, filteredData.length); i++) {
-        newOpenGroups.add(filteredData[i].id.toString());
+        newOpenGroups.add(filteredData[i].group.id.toString());
       }
       setOpenGroups(newOpenGroups);
     }
@@ -112,7 +112,7 @@ function RouteComponent() {
 
         const newOpenGroups = new Set<string>();
         for (let i = 0; i < Math.min(groupsToOpen, filteredData.length); i++) {
-          newOpenGroups.add(filteredData[i].id.toString());
+          newOpenGroups.add(filteredData[i].group.id.toString());
         }
         setOpenGroups(newOpenGroups);
       }
@@ -159,10 +159,10 @@ function RouteComponent() {
             <div className={cn("grid grid-cols-1 gap-6", filteredData.length !== 1 && "lg:grid-cols-2 xl:grid-cols-3")}>
               {filteredData.map((table) => (
                 <Group
-                  key={table.id}
+                  key={table.group.id}
                   group={table}
-                  isOpen={openGroups.has(table.id.toString())}
-                  onToggle={() => handleGroupToggle(table.id.toString())}
+                  isOpen={openGroups.has(table.group.id.toString())}
+                  onToggle={() => handleGroupToggle(table.group.id.toString())}
                 />
               ))}
             </div>

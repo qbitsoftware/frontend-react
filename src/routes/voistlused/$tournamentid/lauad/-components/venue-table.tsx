@@ -1,13 +1,13 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { TournamentTable } from '@/types/groups'
 import { Venue } from '@/types/venues'
 import { useTranslation } from 'react-i18next'
 import { getRoundDisplayName } from '@/lib/match-utils'
+import { TournamentTableWithStages } from '@/queries/tables'
 
 interface VenueTableProps {
     venues: Venue[]
-    groups: TournamentTable[] | null | undefined
+    groups: TournamentTableWithStages[] | null | undefined
 }
 
 export const VenueTable = ({ venues, groups }: VenueTableProps) => {
@@ -15,20 +15,20 @@ export const VenueTable = ({ venues, groups }: VenueTableProps) => {
 
     const getGroup = (venue: Venue) => {
         return groups && venue.match?.match?.tournament_table_id
-            ? groups.find((group) => group.id === venue.match?.match?.tournament_table_id)
+            ? groups.find((group) => group.group.id === venue.match?.match?.tournament_table_id)
             : undefined
     }
 
     const getRing = (venue: Venue) => {
         const group = getGroup(venue)
         if (!group || !venue.match?.match) return "-"
-        
+
         return getRoundDisplayName(
             venue.match.match.type,
             venue.match.match.round,
             venue.match.match.bracket,
             venue.match.match.next_loser_bracket,
-            group.size || 0,
+            group.group.size || 0,
             t
         );
     }
@@ -55,64 +55,64 @@ export const VenueTable = ({ venues, groups }: VenueTableProps) => {
                         </TableRow>
                     ) : (
                         venues.map((venue) => {
-                        const isFree = !venue.match_id || venue.match_id === ""
-                        const group = getGroup(venue)
+                            const isFree = !venue.match_id || venue.match_id === ""
+                            const group = getGroup(venue)
 
-                        return (
-                            <TableRow key={venue.id} className={cn("h-10", isFree && "bg-gray-50")}>
-                                <TableCell className="font-medium py-2 text-sm">{venue.name}</TableCell>
-                                <TableCell className="py-2 text-sm">
-                                    {!isFree ? (
-                                        <span className="block max-w-[220px]" title={venue?.match?.p1.name}>
-                                            {venue?.match?.p1.name}
-                                        </span>
-                                    ) : (
-                                        <span className="text-muted-foreground">-</span>
-                                    )}
-                                </TableCell>
-                                <TableCell className="py-2 text-sm">
-                                    {!isFree ? (
-                                        <span className="block max-w-[220px]" title={venue?.match?.p2.name}>
-                                            {venue?.match?.p2.name}
-                                        </span>
-                                    ) : (
-                                        <span className="text-muted-foreground">-</span>
-                                    )}
-                                </TableCell>
-                                <TableCell className="py-2 text-sm">
-                                    {!isFree && group?.class ? (
-                                        <span className="block max-w-[100px]" title={group.class}>
-                                            {group.class}
-                                        </span>
-                                    ) : (
-                                        <span className="text-muted-foreground">-</span>
-                                    )}
-                                </TableCell>
-                                <TableCell className="py-2 text-sm">
-                                    {!isFree && venue?.match?.match ? (
-                                        <span className="block max-w-[100px]">
-                                            {venue.match.match.type === "winner"
-                                                ? t("admin.tournaments.matches.table.winner_bracket")
-                                                : venue.match.match.type === "loser"
-                                                    ? t("admin.tournaments.matches.table.loser_bracket")
-                                                    : venue.match.match.type === "bracket"
-                                                        ? t("admin.tournaments.matches.table.bracket_bracket")
-                                                        : "-"}
-                                        </span>
-                                    ) : (
-                                        <span className="text-muted-foreground">-</span>
-                                    )}
-                                </TableCell>
-                                <TableCell className="py-2 text-sm">
-                                    {!isFree ? (
-                                        <span className="block max-w-[80px] whitespace-nowrap">
-                                            {getRing(venue)}
-                                        </span>
-                                    ) : (
-                                        <span className="text-muted-foreground">-</span>
-                                    )}
-                                </TableCell>
-                            </TableRow>
+                            return (
+                                <TableRow key={venue.id} className={cn("h-10", isFree && "bg-gray-50")}>
+                                    <TableCell className="font-medium py-2 text-sm">{venue.name}</TableCell>
+                                    <TableCell className="py-2 text-sm">
+                                        {!isFree ? (
+                                            <span className="block max-w-[220px]" title={venue?.match?.p1.name}>
+                                                {venue?.match?.p1.name}
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted-foreground">-</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="py-2 text-sm">
+                                        {!isFree ? (
+                                            <span className="block max-w-[220px]" title={venue?.match?.p2.name}>
+                                                {venue?.match?.p2.name}
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted-foreground">-</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="py-2 text-sm">
+                                        {!isFree && group?.group.class ? (
+                                            <span className="block max-w-[100px]" title={group.group.class}>
+                                                {group.group.class}
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted-foreground">-</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="py-2 text-sm">
+                                        {!isFree && venue?.match?.match ? (
+                                            <span className="block max-w-[100px]">
+                                                {venue.match.match.type === "winner"
+                                                    ? t("admin.tournaments.matches.table.winner_bracket")
+                                                    : venue.match.match.type === "loser"
+                                                        ? t("admin.tournaments.matches.table.loser_bracket")
+                                                        : venue.match.match.type === "bracket"
+                                                            ? t("admin.tournaments.matches.table.bracket_bracket")
+                                                            : "-"}
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted-foreground">-</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="py-2 text-sm">
+                                        {!isFree ? (
+                                            <span className="block max-w-[80px] whitespace-nowrap">
+                                                {getRing(venue)}
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted-foreground">-</span>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
                             )
                         })
                     )}

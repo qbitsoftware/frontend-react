@@ -6,10 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Settings, Play, Pause } from "lucide-react";
-import { TournamentTable } from "@/types/groups";
 import { Tournament } from "@/types/tournaments";
 import { toast } from "sonner";
-import { UseGenerateTimeTable } from "@/queries/tables";
+import { TournamentTableWithStages, UseGenerateTimeTable } from "@/queries/tables";
 import { UseResetTimeTableFully, UseUpdateTimetableVisibility } from "@/queries/tournaments";
 import { Switch } from "@/components/ui/switch";
 import { Globe, Lock } from "lucide-react";
@@ -26,7 +25,7 @@ export interface TimeTableFormValues {
 }
 
 interface Props {
-  tournamentTables: TournamentTable[];
+  tournamentTables: TournamentTableWithStages[];
   tournament: Tournament;
 }
 
@@ -74,42 +73,42 @@ export default function TimetableConfigurationsForm({
     const startTimes = new Map<number, { date: string; time: string }>();
 
     tournamentTables.forEach(table => {
-      if (table.time_table) {
-        enabledTables.add(table.id);
+      if (table.group.time_table) {
+        enabledTables.add(table.group.id);
 
-        if (table.start_date) {
-          setAvgMatchDuration(table.avg_match_duration || 20);
-          setBreakDuration(table.break_duration || 5);
-          setConcurrencyPriority(table.concurrency_priority);
+        if (table.group.start_date) {
+          setAvgMatchDuration(table.group.avg_match_duration || 20);
+          setBreakDuration(table.group.break_duration || 5);
+          setConcurrencyPriority(table.group.concurrency_priority);
           try {
-            const date = new Date(table.start_date);
+            const date = new Date(table.group.start_date);
             if (!isNaN(date.getTime())) {
               const formattedDate = date.toISOString().split("T")[0];
               const formattedTime = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-              startTimes.set(table.id, {
+              startTimes.set(table.group.id, {
                 date: formattedDate,
                 time: formattedTime
               });
             } else {
-              startTimes.set(table.id, {
+              startTimes.set(table.group.id, {
                 date: tournamentStartDate,
                 time: "12:00"
               });
             }
           } catch (error) {
-            startTimes.set(table.id, {
+            startTimes.set(table.group.id, {
               date: tournamentStartDate,
               time: "12:00"
             });
           }
         } else {
-          startTimes.set(table.id, {
+          startTimes.set(table.group.id, {
             date: tournamentStartDate,
             time: "12:00"
           });
         }
       } else {
-        startTimes.set(table.id, {
+        startTimes.set(table.group.id, {
           date: tournamentStartDate,
           time: "12:00"
         });
@@ -169,11 +168,11 @@ export default function TimetableConfigurationsForm({
     try {
       // Send all tables with their timetable status
       for (const table of tournamentTables) {
-        const isSelected = selectedTables.has(table.id);
-        const tableStartTime = tableStartTimes.get(table.id);
+        const isSelected = selectedTables.has(table.group.id);
+        const tableStartTime = tableStartTimes.get(table.group.id);
 
         const values: TimeTableFormValues = {
-          id: table.id,
+          id: table.group.id,
           time_table: isSelected, // Include the enabled/disabled status
           start_date: isSelected && tableStartTime ? tableStartTime.date : null,
           start_time: isSelected && tableStartTime ? (() => {
@@ -306,19 +305,19 @@ export default function TimetableConfigurationsForm({
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {tournamentTables && tournamentTables.sort((a, b) => a.id - b.id).map((table) => (
-              <div key={table.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 border rounded-lg">
+            {tournamentTables && tournamentTables.sort((a, b) => a.group.id - b.group.id).map((table) => (
+              <div key={table.group.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <Checkbox
-                    id={`table-${table.id}`}
-                    checked={selectedTables.has(table.id)}
-                    onCheckedChange={(checked) => handleTableToggle(table.id, checked as boolean)}
+                    id={`table-${table.group.id}`}
+                    checked={selectedTables.has(table.group.id)}
+                    onCheckedChange={(checked) => handleTableToggle(table.group.id, checked as boolean)}
                   />
                   <label
-                    htmlFor={`table-${table.id}`}
+                    htmlFor={`table-${table.group.id}`}
                     className="text-sm font-medium cursor-pointer flex-1 sm:min-w-[100px]"
                   >
-                    {table.class}
+                    {table.group.class}
                   </label>
                 </div>
 
@@ -327,17 +326,17 @@ export default function TimetableConfigurationsForm({
                     type="date"
                     min={tournamentStartDate}
                     max={tournamentEndDate}
-                    value={tableStartTimes.get(table.id)?.date || tournamentStartDate}
-                    onChange={(e) => handleTableTimeChange(table.id, 'date', e.target.value)}
-                    disabled={!selectedTables.has(table.id)}
+                    value={tableStartTimes.get(table.group.id)?.date || tournamentStartDate}
+                    onChange={(e) => handleTableTimeChange(table.group.id, 'date', e.target.value)}
+                    disabled={!selectedTables.has(table.group.id)}
                     className="flex-1 sm:w-36"
                   />
 
                   <Input
                     type="time"
-                    value={tableStartTimes.get(table.id)?.time || "12:00"}
-                    onChange={(e) => handleTableTimeChange(table.id, 'time', e.target.value)}
-                    disabled={!selectedTables.has(table.id)}
+                    value={tableStartTimes.get(table.group.id)?.time || "12:00"}
+                    onChange={(e) => handleTableTimeChange(table.group.id, 'time', e.target.value)}
+                    disabled={!selectedTables.has(table.group.id)}
                     className="flex-1 sm:w-24"
                   />
                 </div>

@@ -44,7 +44,7 @@ function RouteComponent() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const first_tournament_table = useMemo(() => {
     if (!isLoading && data && data.data && data.data.length > 0) {
-      return data.data[0].id;
+      return data.data[0].group.id;
     }
     return undefined;
   }, [isLoading, data]);

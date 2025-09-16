@@ -139,7 +139,7 @@ export const useTournamentEvents = (
 
           let counter = 0;
           groupData.data.forEach((group) => {
-            if (group.type === "champions_league") counter++;
+            if (group.group.type === "champions_league") counter++;
           });
 
           return counter === groupData.data.length;
@@ -168,7 +168,7 @@ export const useTournamentEvents = (
 
           let counter = 0;
           groupData.data.forEach((group) => {
-            if (group.type === "champions_league") counter++;
+            if (group.group.type === "champions_league") counter++;
           });
 
           if (counter !== groupData.data.length) {

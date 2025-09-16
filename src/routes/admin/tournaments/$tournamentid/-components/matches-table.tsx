@@ -6,19 +6,20 @@ import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
 import React, { useCallback, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { DialogType, TournamentTable } from "@/types/groups"
+import { DialogType } from "@/types/groups"
 import { Edit } from "lucide-react"
 import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
 import { getRoundDisplayName } from "@/lib/match-utils"
 import { UseGetTournamentParticipantsQuery } from "@/queries/participants"
 import { UsePatchMatch } from "@/queries/match"
+import { TournamentTableWithStages } from "@/queries/tables"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
     handleRowClick: (match: MatchWrapper) => void
     tournament_id: number
-    tournament_table: TournamentTable[]
+    tournament_table: TournamentTableWithStages[]
     active_participant: string[]
     all?: boolean
 }
@@ -35,7 +36,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const { t } = useTranslation()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
-    const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
+    const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.group.id, table])), [tournament_table])
     const matchUpdate = UsePatchMatch(tournament_id)
 
     const tableRef = useRef<Table>(null)
@@ -65,7 +66,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }
 
     const getScore = useCallback((match: MatchWrapper, player: ParticipantType) => {
-        if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES) {
+        if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES) {
             return player === ParticipantType.P1 ? match.match.extra_data.team_1_total || 0 : match.match.extra_data.team_2_total || 0
         }
 
@@ -318,7 +319,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     const groupCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-[10px]">
-            {tableMap.get(rowData.match.tournament_table_id)?.class || "N/A"}
+            {tableMap.get(rowData.match.tournament_table_id)?.group.class || "N/A"}
         </div>
     ), [tableMap])
 
@@ -346,7 +347,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     // Replace the existing cell renderers with these memoized versions:
     const participant1ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
         const isChampionsLeague = rowData.match.table_type === "champions_league" ||
-            tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES
+            tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES
 
         return (
             <div className="flex items-center h-full px-2">
@@ -367,7 +368,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     const participant2ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
         const isChampionsLeague = rowData.match.table_type === "champions_league" ||
-            tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES
+            tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES
 
         return (
             <div className="flex items-center h-full px-2">
@@ -444,7 +445,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             rowData.match.round,
             rowData.match.bracket,
             rowData.match.next_loser_bracket,
-            table?.size || 0,
+            table?.group.size || 0,
             t
         );
 

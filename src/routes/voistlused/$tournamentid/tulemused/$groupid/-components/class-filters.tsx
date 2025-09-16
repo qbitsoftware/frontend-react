@@ -1,6 +1,5 @@
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { TournamentTable } from "@/types/groups";
 import {
   Select,
   SelectContent,
@@ -8,9 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TournamentTableWithStages } from "@/queries/tables";
 
 interface ClassFiltersProps {
-  availableTables: TournamentTable[];
+  availableTables: TournamentTableWithStages[];
   activeGroupId: number;
   onGroupChange: (groupId: number) => void;
 }
@@ -33,8 +33,8 @@ export const ClassFilters = ({
       return { gender: className.toLowerCase(), age: 0 };
     };
 
-    const classA = parseClass(a.class);
-    const classB = parseClass(b.class);
+    const classA = parseClass(a.group.class);
+    const classB = parseClass(b.group.class);
 
     // Sort by gender first (Poisid before Tudrukud)
     if (classA.gender !== classB.gender) {
@@ -44,10 +44,10 @@ export const ClassFilters = ({
     // Then sort by age
     return classA.age - classB.age;
   });
-  
+
   const activeTable = sortedTables.find(
     (table) =>
-      table.id === activeGroupId ||
+      table.group.id === activeGroupId ||
       (table.stages && table.stages.some((stage) => stage.id === activeGroupId))
   );
 
@@ -57,7 +57,7 @@ export const ClassFilters = ({
 
   return (
     <div className="bg-white border border-gray-200 shadow-sm mb-4 sm:mb-6 rounded-lg">
-        <div>
+      <div>
         <div className="flex items-center justify-between">
           {/* Mobile Dropdown (hidden on md and up) */}
           <div className="flex-1 md:hidden py-3">
@@ -67,13 +67,13 @@ export const ClassFilters = ({
             >
               <SelectTrigger className="w-full h-9 text-sm">
                 <SelectValue>
-                  {activeTable ? activeTable.class : "Select class"}
+                  {activeTable ? activeTable.group.class : "Select class"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {sortedTables.map((table) => (
-                  <SelectItem key={table.id} value={table.id.toString()}>
-                    {table.class}
+                  <SelectItem key={table.group.id} value={table.group.id.toString()}>
+                    {table.group.class}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -85,13 +85,13 @@ export const ClassFilters = ({
             <div className="flex space-x-1 sm:space-x-2 py-2">
               {sortedTables.map((table) => {
                 const isActive =
-                  table.id === activeGroupId ||
+                  table.group.id === activeGroupId ||
                   (table.stages && table.stages.some((stage) => stage.id === activeGroupId));
 
                 return (
                   <button
-                    key={table.id}
-                    onClick={() => onGroupChange(table.id)}
+                    key={table.group.id}
+                    onClick={() => onGroupChange(table.group.id)}
                     className={cn(
                       "flex-shrink-0 px-3 sm:px-4 py-2 text-sm font-medium transition-all duration-200 border-b-2 rounded-t-md min-w-[80px] sm:min-w-[100px]",
                       isActive
@@ -101,9 +101,9 @@ export const ClassFilters = ({
                   >
                     <span
                       className="font-medium text-center leading-tight truncate"
-                      title={table.class}
+                      title={table.group.class}
                     >
-                      {table.class}
+                      {table.group.class}
                     </span>
                   </button>
                 );

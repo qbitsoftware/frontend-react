@@ -95,7 +95,7 @@ const TableStatusSidebar = () => {
     if (!tournamentTables?.data) return [];
 
     const groupsMap = new Map(
-      tournamentGroups?.data?.map((group) => [group.id, group.class]) || [],
+      tournamentGroups?.data?.map((group) => [group.group.id, group.group.class]) || [],
     );
 
     return tournamentTables.data.map((table) => {

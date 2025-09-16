@@ -23,8 +23,8 @@ export interface TournamentTableWithStages {
     participants: Participant[];
 }
 
-interface TournamentTablesResponse {
-    data: TournamentTable[] | null
+export interface TournamentTablesResponse {
+    data: TournamentTableWithStages[] | null
     message: string;
     error: string | null;
 }
@@ -127,21 +127,27 @@ export const UsePatchTournamentTable = (tournament_id: number, tournament_table_
             return data;
         },
 
-        onSuccess: (data: TournamentTableResponse) => {
-            queryClient.setQueryData(["tournament_table", tournament_table_id], (oldData: TournamentTableResponse) => {
-                if (oldData) {
-                    oldData.data = data.data
-                    oldData.message = data.message
-                    oldData.error = data.error
+        onSuccess: (data: TournamentTablesResponse) => {
+            queryClient.setQueryData(["tournament_table", tournament_table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (oldData && data && data.data) {
+                    data.data.map((table) => {
+                        if (table.group.id === tournament_table_id) {
+                            return {
+                                data: table,
+                                message: "",
+                                error: null,
+                            }
+                        }
+                    })
                 }
                 return oldData
             })
-            // queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-            // ["tournament_tables_query", tournament_id]
-            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['participants', tournament_table_id] })
-            queryClient.invalidateQueries({ queryKey: ['bracket', tournament_table_id] })
-            queryClient.invalidateQueries({ queryKey: ['matches', tournament_table_id] })
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], (oldData: TournamentTablesResponse) => {
+                if (!oldData) {
+                    console.log("old data missing")
+                }
+                return data
+            })
         }
     })
 }
@@ -163,6 +169,20 @@ export const UsePostTournamentTable = (tournament_id: number) => {
                 }
                 return oldData
             })
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], (oldData: TournamentTablesResponse) => {
+                if (oldData && oldData.data) {
+                    return {
+                        ...oldData,
+                        data: [...oldData.data, data.data]
+                    }
+                } else {
+                    return {
+                        data: [data.data],
+                        message: "",
+                        error: null,
+                    }
+                }
+            })
         }
     })
 }
@@ -177,12 +197,18 @@ export const UseDeleteTournamentTable = (tournament_id: number, tournament_table
             return data;
         },
 
-        onSuccess: (data: TournamentTableWithStagesResponse) => {
-            queryClient.setQueryData(["tournament_table", data.data.group.id], (oldData: TournamentTableWithStagesResponse) => {
-                if (data) {
-                    return data
+        onSuccess: (data: TournamentTablesResponse) => {
+            queryClient.setQueryData(["tournament_table", tournament_table_id], (oldData: TournamentTableWithStagesResponse) => {
+                return {
+                    ...oldData,
+                    data: null
                 }
-                return oldData
+            })
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], (oldData: TournamentTablesResponse) => {
+                if (!oldData) {
+                    console.log("old data missing")
+                }
+                return data
             })
         }
     })

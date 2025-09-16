@@ -109,6 +109,29 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
   )
 
   const formSchema = createFormSchema(t)
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: initial_data
+      ? {
+        ...initial_data,
+      }
+      : {
+        class: "",
+        type: "",
+        solo: false,
+        dialog_type: "",
+        min_team_size: 2,
+        max_team_size: 2,
+        size: 16,
+        woman_weight: 1,
+        start_time: "",
+        avg_match_duration: 15,
+        time_table: false,
+        second_class: "",
+        has_consolation: false,
+        consolation_class: "",
+      },
+  })
 
   const { tournamentid } = useParams({ strict: false })
 
@@ -144,30 +167,6 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
       setWomanWeightInputValue('1')
     }
   }, [initial_data])
-
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: initial_data
-      ? {
-        ...initial_data,
-      }
-      : {
-        class: "",
-        type: "",
-        solo: false,
-        dialog_type: "",
-        min_team_size: 2,
-        max_team_size: 2,
-        size: 16,
-        woman_weight: 1,
-        start_time: "",
-        avg_match_duration: 15,
-        time_table: false,
-        second_class: "",
-        has_consolation: false,
-        consolation_class: "",
-      },
-  })
 
   let postMutation = UsePostTournamentTable(Number(tournamentid))
   if (initial_data) {
