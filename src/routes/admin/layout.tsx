@@ -283,9 +283,20 @@ function RouteComponent() {
             queryClient.setQueryData(["tournament_tables_query", data.tournament_id], (oldData: TournamentTablesResponse) => {
               if (oldData) {
                 if (oldData.data) {
-                  return {
-                    ...oldData,
-                    data: [...oldData.data, data_tt.tournament_table]
+                  let seen = false
+                  oldData.data.map((tt) => {
+                    if (tt.group.id === data_tt.tournament_table?.group.id) {
+                      seen = true
+                      return {
+                        ...oldData,
+                      }
+                    }
+                  })
+                  if (!seen) {
+                    return {
+                      ...oldData,
+                      data: [...oldData.data, data_tt.tournament_table]
+                    }
                   }
                 } else {
                   return {
@@ -316,10 +327,11 @@ function RouteComponent() {
         }
 
         queryClient.setQueryData(["tournament_tables_query", data.tournament_id], (oldData: TournamentTablesResponse) => {
+          console.log("returning new dat", data)
           if (!oldData) {
             console.log("old data missing")
           }
-          return data
+          return {...oldData, data: data_tts.tournament_tables}
         })
 
         break

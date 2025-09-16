@@ -171,9 +171,20 @@ export const UsePostTournamentTable = (tournament_id: number) => {
             })
             queryClient.setQueryData(["tournament_tables_query", tournament_id], (oldData: TournamentTablesResponse) => {
                 if (oldData && oldData.data) {
-                    return {
-                        ...oldData,
-                        data: [...oldData.data, data.data]
+                    let seen = false
+                    oldData.data.map((tt) => {
+                        if (tt.group.id === data.data.group.id) {
+                            seen = true
+                            return {
+                                ...oldData,
+                            }
+                        }
+                    })
+                    if (!seen) {
+                        return {
+                            ...oldData,
+                            data: [...oldData.data, data.data]
+                        }
                     }
                 } else {
                     return {
