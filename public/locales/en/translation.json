@@ -533,6 +533,7 @@
       "no_results": "No results"
     },
     "standings": {
+      "og_placement": "Seed",
       "placement": "NR",
       "participants": "Participants",
       "rating": "Rating",

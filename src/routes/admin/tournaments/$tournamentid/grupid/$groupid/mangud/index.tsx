@@ -7,6 +7,7 @@ import ErrorPage from '@/components/error'
 import { Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useTournamentTable } from '@/routes/voistlused/$tournamentid/-components/tt-provider'
+import { TournamentProgress } from '@/routes/admin/tournaments/$tournamentid/-components/tournament-progress'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/grupid/$groupid/mangud/',
@@ -53,7 +54,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 px-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {tt.stages && tt.stages.length >= 1 && (
         <div className="border-b border-gray-200 mb-4">
           <nav className="-mb-px flex space-x-8">
@@ -91,6 +92,7 @@ function RouteComponent() {
             all_matches={matches.data.all_matches ?? []}
             tournament_table={tt}
             openMatchId={openMatch}
+            tournamentProgress={<TournamentProgress tournamentId={tournamentId} />}
           />
         </div>
       ) : (isLoading1) ? (

@@ -21,6 +21,7 @@ interface MatchesProps {
   tournament_table: TournamentTableWithStages;
   player_count: number;
   openMatchId?: string;
+  tournamentProgress?: React.ReactElement;
 }
 
 export type FilterOptions = MatchState | "all";
@@ -32,6 +33,7 @@ export const Matches: React.FC<MatchesProps> = ({
   player_count,
   all_matches,
   openMatchId,
+  tournamentProgress,
 }: MatchesProps) => {
   const [isRegroupingModalOpen, setIsRegroupingModalOpen] = useState(false);
   const [isTimeEditingModalOpen, setIsTimeEditingModalOpen] = useState(false);
@@ -321,7 +323,8 @@ export const Matches: React.FC<MatchesProps> = ({
     return (
       <Card className="w-full border-stone-100">
         <CardHeader className="flex flex-row w-full items-center justify-between space-y-0">
-          <div className="flex gap-4 flex-col">
+          <div className="flex gap-4 flex-col w-full">
+            {tournamentProgress}
             {/* Compact filter checkboxes */}
             <div className="flex flex-col sm:flex-row">
               <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
@@ -363,7 +366,7 @@ export const Matches: React.FC<MatchesProps> = ({
             </div>
             <div>
               <div className="flex gap-4  text-xs text-gray-600">
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className="text-sm font-bold text-gray-900">
                   <span className="font-light text-base">
                     {t("admin.tournaments.groups.layout.games_title")}
                   </span>{" "}

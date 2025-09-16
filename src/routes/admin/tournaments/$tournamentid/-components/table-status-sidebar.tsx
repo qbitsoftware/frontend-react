@@ -1,6 +1,5 @@
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import { useMemo, useState, useEffect } from "react";
-import * as React from "react";
 import { useParams, useRouter } from "@tanstack/react-router";
 import { UseGetFreeVenuesAll } from "@/queries/venues";
 import { cn } from "@/lib/utils";
@@ -9,11 +8,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarProvider,
   useSidebar,
   SidebarTrigger
 } from "@/components/ui/sidebar";
-import { useTableSidebar } from "@/providers/tableSidebarProvider";
 
 interface TableStatus {
   id: string;
@@ -86,15 +83,10 @@ const formatPlayerName = (fullName: string): string => {
   return `${firstNames.join('')} ${lastName}`;
 };
 
-const TableStatusSidebarContent = () => {
+const TableStatusSidebar = () => {
   const { t } = useTranslation();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const { setCollapsed } = useTableSidebar();
-
-  React.useEffect(() => {
-    setCollapsed(isCollapsed);
-  }, [isCollapsed, setCollapsed]);
 
   const { tournamentid } = useParams({ strict: false });
   const router = useRouter();
@@ -159,7 +151,7 @@ const TableStatusSidebarContent = () => {
 
   return (
     <Sidebar side="right" collapsible="icon" className="border-l bg-[#F8F9FA] data-[state=collapsed]:w-24 data-[state=expanded]:w-64">
-      <SidebarHeader className="h-[4.5rem] px-2 border-b">
+      <SidebarHeader className="h-[4.2rem] px-2 border-b flex items-center justify-center">
         {isCollapsed ? (
           <div className="flex justify-center w-full">
             <SidebarTrigger />
@@ -182,13 +174,12 @@ const TableStatusSidebarContent = () => {
               onClick={() => handleRowClick(table)}
               key={table.id}
               className={cn(
-                "w-full flex items-center gap-2 h-10 min-h-10 px-2 overflow-hidden border-b relative flex-shrink-0",
-                isCollapsed ? "justify-center" : "justify-between",
+                "w-full flex items-center gap-2 h-10 min-h-10 px-2 overflow-hidden border-b relative flex-shrink-0 justify-between",
                 table.tournament_table_id && "cursor-pointer",
               )}
             >
               <h3 className={cn(
-                "text-sm font-semibold flex-shrink-0",
+                "text-xs font-semibold flex-shrink-0",
                 isCollapsed ? "text-xs" : ""
               )}>{table.number}</h3>
 
@@ -222,18 +213,6 @@ const TableStatusSidebarContent = () => {
         </div>
       </SidebarContent>
     </Sidebar>
-  );
-};
-
-const TableStatusSidebar = () => {
-  return (
-    <div className="hidden lg:block fixed top-0 right-0 z-10 h-screen">
-      <SidebarProvider
-        style={{ '--sidebar-width': '16rem', '--sidebar-width-icon': '4rem' } as React.CSSProperties}
-      >
-        <TableStatusSidebarContent />
-      </SidebarProvider>
-    </div>
   );
 };
 

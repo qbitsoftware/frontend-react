@@ -135,7 +135,17 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                             </span>
                         )}
                         {findLastPlayerMatch && findLastPlayerMatch.match.finish_date && match.match.state === MatchState.CREATED && (
-                            <span className="text-[10px] text-gray-500">
+                            <span className={`text-[10px] ${
+                                (() => {
+                                    const finished = new Date(findLastPlayerMatch.match.finish_date)
+                                    const diffMs = Date.now() - finished.getTime()
+                                    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+
+                                    if (diffMinutes >= 60) return 'text-red-500'
+                                    if (diffMinutes >= 30) return 'text-orange-400'
+                                    return 'text-gray-500'
+                                })()
+                            }`}>
                                 {t('admin.tournaments.matches.waiting')}: {formatWaitingTime(findLastPlayerMatch.match.finish_date)}
                             </span>
                         )}

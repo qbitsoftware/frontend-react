@@ -581,6 +581,7 @@
     },
     "standings": {
       "placement": "Koht",
+      "og_placement": "Asetus",
       "participants": "Osalejad",
       "rating": "Reitingukoht",
       "sex": "Sugu",
@@ -1572,9 +1573,9 @@
         },
         "search": "Otsi turniiri...",
         "all_games": "Kõik mängud",
-        "winner_declared": "Lõppenud mängud",
-        "ongoing_games": "Käimas mängud",
-        "upcoming_games": "Tulevased mängud"
+        "winner_declared": "Lõppenud",
+        "ongoing_games": "Käimas",
+        "upcoming_games": "Tulevased"
       },
       "progress": {
         "title": "Turniiri Progress",

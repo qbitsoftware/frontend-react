@@ -18,7 +18,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TournamentProvider } from "@/routes/voistlused/$tournamentid/-components/tournament-provider";
 import { useNavigationHelper } from "@/providers/navigationProvider";
-import { useTableSidebar } from "@/providers/tableSidebarProvider";
+import { useTableSidebarContext } from "@/providers/tableSidebarContext";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -36,7 +36,7 @@ function RouteComponent() {
   const { t } = useTranslation();
   const { data, isLoading } = UseGetTournamentTablesQuery(Number(tournamentid));
   const { groupId } = useNavigationHelper();
-  const { isCollapsed: isTableSidebarCollapsed } = useTableSidebar();
+  const { isCollapsed: isTableSidebarCollapsed } = useTableSidebarContext();
 
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({

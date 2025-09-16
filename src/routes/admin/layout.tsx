@@ -14,12 +14,12 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import ErrorPage from "@/components/error";
 import { UseGetCurrentUser } from "@/queries/users";
 import { useUser } from "@/providers/userProvider";
-import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
+import TableStatusSidebarWrapper from "./tournaments/$tournamentid/-components/table-status-sidebar-wrapper";
 import TableStatusSidebarSkeleton from "./tournaments/$tournamentid/-components/table-status-skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import { WSMessage, WSMsgType, WSParticipantsData, WSTableInfo, WSTournamentData, WSTournamentsData, WSTournamentTableData, WSTournamentTablesData } from "@/types/ws_message";
 import { WSProvider } from "@/providers/wsProvider";
-import { TableSidebarProvider } from "@/providers/tableSidebarProvider";
+import { TableSidebarContextProvider } from "@/providers/tableSidebarContext";
 import { TournamentTablesResponse, TournamentTableWithStagesResponse } from "@/queries/tables";
 import { TableInfoResponse } from "@/queries/match";
 import { VenuesResponse } from "@/queries/venues";
@@ -73,6 +73,7 @@ function RouteComponent() {
   const isTournamentAdminRoute = /^\/admin\/tournaments\/\d+/.test(location.pathname);
   const defaultOpen = getCookie("sidebar:state") !== "false" && !isTournamentAdminRoute;
   const [hasSidebarLoaded, setHasSidebarLoaded] = useState(false);
+  const [isTableSidebarCollapsed, setIsTableSidebarCollapsed] = useState(false);
   const previousTournamentId = useRef<string | null>(null);
 
   if (!user?.role.includes('admin')) {
@@ -350,7 +351,7 @@ function RouteComponent() {
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
         <WSProvider url={import.meta.env.VITE_BACKEND_API_URL_WS + "ws/v1/admin"} onMessage={handleWSMessage}>
-          <TableSidebarProvider>
+          <TableSidebarContextProvider isCollapsed={isTableSidebarCollapsed}>
             <SidebarProvider defaultOpen={defaultOpen}>
               <SidebarController />
               <AdminSidebar />
@@ -358,11 +359,13 @@ function RouteComponent() {
                 <Outlet />
               </div>
               {isTournamentRoute && (
-                (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
+                (isLoading && !hasSidebarLoaded) ?
+                  <TableStatusSidebarSkeleton /> :
+                  <TableStatusSidebarWrapper onStateChange={setIsTableSidebarCollapsed} />
               )}
             </SidebarProvider>
             <AdminBottomNav />
-          </TableSidebarProvider>
+          </TableSidebarContextProvider>
         </WSProvider>
       </div>
     </div>
