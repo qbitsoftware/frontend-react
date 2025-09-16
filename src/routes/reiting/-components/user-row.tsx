@@ -12,9 +12,11 @@ interface Props {
     index: number
     handleModalOpen: (user: User) => void;
     displayIndex?: number;
+    combinedOrder?: number;
+    showCombinedOrder?: boolean;
 }
 
-export default function UserRow({ user, clubs, index, handleModalOpen, displayIndex }: Props) {
+export default function UserRow({ user, clubs, index, handleModalOpen, displayIndex, combinedOrder, showCombinedOrder }: Props) {
     const { t } = useTranslation()
     const getClubName = (user: User) => {
         return user.club?.name || "KLUBITU";
@@ -72,7 +74,16 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                 }`}
         >
             <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-sm sm:text-lg font-bold text-[#4C97F1]">
-                {user.rate_order > 0 ? user.rate_order : (displayIndex ? displayIndex : "-")}
+                {showCombinedOrder && combinedOrder !== undefined ? (
+                    <>
+                        {combinedOrder}
+                        {user.rate_order > 0 && <span className="text-gray-500"> ({user.rate_order})</span>}
+                    </>
+                ) : showCombinedOrder && combinedOrder === undefined ? (
+                    "-"
+                ) : (
+                    user.rate_order > 0 ? user.rate_order : (displayIndex ? displayIndex : "-")
+                )}
             </TableCell>
             <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">
                 <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">

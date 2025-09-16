@@ -32,7 +32,6 @@ import UserRowSkeleton from "./user-row-skeleton";
 import { RatingFilters } from "@/components/rating-filters";
 import { UseGetRatingInfo } from "@/queries/rating";
 
-
 export function Reiting() {
   const { t } = useTranslation();
 
@@ -46,26 +45,62 @@ export function Reiting() {
   const [showForeigners, setShowForeigners] = useState(false);
 
   // Data fetching
-  const { data: ratingInfo } = UseGetRatingInfo()
-  const { data, isLoading } = UseGetUsersQuery("")
+  const { data: ratingInfo } = UseGetRatingInfo();
+  const { data, isLoading } = UseGetUsersQuery("");
   const { data: clubsData } = UseGetClubsQuery();
 
   const [users, setUsers] = useState<User[]>([]);
   const [clubs, setClubs] = useState<Club[]>([]);
   useEffect(() => {
     if (data && data.data) {
-      setUsers(data.data);
+      const allPlayers = [...data.data];
+
+      const createCombinedList = (genderFilter: string) => {
+        const estonianPlayers = allPlayers.filter(user => user.rate_order > 0 && user.sex === genderFilter).sort((a, b) => a.rate_order - b.rate_order);
+        const foreigners = allPlayers.filter(user => user.rate_order === 0 && user.foreigner === 1 && user.rate_weigth >= 0 && user.sex === genderFilter).sort((a, b) => b.rate_points - a.rate_points);
+
+        const combinedList = [];
+        let foreignerIndex = 0;
+
+        for (const estonianPlayer of estonianPlayers) {
+          while (foreignerIndex < foreigners.length && foreigners[foreignerIndex].rate_points > estonianPlayer.rate_points) {
+            combinedList.push(foreigners[foreignerIndex]);
+            foreignerIndex++;
+          }
+          combinedList.push(estonianPlayer);
+        }
+
+        while (foreignerIndex < foreigners.length) {
+          combinedList.push(foreigners[foreignerIndex]);
+          foreignerIndex++;
+        }
+
+        combinedList.forEach((user, index) => {
+          user.combinedIndex = index + 1;
+        });
+
+        return combinedList;
+      };
+
+      const menCombined = createCombinedList('M');
+      const womenCombined = createCombinedList('N');
+
+      const lowWeightForeigners = allPlayers.filter(user => user.rate_order === 0 && user.foreigner === 1 && user.rate_weigth < 0);
+      lowWeightForeigners.forEach(user => {
+        user.combinedIndex = undefined;
+      });
+
+      setUsers([...menCombined, ...womenCombined, ...lowWeightForeigners]);
     }
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
     if (clubsData && clubsData.data) {
       setClubs(clubsData.data);
     }
-  }, [clubsData])
+  }, [clubsData]);
 
   const windowScrollRef = useRef(0);
-
 
   const handleAgeClassChange = (value: string) => {
     setAgeClass(value);
@@ -100,50 +135,44 @@ export function Reiting() {
     setIsModalOpen(false);
   };
 
-  const filteredUsers = users
-    .filter((user) => {
-      const matchesGender = filterByGender(user, gender);
-      const matchesAgeClass = filterByAgeClass(user, ageClass);
-      const hasELTLId = user.eltl_id != 0;
+  const filteredUsers = users.filter((user) => {
+    const matchesGender = filterByGender(user, gender);
+    const matchesAgeClass = filterByAgeClass(user, ageClass);
+    const hasELTLId = user.eltl_id != 0;
 
-      const searchLower = searchQuery.toLowerCase().trim();
-      const firstNameLower = user.first_name.toLowerCase();
-      const lastNameLower = user.last_name.toLowerCase();
-      const fullNameLower = `${firstNameLower} ${lastNameLower}`;
-      const clubNameLower = user.club?.name.toLowerCase() || "";
-      const eltlIdString = user.eltl_id.toString();
+    const searchLower = searchQuery.toLowerCase().trim();
+    const firstNameLower = user.first_name.toLowerCase();
+    const lastNameLower = user.last_name.toLowerCase();
+    const fullNameLower = `${firstNameLower} ${lastNameLower}`;
+    const clubNameLower = user.club?.name.toLowerCase() || "";
+    const eltlIdString = user.eltl_id.toString();
 
-      const matchesSearchQuery =
-        searchLower === "" ||
-        firstNameLower.includes(searchLower) ||
-        lastNameLower.includes(searchLower) ||
-        fullNameLower.includes(searchLower) ||
-        eltlIdString.includes(searchQuery) ||
-        clubNameLower.includes(searchLower) ||
-
-        searchLower.split(/\s+/).every(word =>
-          word.length > 0 && (
-            firstNameLower.includes(word) ||
-            lastNameLower.includes(word)
-          )
+    const matchesSearchQuery =
+      searchLower === "" ||
+      firstNameLower.includes(searchLower) ||
+      lastNameLower.includes(searchLower) ||
+      fullNameLower.includes(searchLower) ||
+      eltlIdString.includes(searchQuery) ||
+      clubNameLower.includes(searchLower) ||
+      searchLower
+        .split(/\s+/)
+        .every(
+          (word) =>
+            word.length > 0 &&
+            (firstNameLower.includes(word) || lastNameLower.includes(word))
         );
 
-      const isEstonianPlayer = hasELTLId && user.rate_order > 0;
-      const isForeigner = showForeigners && user.rate_order === 0 && user.foreigner === 1;
+    const isEstonianPlayer = hasELTLId && user.rate_order > 0;
+    const isForeigner =
+      showForeigners && user.rate_order === 0 && user.foreigner === 1;
 
-      return matchesGender && matchesAgeClass && matchesSearchQuery && (isEstonianPlayer || isForeigner);
-    })
-    .sort((a, b) => {
-      if (a.rate_order > 0 && b.rate_order > 0) {
-        return a.rate_order - b.rate_order;
-      }
-
-      if (a.rate_order === 0 && b.rate_order === 0) {
-        return b.rate_points - a.rate_points;
-      }
-
-      return b.rate_points - a.rate_points;
-    });
+    return (
+      matchesGender &&
+      matchesAgeClass &&
+      matchesSearchQuery &&
+      (isEstonianPlayer || isForeigner)
+    );
+  });
 
   const selectedPlayer = users.find((user) => user.id === SelectedPlayerId);
 
@@ -160,7 +189,13 @@ export function Reiting() {
           <p className="font-medium pb-1 text-sm sm:text-base">
             {t("rating.last_updated")}:{" "}
             <span className="bg-[#FBFBFB] px-2 sm:px-3 py-1 rounded-full border border-[#EAEAEA] text-xs sm:text-sm">
-              {ratingInfo?.data?.last_calculated_at ? new Date(ratingInfo.data.last_calculated_at).toISOString().slice(0, 16).replace("T", " ") : t("rating.unknown_date", "-")}
+              {ratingInfo?.data?.last_calculated_at
+                ? (() => {
+                    const date = new Date(new Date(ratingInfo.data.last_calculated_at).getTime() + 5 * 60 * 60 * 1000);
+                    date.setMinutes(0, 0, 0);
+                    return date.toISOString().slice(0, 16).replace("T", " ");
+                  })()
+                : t("rating.unknown_date", "-")}
             </span>
           </p>
           <p className="pb-4 text-xs sm:text-sm text-gray-600">
@@ -248,40 +283,46 @@ export function Reiting() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
-                  Array.from({ length: 9 }).map((_, index) => (
-                    <UserRowSkeleton key={index} index={index} />
-                  ))
-                ) : (
-                  filteredUsers && filteredUsers.map((user, index) => (
-                    <UserRow
-                      clubs={clubs}
-                      key={user.id}
-                      user={user}
-                      index={index}
-                      handleModalOpen={handleModalOpen}
-                      displayIndex={user.rate_order > 0 ? user.rate_order : undefined}
-                    />
-                  ))
-                )}
+                {isLoading
+                  ? Array.from({ length: 9 }).map((_, index) => (
+                      <UserRowSkeleton
+                        key={index}
+                        index={index}
+                      />
+                    ))
+                  : filteredUsers &&
+                    filteredUsers.map((user, index) => (
+                      <UserRow
+                        clubs={clubs}
+                        key={user.id}
+                        user={user}
+                        index={index}
+                        handleModalOpen={handleModalOpen}
+                        displayIndex={
+                          user.rate_order > 0 ? user.rate_order : undefined
+                        }
+                        combinedOrder={user.combinedIndex}
+                        showCombinedOrder={showForeigners}
+                      />
+                    ))}
               </TableBody>
             </Table>
           </div>
         </div>
 
-        {selectedPlayer && <PlayerProfileModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          user={selectedPlayer}
-        />
-        }
+        {selectedPlayer && (
+          <PlayerProfileModal
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            user={selectedPlayer}
+          />
+        )}
 
         <RatingCalculator
           isRatingCalculatorOpen={isRatingCalculatorOpen}
           setIsRatingCalculatorOpen={setIsRatingCalculatorOpen}
           users={users}
         />
-
 
         <Dialog open={isRatingInfoOpen} onOpenChange={setIsRatingInfoOpen}>
           <DialogContent className="w-[85vw] max-w-lg mx-auto max-h-[85vh] overflow-y-auto rounded-xl animate-in fade-in-0 zoom-in-95 duration-200">

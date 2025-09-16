@@ -59,6 +59,7 @@ export type User = {
   expiration_date: string | null;
   isikukood?: string;
   selectedLicenseType?: LicenseType;
+  combinedIndex?: number;
 };
 
 export type UserLogin = {
