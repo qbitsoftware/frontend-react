@@ -1,5 +1,5 @@
 import ErrorPage from '@/components/error'
-import { TournamentTableWithStages} from '@/queries/tables'
+import { TournamentTableWithStages } from '@/queries/tables'
 import { createFileRoute, useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { CompactClassFilters } from '../../-components/compact-class-filters'
 import { useEffect, useMemo, useState } from 'react'
@@ -7,7 +7,7 @@ import { UseGetTournamentMatchesQuery } from '@/queries/match'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { MatchesTable } from '../-components/matches-table'
 import { GroupType, MatchState, MatchWrapper } from '@/types/matches'
-import { DialogType} from '@/types/groups'
+import { DialogType } from '@/types/groups'
 import MatchDialog from '@/components/match-dialog'
 import { ProtocolModalProvider } from '@/providers/protocolProvider'
 import { TableTennisProtocolModal } from '../-components/tt-modal/tt-modal'
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next'
 import LoadingScreen from '@/routes/-components/loading-screen'
 import PlacementCompletionModal from '../-components/placement-completion-modal'
 import { useTournament } from '@/routes/voistlused/$tournamentid/-components/tournament-provider'
+import { Progress } from '@/components/ui/progress'
 
 export const Route = createFileRoute(
   '/admin/tournaments/$tournamentid/mangud/',
@@ -74,7 +75,6 @@ function RouteComponent() {
     });
 
     setActiveParticipant(activeParticipantIds);
-
 
     let filtered;
     if (filterValue.includes("all")) {
@@ -261,6 +261,17 @@ function RouteComponent() {
     });
   };
 
+  const tournamentProgress = useMemo(() => {
+    if (!matchData?.data) return { totalMatches: 0, finishedMatches: 0, remainingMatches: 0, progressPercentage: 0 };
+
+    const totalMatches = matchData.data.matches.length;
+    const finishedMatches = matchData.data.matches.filter(match => match.match.state === MatchState.FINISHED).length;
+    const remainingMatches = totalMatches - finishedMatches;
+    const progressPercentage = totalMatches > 0 ? Math.round((finishedMatches / totalMatches) * 100) : 0;
+
+    return { totalMatches, finishedMatches, remainingMatches, progressPercentage };
+  }, [matchData?.data]);
+
   if (isLoadingMatches) {
     return (
       <div className=''>
@@ -282,6 +293,14 @@ function RouteComponent() {
       <Card>
         <CardHeader>
           <div className="flex gap-4 flex-col">
+            <div className="bg-gray-50 p-3 rounded-lg border">
+              <Progress value={tournamentProgress.progressPercentage} className="h-2 mb-2" />
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>{t("admin.tournaments.progress.finished")}: {tournamentProgress.finishedMatches} ({tournamentProgress.progressPercentage}%)</span>
+                <span>{t("admin.tournaments.progress.remaining")}: {tournamentProgress.remainingMatches}</span>
+                <span>{t("admin.tournaments.progress.total")}: {tournamentProgress.totalMatches}</span>
+              </div>
+            </div>
             {/* Compact filter checkboxes */}
             <div className="flex flex-col sm:flex-row">
               <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">

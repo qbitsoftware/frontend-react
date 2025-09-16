@@ -21,6 +21,7 @@ import {
 import { Upload, Download, TrendingUp, CheckCircle, Users, Settings, Play, ChevronRight, Grid2x2, Zap, UserPlus } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { TournamentTableWithStages } from "@/queries/tables";
+import { axiosInstance } from '@/queries/axiosconf';
 
 interface SeedingHeaderProps {
   tournament_id: number;
@@ -175,6 +176,28 @@ const SeedingHeader = ({
     }
     setIsLoading(false)
   }
+
+  const downloadRatingsXML = async () => {
+
+    try {
+      const response = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${table_data.id}/participants/export`, {
+        responseType: "blob",
+        withCredentials: true,
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "ratings.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed", error);
+      toast.error(t('toasts.export.error'));
+    }
+  };
 
   const handleDownloadTemplate = () => {
     let headers: string[];
@@ -366,6 +389,18 @@ const SeedingHeader = ({
                             <Upload className="h-3 w-3" />
                             {t('admin.tournaments.setup.import_excel')}
                           </Button>
+                          
+                          {table_data.solo && (
+                            <Button
+                              onClick={downloadRatingsXML}
+                              variant="outline"
+                              size="sm"
+                              className="h-8 text-xs flex items-center gap-1.5"
+                            >
+                              <Download className="h-3 w-3" />
+                              {t('admin.tournaments.setup.export_participants')}
+                            </Button>
+                          )}
                         </div>
                       )}
 
