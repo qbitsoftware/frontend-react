@@ -52,7 +52,7 @@ export const WSProvider: React.FC<WSProviderProps> = ({ url, children, onMessage
         };
 
         wsRef.current.onerror = (error) => {
-            console.log("WebSocket error:", error);
+            void error;
             setConnected(false);
         };
 
