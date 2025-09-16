@@ -1,9 +1,19 @@
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import { useMemo, useState, useEffect } from "react";
+import * as React from "react";
 import { useParams, useRouter } from "@tanstack/react-router";
 import { UseGetFreeVenuesAll } from "@/queries/venues";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarProvider,
+  useSidebar,
+  SidebarTrigger
+} from "@/components/ui/sidebar";
+import { useTableSidebar } from "@/providers/tableSidebarProvider";
 
 interface TableStatus {
   id: string;
@@ -76,8 +86,15 @@ const formatPlayerName = (fullName: string): string => {
   return `${firstNames.join('')} ${lastName}`;
 };
 
-const TableStatusSidebar = () => {
+const TableStatusSidebarContent = () => {
   const { t } = useTranslation();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+  const { setCollapsed } = useTableSidebar();
+
+  React.useEffect(() => {
+    setCollapsed(isCollapsed);
+  }, [isCollapsed, setCollapsed]);
 
   const { tournamentid } = useParams({ strict: false });
   const router = useRouter();
@@ -141,43 +158,81 @@ const TableStatusSidebar = () => {
   };
 
   return (
-    <div className="hidden min-w-[16rem] lg:flex flex-col border-l h-screen fixed top-0 right-0 z-10 bg-[#F8F9FA]">
-      <div className="flex items-center justify-between h-[4.5rem] px-2 border-b">
-        <h3 className="text-lg font-semibold">
-          {t("admin.tournaments.tables.title")}{" "}
-          {tableStatuses.filter((t) => t.isOccupied).length}/
-          {tableStatuses.length}
-        </h3>
-      </div>
-      <div className="flex flex-col overflow-y-auto w-full h-full">
-        {tableStatuses.map((table) => (
-          <div
-            onClick={() => handleRowClick(table)}
-            key={table.id}
-            className={cn(
-              "w-full flex items-center gap-2 justify-between h-10 min-h-10 px-2 overflow-hidden border-b relative flex-shrink-0",
-              table.tournament_table_id && "cursor-pointer",
-            )}
-          >
-            <h3 className="text-sm font-semibold flex-shrink-0">{table.number}</h3>
-            {table.match && (
-              <div className="flex-1 flex items-center justify-end gap-2 text-[11px] overflow-hidden">
-                <span className="truncate">{formatPlayerName(table.match.participant1)}</span>
-                <span className="flex-shrink-0">vs</span>
-                <span className="truncate">{formatPlayerName(table.match.participant2)}</span>
-                {table.match.startTime && (
-                  <MatchTimer startTime={table.match.startTime} />
-                )}
-              </div>
-            )}
-            {!table.isOccupied && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-              </div>
-            )}
+    <Sidebar side="right" collapsible="icon" className="border-l bg-[#F8F9FA] data-[state=collapsed]:w-24 data-[state=expanded]:w-64">
+      <SidebarHeader className="h-[4.5rem] px-2 border-b">
+        {isCollapsed ? (
+          <div className="flex justify-center w-full">
+            <SidebarTrigger />
           </div>
-        ))}
-      </div>
+        ) : (
+          <div className="flex items-center justify-between w-full">
+            <h3 className="text-lg font-semibold">
+              {t("admin.tournaments.tables.title")}{" "}
+              {tableStatuses.filter((t) => t.isOccupied).length}/
+              {tableStatuses.length}
+            </h3>
+            <SidebarTrigger />
+          </div>
+        )}
+      </SidebarHeader>
+      <SidebarContent className="overflow-y-auto">
+        <div className="flex flex-col w-full h-full">
+          {tableStatuses.map((table) => (
+            <div
+              onClick={() => handleRowClick(table)}
+              key={table.id}
+              className={cn(
+                "w-full flex items-center gap-2 h-10 min-h-10 px-2 overflow-hidden border-b relative flex-shrink-0",
+                isCollapsed ? "justify-center" : "justify-between",
+                table.tournament_table_id && "cursor-pointer",
+              )}
+            >
+              <h3 className={cn(
+                "text-sm font-semibold flex-shrink-0",
+                isCollapsed ? "text-xs" : ""
+              )}>{table.number}</h3>
+
+              {isCollapsed ? (
+                table.match && table.match.startTime ? (
+                  <MatchTimer startTime={table.match.startTime} />
+                ) : !table.isOccupied ? (
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                ) : null
+              ) : (
+                <>
+                  {table.match && (
+                    <div className="flex-1 flex items-center justify-end gap-2 text-[11px] overflow-hidden">
+                      <span className="truncate">{formatPlayerName(table.match.participant1)}</span>
+                      <span className="flex-shrink-0">vs</span>
+                      <span className="truncate">{formatPlayerName(table.match.participant2)}</span>
+                      {table.match.startTime && (
+                        <MatchTimer startTime={table.match.startTime} />
+                      )}
+                    </div>
+                  )}
+                  {!table.isOccupied && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </SidebarContent>
+    </Sidebar>
+  );
+};
+
+const TableStatusSidebar = () => {
+  return (
+    <div className="hidden lg:block fixed top-0 right-0 z-10 h-screen">
+      <SidebarProvider
+        style={{ '--sidebar-width': '16rem', '--sidebar-width-icon': '4rem' } as React.CSSProperties}
+      >
+        <TableStatusSidebarContent />
+      </SidebarProvider>
     </div>
   );
 };

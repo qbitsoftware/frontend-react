@@ -18,6 +18,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TournamentProvider } from "@/routes/voistlused/$tournamentid/-components/tournament-provider";
 import { useNavigationHelper } from "@/providers/navigationProvider";
+import { useTableSidebar } from "@/providers/tableSidebarProvider";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
@@ -34,6 +36,7 @@ function RouteComponent() {
   const { t } = useTranslation();
   const { data, isLoading } = UseGetTournamentTablesQuery(Number(tournamentid));
   const { groupId } = useNavigationHelper();
+  const { isCollapsed: isTableSidebarCollapsed } = useTableSidebar();
 
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -105,7 +108,10 @@ function RouteComponent() {
     <>
       <TooltipProvider delayDuration={300}>
         <TournamentProvider tournamentData={tournament_data?.data!} tournamentTables={data?.data || []}>
-          <div className="mx-auto min-h-[95vh] h-full lg:mr-64">
+          <div className={cn(
+            "mx-auto min-h-[95vh] h-full",
+            isTableSidebarCollapsed ? "lg:mr-16" : "lg:mr-64"
+          )}>
             <div className="w-full relative">
               <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col xl:flex-row gap-3 lg:gap-4 justify-between items-start w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20 overflow-visible">
                 <div className="flex items-center gap-2 flex-shrink-0">

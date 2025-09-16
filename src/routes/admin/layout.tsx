@@ -19,6 +19,7 @@ import TableStatusSidebarSkeleton from "./tournaments/$tournamentid/-components/
 import { useQueryClient } from "@tanstack/react-query";
 import { WSMessage, WSMsgType, WSParticipantsData, WSTableInfo, WSTournamentData, WSTournamentsData, WSTournamentTableData, WSTournamentTablesData } from "@/types/ws_message";
 import { WSProvider } from "@/providers/wsProvider";
+import { TableSidebarProvider } from "@/providers/tableSidebarProvider";
 import { TournamentTablesResponse, TournamentTableWithStagesResponse } from "@/queries/tables";
 import { TableInfoResponse } from "@/queries/match";
 import { VenuesResponse } from "@/queries/venues";
@@ -349,17 +350,19 @@ function RouteComponent() {
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
         <WSProvider url={import.meta.env.VITE_BACKEND_API_URL_WS + "ws/v1/admin"} onMessage={handleWSMessage}>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <SidebarController />
-            <AdminSidebar />
-            <div className="w-full overflow-x-auto pb-20 lg:pb-0">
-              <Outlet />
-            </div>
-            {isTournamentRoute && (
-              (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
-            )}
-          </SidebarProvider>
-          <AdminBottomNav />
+          <TableSidebarProvider>
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <SidebarController />
+              <AdminSidebar />
+              <div className="w-full overflow-x-auto pb-20 lg:pb-0">
+                <Outlet />
+              </div>
+              {isTournamentRoute && (
+                (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
+              )}
+            </SidebarProvider>
+            <AdminBottomNav />
+          </TableSidebarProvider>
         </WSProvider>
       </div>
     </div>
