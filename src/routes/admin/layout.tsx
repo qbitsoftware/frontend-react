@@ -122,10 +122,12 @@ function RouteComponent() {
           if (data.group_id && data.group_id === Number(params.groupid)) {
             queryClient.setQueryData(["tournament_table", Number(data.group_id)], (oldData: TournamentTableWithStagesResponse) => {
               if (oldData && new_data.participants) {
+                console.log("Incoming data in", data)
                 return {
                   ...oldData,
                   data: {
                     ...oldData.data,
+                    group: new_data.tournament_table ? new_data.tournament_table : oldData.data.group,
                     participants: new_data.participants
                   }
                 }
@@ -139,6 +141,21 @@ function RouteComponent() {
                 }
               }
             })
+            if (new_data.stages) {
+              new_data.stages.map((stage) => {
+                queryClient.setQueryData(['tournament_tables', stage.id], (oldData: TournamentTableWithStagesResponse) => {
+                  if (oldData) {
+                    return {
+                      ...oldData,
+                      data: {
+                        ...oldData.data,
+                        group: stage
+                      }
+                    }
+                  }
+                })
+              })
+            }
           }
         }
         break;

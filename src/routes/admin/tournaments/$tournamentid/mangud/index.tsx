@@ -23,9 +23,10 @@ export const Route = createFileRoute(
 )({
   errorComponent: () => <ErrorPage />,
   component: RouteComponent,
-  validateSearch: (search: { filter?: string; openMatch?: string }) => ({
+  validateSearch: (search: { filter?: string; openMatch?: string, activeGroups?: string }) => ({
     filter: search.filter,
     openMatch: search.openMatch,
+    activeGroups: search.activeGroups,
   })
 })
 
@@ -76,12 +77,29 @@ function RouteComponent() {
 
     setActiveParticipant(activeParticipantIds);
 
+    // Filter by match state
     let filtered;
     if (filterValue.includes("all")) {
       filtered = matchData.data.matches || [];
     } else {
       filtered = matchData.data.matches.filter(
         (match) => filterValue.includes(match.match.state)
+      );
+    }
+
+    // Filter by active groups if specified
+    if (search.activeGroups) {
+      const activeGroupIds = search.activeGroups.split(',').map(id => parseInt(id));
+      if (activeGroupIds && activeGroupIds.length > 0) {
+        activeGroupIds.map((id) => {
+          const tt = tableMap.get(id)
+          if (tt && tt.stages) {
+            activeGroupIds.push(...tt.stages.map(stage => stage.id))
+          }
+        })
+      }
+      filtered = filtered.filter(match =>
+        activeGroupIds.includes(match.match.tournament_table_id)
       );
     }
 
@@ -222,7 +240,7 @@ function RouteComponent() {
     const finishedSorted = sortIfTimetable(finished);
 
     return [...ongoingSorted, ...createdSorted, ...finishedSorted];
-  }, [matchData?.data, filterValue, tableMap]);
+  }, [matchData?.data, filterValue, tableMap, search.activeGroups]);
 
 
   const handleCardClick = (match: MatchWrapper) => {
@@ -254,6 +272,7 @@ function RouteComponent() {
         search: {
           openMatch: undefined,
           filter: next.join(","),
+          activeGroups: search.activeGroups
         },
         replace: true,
       });

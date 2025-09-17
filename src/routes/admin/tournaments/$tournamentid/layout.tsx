@@ -202,11 +202,7 @@ function RouteComponent() {
                         <Tooltip open={!first_tournament_table ? undefined : false}>
                           <TooltipTrigger asChild>
                             <Link
-                              to={
-                                groupId
-                                  ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/mangud`
-                                  : `/admin/tournaments/${tournamentid}/mangud`
-                              }
+                              to={`/admin/tournaments/${tournamentid}/mangud`} search={groupId ? { activeGroups: groupId.toString() } : undefined}
                               onClick={(e) => {
                                 if (!first_tournament_table) {
                                   e.preventDefault();

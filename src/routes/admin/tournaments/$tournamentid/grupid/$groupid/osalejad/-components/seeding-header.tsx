@@ -22,6 +22,7 @@ import { Upload, Download, TrendingUp, CheckCircle, Users, Settings, Play, Chevr
 import * as XLSX from 'xlsx';
 import { TournamentTableWithStages } from "@/queries/tables";
 import { axiosInstance } from '@/queries/axiosconf';
+import { getRealParticipantLength } from "@/components/utils/utils";
 
 interface SeedingHeaderProps {
   tournament_id: number;
@@ -72,14 +73,14 @@ const SeedingHeader = ({
       await updateSeeding.mutateAsync({ order });
       toast.message(t('toasts.participants.seeding_success'));
       navigate({
-        to: "/admin/tournaments/$tournamentid/grupid/$groupid/mangud",
+        to: "/admin/tournaments/$tournamentid/mangud",
         params: {
           tournamentid: tournament_id.toString(),
-          groupid: table_data.id.toString()
         },
         search: {
           filter: undefined,
-          openMatch: undefined
+          openMatch: undefined,
+          activeGroups: table_data.id.toString(),
         }
       });
     } catch (error) {
@@ -297,18 +298,9 @@ const SeedingHeader = ({
           <div className="flex flex-wrap gap-2 items-center">
             <p className="bg-[#FBFBFB] font-medium px-3 py-1 rounded-full border border-[#EAEAEA] text-sm">
               {(() => {
-                if (table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
-                  const pairs = data.participants.filter((participant) => participant.players.length > 1);
-                  return pairs.length;
-                }
-                if (table_data.type == GroupType.ROUND_ROBIN || table_data.type == GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
-                  return data.participants.filter((participant) => participant.type === "round_robin").length;
-                }
-                if (table_data.type == GroupType.DYNAMIC) {
-                  return data.participants.filter((participant) => participant.type !== "round_robin").length;
-                }
-                return data.participants.length;
-              })()} / {table_data.size}{" "}
+                const r_participants = getRealParticipantLength(data.participants, table_data)
+                return table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES ? r_participants.right_side : r_participants.total
+              })()} {table_data.type !== GroupType.ROUND_ROBIN && table_data.type !== GroupType.ROUND_ROBIN_FULL_PLACEMENT && `/ ${table_data.size}`}
             </p>
             {(table_data.dialog_type === DialogType.DT_DOUBLES || table_data.dialog_type === DialogType.DT_FIXED_DOUBLES) && (
               <p className="bg-blue-50 font-medium px-3 py-1 rounded-full border border-blue-200 text-blue-700 text-sm">

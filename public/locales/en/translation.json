@@ -899,18 +899,15 @@
       "final_rating": "Final rating (Rl) = Ra + ΔR",
       "weight_change": "Weight change (ΔK) = Hvs + Hks",
       "final_weight": "Final weight (Kl) = Ka + ΔK",
-      "new_player_rules": "New Player Rating and Weight Calculation",
       "new_player_explanation": "If a player without initial rating participates in a tournament, they are assigned an initial rating (Ra).",
       "initial_rating_method": "Initial rating is determined by finding the lowest rating of players who beat them and the highest rating of players they beat, then assigning the lower value.",
       "max_initial_rating": "Maximum initial rating is limited to 55. This limit does not apply to foreign players.",
       "foreign_bonus": "If a foreign player wins all games, +5 is added to their initial rating.",
       "new_player_formula": "New player formula: ΔR = (Hvs-2*Hks-2)*10) + Hvs*Coef / (Hvs+Hks)",
-      "weight_correction": "Weight Correction",
       "weight_correction_high": "If Ka > 10: Corrected monthly on the 1st day before calculating new month results",
       "weight_correction_formula_high": "Ku = Ka - (Ka * Ka) / 225",
       "weight_correction_low": "If Ka < 11: Corrected every three months on the 1st day",
       "weight_correction_formula_low": "Ku = Ka - 1",
-      "ranking_compilation": "Ranking Compilation",
       "placement_points": "Ranking is compiled based on placement points (P), where Rl is rating points and Ku is corrected weights.",
       "placement_formula": "Placement point change (ΔP) = (Rl - (3 * Ku)) / 6",
       "placement_calc": "If ΔP > 0 then P = Rl - ΔP, If ΔP <= 0 then P = Rl",
@@ -1141,6 +1138,18 @@
         "bracket_size_mismatch": {
           "title": "This bracket size might not be suitable for the amount of participants!",
           "body": "Warning: You have {{participants}} participants, you should choose {{closestPowerOf2}} table size. Instead you chose bracket size of {{tableSize}}. This may give incorrect results."
+        },
+        "type_change": {
+          "title": "Tournament Type Change Warning",
+          "description": "Changing the tournament type will affect the structure and may impact existing matches or participants. Are you sure you want to continue?",
+          "cancel": "Cancel",
+          "confirm": "Continue with Change"
+        },
+        "participant_size": {
+          "title": "Too Many Participants",
+          "description": "You have {{participantCount}} participants but the tournament size is only {{tournamentSize}}. Please either remove participants or increase the tournament size.",
+          "cancel": "Cancel",
+          "confirm": "Continue Anyway"
         }
       },
       "create_tournament": {
@@ -1775,7 +1784,19 @@
         "club_deleted": "Club deleted successfully",
         "club_created_error": "Failed to create club. Please try again",
         "club_updated_error": "Failed to update club. Please try again",
-        "club_deleted_error": "Failed to delete club. Please try again"
+        "club_deleted_error": "Failed to delete club. Please try again",
+        "error": "Error - {{error}}",
+        "success": "Success",
+        "failed_to_load_players": "Failed to load club players",
+        "failed_to_load_my_clubs": "Failed to load your clubs",
+        "id_verification_success": "ID verification successful",
+        "player_added": "Player added to club successfully",
+        "player_added_to_club": "{{playerName}} added to {{clubName}} successfully",
+        "player_removed_from_club": "{{playerName}} removed from {{clubName}} successfully",
+        "new_player_created_and_added": "{{playerName}} created and added to {{clubName}} successfully",
+        "failed_to_add_player": "Failed to add player to club",
+        "failed_to_remove_player": "Failed to remove player from club",
+        "missing_required_fields": "Please fill in all required fields: {{fields}}"
       },
       "loading": "Loading...",
       "error": "No club data available",
@@ -1922,20 +1943,6 @@
         "birth_date_mismatch": "Birth date doesn't match Estonian ID code",
         "name_id_mismatch": "Name and ID code do not match",
         "verification_unavailable": "ID verification service unavailable"
-      },
-      "toast": {
-        "error": "Error - {{error}}",
-        "success": "Success",
-        "failed_to_load_players": "Failed to load club players",
-        "failed_to_load_my_clubs": "Failed to load your clubs",
-        "id_verification_success": "ID verification successful",
-        "player_added": "Player added to club successfully",
-        "player_added_to_club": "{{playerName}} added to {{clubName}} successfully",
-        "player_removed_from_club": "{{playerName}} removed from {{clubName}} successfully",
-        "new_player_created_and_added": "{{playerName}} created and added to {{clubName}} successfully",
-        "failed_to_add_player": "Failed to add player to club",
-        "failed_to_remove_player": "Failed to remove player from club",
-        "missing_required_fields": "Please fill in all required fields: {{fields}}"
       },
       "no_club_affiliation": "NO CLUB",
       "api_errors": {

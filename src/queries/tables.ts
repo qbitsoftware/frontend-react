@@ -1,7 +1,7 @@
 import { TournamentTable } from "@/types/groups";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "./axiosconf";
-import TournamentTableForm from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
+import { TournamentTableFormSchema } from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
 import { TimeTableFormValues } from "@/routes/admin/tournaments/$tournamentid/ajakava/seaded/-components/timetable-configurations-form";
 import { Participant } from "@/types/participants";
 
@@ -120,7 +120,7 @@ export const UseGetTournamentTableQuery = (tournament_id: number, tournament_tab
 export const UsePatchTournamentTable = (tournament_id: number, tournament_table_id: number) => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (formData: TournamentTableForm) => {
+        mutationFn: async (formData: TournamentTableFormSchema) => {
             const { data } = await axiosInstance.patch(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}`, formData, {
                 withCredentials: true
             })
@@ -152,7 +152,7 @@ export const UsePatchTournamentTable = (tournament_id: number, tournament_table_
 export const UsePostTournamentTable = (tournament_id: number) => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (formData: TournamentTableForm) => {
+        mutationFn: async (formData: TournamentTableFormSchema) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables`, formData, {
                 withCredentials: true
             })

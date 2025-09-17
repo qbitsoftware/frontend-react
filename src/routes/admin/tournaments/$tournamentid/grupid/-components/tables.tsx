@@ -5,8 +5,10 @@ import { Plus } from "lucide-react"
 import { Link, useNavigate, useParams } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 import { Tournament } from "@/types/tournaments"
-import { GroupType } from "@/types/matches"
 import { TournamentTableWithStages } from "@/queries/tables"
+import { getRealParticipantLength } from "@/components/utils/utils"
+import { GroupType } from "@/types/matches"
+import { DialogType } from "@/types/groups"
 
 
 interface TournamentTablesProps {
@@ -48,18 +50,15 @@ export const TournamentTables: React.FC<TournamentTablesProps> = ({ tables }) =>
             </TableHeader>
             <TableBody>
               {tables ? tables.map((table) => {
-                let participants = table.participants.length
-                if (table.group.type === GroupType.ROUND_ROBIN || table.group.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT) {
-                  participants = table.participants.filter((participant) => participant.type === "round_robin").length
-
-                }
+                let participants = getRealParticipantLength(table.participants, table.group)
                 return (
                   <TableRow key={table.group.id} onClick={() => (navigate({ to: `${table.group.id}` }))} className="cursor-pointer">
                     <TableCell className="font-medium text-xs sm:text-sm px-1 sm:px-4 max-w-[80px] sm:max-w-none truncate">
                       {table.group.class}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4">
-                      <span className="font-semibold">{participants}</span>/{table.group.size}
+                      <span className="font-semibold">{table.group.dialog_type === DialogType.DT_DOUBLES || table.group.dialog_type === DialogType.DT_FIXED_DOUBLES ? `${participants.right_side}` : participants.total}</span>
+                      {table.group.type !== GroupType.ROUND_ROBIN && table.group.type !== GroupType.ROUND_ROBIN_FULL_PLACEMENT && `/${table.group.size}`}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm px-1 sm:px-4 truncate max-w-[90px] sm:max-w-none">
                       {t(`admin.tournaments.create_tournament.tournament_tables.${table.group.type}`)}

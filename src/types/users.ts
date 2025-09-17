@@ -57,6 +57,7 @@ export type User = {
   role: number;
   license: string | null;
   expiration_date: string | null;
+  rating_last_change: number;
   isikukood?: string;
   selectedLicenseType?: LicenseType;
   combinedIndex?: number;

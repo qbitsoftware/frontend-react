@@ -150,6 +150,7 @@ export function UsePostSeeding(tournament_id: number, table_id: number) {
             return data;
         },
         onSuccess: (data: TableInfoResponse) => {
+            console.log("Seeding data", data)
             queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
                 if (!oldData) return data;
                 return {

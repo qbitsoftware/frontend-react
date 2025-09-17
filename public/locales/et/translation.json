@@ -367,26 +367,21 @@
     "title": "Litsentsid",
     "page_title": "Mängija litsentsi ostmine/uuendamine",
     "add_player": {
-      "title": "Lisa mängija",
       "search_placeholder": "Otsi olemasolevat mängijat...",
       "add_new_player": "Lisa uus mängija",
       "help_text": "Otsi andmebaasist olemasolevaid mängijaid või kasuta nuppu \"Lisa uus mängija\" süsteemis puuduvate mängijate jaoks.",
       "no_players_found": "Mängijaid ei leitud. Kasuta nuppu \"Lisa uus mängija\" andmebaasis puuduvate mängijate lisamiseks.",
       "manual_entry_title": "Uue mängija lisamine (pole andmebaasis)",
       "back_to_search": "Tagasi otsingusse",
-      "first_name": "Eesnimi",
       "surname": "Perekonnanimi",
-      "birth_date": "Sünnipäev",
       "birth_year": "Sünniaasta",
       "isikukood": "Eesti Isikukood",
       "club": "Klubi nimi",
-      "gender": "Sugu",
       "gender_male": "Mees",
       "gender_female": "Naine",
       "add_to_list": "Lisa mängija nimekirja",
       "manual_help_text": "Sisesta andmebaasis puuduva mängija andmed. Kõik väljad on kohustuslikud.",
       "club_help": "Jäta tühjaks või sisesta 'KLUBITU' kui mängijal pole klubikuuluvust",
-      "no_estonian_id": "Mul pole Eesti isikukoodi",
       "search_club": "Otsi klubi...",
       "no_clubs_found": "Klube ei leitud",
       "auto_generated": "Automaatselt genereeritud isikukoodist",
@@ -400,11 +395,7 @@
       "birth_date": "Sünnipäev",
       "estonian_id": "Eesti isikukood",
       "no_estonian_id": "Mul pole Eesti isikukoodi",
-      "gender": {
-        "placeholder": "Vali sugu",
-        "male": "Mees",
-        "female": "Naine"
-      },
+      "gender": "Sugu",
       "verifying_id": "Kontrollin Eesti isikukoodi...",
       "submit_button": "Lisa mängija"
     },
@@ -1169,6 +1160,18 @@
         "bracket_size_mismatch": {
           "title": "See tabeli suurus ei pruugi olla parim, võttes arvesse mängijate arvu.",
           "body": "Hoiatus! Teil on {{participants}} osalejat, peaksite valima {{closestPowerOf2}}-se tabeli suuruse. Teie valisite tabeli suuruseks {{tableSize}}. See võib anda vigaseid tulemusi!"
+        },
+        "type_change": {
+          "title": "Olete muutmas turniiri tüüpi",
+          "description": "Osalejad kustutatakse ja kogu grupi andmed lähtestatakse. Kas soovite jätkata?",
+          "cancel": "Katkesta",
+          "confirm": "Jätka"
+        },
+        "participant_size": {
+          "title": "Osalejate arv ei sobi turniiri suurusega",
+          "description": "Teil on {{participantCount}} osalejat, kuid turniiri suurus on ainult {{tournamentSize}}. Palun kas eemaldage osalejad või suurendage turniiri suurust.",
+          "cancel": "Katkesta",
+          "confirm": "Jätka"
         }
       },
       "create_tournament": {

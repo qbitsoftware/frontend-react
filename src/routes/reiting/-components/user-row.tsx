@@ -22,6 +22,9 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
     const getClubName = (user: User) => {
         return user.club?.name || "KLUBITU";
     };
+
+    console.log("user latest rating", user.rating_last_change);
+
     const getClubImage = (user: User) => {
         if (user.club?.image_url) {
             return user.club.image_url;
@@ -93,6 +96,14 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                     user.rate_order
                 ) : (
                     "-"
+                )}
+                {user.rating_last_change && user.rating_last_change !== 0 && (
+                    <span className={`ml-2 text-xs ${user.rating_last_change > 0
+                        ? "text-red-500"
+                        : "text-green-600"
+                        }`}>
+                        {user.rating_last_change > 0 ? `+${user.rating_last_change}` : user.rating_last_change}
+                    </span>
                 )}
             </TableCell>
             <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">

@@ -17,6 +17,7 @@ function RouteComponent() {
       <div className="p-2">
         <TournamentTableForm
           initial_data={tt.group}
+          participants={tt.participants}
         />
       </div>
     </div>
