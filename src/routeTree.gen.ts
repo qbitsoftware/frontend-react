@@ -22,12 +22,9 @@ import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as ReeglidIndexImport } from './routes/reeglid/index'
 import { Route as ProfileIndexImport } from './routes/profile/index'
 import { Route as LoginIndexImport } from './routes/login/index'
-import { Route as LitsentsIndexImport } from './routes/litsents/index'
 import { Route as KontaktIndexImport } from './routes/kontakt/index'
 import { Route as KlubidIndexImport } from './routes/klubid/index'
 import { Route as UudisedBlogidImport } from './routes/uudised/$blogid'
-import { Route as LitsentsSuccessImport } from './routes/litsents/success'
-import { Route as LitsentsCancelImport } from './routes/litsents/cancel'
 import { Route as VoistlusedTournamentidLayoutImport } from './routes/voistlused/$tournamentid/layout'
 import { Route as AdminTournamentsLayoutImport } from './routes/admin/tournaments/layout'
 import { Route as AdminDashboardLayoutImport } from './routes/admin/dashboard/layout'
@@ -36,6 +33,7 @@ import { Route as AdminBlogLayoutImport } from './routes/admin/blog/layout'
 import { Route as VoistlusedTournamentidIndexImport } from './routes/voistlused/$tournamentid/index'
 import { Route as ProfileTournamentsIndexImport } from './routes/profile/tournaments/index'
 import { Route as ProfileSettingsIndexImport } from './routes/profile/settings/index'
+import { Route as EpoodLitsentsIndexImport } from './routes/epood/litsents/index'
 import { Route as AdminUsersIndexImport } from './routes/admin/users/index'
 import { Route as AdminTournamentsIndexImport } from './routes/admin/tournaments/index'
 import { Route as AdminRatingIndexImport } from './routes/admin/rating/index'
@@ -43,6 +41,8 @@ import { Route as AdminFeedbackIndexImport } from './routes/admin/feedback/index
 import { Route as AdminDashboardIndexImport } from './routes/admin/dashboard/index'
 import { Route as AdminClubsIndexImport } from './routes/admin/clubs/index'
 import { Route as AdminBlogIndexImport } from './routes/admin/blog/index'
+import { Route as EpoodLitsentsSuccessImport } from './routes/epood/litsents/success'
+import { Route as EpoodLitsentsCancelImport } from './routes/epood/litsents/cancel'
 import { Route as AdminTournamentsTournamentidLayoutImport } from './routes/admin/tournaments/$tournamentid/layout'
 import { Route as VoistlusedTournamentidTulemusedIndexImport } from './routes/voistlused/$tournamentid/tulemused/index'
 import { Route as VoistlusedTournamentidSponsoridIndexImport } from './routes/voistlused/$tournamentid/sponsorid/index'
@@ -142,12 +142,6 @@ const LoginIndexRoute = LoginIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LitsentsIndexRoute = LitsentsIndexImport.update({
-  id: '/litsents/',
-  path: '/litsents/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const KontaktIndexRoute = KontaktIndexImport.update({
   id: '/kontakt/',
   path: '/kontakt/',
@@ -163,18 +157,6 @@ const KlubidIndexRoute = KlubidIndexImport.update({
 const UudisedBlogidRoute = UudisedBlogidImport.update({
   id: '/uudised/$blogid',
   path: '/uudised/$blogid',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LitsentsSuccessRoute = LitsentsSuccessImport.update({
-  id: '/litsents/success',
-  path: '/litsents/success',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LitsentsCancelRoute = LitsentsCancelImport.update({
-  id: '/litsents/cancel',
-  path: '/litsents/cancel',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -228,6 +210,12 @@ const ProfileSettingsIndexRoute = ProfileSettingsIndexImport.update({
   getParentRoute: () => ProfileLayoutRoute,
 } as any)
 
+const EpoodLitsentsIndexRoute = EpoodLitsentsIndexImport.update({
+  id: '/epood/litsents/',
+  path: '/epood/litsents/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AdminUsersIndexRoute = AdminUsersIndexImport.update({
   id: '/users/',
   path: '/users/',
@@ -268,6 +256,18 @@ const AdminBlogIndexRoute = AdminBlogIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminBlogLayoutRoute,
+} as any)
+
+const EpoodLitsentsSuccessRoute = EpoodLitsentsSuccessImport.update({
+  id: '/epood/litsents/success',
+  path: '/epood/litsents/success',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EpoodLitsentsCancelRoute = EpoodLitsentsCancelImport.update({
+  id: '/epood/litsents/cancel',
+  path: '/epood/litsents/cancel',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const AdminTournamentsTournamentidLayoutRoute =
@@ -537,20 +537,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoistlusedTournamentidLayoutImport
       parentRoute: typeof rootRoute
     }
-    '/litsents/cancel': {
-      id: '/litsents/cancel'
-      path: '/litsents/cancel'
-      fullPath: '/litsents/cancel'
-      preLoaderRoute: typeof LitsentsCancelImport
-      parentRoute: typeof rootRoute
-    }
-    '/litsents/success': {
-      id: '/litsents/success'
-      path: '/litsents/success'
-      fullPath: '/litsents/success'
-      preLoaderRoute: typeof LitsentsSuccessImport
-      parentRoute: typeof rootRoute
-    }
     '/uudised/$blogid': {
       id: '/uudised/$blogid'
       path: '/uudised/$blogid'
@@ -570,13 +556,6 @@ declare module '@tanstack/react-router' {
       path: '/kontakt'
       fullPath: '/kontakt'
       preLoaderRoute: typeof KontaktIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/litsents/': {
-      id: '/litsents/'
-      path: '/litsents'
-      fullPath: '/litsents'
-      preLoaderRoute: typeof LitsentsIndexImport
       parentRoute: typeof rootRoute
     }
     '/login/': {
@@ -642,6 +621,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTournamentsTournamentidLayoutImport
       parentRoute: typeof AdminTournamentsLayoutImport
     }
+    '/epood/litsents/cancel': {
+      id: '/epood/litsents/cancel'
+      path: '/epood/litsents/cancel'
+      fullPath: '/epood/litsents/cancel'
+      preLoaderRoute: typeof EpoodLitsentsCancelImport
+      parentRoute: typeof rootRoute
+    }
+    '/epood/litsents/success': {
+      id: '/epood/litsents/success'
+      path: '/epood/litsents/success'
+      fullPath: '/epood/litsents/success'
+      preLoaderRoute: typeof EpoodLitsentsSuccessImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/blog/': {
       id: '/admin/blog/'
       path: '/'
@@ -690,6 +683,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersIndexImport
       parentRoute: typeof AdminLayoutImport
+    }
+    '/epood/litsents/': {
+      id: '/epood/litsents/'
+      path: '/epood/litsents'
+      fullPath: '/epood/litsents'
+      preLoaderRoute: typeof EpoodLitsentsIndexImport
+      parentRoute: typeof rootRoute
     }
     '/profile/settings/': {
       id: '/profile/settings/'
@@ -1153,12 +1153,9 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AdminDashboardLayoutRouteWithChildren
   '/admin/tournaments': typeof AdminTournamentsLayoutRouteWithChildren
   '/voistlused/$tournamentid': typeof VoistlusedTournamentidLayoutRouteWithChildren
-  '/litsents/cancel': typeof LitsentsCancelRoute
-  '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/klubid': typeof KlubidIndexRoute
   '/kontakt': typeof KontaktIndexRoute
-  '/litsents': typeof LitsentsIndexRoute
   '/login': typeof LoginIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/reeglid': typeof ReeglidIndexRoute
@@ -1168,6 +1165,8 @@ export interface FileRoutesByFullPath {
   '/uudised': typeof UudisedIndexRoute
   '/voistlused': typeof VoistlusedIndexRoute
   '/admin/tournaments/$tournamentid': typeof AdminTournamentsTournamentidLayoutRouteWithChildren
+  '/epood/litsents/cancel': typeof EpoodLitsentsCancelRoute
+  '/epood/litsents/success': typeof EpoodLitsentsSuccessRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/clubs/': typeof AdminClubsIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
@@ -1175,6 +1174,7 @@ export interface FileRoutesByFullPath {
   '/admin/rating': typeof AdminRatingIndexRoute
   '/admin/tournaments/': typeof AdminTournamentsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
+  '/epood/litsents': typeof EpoodLitsentsIndexRoute
   '/profile/settings': typeof ProfileSettingsIndexRoute
   '/profile/tournaments': typeof ProfileTournamentsIndexRoute
   '/voistlused/$tournamentid/': typeof VoistlusedTournamentidIndexRoute
@@ -1212,12 +1212,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminLayoutRouteWithChildren
-  '/litsents/cancel': typeof LitsentsCancelRoute
-  '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/klubid': typeof KlubidIndexRoute
   '/kontakt': typeof KontaktIndexRoute
-  '/litsents': typeof LitsentsIndexRoute
   '/login': typeof LoginIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/reeglid': typeof ReeglidIndexRoute
@@ -1226,6 +1223,8 @@ export interface FileRoutesByTo {
   '/tagasiside': typeof TagasisideIndexRoute
   '/uudised': typeof UudisedIndexRoute
   '/voistlused': typeof VoistlusedIndexRoute
+  '/epood/litsents/cancel': typeof EpoodLitsentsCancelRoute
+  '/epood/litsents/success': typeof EpoodLitsentsSuccessRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/clubs': typeof AdminClubsIndexRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
@@ -1233,6 +1232,7 @@ export interface FileRoutesByTo {
   '/admin/rating': typeof AdminRatingIndexRoute
   '/admin/tournaments': typeof AdminTournamentsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
+  '/epood/litsents': typeof EpoodLitsentsIndexRoute
   '/profile/settings': typeof ProfileSettingsIndexRoute
   '/profile/tournaments': typeof ProfileTournamentsIndexRoute
   '/voistlused/$tournamentid': typeof VoistlusedTournamentidIndexRoute
@@ -1275,12 +1275,9 @@ export interface FileRoutesById {
   '/admin/dashboard': typeof AdminDashboardLayoutRouteWithChildren
   '/admin/tournaments': typeof AdminTournamentsLayoutRouteWithChildren
   '/voistlused/$tournamentid': typeof VoistlusedTournamentidLayoutRouteWithChildren
-  '/litsents/cancel': typeof LitsentsCancelRoute
-  '/litsents/success': typeof LitsentsSuccessRoute
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/klubid/': typeof KlubidIndexRoute
   '/kontakt/': typeof KontaktIndexRoute
-  '/litsents/': typeof LitsentsIndexRoute
   '/login/': typeof LoginIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/reeglid/': typeof ReeglidIndexRoute
@@ -1290,6 +1287,8 @@ export interface FileRoutesById {
   '/uudised/': typeof UudisedIndexRoute
   '/voistlused/': typeof VoistlusedIndexRoute
   '/admin/tournaments/$tournamentid': typeof AdminTournamentsTournamentidLayoutRouteWithChildren
+  '/epood/litsents/cancel': typeof EpoodLitsentsCancelRoute
+  '/epood/litsents/success': typeof EpoodLitsentsSuccessRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/clubs/': typeof AdminClubsIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
@@ -1297,6 +1296,7 @@ export interface FileRoutesById {
   '/admin/rating/': typeof AdminRatingIndexRoute
   '/admin/tournaments/': typeof AdminTournamentsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
+  '/epood/litsents/': typeof EpoodLitsentsIndexRoute
   '/profile/settings/': typeof ProfileSettingsIndexRoute
   '/profile/tournaments/': typeof ProfileTournamentsIndexRoute
   '/voistlused/$tournamentid/': typeof VoistlusedTournamentidIndexRoute
@@ -1342,12 +1342,9 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/tournaments'
     | '/voistlused/$tournamentid'
-    | '/litsents/cancel'
-    | '/litsents/success'
     | '/uudised/$blogid'
     | '/klubid'
     | '/kontakt'
-    | '/litsents'
     | '/login'
     | '/profile/'
     | '/reeglid'
@@ -1357,6 +1354,8 @@ export interface FileRouteTypes {
     | '/uudised'
     | '/voistlused'
     | '/admin/tournaments/$tournamentid'
+    | '/epood/litsents/cancel'
+    | '/epood/litsents/success'
     | '/admin/blog/'
     | '/admin/clubs/'
     | '/admin/dashboard/'
@@ -1364,6 +1363,7 @@ export interface FileRouteTypes {
     | '/admin/rating'
     | '/admin/tournaments/'
     | '/admin/users'
+    | '/epood/litsents'
     | '/profile/settings'
     | '/profile/tournaments'
     | '/voistlused/$tournamentid/'
@@ -1400,12 +1400,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
-    | '/litsents/cancel'
-    | '/litsents/success'
     | '/uudised/$blogid'
     | '/klubid'
     | '/kontakt'
-    | '/litsents'
     | '/login'
     | '/profile'
     | '/reeglid'
@@ -1414,6 +1411,8 @@ export interface FileRouteTypes {
     | '/tagasiside'
     | '/uudised'
     | '/voistlused'
+    | '/epood/litsents/cancel'
+    | '/epood/litsents/success'
     | '/admin/blog'
     | '/admin/clubs'
     | '/admin/dashboard'
@@ -1421,6 +1420,7 @@ export interface FileRouteTypes {
     | '/admin/rating'
     | '/admin/tournaments'
     | '/admin/users'
+    | '/epood/litsents'
     | '/profile/settings'
     | '/profile/tournaments'
     | '/voistlused/$tournamentid'
@@ -1461,12 +1461,9 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/tournaments'
     | '/voistlused/$tournamentid'
-    | '/litsents/cancel'
-    | '/litsents/success'
     | '/uudised/$blogid'
     | '/klubid/'
     | '/kontakt/'
-    | '/litsents/'
     | '/login/'
     | '/profile/'
     | '/reeglid/'
@@ -1476,6 +1473,8 @@ export interface FileRouteTypes {
     | '/uudised/'
     | '/voistlused/'
     | '/admin/tournaments/$tournamentid'
+    | '/epood/litsents/cancel'
+    | '/epood/litsents/success'
     | '/admin/blog/'
     | '/admin/clubs/'
     | '/admin/dashboard/'
@@ -1483,6 +1482,7 @@ export interface FileRouteTypes {
     | '/admin/rating/'
     | '/admin/tournaments/'
     | '/admin/users/'
+    | '/epood/litsents/'
     | '/profile/settings/'
     | '/profile/tournaments/'
     | '/voistlused/$tournamentid/'
@@ -1523,12 +1523,9 @@ export interface RootRouteChildren {
   AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
   ProfileLayoutRoute: typeof ProfileLayoutRouteWithChildren
   VoistlusedTournamentidLayoutRoute: typeof VoistlusedTournamentidLayoutRouteWithChildren
-  LitsentsCancelRoute: typeof LitsentsCancelRoute
-  LitsentsSuccessRoute: typeof LitsentsSuccessRoute
   UudisedBlogidRoute: typeof UudisedBlogidRoute
   KlubidIndexRoute: typeof KlubidIndexRoute
   KontaktIndexRoute: typeof KontaktIndexRoute
-  LitsentsIndexRoute: typeof LitsentsIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   ReeglidIndexRoute: typeof ReeglidIndexRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
@@ -1536,6 +1533,9 @@ export interface RootRouteChildren {
   TagasisideIndexRoute: typeof TagasisideIndexRoute
   UudisedIndexRoute: typeof UudisedIndexRoute
   VoistlusedIndexRoute: typeof VoistlusedIndexRoute
+  EpoodLitsentsCancelRoute: typeof EpoodLitsentsCancelRoute
+  EpoodLitsentsSuccessRoute: typeof EpoodLitsentsSuccessRoute
+  EpoodLitsentsIndexRoute: typeof EpoodLitsentsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -1544,12 +1544,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileLayoutRoute: ProfileLayoutRouteWithChildren,
   VoistlusedTournamentidLayoutRoute:
     VoistlusedTournamentidLayoutRouteWithChildren,
-  LitsentsCancelRoute: LitsentsCancelRoute,
-  LitsentsSuccessRoute: LitsentsSuccessRoute,
   UudisedBlogidRoute: UudisedBlogidRoute,
   KlubidIndexRoute: KlubidIndexRoute,
   KontaktIndexRoute: KontaktIndexRoute,
-  LitsentsIndexRoute: LitsentsIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   ReeglidIndexRoute: ReeglidIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
@@ -1557,6 +1554,9 @@ const rootRouteChildren: RootRouteChildren = {
   TagasisideIndexRoute: TagasisideIndexRoute,
   UudisedIndexRoute: UudisedIndexRoute,
   VoistlusedIndexRoute: VoistlusedIndexRoute,
+  EpoodLitsentsCancelRoute: EpoodLitsentsCancelRoute,
+  EpoodLitsentsSuccessRoute: EpoodLitsentsSuccessRoute,
+  EpoodLitsentsIndexRoute: EpoodLitsentsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -1573,19 +1573,19 @@ export const routeTree = rootRoute
         "/admin",
         "/profile",
         "/voistlused/$tournamentid",
-        "/litsents/cancel",
-        "/litsents/success",
         "/uudised/$blogid",
         "/klubid/",
         "/kontakt/",
-        "/litsents/",
         "/login/",
         "/reeglid/",
         "/register/",
         "/reiting/",
         "/tagasiside/",
         "/uudised/",
-        "/voistlused/"
+        "/voistlused/",
+        "/epood/litsents/cancel",
+        "/epood/litsents/success",
+        "/epood/litsents/"
       ]
     },
     "/": {
@@ -1661,12 +1661,6 @@ export const routeTree = rootRoute
         "/voistlused/$tournamentid/tulemused/$groupid/"
       ]
     },
-    "/litsents/cancel": {
-      "filePath": "litsents/cancel.tsx"
-    },
-    "/litsents/success": {
-      "filePath": "litsents/success.tsx"
-    },
     "/uudised/$blogid": {
       "filePath": "uudised/$blogid.tsx"
     },
@@ -1675,9 +1669,6 @@ export const routeTree = rootRoute
     },
     "/kontakt/": {
       "filePath": "kontakt/index.tsx"
-    },
-    "/litsents/": {
-      "filePath": "litsents/index.tsx"
     },
     "/login/": {
       "filePath": "login/index.tsx"
@@ -1717,6 +1708,12 @@ export const routeTree = rootRoute
         "/admin/tournaments/$tournamentid/grupid/uus/"
       ]
     },
+    "/epood/litsents/cancel": {
+      "filePath": "epood/litsents/cancel.tsx"
+    },
+    "/epood/litsents/success": {
+      "filePath": "epood/litsents/success.tsx"
+    },
     "/admin/blog/": {
       "filePath": "admin/blog/index.tsx",
       "parent": "/admin/blog"
@@ -1744,6 +1741,9 @@ export const routeTree = rootRoute
     "/admin/users/": {
       "filePath": "admin/users/index.tsx",
       "parent": "/admin"
+    },
+    "/epood/litsents/": {
+      "filePath": "epood/litsents/index.tsx"
     },
     "/profile/settings/": {
       "filePath": "profile/settings/index.tsx",

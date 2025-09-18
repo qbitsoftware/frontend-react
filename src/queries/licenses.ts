@@ -45,6 +45,7 @@ export interface LicensePaymentRecord {
   payment_order_id: string
   created_at: string
   paid_at: string
+  selected_license_duration: number
 }
 
 export interface LicenseDetailsResponse {

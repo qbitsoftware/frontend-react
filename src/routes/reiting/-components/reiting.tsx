@@ -300,7 +300,7 @@ export function Reiting() {
                     "Licenses will be required starting from January 1, 2026, and can be bought"
                   )}{" "}
                   <Link
-                    to="/litsents"
+                    to="/epood/litsents"
                     className="text-blue-600 hover:text-blue-800 underline font-medium"
                   >
                     {t("rating.license_info.link_text", "here")}
