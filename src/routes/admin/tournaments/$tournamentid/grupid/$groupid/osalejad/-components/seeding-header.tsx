@@ -62,7 +62,7 @@ const SeedingHeader = ({
         setCanMove(true);
       }
     }
-  }, [table_data.state])
+  }, [table_data.state, data.stages])
 
   const { t } = useTranslation();
   const navigate = useNavigate();

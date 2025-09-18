@@ -122,7 +122,6 @@ function RouteComponent() {
           if (data.group_id && data.group_id === Number(params.groupid)) {
             queryClient.setQueryData(["tournament_table", Number(data.group_id)], (oldData: TournamentTableWithStagesResponse) => {
               if (oldData && new_data.participants) {
-                console.log("Incoming data in", data)
                 return {
                   ...oldData,
                   data: {
@@ -223,7 +222,7 @@ function RouteComponent() {
                 ...oldData,
                 data: {
                   ...oldData.data,
-                  group: new_data_matches.info?.tournament_table,
+                  group: new_data_matches.info?.tournament_table.group,
                 }
               }
               return output

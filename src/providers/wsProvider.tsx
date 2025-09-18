@@ -21,14 +21,21 @@ export const WSProvider: React.FC<WSProviderProps> = ({ url, children, onMessage
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const reconnectAttemptsRef = useRef(0);
     const shouldReconnectRef = useRef(true);
+    const onMessageRef = useRef(onMessage);
     const reconnectInterval = 3000
     const maxReconnectAttempts = 10;
+
+    // Update the ref when onMessage changes
+    useEffect(() => {
+        onMessageRef.current = onMessage;
+    }, [onMessage]);
 
     const connect = useCallback(() => {
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             return;
         }
 
+        console.log("connecting to WebSocket...");
         wsRef.current = new WebSocket(url + "?token=" + import.meta.env.VITE_TOURNAMENT10_PUBLIC_KEY);
 
         wsRef.current.onopen = () => {
@@ -59,14 +66,14 @@ export const WSProvider: React.FC<WSProviderProps> = ({ url, children, onMessage
         wsRef.current.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                if (onMessage) {
-                    onMessage(data);
+                if (onMessageRef.current) {
+                    onMessageRef.current(data);
                 }
             } catch (e) {
                 console.log("Failed to parse WebSocket message", e);
             }
         };
-    }, [url, onMessage, reconnectInterval, maxReconnectAttempts]);
+    }, [url]);
 
     useEffect(() => {
         shouldReconnectRef.current = true;

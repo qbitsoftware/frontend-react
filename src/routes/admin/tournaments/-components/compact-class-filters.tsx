@@ -43,8 +43,6 @@ export const CompactClassFilters = ({
     let href = ""
     let search = undefined
 
-    console.log("new gorup id", newGroupId)
-
     if (location.includes("/tabelid")) {
       href = "/admin/tournaments/$tournamentid/grupid/$groupid/tabelid"
     } else if (location.includes("/kohad")) {

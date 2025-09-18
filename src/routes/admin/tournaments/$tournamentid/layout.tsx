@@ -4,6 +4,7 @@ import {
   useLocation,
   useNavigate,
   useParams,
+  useSearch,
 } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,6 +38,7 @@ function RouteComponent() {
   const { data, isLoading } = UseGetTournamentTablesQuery(Number(tournamentid));
   const { groupId } = useNavigationHelper();
   const { isCollapsed: isTableSidebarCollapsed } = useTableSidebarContext();
+  const search = useSearch({ strict: false })
 
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -165,6 +167,8 @@ function RouteComponent() {
                               to={
                                 groupId
                                   ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/osalejad`
+                                  : search.activeGroups
+                                  ? `/admin/tournaments/${tournamentid}/grupid/${search.activeGroups.split(',')[0]}/osalejad`
                                   : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/osalejad`
                               }
                               onClick={(e) => {
@@ -241,6 +245,8 @@ function RouteComponent() {
                               to={
                                 groupId
                                   ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/tabelid`
+                                  : search.activeGroups
+                                  ? `/admin/tournaments/${tournamentid}/grupid/${search.activeGroups.split(',')[0]}/tabelid`
                                   : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/tabelid`
                               }
                               onClick={(e) => {
@@ -280,8 +286,9 @@ function RouteComponent() {
                               to={
                                 groupId
                                   ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/kohad`
+                                  : search.activeGroups
+                                  ? `/admin/tournaments/${tournamentid}/grupid/${search.activeGroups.split(',')[0]}/kohad`
                                   : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/kohad`
-
                               }
                               onClick={(e) => {
                                 if (!first_tournament_table) {

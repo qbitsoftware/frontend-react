@@ -779,14 +779,23 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, pa
 
               <div className="flex justify-between gap-4 mt-10">
                 {initial_data && (
-                  <Button type="button" className="text-red-600" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
+                  <Button disabled={form.formState.isSubmitting} type="button" className="text-red-600" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
                     {t("admin.tournaments.create_tournament.title_delete_table")}
                   </Button>
                 )}
-                <Button type="submit" className="md:w-[200px] w-full">
-                  {initial_data
-                    ? t("admin.tournaments.create_tournament.title_edit_table")
-                    : t("admin.tournaments.create_tournament.title_create_table")}
+                <Button type="submit" className="md:w-[200px] w-full" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {initial_data
+                        ? t("admin.tournaments.create_tournament.title_edit_table")
+                        : t("admin.tournaments.create_tournament.title_create_table")}
+                    </>
+                  ) : (
+                    initial_data
+                      ? t("admin.tournaments.create_tournament.title_edit_table")
+                      : t("admin.tournaments.create_tournament.title_create_table")
+                  )}
                 </Button>
 
               </div>

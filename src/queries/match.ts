@@ -3,11 +3,10 @@ import { axiosInstance } from "./axiosconf"
 import { Match, MatchTimeUpdate, MatchWrapper } from "@/types/matches"
 import { Participant } from "@/types/participants"
 import { Venue } from "@/types/venues"
-import { TournamentTable } from "@/types/groups"
 import { VenuesResponse } from "./venues"
 import { Bracket } from "@/types/brackets"
 import { BracketReponse } from "./tournaments"
-import { TournamentTableWithStagesResponse } from "./tables"
+import { TournamentTableWithStages, TournamentTableWithStagesResponse } from "./tables"
 
 export interface TableInfoResponse {
     data: MatchesInfo
@@ -20,7 +19,7 @@ export interface MatchesInfo {
     all_matches: MatchWrapper[]
     free_tables: Venue[]
     all_tables: Venue[]
-    tournament_table: TournamentTable
+    tournament_table: TournamentTableWithStages
     brackets: Bracket | null
 }
 
@@ -52,7 +51,7 @@ export const UsePatchMatch = (id: number) => {
             return data;
         },
         onSuccess: (data: TableInfoResponse) => {
-            queryClient.setQueryData(['matches_info', data.data.tournament_table.id], (oldData: TableInfoResponse) => {
+            queryClient.setQueryData(['matches_info', data.data.tournament_table.group.id], (oldData: TableInfoResponse) => {
                 if (!oldData) return data;
                 const output = {
                     ...oldData,
@@ -67,7 +66,7 @@ export const UsePatchMatch = (id: number) => {
                 return output
             })
             if (data.data.brackets) {
-                queryClient.setQueryData(['bracket', id, data.data.tournament_table.id], (oldData: BracketReponse) => {
+                queryClient.setQueryData(['bracket', id, data.data.tournament_table.group.id], (oldData: BracketReponse) => {
                     if (!oldData) return { data: data.data.brackets, message: data.message, error: null };
                     const output = {
                         ...oldData,
@@ -94,7 +93,7 @@ export const UsePatchMatch = (id: number) => {
                     return output
                 }
             })
-            queryClient.setQueryData(["tournament_table", data.data.tournament_table.id], (oldData: TournamentTableWithStagesResponse) => {
+            queryClient.setQueryData(["tournament_table", data.data.tournament_table.group.id], (oldData: TournamentTableWithStagesResponse) => {
                 if (!oldData) return oldData;
                 const output = {
                     ...oldData,
@@ -151,7 +150,7 @@ export const UsePatchMatchReset = (tournament_id: number, group_id: number, matc
                 }
             })
             if (data.data.brackets) {
-                queryClient.setQueryData(['bracket', tournament_id, data.data.tournament_table.id], (oldData: BracketReponse) => {
+                queryClient.setQueryData(['bracket', tournament_id, data.data.tournament_table.group.id], (oldData: BracketReponse) => {
                     if (!oldData) return { data: data.data.brackets, message: data.message, error: null };
                     const output = {
                         ...oldData,

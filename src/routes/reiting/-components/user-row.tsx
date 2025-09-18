@@ -23,8 +23,6 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
         return user.club?.name || "KLUBITU";
     };
 
-    console.log("user latest rating", user.rating_last_change);
-
     const getClubImage = (user: User) => {
         if (user.club?.image_url) {
             return user.club.image_url;
