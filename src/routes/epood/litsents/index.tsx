@@ -185,33 +185,33 @@ function RouteComponent() {
       club:
         clubName !== 'KLUBITU'
           ? {
-              id: 0,
-              name: clubName,
-              created_at: '',
-              updated_at: '',
-              deleted_at: null,
-              email: '',
-              phone: '',
-              contact_person: '',
-              address: '',
-              website: '',
-              organization_id: 0,
-              image_url: '',
-            }
+            id: 0,
+            name: clubName,
+            created_at: '',
+            updated_at: '',
+            deleted_at: null,
+            email: '',
+            phone: '',
+            contact_person: '',
+            address: '',
+            website: '',
+            organization_id: 0,
+            image_url: '',
+          }
           : {
-              id: 0,
-              name: 'KLUBITU',
-              created_at: '',
-              updated_at: '',
-              deleted_at: null,
-              email: '',
-              phone: '',
-              contact_person: '',
-              address: '',
-              website: '',
-              organization_id: 0,
-              image_url: '',
-            },
+            id: 0,
+            name: 'KLUBITU',
+            created_at: '',
+            updated_at: '',
+            deleted_at: null,
+            email: '',
+            phone: '',
+            contact_person: '',
+            address: '',
+            website: '',
+            organization_id: 0,
+            image_url: '',
+          },
       rate_order: 0,
       rate_pl_points: 0,
       rate_points: 0,
@@ -362,6 +362,42 @@ function RouteComponent() {
     return availableTypes
   }
 
+  const calculateLicenseExpiration = (selectedLicenseDuration: number): Date => {
+    const now = new Date()
+    const currentYear = now.getFullYear()
+    const isTwoYearLicense = selectedLicenseDuration === 2
+
+    if (currentYear > 2025) {
+      if (isTwoYearLicense) {
+        // Add 2 years and 2 months
+        const expirationDate = new Date(now)
+        expirationDate.setFullYear(now.getFullYear() + 2)
+        expirationDate.setMonth(now.getMonth() + 2)
+        return expirationDate
+      } else {
+        // Add 1 year
+        const expirationDate = new Date(now)
+        expirationDate.setFullYear(now.getFullYear() + 1)
+        return expirationDate
+      }
+    } else {
+      const endOf2025 = new Date(2025, 11, 31, 23, 59, 59, 999) // Dec 31, 2025
+      const daysUntilEndOf2025 = Math.ceil((endOf2025.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (isTwoYearLicense) {
+        const totalDays = daysUntilEndOf2025 * 2 + 365 * 2 + 30 * 2 + 31
+        const expirationDate = new Date(now)
+        expirationDate.setDate(now.getDate() + totalDays)
+        return expirationDate
+      } else {
+        const totalDays = daysUntilEndOf2025 * 2 + 365 + 31
+        const expirationDate = new Date(now)
+        expirationDate.setDate(now.getDate() + totalDays)
+        return expirationDate
+      }
+    }
+  }
+
   const calculateTotal = () => {
     return players.reduce((total, player) => {
       const basePrice = getLicenseTypePrice(
@@ -445,6 +481,50 @@ function RouteComponent() {
                 {t('licenses.page_title')}
               </h1>
             </div>
+            <div className="mt-4 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-3 sm:p-4 shadow-sm mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-1 h-4 bg-green-600 rounded-full"></div>
+                <h3 className="text-sm sm:text-lg font-bold text-green-900">
+                  {t('licenses.campaign.title')}
+                </h3>
+              </div>
+
+              <div className="bg-white p-3 rounded-lg border border-green-200">
+                <h4 className="text-base font-bold text-green-800 mb-2">
+                  {t('licenses.campaign.main_title')}
+                </h4>
+                <p className="text-xs text-gray-700 mb-3">
+                  {t('licenses.campaign.description')}
+                </p>
+
+                <div className="mb-3">
+                  <h5 className="text-sm font-semibold text-green-700 mb-1">
+                    {t('licenses.campaign.benefits_title')}
+                  </h5>
+                  <ul className="space-y-1 text-xs text-gray-700">
+                    <li>• {t('licenses.campaign.annual_benefit')}</li>
+                    <li>• {t('licenses.campaign.biennial_benefit')}</li>
+                  </ul>
+                </div>
+
+                <div className="mb-3">
+                  <h5 className="text-sm font-semibold text-green-700 mb-1">
+                    {t('licenses.campaign.examples_title')}
+                  </h5>
+                  <ul className="space-y-0.5 text-xs text-gray-700">
+                    <li>1. {t('licenses.campaign.example1')}</li>
+                    <li>2. {t('licenses.campaign.example2')}</li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 p-2 rounded border border-blue-200">
+                  <p className="text-xs text-blue-800 font-medium">
+                    {t('licenses.campaign.calculation_note')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-gradient-to-br from-[#4C97F1]/5 to-blue-50/50 border border-[#4C97F1]/20 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
               {!showManualEntry ? (
                 <div>
@@ -534,6 +614,9 @@ function RouteComponent() {
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                           {t('licenses.table.price')}
+                        </th>
+                        <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
+                          {t('licenses.table.expiry_date', 'Expiry Date')}
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                           {t('licenses.table.action')}
@@ -635,13 +718,29 @@ function RouteComponent() {
                                   const basePrice = license
                                     ? license.price
                                     : getLicenseTypePrice(
-                                        player.selectedLicenseType ||
-                                          LicenseType.ADULT,
-                                      )
+                                      player.selectedLicenseType ||
+                                      LicenseType.ADULT,
+                                    )
                                   const duration =
                                     player.selectedLicenseDuration || 1
                                   return basePrice * duration
                                 })()}
+                              </div>
+                            </td>
+                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg px-2 py-1 sm:px-3 sm:py-2">
+                                <div className="text-xs sm:text-sm font-bold text-green-800">
+                                  {(() => {
+                                    const expirationDate = calculateLicenseExpiration(
+                                      player.selectedLicenseDuration || 1
+                                    )
+                                    return expirationDate.toLocaleDateString('et-EE', {
+                                      year: 'numeric',
+                                      month: '2-digit',
+                                      day: '2-digit'
+                                    })
+                                  })()}
+                                </div>
                               </div>
                             </td>
                             <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
@@ -700,11 +799,10 @@ function RouteComponent() {
                     value={email}
                     onChange={(e) => handleEmailChange(e.target.value)}
                     placeholder={t('licenses.payment.email_placeholder')}
-                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm text-sm ${
-                      emailError
-                        ? 'border-red-300 focus:border-red-500'
-                        : 'border-gray-200 hover:border-green-400 focus:border-green-500'
-                    }`}
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm text-sm ${emailError
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-200 hover:border-green-400 focus:border-green-500'
+                      }`}
                   />
                   {emailError && (
                     <p className="mt-2 text-xs sm:text-sm text-red-600">
@@ -826,49 +924,6 @@ function RouteComponent() {
               </div>
             )}
 
-            <div className="mt-4 sm:mt-8 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 sm:p-6 shadow-sm mb-6">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4">
-                <div className="w-1 h-5 sm:h-6 bg-green-600 rounded-full"></div>
-                <h3 className="text-base sm:text-xl font-bold text-green-900">
-                  {t('licenses.campaign.title')}
-                </h3>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg border border-green-200 mb-4">
-                <h4 className="text-lg font-bold text-green-800 mb-3">
-                  {t('licenses.campaign.main_title')}
-                </h4>
-                <p className="text-sm text-gray-700 mb-4">
-                  {t('licenses.campaign.description')}
-                </p>
-
-                <div className="mb-4">
-                  <h5 className="text-base font-semibold text-green-700 mb-2">
-                    {t('licenses.campaign.benefits_title')}
-                  </h5>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    <li>• {t('licenses.campaign.annual_benefit')}</li>
-                    <li>• {t('licenses.campaign.biennial_benefit')}</li>
-                  </ul>
-                </div>
-
-                <div className="mb-4">
-                  <h5 className="text-base font-semibold text-green-700 mb-2">
-                    {t('licenses.campaign.examples_title')}
-                  </h5>
-                  <ul className="space-y-1 text-sm text-gray-700">
-                    <li>1. {t('licenses.campaign.example1')}</li>
-                    <li>2. {t('licenses.campaign.example2')}</li>
-                  </ul>
-                </div>
-
-                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <p className="text-xs text-blue-800 font-medium">
-                    {t('licenses.campaign.calculation_note')}
-                  </p>
-                </div>
-              </div>
-            </div>
 
             <div className="mt-4 sm:mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-3 sm:p-6 shadow-sm">
               <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6">

@@ -176,7 +176,7 @@ function PaymentSuccess() {
                           {t('licenses.success.license_info.cost')}
                         </span>
                         <div className="font-medium text-gray-900">
-                          €{record.amount.toFixed(2)}
+                          €{record.amount.toFixed(2)} {record.selected_license_duration > 1 ? `x${record.selected_license_duration}` : ''}
                         </div>
                       </div>
                     </div>

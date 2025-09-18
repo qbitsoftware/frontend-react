@@ -489,7 +489,8 @@
       "price": "Hind",
       "action": "Tegevus",
       "eltl_id": "ELTL ID",
-      "foreigner": "Välismaalane"
+      "foreigner": "Välismaalane",
+      "expiry_date": "Aegub"
     },
     "summary": {
       "title": "Kokkuvõte",

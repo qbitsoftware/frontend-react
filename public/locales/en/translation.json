@@ -451,7 +451,8 @@
       "price": "Price",
       "action": "Action",
       "eltl_id": "ELTL ID",
-      "foreigner": "Foreigner"
+      "foreigner": "Foreigner",
+      "expiry_date": "Expiry Date"
     },
     "summary": {
       "title": "Total Summary",
