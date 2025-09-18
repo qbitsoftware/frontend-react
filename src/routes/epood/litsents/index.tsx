@@ -146,6 +146,19 @@ function RouteComponent() {
     playerData: PlayerFormData,
     noEstId: boolean,
   ) => {
+    // Check if player is already added by name and birth date
+    const isAlreadyAdded = players.some(
+      (existingPlayer) =>
+        existingPlayer.first_name.toLowerCase() === playerData.first_name.toLowerCase() &&
+        existingPlayer.last_name.toLowerCase() === playerData.last_name.toLowerCase() &&
+        existingPlayer.birth_date === playerData.birth_date
+    )
+
+    if (isAlreadyAdded) {
+      toast.error(t('licenses.toasts.player_already_added'))
+      return
+    }
+
     const birthDate = new Date(playerData.birth_date)
     const currentDate = new Date()
     const age = currentDate.getFullYear() - birthDate.getFullYear()
@@ -230,6 +243,18 @@ function RouteComponent() {
   }
 
   const handlePlayerSelect = (user: User) => {
+    // Check if player is already added by ELTL ID
+    if (user.eltl_id && user.eltl_id > 0) {
+      const isAlreadyAdded = players.some(
+        (existingPlayer) => existingPlayer.eltl_id === user.eltl_id
+      )
+
+      if (isAlreadyAdded) {
+        toast.error(t('licenses.toasts.player_already_added'))
+        return
+      }
+    }
+
     const currentYear = new Date().getFullYear()
     const birthDate = user.birth_date || ''
     const birthYear = birthDate ? parseInt(birthDate) : 0
@@ -585,10 +610,10 @@ function RouteComponent() {
 
             {players.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-1 h-6 bg-[#4C97F1] rounded-full"></div>
-                    <h2 className="text-xl font-bold text-gray-900">
+                <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-1 h-4 sm:h-6 bg-[#4C97F1] rounded-full"></div>
+                    <h2 className="text-base sm:text-xl font-bold text-gray-900">
                       {t('licenses.table.title')}
                     </h2>
                   </div>
@@ -601,12 +626,6 @@ function RouteComponent() {
                           {t('licenses.table.player')}
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
-                          {t('licenses.table.birth_year')}
-                        </th>
-                        <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
-                          {t('licenses.table.club')}
-                        </th>
-                        <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                           {t('licenses.table.license_type')}
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
@@ -617,6 +636,12 @@ function RouteComponent() {
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                           {t('licenses.table.expiry_date', 'Expiry Date')}
+                        </th>
+                        <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
+                          {t('licenses.table.birth_year')}
+                        </th>
+                        <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
+                          {t('licenses.table.club')}
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                           {t('licenses.table.action')}
@@ -635,7 +660,7 @@ function RouteComponent() {
                           >
                             <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
                               <div className="flex items-center gap-2 sm:gap-3">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#4C97F1] rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                                <div className="hidden sm:flex w-8 h-8 sm:w-10 sm:h-10 bg-[#4C97F1] rounded-full items-center justify-center text-white font-bold text-xs sm:text-sm">
                                   {player.first_name.charAt(0)}
                                   {player.last_name.charAt(0)}
                                 </div>
@@ -657,19 +682,7 @@ function RouteComponent() {
                                 </div>
                               </div>
                             </td>
-                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
-                              <div className="text-xs sm:text-sm font-medium text-gray-700">
-                                {player.birth_date
-                                  ? new Date(player.birth_date).getFullYear()
-                                  : '---'}
-                              </div>
-                            </td>
-                            <td className="px-3 sm:px-6 py-4 sm:py-5">
-                              <div className="text-xs sm:text-sm text-gray-600 truncate max-w-[100px] sm:max-w-none">
-                                {player.club?.name || 'KLUBITU'}
-                              </div>
-                            </td>
-                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap min-w-[140px] sm:min-w-0">
                               <select
                                 value={
                                   player.selectedLicenseType ||
@@ -681,7 +694,7 @@ function RouteComponent() {
                                     e.target.value,
                                   )
                                 }
-                                className="w-full px-2 sm:px-3 py-1 sm:py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-xs sm:text-sm focus:outline-none transition-all"
+                                className="w-full min-w-[120px] px-2 sm:px-3 py-1 sm:py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-xs sm:text-sm focus:outline-none transition-all"
                               >
                                 {getAvailableLicenseTypes(player).map(
                                   (type) => (
@@ -692,7 +705,7 @@ function RouteComponent() {
                                 )}
                               </select>
                             </td>
-                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap min-w-[100px] sm:min-w-0">
                               <select
                                 value={player.selectedLicenseDuration || 1}
                                 onChange={(e) =>
@@ -701,7 +714,7 @@ function RouteComponent() {
                                     parseInt(e.target.value),
                                   )
                                 }
-                                className="w-full px-2 sm:px-3 py-1 sm:py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-xs sm:text-sm focus:outline-none transition-all"
+                                className="w-full min-w-[80px] px-2 sm:px-3 py-1 sm:py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-xs sm:text-sm focus:outline-none transition-all"
                               >
                                 <option value={1}>
                                   1 {t('licenses.duration.year')}
@@ -744,6 +757,18 @@ function RouteComponent() {
                               </div>
                             </td>
                             <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                              <div className="text-xs sm:text-sm font-medium text-gray-700">
+                                {player.birth_date
+                                  ? new Date(player.birth_date).getFullYear()
+                                  : '---'}
+                              </div>
+                            </td>
+                            <td className="px-3 sm:px-6 py-4 sm:py-5">
+                              <div className="text-xs sm:text-sm text-gray-600 truncate max-w-[100px] sm:max-w-none">
+                                {player.club?.name || 'KLUBITU'}
+                              </div>
+                            </td>
+                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
                               <button
                                 onClick={() => removePlayer(player.id)}
                                 className="p-1 sm:p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
@@ -761,16 +786,16 @@ function RouteComponent() {
             )}
 
             {players.length > 0 && (
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 sm:p-6 shadow-lg">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-4 sm:mb-6">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-3 sm:p-6 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-3 sm:mb-6">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-1 h-6 bg-green-600 rounded-full"></div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                      <div className="w-1 h-4 sm:h-6 bg-green-600 rounded-full"></div>
+                      <h3 className="text-base sm:text-xl font-bold text-gray-900">
                         {t('licenses.summary.title')}
                       </h3>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600">
                       {players.length}{' '}
                       {players.length === 1
                         ? t('licenses.summary.license_single')
@@ -779,19 +804,19 @@ function RouteComponent() {
                     </p>
                   </div>
                   <div className="w-full sm:w-auto text-left sm:text-right">
-                    <p className="text-sm text-gray-600 mb-1">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
                       {t('licenses.summary.total_amount')}
                     </p>
-                    <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-green-200">
-                      <p className="text-3xl font-bold text-green-600">
+                    <div className="bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg shadow-sm border border-green-200">
+                      <p className="text-2xl sm:text-3xl font-bold text-green-600">
                         €{calculateTotal()}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mb-4 sm:mb-6">
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                <div className="mb-3 sm:mb-6">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                     {t('licenses.payment.email_label')}
                   </label>
                   <input
@@ -805,16 +830,16 @@ function RouteComponent() {
                       }`}
                   />
                   {emailError && (
-                    <p className="mt-2 text-xs sm:text-sm text-red-600">
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
                       {emailError}
                     </p>
                   )}
-                  <p className="mt-2 text-xs sm:text-sm text-gray-600">
+                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">
                     {t('licenses.payment.email_help')}
                   </p>
                 </div>
 
-                <div className="mb-4 sm:mb-6 space-y-3">
+                <div className="mb-3 sm:mb-6 space-y-2 sm:space-y-3">
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
@@ -909,6 +934,10 @@ function RouteComponent() {
                     ? t('licenses.payment.processing')
                     : t('licenses.payment.complete_payment')}
                 </button>
+
+                <p className="mt-2 text-xs text-gray-500 text-center">
+                  {t('licenses.payment.e_invoice_notice')}
+                </p>
               </div>
             )}
 

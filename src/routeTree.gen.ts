@@ -22,6 +22,7 @@ import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as ReeglidIndexImport } from './routes/reeglid/index'
 import { Route as ProfileIndexImport } from './routes/profile/index'
 import { Route as LoginIndexImport } from './routes/login/index'
+import { Route as LitsentsIndexImport } from './routes/litsents/index'
 import { Route as KontaktIndexImport } from './routes/kontakt/index'
 import { Route as KlubidIndexImport } from './routes/klubid/index'
 import { Route as UudisedBlogidImport } from './routes/uudised/$blogid'
@@ -139,6 +140,12 @@ const ProfileIndexRoute = ProfileIndexImport.update({
 const LoginIndexRoute = LoginIndexImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LitsentsIndexRoute = LitsentsIndexImport.update({
+  id: '/litsents/',
+  path: '/litsents/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -556,6 +563,13 @@ declare module '@tanstack/react-router' {
       path: '/kontakt'
       fullPath: '/kontakt'
       preLoaderRoute: typeof KontaktIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/litsents/': {
+      id: '/litsents/'
+      path: '/litsents'
+      fullPath: '/litsents'
+      preLoaderRoute: typeof LitsentsIndexImport
       parentRoute: typeof rootRoute
     }
     '/login/': {
@@ -1156,6 +1170,7 @@ export interface FileRoutesByFullPath {
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/klubid': typeof KlubidIndexRoute
   '/kontakt': typeof KontaktIndexRoute
+  '/litsents': typeof LitsentsIndexRoute
   '/login': typeof LoginIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/reeglid': typeof ReeglidIndexRoute
@@ -1215,6 +1230,7 @@ export interface FileRoutesByTo {
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/klubid': typeof KlubidIndexRoute
   '/kontakt': typeof KontaktIndexRoute
+  '/litsents': typeof LitsentsIndexRoute
   '/login': typeof LoginIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/reeglid': typeof ReeglidIndexRoute
@@ -1278,6 +1294,7 @@ export interface FileRoutesById {
   '/uudised/$blogid': typeof UudisedBlogidRoute
   '/klubid/': typeof KlubidIndexRoute
   '/kontakt/': typeof KontaktIndexRoute
+  '/litsents/': typeof LitsentsIndexRoute
   '/login/': typeof LoginIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/reeglid/': typeof ReeglidIndexRoute
@@ -1345,6 +1362,7 @@ export interface FileRouteTypes {
     | '/uudised/$blogid'
     | '/klubid'
     | '/kontakt'
+    | '/litsents'
     | '/login'
     | '/profile/'
     | '/reeglid'
@@ -1403,6 +1421,7 @@ export interface FileRouteTypes {
     | '/uudised/$blogid'
     | '/klubid'
     | '/kontakt'
+    | '/litsents'
     | '/login'
     | '/profile'
     | '/reeglid'
@@ -1464,6 +1483,7 @@ export interface FileRouteTypes {
     | '/uudised/$blogid'
     | '/klubid/'
     | '/kontakt/'
+    | '/litsents/'
     | '/login/'
     | '/profile/'
     | '/reeglid/'
@@ -1526,6 +1546,7 @@ export interface RootRouteChildren {
   UudisedBlogidRoute: typeof UudisedBlogidRoute
   KlubidIndexRoute: typeof KlubidIndexRoute
   KontaktIndexRoute: typeof KontaktIndexRoute
+  LitsentsIndexRoute: typeof LitsentsIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   ReeglidIndexRoute: typeof ReeglidIndexRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
@@ -1547,6 +1568,7 @@ const rootRouteChildren: RootRouteChildren = {
   UudisedBlogidRoute: UudisedBlogidRoute,
   KlubidIndexRoute: KlubidIndexRoute,
   KontaktIndexRoute: KontaktIndexRoute,
+  LitsentsIndexRoute: LitsentsIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   ReeglidIndexRoute: ReeglidIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
@@ -1576,6 +1598,7 @@ export const routeTree = rootRoute
         "/uudised/$blogid",
         "/klubid/",
         "/kontakt/",
+        "/litsents/",
         "/login/",
         "/reeglid/",
         "/register/",
@@ -1669,6 +1692,9 @@ export const routeTree = rootRoute
     },
     "/kontakt/": {
       "filePath": "kontakt/index.tsx"
+    },
+    "/litsents/": {
+      "filePath": "litsents/index.tsx"
     },
     "/login/": {
       "filePath": "login/index.tsx"

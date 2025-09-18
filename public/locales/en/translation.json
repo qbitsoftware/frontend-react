@@ -372,6 +372,7 @@
       "complete_payment": "Complete Payment",
       "payment_failed": "Payment failed. Please try again.",
       "september_notice": "License purchasing functionality will be available starting from September.",
+      "e_invoice_notice": "E-invoice payment is not yet available, please use existing payment methods",
       "status": {
         "success": "License purchased successfully!",
         "pending": "Payment is being processed...",
@@ -480,6 +481,7 @@
     "toasts": {
       "player_added": "Player added successfully",
       "player_removed": "Player removed",
+      "player_already_added": "This player has already been added to the list",
       "redirecting": "License purchasing functionality is currently in development"
     },
     "validation": {

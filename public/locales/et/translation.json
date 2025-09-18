@@ -410,6 +410,7 @@
       "complete_payment": "Maksma",
       "payment_failed": "Makse ebaõnnestus. Palun proovige uuesti.",
       "september_notice": "Litsentsi ostmise funktsioon on saadaval alates septembrist.",
+      "e_invoice_notice": "NB: Arve ja e-arvega maksmine pole hetkel võimalik, palun kasutage olemasolevaid makseviise",
       "status": {
         "success": "Litsents edukalt ostetud!",
         "pending": "Makse on töötlemisel...",
@@ -518,6 +519,7 @@
     "toasts": {
       "player_added": "Mängija edukalt lisatud",
       "player_removed": "Mängija eemaldatud",
+      "player_already_added": "See mängija on juba nimekirja lisatud",
       "redirecting": "Litsentisde ostmise funktsionaalsus on hetkel arenduses"
     },
     "validation": {
