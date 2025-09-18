@@ -16,6 +16,7 @@ import { PlayerSearchInput } from "@/components/shared/PlayerSearchInput";
 import { PlayerManualEntryForm } from "@/components/shared/PlayerManualEntryForm";
 import { SalesTermsModal } from "@/components/licenses/SalesTermsModal";
 import { LicenseTermsModal } from "@/components/licenses/LicenseTermsModal";
+import { PrivacyTermsModal } from "@/components/licenses/PrivacyTermsModal";
 import {
   extractGenderFromIsikukood,
   PlayerFormData,
@@ -55,6 +56,7 @@ function RouteComponent() {
   const [agreedToLicenseTerms, setAgreedToLicenseTerms] = useState(false);
   const [agreedToGuardianConsent, setAgreedToGuardianConsent] = useState(false);
   const [showSalesTermsModal, setShowSalesTermsModal] = useState(false);
+  const [showPrivacyTermsModal, setShowPrivacyTermsModal] = useState(false);
   const [showLicenseTermsModal, setShowLicenseTermsModal] = useState(false);
   const createPaymentMutation = useCreatePayment();
   const checkPaymentStatusMutation = useCheckPaymentStatus();
@@ -223,6 +225,7 @@ function RouteComponent() {
       expiration_date: null,
       isikukood: noEstId ? undefined : playerData.isikukood,
       selectedLicenseType: defaultLicenseType,
+      selectedLicenseDuration: 1,
     };
 
     setPlayers([...players, newUser]);
@@ -275,6 +278,7 @@ function RouteComponent() {
       license: null,
       expiration_date: null,
       selectedLicenseType: finalLicenseType,
+      selectedLicenseDuration: 1,
     };
 
     setPlayers([...players, newUser]);
@@ -290,6 +294,14 @@ function RouteComponent() {
     setPlayers(
       players.map((p) =>
         p.id === playerId ? { ...p, selectedLicenseType: licenseType } : p
+      )
+    );
+  };
+
+  const updateLicenseDuration = (playerId: number, duration: number) => {
+    setPlayers(
+      players.map((p) =>
+        p.id === playerId ? { ...p, selectedLicenseDuration: duration } : p
       )
     );
   };
@@ -376,10 +388,9 @@ function RouteComponent() {
 
   const calculateTotal = () => {
     return players.reduce((total, player) => {
-      return (
-        total +
-        getLicenseTypePrice(player.selectedLicenseType || LicenseType.ADULT)
-      );
+      const basePrice = getLicenseTypePrice(player.selectedLicenseType || LicenseType.ADULT);
+      const duration = player.selectedLicenseDuration || 1;
+      return total + (basePrice * duration);
     }, 0);
   };
 
@@ -401,7 +412,45 @@ function RouteComponent() {
       toast.error(t("licenses.terms.must_agree_to_terms"));
       return;
     }
-    toast.message(t("licenses.payment.september_notice"));
+
+    if (!email || !validateEmail(email)) {
+      setEmailError(t("licenses.payment.email_invalid"));
+      return;
+    }
+
+    if (players.length === 0) {
+      toast.error(t("licenses.payment.no_players"));
+      return;
+    }
+
+    const paymentData = {
+      email,
+      players: players.map(player => ({
+        id: player.id,
+        first_name: player.first_name,
+        last_name: player.last_name,
+        birth_date: player.birth_date,
+        licenseType: player.selectedLicenseType || LicenseType.ADULT,
+        eltl_id: player.eltl_id,
+        club_name: player.club?.name || "KLUBITU",
+        selected_license_duration: player.selectedLicenseDuration || 1
+      })),
+      currency: "EUR"
+    };
+
+    try {
+      console.log("Sending payment data:", paymentData);
+      const result = await createPaymentMutation.mutateAsync(paymentData);
+      console.log("Payment result:", result);
+      if (result.data?.payment_url) {
+        window.location.href = result.data.payment_url;
+      } else {
+        toast.error(t("licenses.payment.creation_failed"));
+      }
+    } catch (error) {
+      console.error("Payment creation error:", error);
+      toast.error(t("licenses.payment.creation_failed"));
+    }
   };
 
   return (
@@ -491,6 +540,9 @@ function RouteComponent() {
                           {t("licenses.table.license_type")}
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
+                          {t("licenses.table.duration")}
+                        </th>
+                        <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
                           {t("licenses.table.price")}
                         </th>
                         <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-700">
@@ -565,14 +617,33 @@ function RouteComponent() {
                               </select>
                             </td>
                             <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                              <select
+                                value={player.selectedLicenseDuration || 1}
+                                onChange={(e) =>
+                                  updateLicenseDuration(
+                                    player.id,
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-full px-2 sm:px-3 py-1 sm:py-2 border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-lg text-xs sm:text-sm focus:outline-none transition-all"
+                              >
+                                <option value={1}>1 {t("licenses.duration.year")}</option>
+                                <option value={2}>2 {t("licenses.duration.years")}</option>
+                              </select>
+                            </td>
+                            <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
                               <div className="text-sm sm:text-lg font-bold text-[#4C97F1]">
                                 €
-                                {license
-                                  ? license.price
-                                  : getLicenseTypePrice(
-                                    player.selectedLicenseType ||
-                                    LicenseType.ADULT
-                                  )}
+                                {(() => {
+                                  const basePrice = license
+                                    ? license.price
+                                    : getLicenseTypePrice(
+                                      player.selectedLicenseType ||
+                                      LicenseType.ADULT
+                                    );
+                                  const duration = player.selectedLicenseDuration || 1;
+                                  return basePrice * duration;
+                                })()}
                               </div>
                             </td>
                             <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
@@ -660,8 +731,17 @@ function RouteComponent() {
                         onClick={() => setShowSalesTermsModal(true)}
                         className="text-green-600 hover:text-green-700 underline font-medium"
                       >
-                        {t("licenses.terms.sales_terms")}
+                        {t("licenses.terms.sales_terms")}{" "}
                       </button>
+                      {" "}{t("licenses.terms.and")}{" "}
+                      <button
+                        type="button"
+                        onClick={() => setShowPrivacyTermsModal(true)}
+                        className="text-green-600 hover:text-green-700 underline font-medium"
+                      >
+                        {t("licenses.terms.privacy_terms")}
+                      </button>
+
                     </label>
                   </div>
 
@@ -763,6 +843,11 @@ function RouteComponent() {
       <SalesTermsModal
         isOpen={showSalesTermsModal}
         onClose={() => setShowSalesTermsModal(false)}
+      />
+
+      <PrivacyTermsModal
+        isOpen={showPrivacyTermsModal}
+        onClose={() => setShowPrivacyTermsModal(false)}
       />
 
       <LicenseTermsModal

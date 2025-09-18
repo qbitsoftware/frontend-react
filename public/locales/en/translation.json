@@ -365,6 +365,9 @@
       "email_label": "Email Address",
       "email_placeholder": "Enter email for invoice",
       "email_help": "We'll send the invoice to this email address",
+      "email_invalid": "Please enter a valid email address",
+      "no_players": "Please add at least one player",
+      "creation_failed": "Failed to create payment. Please try again.",
       "processing": "Processing payment...",
       "complete_payment": "Complete Payment",
       "payment_failed": "Payment failed. Please try again.",
@@ -444,6 +447,7 @@
       "birth_year": "Birth Year",
       "club": "Club",
       "license_type": "License Type",
+      "duration": "Duration",
       "price": "Price",
       "action": "Action",
       "eltl_id": "ELTL ID",
@@ -490,10 +494,16 @@
     },
     "terms": {
       "sales_terms": "Sales Terms",
+      "privacy_terms": "Privacy Terms",
       "license_purchase_terms": "License Purchase Terms",
       "under_18_guardian_consent": "I confirm that for athletes under 18 years of age, all license terms are confirmed and signed by the parent, legal guardian, or sports club.",
       "must_agree_to_terms": "You must agree to the terms to continue",
+      "and": "and",
       "agree_to": "I agree to the"
+    },
+    "duration": {
+      "year": "year",
+      "years": "years"
     }
   },
   "competitions": {

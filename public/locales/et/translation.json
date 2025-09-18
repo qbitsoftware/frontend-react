@@ -403,8 +403,11 @@
       "email_label": "E-posti aadress",
       "email_placeholder": "Sisesta e-post arve jaoks",
       "email_help": "Saadame arve sellele e-posti aadressile",
+      "email_invalid": "Palun sisestage kehtiv e-posti aadress",
+      "no_players": "Palun lisage vähemalt üks mängija",
+      "creation_failed": "Makse loomine ebaõnnestus. Palun proovige uuesti.",
       "processing": "Makse töötlemine...",
-      "complete_payment": "Lõpeta makse",
+      "complete_payment": "Maksma",
       "payment_failed": "Makse ebaõnnestus. Palun proovige uuesti.",
       "september_notice": "Litsentsi ostmise funktsioon on saadaval alates septembrist.",
       "status": {
@@ -482,6 +485,7 @@
       "birth_year": "Sünniaasta",
       "club": "Klubi",
       "license_type": "Litsentsi tüüp",
+      "duration": "Kehtivus",
       "price": "Hind",
       "action": "Tegevus",
       "eltl_id": "ELTL ID",
@@ -528,10 +532,16 @@
     },
     "terms": {
       "sales_terms": "Müügitingimustega",
+      "privacy_terms": "Privaatsustingimustega",
       "license_purchase_terms": "Litsentsi ostu tingimustega",
       "under_18_guardian_consent": "Sportlase või sportlaste – alla 18-aastase(te) puhul kinnitab ja allkirjastab kõik litsentsitingimused alaealise lapsevanem, seaduslik esindaja või spordiklubi.",
       "must_agree_to_terms": "Jätkamiseks peate nõustuma tingimustega",
+      "and": "ja",
       "agree_to": "Nõustun"
+    },
+    "duration": {
+      "year": "aasta",
+      "years": "aastat"
     }
   },
   "competitions": {

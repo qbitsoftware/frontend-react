@@ -60,6 +60,7 @@ export type User = {
   rating_last_change: number;
   isikukood?: string;
   selectedLicenseType?: LicenseType;
+  selectedLicenseDuration?: number;
   combinedIndex?: number;
   genderCombinedIndex?: number;
   originalRateOrder?: number;
