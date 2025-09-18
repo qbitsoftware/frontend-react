@@ -542,6 +542,18 @@
     "duration": {
       "year": "aasta",
       "years": "aastat"
+    },
+    "campaign": {
+      "title": "2025. aasta kampaania",
+      "main_title": "Osta litsents 2025. aastal ja saa boonuskuud tasuta!",
+      "description": "Kõik, kes ostavad ELTL litsentsi enne 2026. aasta algust, saavad EKSTRA KEHTIVUSAEGA!",
+      "benefits_title": "Varajase ostu eelised:",
+      "annual_benefit": "Aastane litsents: lisatakse kuude arv, mis on jäänud aasta lõpuni, pluss jooksva kuu päevade arv.",
+      "biennial_benefit": "Kaheaastane litsents: lisaks ülaltoodule lisandub iga aasta kohta +1 kuu tasuta!",
+      "examples_title": "Näited:",
+      "example1": "Ostes 1-aastase litsentsi 16. novembril 2025, kehtib see kuni 17. märtsini 2027",
+      "example2": "Ostes 2-aastase litsentsi 5. oktoobril 2025, kehtib see kuni 26. juunini 2028",
+      "calculation_note": "Arvestus põhineb 365-päevasel aastal ja 30-päevasel kuul."
     }
   },
   "competitions": {

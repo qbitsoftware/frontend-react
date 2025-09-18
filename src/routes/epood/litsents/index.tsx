@@ -311,17 +311,13 @@ function RouteComponent() {
 
     if (player.foreigner === 1) {
       availableTypes = licenseTypes.filter(
-        (type) =>
-          type.id === LicenseType.FOREIGNER || type.id === LicenseType.ONE_TIME,
+        (type) => type.id === LicenseType.FOREIGNER,
       )
     } else if (player.club?.name === 'KLUBITU') {
       const hasEstonianId = player.isikukood && player.isikukood.trim() !== ''
 
       availableTypes = licenseTypes.filter((type) => {
-        if (
-          type.id === LicenseType.NO_CLUB ||
-          type.id === LicenseType.ONE_TIME
-        ) {
+        if (type.id === LicenseType.NO_CLUB) {
           return true
         }
         if (type.id === LicenseType.FOREIGNER) {
@@ -353,10 +349,7 @@ function RouteComponent() {
       const hasEstonianId = player.isikukood && player.isikukood.trim() !== ''
 
       availableTypes = licenseTypes.filter((type) => {
-        if (
-          type.id === defaultLicenseType ||
-          type.id === LicenseType.ONE_TIME
-        ) {
+        if (type.id === defaultLicenseType) {
           return true
         }
         if (type.id === LicenseType.FOREIGNER) {
@@ -364,18 +357,6 @@ function RouteComponent() {
         }
         return false
       })
-    }
-
-    const hasOneTime = availableTypes.some(
-      (type) => type.id === LicenseType.ONE_TIME,
-    )
-    if (!hasOneTime) {
-      const oneTimeType = licenseTypes.find(
-        (type) => type.id === LicenseType.ONE_TIME,
-      )
-      if (oneTimeType) {
-        availableTypes.push(oneTimeType)
-      }
     }
 
     return availableTypes
@@ -844,6 +825,50 @@ function RouteComponent() {
                 <p className="text-gray-500">{t('licenses.empty_state')}</p>
               </div>
             )}
+
+            <div className="mt-4 sm:mt-8 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 sm:p-6 shadow-sm mb-6">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                <div className="w-1 h-5 sm:h-6 bg-green-600 rounded-full"></div>
+                <h3 className="text-base sm:text-xl font-bold text-green-900">
+                  {t('licenses.campaign.title')}
+                </h3>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg border border-green-200 mb-4">
+                <h4 className="text-lg font-bold text-green-800 mb-3">
+                  {t('licenses.campaign.main_title')}
+                </h4>
+                <p className="text-sm text-gray-700 mb-4">
+                  {t('licenses.campaign.description')}
+                </p>
+
+                <div className="mb-4">
+                  <h5 className="text-base font-semibold text-green-700 mb-2">
+                    {t('licenses.campaign.benefits_title')}
+                  </h5>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>• {t('licenses.campaign.annual_benefit')}</li>
+                    <li>• {t('licenses.campaign.biennial_benefit')}</li>
+                  </ul>
+                </div>
+
+                <div className="mb-4">
+                  <h5 className="text-base font-semibold text-green-700 mb-2">
+                    {t('licenses.campaign.examples_title')}
+                  </h5>
+                  <ul className="space-y-1 text-sm text-gray-700">
+                    <li>1. {t('licenses.campaign.example1')}</li>
+                    <li>2. {t('licenses.campaign.example2')}</li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                  <p className="text-xs text-blue-800 font-medium">
+                    {t('licenses.campaign.calculation_note')}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <div className="mt-4 sm:mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-3 sm:p-6 shadow-sm">
               <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6">

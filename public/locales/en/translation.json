@@ -504,6 +504,18 @@
     "duration": {
       "year": "year",
       "years": "years"
+    },
+    "campaign": {
+      "title": "2025 Campaign",
+      "main_title": "Buy a license in 2025 and get bonus months for free!",
+      "description": "Everyone who purchases an ELTL license before the beginning of 2026 will receive EXTRA VALIDITY PERIOD!",
+      "benefits_title": "Early purchase benefits:",
+      "annual_benefit": "Annual license: the number of months remaining until the end of the year is added, plus the number of days in the current month.",
+      "biennial_benefit": "Two-year license: in addition to the above, +1 month free is added for each year!",
+      "examples_title": "Examples:",
+      "example1": "Buying a 1-year license on November 16, 2025, it will be valid until March 17, 2027",
+      "example2": "Buying a 2-year license on October 5, 2025, it will be valid until June 26, 2028",
+      "calculation_note": "Calculation is based on a 365-day year and 30-day month."
     }
   },
   "competitions": {
