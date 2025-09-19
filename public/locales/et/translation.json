@@ -410,6 +410,7 @@
       "complete_payment": "Maksma",
       "payment_failed": "Makse ebaõnnestus. Palun proovige uuesti.",
       "september_notice": "Litsentsi ostmise funktsioon on saadaval alates septembrist.",
+      "october_notice": "Litsentsi ostmine avatakse 1. oktoobril",
       "e_invoice_notice": "NB: Arve ja e-arvega maksmine pole hetkel võimalik, palun kasutage olemasolevaid makseviise",
       "status": {
         "success": "Litsents edukalt ostetud!",

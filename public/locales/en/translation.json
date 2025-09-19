@@ -372,6 +372,7 @@
       "complete_payment": "Complete Payment",
       "payment_failed": "Payment failed. Please try again.",
       "september_notice": "License purchasing functionality will be available starting from September.",
+      "october_notice": "License purchasing will be opened on October 1st",
       "e_invoice_notice": "E-invoice payment is not yet available, please use existing payment methods",
       "status": {
         "success": "License purchased successfully!",
