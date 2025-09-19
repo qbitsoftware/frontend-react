@@ -186,7 +186,7 @@ const EliminationMatch = ({
           </div>
         )}
         {!match.match.table_type?.startsWith("single_elimination") && (
-          <div className="absolute -top-[18px] right-0 text-[9px] font-medium text-gray-600 bg-white px-1 border border-blue-300 rounded">
+          <div className="absolute -top-[20px] right-0 text-[10px] font-medium text-gray-600 bg-white px-1 border border-blue-300 rounded">
             {match.match.readable_id}
           </div>
         )}

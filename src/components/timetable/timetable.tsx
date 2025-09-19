@@ -1,6 +1,6 @@
 import { UseGetTournamentMatchesQuery } from '@/queries/match'
 import { UseGetFreeVenuesAll } from '@/queries/venues'
-import { TimeTableEditMatch, UseChangeTimeSlotTime, UseEditTimeTable, UseGetTournamentTablesQuery } from '@/queries/tables'
+import { TimeTableEditMatch, TournamentTableWithStages, UseChangeTimeSlotTime, UseEditTimeTable, UseGetTournamentTablesQuery } from '@/queries/tables'
 import { useMemo, useState, useCallback, useEffect } from 'react'
 import { MatchWrapper } from '@/types/matches'
 import { useTranslation } from 'react-i18next'
@@ -23,7 +23,6 @@ import TTRow from '@/routes/admin/tournaments/$tournamentid/ajakava/-components/
 import { DraggableMatch } from '@/routes/admin/tournaments/$tournamentid/ajakava/-components/draggable-match'
 import { toast } from 'sonner'
 import { FaPencilAlt } from 'react-icons/fa'
-import { TournamentTable } from '@/types/groups'
 
 interface TimetableProps {
     tournamentId: number
@@ -67,16 +66,16 @@ export function Timetable({
 
     const tournamentDays = useMemo(() => {
         if (!tournamentMatches?.data) return []
-        const classMap = new Map<number, TournamentTable>()
+        const classMap = new Map<number, TournamentTableWithStages>()
         tournamentClassesData?.data?.forEach(table => {
-            classMap.set(table.id, table)
+            classMap.set(table.group.id, table)
         })
 
         const daysSet = new Set<string>()
-        tournamentMatches.data.forEach(match => {
+        tournamentMatches.data.matches.forEach(match => {
             if (match.match.start_date && new Date(match.match.start_date).getTime() > 0) {
                 const tt = classMap.get(match.match.tournament_table_id)
-                if (tt && !tt.time_table) {
+                if (tt && !tt.group.time_table) {
                     return false
                 }
                 const date = new Date(match.match.start_date)
@@ -96,14 +95,14 @@ export function Timetable({
 
     const dayMatches = useMemo(() => {
         if (!tournamentMatches?.data || !selectedDay) return []
-        const classMap = new Map<number, TournamentTable>()
+        const classMap = new Map<number, TournamentTableWithStages>()
         tournamentClassesData?.data?.forEach(table => {
-            classMap.set(table.id, table)
+            classMap.set(table.group.id, table)
         })
 
-        return tournamentMatches.data.filter(match => {
+        return tournamentMatches.data.matches.filter(match => {
             const tt = classMap.get(match.match.tournament_table_id)
-            if (tt && !tt.time_table) {
+            if (tt && !tt.group.time_table) {
                 return false
             }
             if (!match.match.start_date) return false
@@ -171,9 +170,9 @@ export function Timetable({
         if (!dayMatches.length || !tournamentClassesData?.data) return []
 
 
-        const classMap = new Map<number, TournamentTable>()
+        const classMap = new Map<number, TournamentTableWithStages>()
         tournamentClassesData.data.forEach(table => {
-            classMap.set(table.id, table)
+            classMap.set(table.group.id, table)
         })
 
         const usedClasses = new Set<string>()
@@ -183,10 +182,10 @@ export function Timetable({
         dayMatches.forEach(match => {
             const tableId = match.match.tournament_table_id
             const tt = classMap.get(tableId)
-            if (tt && !usedClasses.has(tt.class)) {
-                usedClasses.add(tt.class)
+            if (tt && !usedClasses.has(tt.group.class)) {
+                usedClasses.add(tt.group.class)
                 // Assign colors sequentially to ensure uniqueness
-                classColorMap.set(tt.class, {
+                classColorMap.set(tt.group.class, {
                     ...colorPalette[colorIndex % colorPalette.length],
                     tableId
                 })
@@ -204,10 +203,10 @@ export function Timetable({
         if (!tournamentClassesData?.data) return 'bg-gray-100 border-gray-400'
 
         const tableId = parseInt(tournamentTableId)
-        const table = tournamentClassesData.data.find(t => t.id === tableId)
+        const table = tournamentClassesData.data.find(t => t.group.id === tableId)
         if (!table) return 'bg-gray-100 border-gray-400'
 
-        const classData = tournamentClasses.find(c => c.name === table.class)
+        const classData = tournamentClasses.find(c => c.name === table.group.class)
         return classData ? `${classData.bg} ${classData.border}` : 'bg-gray-100 border-gray-400'
     }, [tournamentClassesData?.data, tournamentClasses])
 

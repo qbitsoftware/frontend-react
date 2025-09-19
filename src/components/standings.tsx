@@ -44,13 +44,11 @@ const Standings = ({ participants, tournament_table }: Props) => {
   const parseAgeFromInput = (input: string): { age: number; type: 'under' | 'veteran' } | null => {
     const trimmed = input.trim()
 
-    // Match U* format (under age)
     const underMatch = trimmed.match(/^[Uu](\d+)$/)
     if (underMatch) {
       return { age: parseInt(underMatch[1]), type: 'under' }
     }
 
-    // Match V* format (veterans/over age) 
     const veteranMatch = trimmed.match(/^[Vv](\d+)$/)
     if (veteranMatch) {
       return { age: parseInt(veteranMatch[1]), type: 'veteran' }
@@ -103,11 +101,9 @@ const Standings = ({ participants, tournament_table }: Props) => {
         const playerAge = currentYear - birthYear
 
         if (ageFilter.type === 'under') {
-          // U* or plain number: show players under this age
           if (playerAge >= ageFilter.age) return false
         } else if (ageFilter.type === 'veteran') {
-          // V*: show players this age or older
-          if (playerAge < ageFilter.age) return false
+          if (playerAge < (ageFilter.age - 1)) return false
         }
       }
     }
@@ -242,6 +238,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-16">{t("competitions.standings.placement")}</TableHead>
+                  <TableHead className="w-16">{t("competitions.standings.og_placement")}</TableHead>
                   <TableHead>{t("competitions.standings.participants")}</TableHead>
                   <TableHead>{t("competitions.standings.rating")}</TableHead>
                   <TableHead>ELTL ID</TableHead>
@@ -254,6 +251,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
                 {groupedParticipants && groupedParticipants[groupId].map((participant, index) => (
                   <TableRow key={participant.id || index} className="hover:bg-gray-50">
                     <TableCell className="w-16 font-medium">{index + 1}</TableCell>
+                <TableCell className="w-16 font-medium text-gray-500">({participant.order})</TableCell>
                     <TableCell className="flex items-center space-x-3">
                       <Avatar className="w-8 h-8 flex-shrink-0">
                         <AvatarImage src={participant.players?.[0]?.extra_data?.image_url || ""} alt={`${participant.name}'s profile`} />
@@ -411,6 +409,7 @@ const Standings = ({ participants, tournament_table }: Props) => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-16">{t("competitions.standings.placement")}</TableHead>
+              <TableHead className="w-16">{t("competitions.standings.og_placement")}</TableHead>
               <TableHead>{t("competitions.standings.participants")}</TableHead>
               <TableHead>{t("competitions.standings.rating")}</TableHead>
               <TableHead>ELTL ID</TableHead>
@@ -422,7 +421,8 @@ const Standings = ({ participants, tournament_table }: Props) => {
           <TableBody>
             {filteredParticipants.map((participant: Participant, index) => (
               <TableRow key={participant.id || index} className="hover:bg-gray-50">
-                <TableCell className="w-16 font-medium">{participants.findIndex(p => p.id === participant.id) + 1}</TableCell>
+                <TableCell className="w-16 font-bold">{participants.findIndex(p => p.id === participant.id) + 1}</TableCell>
+                <TableCell className="w-16 font-medium text-gray-500">({participant.order})</TableCell>
                 <TableCell className="flex items-center space-x-3">
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     <AvatarImage src={participant.players?.[0]?.extra_data?.image_url || ""} alt={`${participant.name}'s profile`} />

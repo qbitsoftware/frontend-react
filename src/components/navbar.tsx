@@ -19,19 +19,19 @@ export default function Navbar() {
   const { user } = useUser();
   const location = useLocation();
   const [scrollY, setScrollY] = useState(0);
-  
+
   // Check if we're on a bracket route
   const isBracketRoute = location.pathname.includes('/tulemused/');
-  
+
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
-    
+
     if (isBracketRoute) {
       window.addEventListener('scroll', handleScroll);
       return () => window.removeEventListener('scroll', handleScroll);
     }
   }, [isBracketRoute]);
-  
+
   // Make navbar non-sticky after 100px scroll on bracket routes
   const shouldBeSticky = !isBracketRoute || scrollY < 200;
 
@@ -68,7 +68,7 @@ export default function Navbar() {
       href: "/klubid",
     },
     { name: t("navbar.menu.ratings"), href: "/reiting" },
-    { name: t("navbar.menu.license"), href: "/litsents" },
+    { name: t("navbar.menu.license"), href: "/epood/litsents" },
     {
       name: t("navbar.menu.eltl"),
       href: "#",

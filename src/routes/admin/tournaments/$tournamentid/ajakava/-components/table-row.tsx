@@ -1,9 +1,9 @@
-import { TournamentTable } from "@/types/groups";
 import { Venue } from "@/types/venues";
 import { useDroppable } from "@dnd-kit/core";
 import { memo } from "react";
 import { DraggableMatch } from "./draggable-match";
 import { MatchWrapper } from "@/types/matches";
+import { TournamentTableWithStages } from "@/queries/tables";
 
 interface Props {
     table: Venue;
@@ -14,7 +14,7 @@ interface Props {
     isPlacementMatch: (match: any) => boolean;
     activeMatch: MatchWrapper | null;
     getPlacementLabel: (match: any) => string;
-    tournamentClassesData: TournamentTable[] | null | undefined;
+    tournamentClassesData: TournamentTableWithStages[] | null | undefined;
     hoveredCell: string | null;
     setHoveredCell: (cellKey: string | null) => void;
     allMatches: MatchWrapper[] | null | undefined;

@@ -82,15 +82,58 @@ export function Reiting() {
         return combinedList;
       };
 
+      const createGenderCombinedList = () => {
+        const estonianPlayers = allPlayers.filter(user => user.rate_order > 0);
+
+        const playersWithAdjustedOrder = estonianPlayers.map(user => ({
+          ...user,
+          originalRateOrder: user.rate_order,
+          adjustedRateOrder: user.sex === 'N' ? user.rate_order * 4.5 : user.rate_order
+        }));
+
+        const sortedPlayers = playersWithAdjustedOrder.sort((a, b) => a.adjustedRateOrder - b.adjustedRateOrder);
+
+        sortedPlayers.forEach((user, index) => {
+          user.genderCombinedIndex = index + 1;
+        });
+
+        return sortedPlayers;
+      };
+
       const menCombined = createCombinedList('M');
       const womenCombined = createCombinedList('N');
+      const genderCombined = createGenderCombinedList();
 
       const lowWeightForeigners = allPlayers.filter(user => user.rate_order === 0 && user.foreigner === 1 && user.rate_weigth < 0);
       lowWeightForeigners.forEach(user => {
         user.combinedIndex = undefined;
       });
 
-      setUsers([...menCombined, ...womenCombined, ...lowWeightForeigners]);
+      const uniqueUsers = allPlayers.map(user => ({ ...user }));
+
+      menCombined.forEach(menUser => {
+        const user = uniqueUsers.find(u => u.id === menUser.id);
+        if (user) {
+          user.menCombinedIndex = menUser.combinedIndex;
+        }
+      });
+
+      womenCombined.forEach(womenUser => {
+        const user = uniqueUsers.find(u => u.id === womenUser.id);
+        if (user) {
+          user.womenCombinedIndex = womenUser.combinedIndex;
+        }
+      });
+
+      genderCombined.forEach(genderUser => {
+        const user = uniqueUsers.find(u => u.id === genderUser.id);
+        if (user) {
+          user.genderCombinedIndex = genderUser.genderCombinedIndex;
+          user.originalRateOrder = genderUser.originalRateOrder;
+        }
+      });
+
+      setUsers(uniqueUsers);
     }
   }, [data]);
 
@@ -108,6 +151,9 @@ export function Reiting() {
 
   const handleGenderChange = (value: string) => {
     setGender(value);
+    if (value === "combined") {
+      setShowForeigners(false);
+    }
   };
 
   useEffect(() => {
@@ -136,7 +182,6 @@ export function Reiting() {
   };
 
   const filteredUsers = users.filter((user) => {
-    const matchesGender = filterByGender(user, gender);
     const matchesAgeClass = filterByAgeClass(user, ageClass);
     const hasELTLId = user.eltl_id != 0;
 
@@ -166,12 +211,50 @@ export function Reiting() {
     const isForeigner =
       showForeigners && user.rate_order === 0 && user.foreigner === 1;
 
+    // For gender combined view, only show Estonian players that have a genderCombinedIndex
+    if (gender === "combined") {
+      return (
+        user.genderCombinedIndex &&
+        matchesAgeClass &&
+        matchesSearchQuery &&
+        isEstonianPlayer
+      );
+    }
+
+    // For regular gender filtering
+    const matchesGender = filterByGender(user, gender);
     return (
       matchesGender &&
       matchesAgeClass &&
       matchesSearchQuery &&
       (isEstonianPlayer || isForeigner)
     );
+  }).sort((a, b) => {
+    // Sort by genderCombinedIndex when in combined mode
+    if (gender === "combined" && a.genderCombinedIndex && b.genderCombinedIndex) {
+      return a.genderCombinedIndex - b.genderCombinedIndex;
+    }
+
+    // Sort by menCombinedIndex when showing men with foreigners
+    if (showForeigners && gender === "M" && a.menCombinedIndex && b.menCombinedIndex) {
+      return a.menCombinedIndex - b.menCombinedIndex;
+    }
+
+    // Sort by womenCombinedIndex when showing women with foreigners
+    if (showForeigners && gender === "N" && a.womenCombinedIndex && b.womenCombinedIndex) {
+      return a.womenCombinedIndex - b.womenCombinedIndex;
+    }
+
+    // Default sorting
+    if (a.rate_order > 0 && b.rate_order > 0) {
+      return a.rate_order - b.rate_order;
+    }
+
+    if (a.rate_order === 0 && b.rate_order === 0) {
+      return b.rate_points - a.rate_points;
+    }
+
+    return b.rate_points - a.rate_points;
   });
 
   const selectedPlayer = users.find((user) => user.id === SelectedPlayerId);
@@ -217,7 +300,7 @@ export function Reiting() {
                     "Licenses will be required starting from January 1, 2026, and can be bought"
                   )}{" "}
                   <Link
-                    to="/litsents"
+                    to="/epood/litsents"
                     className="text-blue-600 hover:text-blue-800 underline font-medium"
                   >
                     {t("rating.license_info.link_text", "here")}
@@ -243,6 +326,7 @@ export function Reiting() {
             onGenderChange={handleGenderChange}
             showForeigners={showForeigners}
             onShowForeignersChange={setShowForeigners}
+            disableForeigners={gender === "combined"}
             showCalculator
             onCalculatorClick={() => setIsRatingCalculatorOpen(true)}
             showInfo
@@ -299,10 +383,17 @@ export function Reiting() {
                         index={index}
                         handleModalOpen={handleModalOpen}
                         displayIndex={
-                          user.rate_order > 0 ? user.rate_order : undefined
+                          gender === "combined" && user.genderCombinedIndex
+                            ? user.genderCombinedIndex
+                            : user.rate_order > 0 ? user.rate_order : undefined
                         }
-                        combinedOrder={user.combinedIndex}
+                        combinedOrder={
+                          gender === "M" ? user.menCombinedIndex :
+                          gender === "N" ? user.womenCombinedIndex :
+                          user.combinedIndex
+                        }
                         showCombinedOrder={showForeigners}
+                        isGenderCombined={gender === "combined"}
                       />
                     ))}
               </TableBody>

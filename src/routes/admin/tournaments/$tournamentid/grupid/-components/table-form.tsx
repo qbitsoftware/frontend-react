@@ -21,6 +21,8 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { Slider } from '@/components/ui/slider'
+import { Participant } from '@/types/participants'
+import { getTournamentTypeKey } from '@/components/utils/utils'
 
 
 const createFormSchema = (t: TFunction) => z.object({
@@ -36,6 +38,22 @@ const createFormSchema = (t: TFunction) => z.object({
   second_class: z.string().optional(),
   has_consolation: z.boolean().optional(),
   consolation_class: z.string().optional(),
+}).refine((data) => {
+  if (data.type === GroupType.DYNAMIC && (!data.second_class || data.second_class === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: t('admin.tournaments.groups.errors.second_class'),
+  path: ['second_class']
+}).refine((data) => {
+  if (data.type === GroupType.DYNAMIC && data.has_consolation && (!data.consolation_class || data.consolation_class === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: t('admin.tournaments.groups.errors.consolation_class'),
+  path: ['consolation_class']
 }).superRefine((data, ctx) => {
   if (data.solo) return;
 
@@ -61,22 +79,6 @@ const createFormSchema = (t: TFunction) => z.object({
     });
   }
 
-  if (data.type === GroupType.DYNAMIC && data.second_class === "") {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('admin.tournaments.groups.errors.second_class'),
-      path: ['second_class']
-    });
-  }
-
-  if (data.type === GroupType.DYNAMIC && data.has_consolation && data.consolation_class === "") {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('admin.tournaments.groups.errors.consolation_class'),
-      path: ['consolation_class']
-    });
-  }
-
   if (data.max_team_size === undefined) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -92,23 +94,52 @@ const createFormSchema = (t: TFunction) => z.object({
   }
 });
 
-export type TournamentTableForm = z.infer<ReturnType<typeof createFormSchema>>
+export type TournamentTableFormSchema = z.infer<ReturnType<typeof createFormSchema>>
 
 interface TableFormProps {
   initial_data: TournamentTable | undefined
-  onTimetableToggle?: (enabled: boolean) => void
+  participants: Participant[]
 }
 
-export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) => {
+
+
+export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, participants }) => {
 
   const { t } = useTranslation()
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showTypeChangeWarning, setShowTypeChangeWarning] = useState(false)
+  const [showParticipantSizeWarning, setShowParticipantSizeWarning] = useState(false)
+  const [pendingFormData, setPendingFormData] = useState<TournamentTableFormSchema | null>(null)
+
   const [womanWeightInputValue, setWomanWeightInputValue] = useState<string>(
     initial_data?.woman_weight ? String(initial_data.woman_weight) : '1'
   )
 
   const formSchema = createFormSchema(t)
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: initial_data
+      ? {
+        ...initial_data,
+      }
+      : {
+        class: "",
+        type: "",
+        solo: false,
+        dialog_type: "",
+        min_team_size: 2,
+        max_team_size: 2,
+        size: 16,
+        woman_weight: 1,
+        start_time: "",
+        avg_match_duration: 15,
+        time_table: false,
+        second_class: "",
+        has_consolation: false,
+        consolation_class: "",
+      },
+  })
 
   const { tournamentid } = useParams({ strict: false })
 
@@ -145,32 +176,9 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
     }
   }, [initial_data])
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: initial_data
-      ? {
-        ...initial_data,
-      }
-      : {
-        class: "",
-        type: "",
-        solo: false,
-        dialog_type: "",
-        min_team_size: 2,
-        max_team_size: 2,
-        size: 16,
-        woman_weight: 1,
-        start_time: "",
-        avg_match_duration: 15,
-        time_table: false,
-        second_class: "",
-        has_consolation: false,
-        consolation_class: "",
-      },
-  })
-
   let postMutation = UsePostTournamentTable(Number(tournamentid))
   if (initial_data) {
+    //@ts-ignore
     postMutation = UsePatchTournamentTable(Number(tournamentid), initial_data.id)
   }
 
@@ -182,7 +190,41 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
     }
   }, [watchedType, form])
 
-  const handleSubmit = async (values: TournamentTableForm) => {
+  const handleSubmit = async (values: TournamentTableFormSchema) => {
+    if (initial_data) {
+      const currentTypeKey = getTournamentTypeKey(initial_data);
+
+      const newTypeKey = getTournamentTypeKey({
+        type: values.type,
+        solo: values.solo,
+        dialog_type: values.dialog_type!
+      });
+
+      if (currentTypeKey !== newTypeKey) {
+        const typeTransition = `${currentTypeKey}->${newTypeKey}`;
+        const warningTransitions = [
+          "dynamic->teams",
+          "dynamic->teams-roundrobin",
+          "doubles->teams",
+          "doubles->teams-roundrobin",
+          "solo-roundrobin->teams",
+          "solo-roundrobin->teams-roundrobin",
+          "solo->teams",
+          "solo->teams-roundrobin"
+        ];
+
+        if (warningTransitions.includes(typeTransition)) {
+          setPendingFormData(values);
+          setShowTypeChangeWarning(true);
+          return;
+        }
+      }
+    }
+
+    await submitForm(values);
+  };
+
+  const submitForm = async (values: TournamentTableFormSchema) => {
     try {
       if (values.solo) {
         values.dialog_type = ""
@@ -196,7 +238,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
       } else {
         toast.message(t('toasts.tournament_tables.created'))
         router.navigate({
-          to: `/admin/tournaments/${tournamentid}/grupid/${res.data.id}/`,
+          to: `/admin/tournaments/${tournamentid}/grupid/${res.data.group.id}/`,
         })
       }
     } catch {
@@ -207,6 +249,39 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
       }
     }
   }
+
+  const handleTypeChangeConfirm = async () => {
+    if (pendingFormData) {
+      setShowTypeChangeWarning(false);
+
+      // After confirming type change, still check participant size
+      // if (participants && participants.length > pendingFormData.size) {
+      //   setShowParticipantSizeWarning(true);
+      //   return;
+      // }
+
+      await submitForm(pendingFormData);
+      setPendingFormData(null);
+    }
+  };
+
+  const handleTypeChangeCancel = () => {
+    setShowTypeChangeWarning(false);
+    setPendingFormData(null);
+  };
+
+  const handleParticipantSizeConfirm = async () => {
+    if (pendingFormData) {
+      setShowParticipantSizeWarning(false);
+      await submitForm(pendingFormData);
+      setPendingFormData(null);
+    }
+  };
+
+  const handleParticipantSizeCancel = () => {
+    setShowParticipantSizeWarning(false);
+    setPendingFormData(null);
+  };
 
   const handleDelete = async () => {
     try {
@@ -249,6 +324,54 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertDialog open={showTypeChangeWarning} onOpenChange={setShowTypeChangeWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("admin.tournaments.warnings.type_change.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("admin.tournaments.warnings.type_change.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleTypeChangeCancel}>
+              {t("admin.tournaments.warnings.type_change.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleTypeChangeConfirm}
+              className="bg-yellow-600 text-white hover:bg-yellow-700"
+            >
+              {t("admin.tournaments.warnings.type_change.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showParticipantSizeWarning} onOpenChange={setShowParticipantSizeWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("admin.tournaments.warnings.participant_size.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("admin.tournaments.warnings.participant_size.description", {
+                participantCount: participants?.length || 0,
+                tournamentSize: pendingFormData?.size || 0
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleParticipantSizeCancel}>
+              {t("admin.tournaments.warnings.participant_size.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleParticipantSizeConfirm}
+              className="bg-orange-600 text-white hover:bg-orange-700"
+            >
+              {t("admin.tournaments.warnings.participant_size.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+
       <Card className="w-full border-stone-100">
         <CardHeader className=''>
           <h5 className="font-medium">
@@ -656,14 +779,23 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data }) 
 
               <div className="flex justify-between gap-4 mt-10">
                 {initial_data && (
-                  <Button type="button" className="text-red-600" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
+                  <Button disabled={form.formState.isSubmitting} type="button" className="text-red-600" onClick={() => setShowDeleteDialog(true)} variant={"outline"}>
                     {t("admin.tournaments.create_tournament.title_delete_table")}
                   </Button>
                 )}
-                <Button type="submit" className="md:w-[200px] w-full">
-                  {initial_data
-                    ? t("admin.tournaments.create_tournament.title_edit_table")
-                    : t("admin.tournaments.create_tournament.title_create_table")}
+                <Button type="submit" className="md:w-[200px] w-full" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {initial_data
+                        ? t("admin.tournaments.create_tournament.title_edit_table")
+                        : t("admin.tournaments.create_tournament.title_create_table")}
+                    </>
+                  ) : (
+                    initial_data
+                      ? t("admin.tournaments.create_tournament.title_edit_table")
+                      : t("admin.tournaments.create_tournament.title_create_table")
+                  )}
                 </Button>
 
               </div>

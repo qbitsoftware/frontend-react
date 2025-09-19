@@ -14,13 +14,15 @@ interface Props {
     displayIndex?: number;
     combinedOrder?: number;
     showCombinedOrder?: boolean;
+    isGenderCombined?: boolean;
 }
 
-export default function UserRow({ user, clubs, index, handleModalOpen, displayIndex, combinedOrder, showCombinedOrder }: Props) {
+export default function UserRow({ user, clubs, index, handleModalOpen, displayIndex, combinedOrder, showCombinedOrder, isGenderCombined }: Props) {
     const { t } = useTranslation()
     const getClubName = (user: User) => {
         return user.club?.name || "KLUBITU";
     };
+
     const getClubImage = (user: User) => {
         if (user.club?.image_url) {
             return user.club.image_url;
@@ -73,19 +75,52 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                 : "bg-blue-50/30 hover:bg-blue-50/50"
                 }`}
         >
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-sm sm:text-lg font-bold text-[#4C97F1]">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-sm sm:text-lg font-bold text-[#4C97F1] whitespace-nowrap">
                 {showCombinedOrder && combinedOrder !== undefined ? (
                     <>
                         {combinedOrder}
-                        {user.rate_order > 0 && <span className="text-gray-500"> ({user.rate_order})</span>}
+                        {user.rate_order > 0 && <span className="text-gray-500">({user.rate_order})</span>}
                     </>
                 ) : showCombinedOrder && combinedOrder === undefined ? (
                     "-"
+                ) : isGenderCombined && displayIndex ? (
+                    <>
+                        {displayIndex}
+                        {user.sex === 'N' && user.originalRateOrder && <span className="text-gray-500"> ({user.originalRateOrder})</span>}
+                    </>
+                ) : displayIndex ? (
+                    displayIndex
+                ) : user.rate_order > 0 ? (
+                    user.rate_order
                 ) : (
-                    user.rate_order > 0 ? user.rate_order : (displayIndex ? displayIndex : "-")
+                    "-"
+                )}
+                {user.rating_last_change != null && user.rating_last_change !== 0 && !(user.rate_order === -(user.rating_last_change) && user.rate_order > 100) && (
+                    <>
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            className={`ml-1 inline flex-shrink-0 ${user.rating_last_change > 0 ? "text-green-600" : "text-red-500"}`}
+                        >
+                            <path
+                                d={user.rating_last_change > 0
+                                    ? "M4 12 Q3 12 3.5 11 L7.5 4 Q8 3 8.5 4 L12.5 11 Q13 12 12 12 Z"
+                                    : "M4 4 Q3 4 3.5 5 L7.5 12 Q8 13 8.5 12 L12.5 5 Q13 4 12 4 Z"
+                                }
+                                fill="currentColor"
+                            />
+                        </svg>
+                        <span className={`ml-0.5 text-xs font-medium flex-shrink-0 ${user.rating_last_change > 0
+                            ? "text-green-600"
+                            : "text-red-500"
+                        }`}>
+                            {Math.abs(user.rating_last_change)}
+                        </span>
+                    </>
                 )}
             </TableCell>
-            <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">
+            <TableCell className="px-0 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">
                 <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
                     <AvatarImage
                         src=""

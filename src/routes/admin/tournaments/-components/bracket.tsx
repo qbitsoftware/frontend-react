@@ -11,8 +11,6 @@ import GroupBracket from "@/components/group-bracket";
 import { ProtocolModalProvider } from "@/providers/protocolProvider";
 import MatchDialog from "@/components/match-dialog";
 import { TableTennisProtocolModal } from "../$tournamentid/-components/tt-modal/tt-modal";
-import { UseGetMatchesQuery } from "@/queries/match";
-import { useParams } from "@tanstack/react-router";
 import PlacementCompletionModal from "../$tournamentid/-components/placement-completion-modal";
 
 interface BracketComponentProps {
@@ -28,23 +26,37 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<MatchWrapper | null>(null);
   const [activeTab, setActiveTab] = useState<string>("");
-  const params = useParams({ strict: false })
 
-  const { data: matches } = UseGetMatchesQuery(
-    Number(params.tournamentid),
-    Number(params.groupid)
-  );
+  const findElimMatch = (matchId: string) => {
+    const m = bracket.data?.eliminations?.map((elimBracket) => elimBracket.elimination.map((matchGroups) => matchGroups.matches.find((m) => m.match.id === matchId))).flat().find((m) => m !== undefined);
+    if (m) {
+      const matchWrapper: MatchWrapper = {
+        match: m.match,
+        p1: m.participant_1,
+        p2: m.participant_2,
+        class: ""
+      }
+      return matchWrapper
+    }
+    return undefined
+  }
+
+  const findRoundRobinMatch = (matchId: string) => {
+    const m = bracket.data?.round_robins?.map((rrBracket) => rrBracket.round_robin.map((rrGroup) => rrGroup?.map((matchesGroup) => matchesGroup?.matches?.find((m) => m.match.id === matchId))).flat()).flat().find((m) => m !== undefined);
+    return m
+  }
 
   useEffect(() => {
-    if (selectedMatch && matches && matches.data) {
-      const updatedMatch = matches.data.find(
-        (match) => match.match.id === selectedMatch.match.id
-      );
-      if (updatedMatch) {
-        setSelectedMatch(updatedMatch);
+    if (selectedMatch) {
+      let m = findElimMatch(selectedMatch.match.id);
+      if (!m) {
+        m = findRoundRobinMatch(selectedMatch.match.id);
+      }
+      if (m) {
+        setSelectedMatch(m);
       }
     }
-  }, [matches, selectedMatch]);
+  }, [isOpen, bracket]);
 
   useEffect(() => {
     if (!bracket.data || !tournament_table) return;
@@ -168,9 +180,9 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
         )}
 
       <PlacementCompletionModal
-        matches={matches?.data || []}
+        matches={[]}
         isOpen={true}
-        onClose={() => {}}
+        onClose={() => { }}
       />
     </div>
   );

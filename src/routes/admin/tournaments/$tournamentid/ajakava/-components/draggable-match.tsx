@@ -1,4 +1,4 @@
-import { TournamentTable } from "@/types/groups"
+import { TournamentTableWithStages } from "@/queries/tables"
 import { MatchWrapper } from "@/types/matches"
 import { useDraggable } from "@dnd-kit/core"
 import { CSS } from "@dnd-kit/utilities"
@@ -7,7 +7,7 @@ import { memo } from "react"
 interface Props {
     match: MatchWrapper,
     activeMatch: MatchWrapper | null,
-    tournamentClassesData: TournamentTable[] | null | undefined,
+    tournamentClassesData: TournamentTableWithStages[] | null | undefined,
     isPlacementMatch: (match: MatchWrapper) => boolean,
     getPlacementLabel: (match: MatchWrapper) => string,
     getGroupColor: (groupId: string) => string,
@@ -53,8 +53,8 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
             {...(isAdmin ? listeners : {})}
             {...(isAdmin ? attributes : {})}
             className={`relative text-center w-full h-full flex flex-col justify-center ${isAdmin ? 'cursor-grab active:cursor-grabbing' : ''} ${!isDragging ? 'transition-all' : ''} ${getGroupColor(String(match.match.tournament_table_id))} ${match.match.state === "finished"
-                    ? "opacity-40 grayscale cursor-not-allowed"
-                    : ""
+                ? "opacity-40 grayscale cursor-not-allowed"
+                : ""
                 } ${isPlacementMatch(match) ? 'border-red-200' : ""} ${isNextMatch
                     ? 'ring-2 ring-black ring-opacity-80 shadow-md shadow-red-200/50'
                     : ''
@@ -77,7 +77,7 @@ export const DraggableMatch = memo(({ match, tournamentClassesData, isPlacementM
             )}
             {!showParticipants ? (
                 <div className="text-[10px] font-medium text-gray-600 leading-tight">
-                    {tournamentClassesData && tournamentClassesData.find((t) => t.id === match.match.tournament_table_id)?.class || 'Class'}
+                    {tournamentClassesData && tournamentClassesData.find((t) => t.group.id === match.match.tournament_table_id)?.group.class || 'Class'}
                 </div>
             ) : (
                 <div className="text-[8px] font-medium text-gray-700 leading-tight px-0.5 w-full overflow-hidden">

@@ -14,9 +14,10 @@ interface TableNumberFormProps {
   initialTableNumber: string
   brackets: boolean
   showLabel?: boolean
+  disabled?: boolean
 }
 
-export function TableNumberForm({ match, initialTableNumber, brackets, showLabel = false }: TableNumberFormProps) {
+export function TableNumberForm({ match, initialTableNumber, brackets, showLabel = false, disabled = false }: TableNumberFormProps) {
   const params = useParams({ strict: false })
   const { data: freeVenues, isLoading, isError } = UseGetFreeVenues(Number(params.tournamentid))
   const { t } = useTranslation()
@@ -26,13 +27,13 @@ export function TableNumberForm({ match, initialTableNumber, brackets, showLabel
     setTableNumber(initialTableNumber)
   }, [initialTableNumber])
 
-  const matchMutation = UsePatchMatch(Number(params.tournamentid), match.tournament_table_id, match.id)
+  const matchMutation = UsePatchMatch(Number(params.tournamentid))
 
   const handleChange = async (value: string) => {
     setTableNumber(value)
     try {
       const data: Match = { ...match, extra_data: { ...match.extra_data, table: value.trim() } }
-      await matchMutation.mutateAsync(data)
+      await matchMutation.mutateAsync({ group_id: match.tournament_table_id, match_id: match.id, match: data })
     } catch (error) {
       void error
       toast.error(t('toasts.protocol_modals.table_number_change_error'))
@@ -50,8 +51,8 @@ export function TableNumberForm({ match, initialTableNumber, brackets, showLabel
   return (
     <div className="flex items-center gap-3">
       {showLabel && <Label className={cn(brackets ? "text-[8px]" : "")}>{t("admin.tournaments.matches.table.table")}</Label>}
-      <Select value={String(tableNumber)} onValueChange={handleChange}>
-        <SelectTrigger className={cn(brackets ? "h-[20px] px-2" : "h-8", "focus:outline-none focus:ring-0")}>
+      <Select value={String(tableNumber)} onValueChange={handleChange} disabled={disabled}>
+        <SelectTrigger className={cn(brackets ? "h-[20px] px-2" : "h-8", "focus:outline-none focus:ring-0", disabled && "opacity-50 cursor-not-allowed")}>
           <span className={cn(brackets ? "text-[10px]" : "")}>{tableNumber}</span>
         </SelectTrigger>
         <SelectContent className="">

@@ -23,10 +23,7 @@ const Forfeit = ({ match }: { match: MatchWrapper }) => {
 
     const { t } = useTranslation()
 
-    const { mutateAsync: updateMatch } = UsePatchMatch(
-        tournamentId,
-        match.match.tournament_table_id,
-        match.match.id)
+    const { mutateAsync: updateMatch } = UsePatchMatch(tournamentId)
 
     const handleForfeit = async () => {
         try {
@@ -36,7 +33,7 @@ const Forfeit = ({ match }: { match: MatchWrapper }) => {
                 send_match.winner_id = winnerId
                 send_match.forfeit = true
                 send_match.forfeit_type = forfeitType
-                await updateMatch(send_match)
+                await updateMatch({ match_id: match.match.id, group_id: match.match.tournament_table_id, match: send_match })
                 setForfeitMatch(null)
             } else {
                 setError(t('protocol.forfeit.select_winner_error'))
@@ -54,7 +51,7 @@ const Forfeit = ({ match }: { match: MatchWrapper }) => {
             send_match.winner_id = ""
             send_match.forfeit = false
             send_match.forfeit_type = ""
-            await updateMatch(send_match)
+            await updateMatch({ match_id: match.match.id, group_id: match.match.tournament_table_id, match: send_match })
             setForfeitMatch(null)
         } catch (error) {
             void error;

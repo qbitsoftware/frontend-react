@@ -365,10 +365,14 @@
       "email_label": "Email Address",
       "email_placeholder": "Enter email for invoice",
       "email_help": "We'll send the invoice to this email address",
+      "email_invalid": "Please enter a valid email address",
+      "no_players": "Please add at least one player",
+      "creation_failed": "Failed to create payment. Please try again.",
       "processing": "Processing payment...",
       "complete_payment": "Complete Payment",
       "payment_failed": "Payment failed. Please try again.",
       "september_notice": "License purchasing functionality will be available starting from September.",
+      "e_invoice_notice": "E-invoice payment is not yet available, please use existing payment methods",
       "status": {
         "success": "License purchased successfully!",
         "pending": "Payment is being processed...",
@@ -444,10 +448,12 @@
       "birth_year": "Birth Year",
       "club": "Club",
       "license_type": "License Type",
+      "duration": "Duration",
       "price": "Price",
       "action": "Action",
       "eltl_id": "ELTL ID",
-      "foreigner": "Foreigner"
+      "foreigner": "Foreigner",
+      "expiry_date": "Expiry Date"
     },
     "summary": {
       "title": "Total Summary",
@@ -475,6 +481,8 @@
     "toasts": {
       "player_added": "Player added successfully",
       "player_removed": "Player removed",
+      "player_already_added": "This player has already been added to the list",
+      "player_has_active_license": "This player already has an active license",
       "redirecting": "License purchasing functionality is currently in development"
     },
     "validation": {
@@ -487,6 +495,31 @@
       "name_id_mismatch": "The provided name does not match the Estonian ID records.",
       "verification_unavailable": "ID verification service is temporarily unavailable.",
       "verification_success": "Estonian ID verified successfully."
+    },
+    "terms": {
+      "sales_terms": "Sales Terms",
+      "privacy_terms": "Privacy Terms",
+      "license_purchase_terms": "License Purchase Terms",
+      "under_18_guardian_consent": "I confirm that for athletes under 18 years of age, all license terms are confirmed and signed by the parent, legal guardian, or sports club.",
+      "must_agree_to_terms": "You must agree to the terms to continue",
+      "and": "and",
+      "agree_to": "I agree to the"
+    },
+    "duration": {
+      "year": "year",
+      "years": "years"
+    },
+    "campaign": {
+      "title": "2025 Campaign",
+      "main_title": "Buy a license in 2025 and get bonus months for free!",
+      "description": "Everyone who purchases an ELTL license before the beginning of 2026 will receive EXTRA VALIDITY PERIOD!",
+      "benefits_title": "Early purchase benefits:",
+      "annual_benefit": "Annual license: the number of months remaining until the end of the year is added, plus the number of days in the current month.",
+      "biennial_benefit": "Two-year license: in addition to the above, +1 month free is added for each year!",
+      "examples_title": "Examples:",
+      "example1": "Buying a 1-year license on November 16, 2025, it will be valid until March 17, 2027",
+      "example2": "Buying a 2-year license on October 5, 2025, it will be valid until June 26, 2028",
+      "calculation_note": "Calculation is based on a 365-day year and 30-day month."
     }
   },
   "competitions": {
@@ -533,6 +566,7 @@
       "no_results": "No results"
     },
     "standings": {
+      "og_placement": "Seed",
       "placement": "NR",
       "participants": "Participants",
       "rating": "Rating",
@@ -891,18 +925,15 @@
       "final_rating": "Final rating (Rl) = Ra + ΔR",
       "weight_change": "Weight change (ΔK) = Hvs + Hks",
       "final_weight": "Final weight (Kl) = Ka + ΔK",
-      "new_player_rules": "New Player Rating and Weight Calculation",
       "new_player_explanation": "If a player without initial rating participates in a tournament, they are assigned an initial rating (Ra).",
       "initial_rating_method": "Initial rating is determined by finding the lowest rating of players who beat them and the highest rating of players they beat, then assigning the lower value.",
       "max_initial_rating": "Maximum initial rating is limited to 55. This limit does not apply to foreign players.",
       "foreign_bonus": "If a foreign player wins all games, +5 is added to their initial rating.",
       "new_player_formula": "New player formula: ΔR = (Hvs-2*Hks-2)*10) + Hvs*Coef / (Hvs+Hks)",
-      "weight_correction": "Weight Correction",
       "weight_correction_high": "If Ka > 10: Corrected monthly on the 1st day before calculating new month results",
       "weight_correction_formula_high": "Ku = Ka - (Ka * Ka) / 225",
       "weight_correction_low": "If Ka < 11: Corrected every three months on the 1st day",
       "weight_correction_formula_low": "Ku = Ka - 1",
-      "ranking_compilation": "Ranking Compilation",
       "placement_points": "Ranking is compiled based on placement points (P), where Rl is rating points and Ku is corrected weights.",
       "placement_formula": "Placement point change (ΔP) = (Rl - (3 * Ku)) / 6",
       "placement_calc": "If ΔP > 0 then P = Rl - ΔP, If ΔP <= 0 then P = Rl",
@@ -1133,6 +1164,18 @@
         "bracket_size_mismatch": {
           "title": "This bracket size might not be suitable for the amount of participants!",
           "body": "Warning: You have {{participants}} participants, you should choose {{closestPowerOf2}} table size. Instead you chose bracket size of {{tableSize}}. This may give incorrect results."
+        },
+        "type_change": {
+          "title": "Tournament Type Change Warning",
+          "description": "Changing the tournament type will affect the structure and may impact existing matches or participants. Are you sure you want to continue?",
+          "cancel": "Cancel",
+          "confirm": "Continue with Change"
+        },
+        "participant_size": {
+          "title": "Too Many Participants",
+          "description": "You have {{participantCount}} participants but the tournament size is only {{tournamentSize}}. Please either remove participants or increase the tournament size.",
+          "cancel": "Cancel",
+          "confirm": "Continue Anyway"
         }
       },
       "create_tournament": {
@@ -1333,8 +1376,8 @@
           "type": "Tournament type is required",
           "min_team_size": "Minimum team size is 2",
           "dialog_type": "Team type is required",
-          "second_class": "Main bracket type is required",
-          "consolation_class": "Consolation bracket type is required"
+          "second_class": "Bracket type required",
+          "consolation_class": "Bracket type required"
         },
         "solo": "Solo",
         "team": "Teams",
@@ -1767,7 +1810,19 @@
         "club_deleted": "Club deleted successfully",
         "club_created_error": "Failed to create club. Please try again",
         "club_updated_error": "Failed to update club. Please try again",
-        "club_deleted_error": "Failed to delete club. Please try again"
+        "club_deleted_error": "Failed to delete club. Please try again",
+        "error": "Error - {{error}}",
+        "success": "Success",
+        "failed_to_load_players": "Failed to load club players",
+        "failed_to_load_my_clubs": "Failed to load your clubs",
+        "id_verification_success": "ID verification successful",
+        "player_added": "Player added to club successfully",
+        "player_added_to_club": "{{playerName}} added to {{clubName}} successfully",
+        "player_removed_from_club": "{{playerName}} removed from {{clubName}} successfully",
+        "new_player_created_and_added": "{{playerName}} created and added to {{clubName}} successfully",
+        "failed_to_add_player": "Failed to add player to club",
+        "failed_to_remove_player": "Failed to remove player from club",
+        "missing_required_fields": "Please fill in all required fields: {{fields}}"
       },
       "loading": "Loading...",
       "error": "No club data available",
@@ -1914,20 +1969,6 @@
         "birth_date_mismatch": "Birth date doesn't match Estonian ID code",
         "name_id_mismatch": "Name and ID code do not match",
         "verification_unavailable": "ID verification service unavailable"
-      },
-      "toast": {
-        "error": "Error - {{error}}",
-        "success": "Success",
-        "failed_to_load_players": "Failed to load club players",
-        "failed_to_load_my_clubs": "Failed to load your clubs",
-        "id_verification_success": "ID verification successful",
-        "player_added": "Player added to club successfully",
-        "player_added_to_club": "{{playerName}} added to {{clubName}} successfully",
-        "player_removed_from_club": "{{playerName}} removed from {{clubName}} successfully",
-        "new_player_created_and_added": "{{playerName}} created and added to {{clubName}} successfully",
-        "failed_to_add_player": "Failed to add player to club",
-        "failed_to_remove_player": "Failed to remove player from club",
-        "missing_required_fields": "Please fill in all required fields: {{fields}}"
       },
       "no_club_affiliation": "NO CLUB",
       "api_errors": {

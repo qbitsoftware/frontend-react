@@ -1,6 +1,8 @@
 import { BracketType, TableMatch } from "@/types/brackets";
 import { BRACKET_CONSTANTS } from "@/types/brackets";
-import { MatchWrapper } from "@/types/matches";
+import { DialogType, TournamentTable } from "@/types/groups";
+import { GroupType, MatchWrapper } from "@/types/matches";
+import { Participant } from "@/types/participants";
 
 /**
  * Organizes tournament matches by their rounds
@@ -120,3 +122,86 @@ export function extractSetsFromPoints(scores: { player1: number, player2: number
     return acc;
   }, { p1_sets: 0, p2_sets: 0 });
 }
+
+export interface ParticipantCount {
+  left_side: number
+  right_side: number
+  groups: number
+  total: number
+}
+
+export function getRealParticipantLength(participants: Participant[], tt: TournamentTable): ParticipantCount {
+  const key = getTournamentTypeKey(tt)
+  switch (key) {
+    case "dynamic": {
+      if (participants) {
+        const left_side = participants.filter(p => p.group_id === "" && p.group == 1 && p.type !== "round_robin").length || 0
+        const right_side = participants.filter(p => p.group_id !== "" && p.group == 1 && p.type !== "round_robin").length || 0
+        const groups = participants.filter(p => p.type === "round_robin").length || 0
+
+        return { left_side, right_side, groups, total: left_side + right_side }
+      }
+      return { left_side: 0, right_side: 0, groups: 0, total: 0 }
+    }
+    case "teams-roundrobin":
+      if (participants) {
+        const all_total = participants.filter(p => p.type !== "round_robin")
+        const total = all_total.map((p) => p.players ? p.players.length : 1).reduce((a, b) => a + b, 0) || 0
+
+        return { left_side: 0, right_side: 0, groups: 0, total: total }
+      }
+      return { left_side: 0, right_side: 0, groups: 0, total: 0 }
+    case "doubles":
+      if (participants) {
+        const left_side = participants.filter(p => p.players && p.players.length === 1).length || 0
+        const right_side_parts = participants.filter(p => p.players && p.players.length > 1)
+        const right_side = right_side_parts.length || 0
+        const total = left_side + right_side_parts.reduce((a, b) => a + (b.players ? b.players.length : 0), 0) || 0
+
+        return { left_side, right_side, groups: 0, total }
+      }
+      return { left_side: 1, right_side: 1, groups: 0, total: 0 }
+    case "solo-roundrobin":
+      if (participants) {
+        const groups = participants.filter(p => p.type === "round_robin").length || 0
+        const total = participants.filter(p => p.type !== "round_robin").length || 0
+        return { left_side: 0, right_side: 0, groups, total }
+      }
+      return { left_side: 0, right_side: 0, groups: 0, total: 0 }
+    case "solo":
+      return { left_side: 0, right_side: 0, groups: 0, total: participants ? participants.length : 0 }
+    case "teams":
+      return { left_side: 0, right_side: 0, groups: 0, total: participants ? participants.length : 0 }
+    default:
+      return { left_side: 0, right_side: 0, groups: 0, total: 0 }
+  }
+}
+
+export const getTournamentTypeKey = (data: { type: string; solo: boolean; dialog_type: string }): string => {
+  if (data.type === GroupType.DYNAMIC) {
+    return "dynamic";
+  }
+
+  if (!data.solo && data.dialog_type === DialogType.DT_TEAM_LEAGUES &&
+    (data.type === GroupType.ROUND_ROBIN || data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT)) {
+    return "teams-roundrobin";
+  }
+
+  if (!data.solo && data.dialog_type !== DialogType.DT_DOUBLES && data.dialog_type !== DialogType.DT_FIXED_DOUBLES) {
+    return "teams";
+  }
+
+  if (data.dialog_type === DialogType.DT_DOUBLES || data.dialog_type === DialogType.DT_FIXED_DOUBLES) {
+    return "doubles";
+  }
+
+  if (data.solo && (data.type === GroupType.ROUND_ROBIN || data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT)) {
+    return "solo-roundrobin";
+  }
+
+  if (data.solo) {
+    return "solo";
+  }
+
+  return "unknown";
+};

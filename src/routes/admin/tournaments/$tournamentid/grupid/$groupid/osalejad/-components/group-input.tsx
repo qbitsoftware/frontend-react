@@ -1,5 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { useParticipantUtils } from '@/hooks/useParticipantUtils'
+import { TournamentTable } from '@/types/groups'
+import { TTState } from '@/types/matches'
 import { Participant } from '@/types/participants'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -9,11 +11,11 @@ import { toast } from 'sonner'
 interface GroupInputProps {
     group: Participant
     tournament_id: number
-    tournament_table_id: number
+    tournament_table: TournamentTable
 }
 
-export default function GroupInput({ group, tournament_id, tournament_table_id }: GroupInputProps) {
-    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table_id)
+export default function GroupInput({ group, tournament_id, tournament_table }: GroupInputProps) {
+    const { addOrUpdateParticipant, deleteParticipant } = useParticipantUtils(tournament_id, tournament_table.id)
     const [groupName, setGroupName] = useState(group.name)
     useEffect(() => {
         setGroupName(group.name)
@@ -41,8 +43,10 @@ export default function GroupInput({ group, tournament_id, tournament_table_id }
         }
     }
 
+    console.log("state", tournament_table.state)
+
     return (
-        <div>
+        <div className=''>
             <div className="flex justify-between items-center  bg-[#062842] py-2 rounded-l-sm pr-2">
                 <h3 className="text-xl font-semibold px-2 ">
                     <Input
@@ -53,10 +57,12 @@ export default function GroupInput({ group, tournament_id, tournament_table_id }
                         onBlur={handleNameChange}
                     />
                 </h3>
-                <Trash
-                    className="h-6 w-6 text-red-500 cursor-pointer hover:text-red-700"
-                    onClick={handleDeleteGroup}
-                />
+                {tournament_table.state < TTState.TT_STATE_MATCHES_ASSIGNED &&
+                    <Trash
+                        className="h-6 w-6 text-red-500 cursor-pointer hover:text-red-700"
+                        onClick={handleDeleteGroup}
+                    />
+                }
             </div>
         </div>
     )

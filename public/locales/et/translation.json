@@ -367,26 +367,21 @@
     "title": "Litsentsid",
     "page_title": "Mängija litsentsi ostmine/uuendamine",
     "add_player": {
-      "title": "Lisa mängija",
       "search_placeholder": "Otsi olemasolevat mängijat...",
       "add_new_player": "Lisa uus mängija",
       "help_text": "Otsi andmebaasist olemasolevaid mängijaid või kasuta nuppu \"Lisa uus mängija\" süsteemis puuduvate mängijate jaoks.",
       "no_players_found": "Mängijaid ei leitud. Kasuta nuppu \"Lisa uus mängija\" andmebaasis puuduvate mängijate lisamiseks.",
       "manual_entry_title": "Uue mängija lisamine (pole andmebaasis)",
       "back_to_search": "Tagasi otsingusse",
-      "first_name": "Eesnimi",
       "surname": "Perekonnanimi",
-      "birth_date": "Sünnipäev",
       "birth_year": "Sünniaasta",
       "isikukood": "Eesti Isikukood",
       "club": "Klubi nimi",
-      "gender": "Sugu",
       "gender_male": "Mees",
       "gender_female": "Naine",
       "add_to_list": "Lisa mängija nimekirja",
       "manual_help_text": "Sisesta andmebaasis puuduva mängija andmed. Kõik väljad on kohustuslikud.",
       "club_help": "Jäta tühjaks või sisesta 'KLUBITU' kui mängijal pole klubikuuluvust",
-      "no_estonian_id": "Mul pole Eesti isikukoodi",
       "search_club": "Otsi klubi...",
       "no_clubs_found": "Klube ei leitud",
       "auto_generated": "Automaatselt genereeritud isikukoodist",
@@ -400,11 +395,7 @@
       "birth_date": "Sünnipäev",
       "estonian_id": "Eesti isikukood",
       "no_estonian_id": "Mul pole Eesti isikukoodi",
-      "gender": {
-        "placeholder": "Vali sugu",
-        "male": "Mees",
-        "female": "Naine"
-      },
+      "gender": "Sugu",
       "verifying_id": "Kontrollin Eesti isikukoodi...",
       "submit_button": "Lisa mängija"
     },
@@ -412,10 +403,14 @@
       "email_label": "E-posti aadress",
       "email_placeholder": "Sisesta e-post arve jaoks",
       "email_help": "Saadame arve sellele e-posti aadressile",
+      "email_invalid": "Palun sisestage kehtiv e-posti aadress",
+      "no_players": "Palun lisage vähemalt üks mängija",
+      "creation_failed": "Makse loomine ebaõnnestus. Palun proovige uuesti.",
       "processing": "Makse töötlemine...",
-      "complete_payment": "Lõpeta makse",
+      "complete_payment": "Maksma",
       "payment_failed": "Makse ebaõnnestus. Palun proovige uuesti.",
       "september_notice": "Litsentsi ostmise funktsioon on saadaval alates septembrist.",
+      "e_invoice_notice": "NB: Arve ja e-arvega maksmine pole hetkel võimalik, palun kasutage olemasolevaid makseviise",
       "status": {
         "success": "Litsents edukalt ostetud!",
         "pending": "Makse on töötlemisel...",
@@ -491,10 +486,12 @@
       "birth_year": "Sünniaasta",
       "club": "Klubi",
       "license_type": "Litsentsi tüüp",
+      "duration": "Kehtivus",
       "price": "Hind",
       "action": "Tegevus",
       "eltl_id": "ELTL ID",
-      "foreigner": "Välismaalane"
+      "foreigner": "Välismaalane",
+      "expiry_date": "Aegub"
     },
     "summary": {
       "title": "Kokkuvõte",
@@ -522,6 +519,8 @@
     "toasts": {
       "player_added": "Mängija edukalt lisatud",
       "player_removed": "Mängija eemaldatud",
+      "player_already_added": "See mängija on juba nimekirja lisatud",
+      "player_has_active_license": "Sellel mängijal on juba kehtiv litsents",
       "redirecting": "Litsentisde ostmise funktsionaalsus on hetkel arenduses"
     },
     "validation": {
@@ -534,6 +533,31 @@
       "name_id_mismatch": "Sisestatud nimi ei kattu isikukoodi registriga.",
       "verification_unavailable": "Isikukoodi kontrollimise teenus on ajutiselt kättesaamatu.",
       "verification_success": "Eesti isikukood edukalt kontrollitud."
+    },
+    "terms": {
+      "sales_terms": "Müügitingimustega",
+      "privacy_terms": "Privaatsustingimustega",
+      "license_purchase_terms": "Litsentsi ostu tingimustega",
+      "under_18_guardian_consent": "Sportlase või sportlaste – alla 18-aastase(te) puhul kinnitab ja allkirjastab kõik litsentsitingimused alaealise lapsevanem, seaduslik esindaja või spordiklubi.",
+      "must_agree_to_terms": "Jätkamiseks peate nõustuma tingimustega",
+      "and": "ja",
+      "agree_to": "Nõustun"
+    },
+    "duration": {
+      "year": "aasta",
+      "years": "aastat"
+    },
+    "campaign": {
+      "title": "2025. aasta kampaania",
+      "main_title": "Osta litsents 2025. aastal ja saa boonuskuud tasuta!",
+      "description": "Kõik, kes ostavad ELTL litsentsi enne 2026. aasta algust, saavad EKSTRA KEHTIVUSAEGA!",
+      "benefits_title": "Varajase ostu eelised:",
+      "annual_benefit": "Aastane litsents: lisatakse kuude arv, mis on jäänud aasta lõpuni, pluss jooksva kuu päevade arv.",
+      "biennial_benefit": "Kaheaastane litsents: lisaks ülaltoodule lisandub iga aasta kohta +1 kuu tasuta!",
+      "examples_title": "Näited:",
+      "example1": "Ostes 1-aastase litsentsi 16. novembril 2025, kehtib see kuni 17. märtsini 2027",
+      "example2": "Ostes 2-aastase litsentsi 5. oktoobril 2025, kehtib see kuni 26. juunini 2028",
+      "calculation_note": "Arvestus põhineb 365-päevasel aastal ja 30-päevasel kuul."
     }
   },
   "competitions": {
@@ -581,6 +605,7 @@
     },
     "standings": {
       "placement": "Koht",
+      "og_placement": "Asetus",
       "participants": "Osalejad",
       "rating": "Reitingukoht",
       "sex": "Sugu",
@@ -1161,6 +1186,18 @@
         "bracket_size_mismatch": {
           "title": "See tabeli suurus ei pruugi olla parim, võttes arvesse mängijate arvu.",
           "body": "Hoiatus! Teil on {{participants}} osalejat, peaksite valima {{closestPowerOf2}}-se tabeli suuruse. Teie valisite tabeli suuruseks {{tableSize}}. See võib anda vigaseid tulemusi!"
+        },
+        "type_change": {
+          "title": "Olete muutmas turniiri tüüpi",
+          "description": "Osalejad kustutatakse ja kogu grupi andmed lähtestatakse. Kas soovite jätkata?",
+          "cancel": "Katkesta",
+          "confirm": "Jätka"
+        },
+        "participant_size": {
+          "title": "Osalejate arv ei sobi turniiri suurusega",
+          "description": "Teil on {{participantCount}} osalejat, kuid turniiri suurus on ainult {{tournamentSize}}. Palun kas eemaldage osalejad või suurendage turniiri suurust.",
+          "cancel": "Katkesta",
+          "confirm": "Jätka"
         }
       },
       "create_tournament": {
@@ -1358,12 +1395,12 @@
         "no_tables": "Võistlusklasse pole veel lisatud",
         "title": "Turniiri klassid",
         "errors": {
-          "class": "Grupi nimi on kohustuslik",
+          "class": "Klassi nimi on kohustuslik",
           "type": "Turniiri tüüp on kohustuslik",
           "min_team_size": "Minimaalne tiimi suurus on 2",
           "dialog_type": "Tiimi tüübi valik on nõutud",
-          "second_class": "Põhitabeli formaat on nöutud",
-          "consolation_class": "Lohutusturniiri tabeli formaat on nöutud"
+          "second_class": "Tabeli tüüp on kohustuslik",
+          "consolation_class": "Tabeli tüüp on kohustuslik"
         },
         "solo": "Üksik",
         "team": "Meeskondadega",
@@ -1572,9 +1609,9 @@
         },
         "search": "Otsi turniiri...",
         "all_games": "Kõik mängud",
-        "winner_declared": "Lõppenud mängud",
-        "ongoing_games": "Käimas mängud",
-        "upcoming_games": "Tulevased mängud"
+        "winner_declared": "Lõppenud",
+        "ongoing_games": "Käimas",
+        "upcoming_games": "Tulevased"
       },
       "progress": {
         "title": "Turniiri Progress",

@@ -38,8 +38,7 @@ function RouteComponent() {
     const [timeUntilNext, setTimeUntilNext] = useState('')
     const [isExportingRatings, setIsExportingRatings] = useState(false)
     const [withRating, setWithRating] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('2025-09-09');
-
+    const [selectedDate, setSelectedDate] = useState('2025-09-10');
 
     useEffect(() => {
         const updateTimer = () => {
@@ -71,14 +70,14 @@ function RouteComponent() {
         return () => clearInterval(interval)
     }, [ratingInfo?.data.next_calculation])
 
-    const downloadRatingsXML = async () => {
+    const downloadRatingsXML = async (with_timestamp: boolean) => {
         setIsExportingRatings(true)
         try {
             const response = await axiosInstance.get("/api/v1/ratings/export_xml", {
                 responseType: "blob",
                 withCredentials: true,
                 params: {
-                    timestamp: selectedDate,
+                    timestamp: with_timestamp ? selectedDate : undefined,
                     rating: withRating,
                 }
             });
@@ -86,7 +85,15 @@ function RouteComponent() {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", "ratings.xml");
+            if (selectedDate && with_timestamp && withRating) {
+                link.setAttribute("download", `reiting_min_${selectedDate}.xml`);
+            } else if (selectedDate && with_timestamp) {
+                link.setAttribute("download", `reiting_all_${selectedDate}.xml`);
+            } else if (withRating) {
+                link.setAttribute("download", `reiting_all_latest.xml`);
+            } else {
+                link.setAttribute("download", `reiting_min_latest.xml`);
+            }
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -216,6 +223,7 @@ function RouteComponent() {
                                         onChange={e => setWithRating(e.target.checked)}
                                         className="h-3 w-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                     />
+
                                     <label htmlFor="withRating" className="text-xs text-slate-700">
                                         {t('admin.rating.with_rating_only', 'With rating only')}
                                     </label>
@@ -225,7 +233,7 @@ function RouteComponent() {
                         <CardContent>
                             <div className="space-y-2">
 
-                                <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={downloadRatingsXML}>
+                                <Button variant="outline" size="sm" className="w-full h-8 text-xs" disabled={isExportingRatings} onClick={() => downloadRatingsXML(false)}>
                                     <Download className="h-3 w-3 mr-2" />
                                     {t('admin.rating.export_current', 'Export Current Ratings')}
                                 </Button>
@@ -244,24 +252,18 @@ function RouteComponent() {
                                             value={selectedDate}
                                             onChange={e => setSelectedDate(e.target.value)}
                                             min="2025-09-09"
+                                            max={new Date().toISOString().split('T')[0]}
                                         />
                                     </div>
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         className="w-full h-8 text-xs"
-                                        onClick={downloadRatingsXML}
+                                        onClick={() => downloadRatingsXML(true)}
                                         disabled={isExportingRatings || !selectedDate}
                                     >
-                                        {isExportingRatings ? (
-                                            <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                                        ) : (
-                                            <Calendar className="h-3 w-3 mr-2" />
-                                        )}
-                                        {isExportingRatings
-                                            ? t('admin.rating.exporting', 'Exporting...')
-                                            : t('admin.rating.export_date', 'Export by Date')
-                                        }
+                                        <Calendar className="h-3 w-3 mr-2" />
+                                        {t('admin.rating.export_date', 'Export by Date')}
                                     </Button>
                                 </div>
                             </div>

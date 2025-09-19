@@ -4,23 +4,22 @@ import { useTranslation } from "react-i18next"
 import { MatchWrapper, MatchState } from "@/types/matches"
 import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { useQueryClient } from "@tanstack/react-query"
-import { axiosInstance } from "@/queries/axiosconf"
-import { DialogType, TournamentTable } from "@/types/groups"
+import { DialogType } from "@/types/groups"
 import { Edit } from "lucide-react"
 import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
 import { getRoundDisplayName } from "@/lib/match-utils"
 import { UseGetTournamentParticipantsQuery } from "@/queries/participants"
-import { useWS } from "@/providers/wsProvider"
+import { UsePatchMatch } from "@/queries/match"
+import { TournamentTableWithStages } from "@/queries/tables"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
     handleRowClick: (match: MatchWrapper) => void
     tournament_id: number
-    tournament_table: TournamentTable[]
+    tournament_table: TournamentTableWithStages[]
     active_participant: string[]
     all?: boolean
 }
@@ -30,16 +29,14 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     handleRowClick,
     tournament_id,
     tournament_table,
-    active_participant,
     all = false,
 }: MatchesTableProps) => {
     const { data } = UseGetTournamentParticipantsQuery(tournament_id)
     const { t } = useTranslation()
-    const queryClient = useQueryClient()
-    const { connected } = useWS()
     const [loadingUpdates, setLoadingUpdates] = useState<Set<string>>(new Set())
     const [pendingScores, setPendingScores] = useState<Record<string, { p1: number | null, p2: number | null }>>({})
-    const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.id, table])), [tournament_table])
+    const tableMap = useMemo(() => new Map(tournament_table.map(table => [table.group.id, table])), [tournament_table])
+    const matchUpdate = UsePatchMatch(tournament_id)
 
     const tableRef = useRef<Table>(null)
     const [scrollTop, setScrollTop] = useState(0)
@@ -49,15 +46,9 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         return `${matches.length}-${matchIds.join('-')}`
     }, [matches.length, matchIds])
 
-    useEffect(() => {
-        if (tableRef.current) {
-            tableRef.current.forceUpdateGrid()
-        }
-    }, [matches])
-
-    const handleScroll = ({ scrollTop: newScrollTop }: { scrollTop: number }) => {
+    const handleScroll = useCallback(({ scrollTop: newScrollTop }: { scrollTop: number }) => {
         setScrollTop(newScrollTop)
-    }
+    }, [])
 
     const formatWaitingTime = (finishDate: string) => {
         const finished = new Date(finishDate)
@@ -74,7 +65,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }
 
     const getScore = useCallback((match: MatchWrapper, player: ParticipantType) => {
-        if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES) {
+        if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES) {
             return player === ParticipantType.P1 ? match.match.extra_data.team_1_total || 0 : match.match.extra_data.team_2_total || 0
         }
 
@@ -88,6 +79,24 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         }).length
     }, [tableMap])
 
+    const isParticipantTaken = useCallback((userId: number, currentMatchState: MatchState) => {
+        if (currentMatchState === MatchState.ONGOING || currentMatchState === MatchState.FINISHED) {
+            return false
+        }
+
+        return matches.some(match => {
+            if (match.match.state === MatchState.ONGOING) {
+                // Check all players in both participants (handles singles and doubles)
+                const p1PlayerIds = match.p1.players?.map(player => player.user_id) || []
+                const p2PlayerIds = match.p2.players?.map(player => player.user_id) || []
+                const allActivePlayerIds = [...p1PlayerIds, ...p2PlayerIds]
+
+                return allActivePlayerIds.includes(userId)
+            }
+            return false
+        })
+    }, [matches])
+
     const getRowClassName = useCallback((match: MatchWrapper) => {
         const state = match.match.state
         if (state === 'finished') return 'opacity-60 bg-gray-50'
@@ -97,26 +106,27 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         return ''
     }, [])
 
-    const isParticipantTaken = useCallback((participantId: string, currentMatchState: MatchState) => {
-        return active_participant.includes(participantId) && currentMatchState !== MatchState.ONGOING && currentMatchState != MatchState.FINISHED
-    }, [active_participant])
-
     const renderPlayer = useCallback((match: MatchWrapper, player: ParticipantType) => {
         const playerId = player === ParticipantType.P1 ? match.match.p1_id : match.match.p2_id
+        const participantPlayers = player === ParticipantType.P1 ? match.p1.players : match.p2.players
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
         // const playerGroupName = player === ParticipantType.P1 ? match.p1.group_id: match.p2.group_id
         const isForfeit = matches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
-        const isPlayerTaken = isParticipantTaken(playerId, match.match.state)
+
+        // Check if any player in this participant is taken (handles both singles and doubles)
+        const isPlayerTaken = participantPlayers?.some(p =>
+            isParticipantTaken(p.user_id, match.match.state)
+        ) || false
         const findLastPlayerMatch = matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
         const groupParticipant = data && data.data && data.data.find(p => p.id === match.p1.group_id || p.id === match.p2.group_id)
 
         return (
-            <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-600 font-medium' : ''}`}>
+            <div className={`flex items-center gap-2 ${isPlayerTaken ? 'text-red-400 font-medium' : ''}`}>
                 {isPlayerTaken && (
                     <div
-                        className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"
+                        className="w-2 h-2 rounded-full bg-red-300 flex-shrink-0"
                         title="Player is currently in another ongoing match"
                     />
                 )}
@@ -143,7 +153,17 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                             </span>
                         )}
                         {findLastPlayerMatch && findLastPlayerMatch.match.finish_date && match.match.state === MatchState.CREATED && (
-                            <span className="text-[10px] text-gray-500">
+                            <span className={`text-[10px] ${
+                                (() => {
+                                    const finished = new Date(findLastPlayerMatch.match.finish_date)
+                                    const diffMs = Date.now() - finished.getTime()
+                                    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+
+                                    if (diffMinutes >= 60) return 'text-red-500'
+                                    if (diffMinutes >= 30) return 'text-orange-400'
+                                    return 'text-gray-500'
+                                })()
+                            }`}>
                                 {t('admin.tournaments.matches.waiting')}: {formatWaitingTime(findLastPlayerMatch.match.finish_date)}
                             </span>
                         )}
@@ -152,7 +172,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 </div>
             </div>
         )
-    }, [matches, active_participant, data, t])
+    }, [matches, data, t, isParticipantTaken])
 
     const getPendingScore = useCallback((matchId: string, player: ParticipantType) => {
         const pending = pendingScores[matchId]
@@ -226,27 +246,17 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 }
             }
 
-            await axiosInstance.patch(
-                `/api/v1/tournaments/${tournament_id}/tables/${match.match.tournament_table_id}/match/${match.match.id}`,
-                updatedMatch,
-                { withCredentials: true }
-            )
-
-            if (!connected) {
-                queryClient.invalidateQueries({ queryKey: ['bracket', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['matches', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['matches_group', match.match.tournament_table_id] })
-                queryClient.invalidateQueries({ queryKey: ['venues_free', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['venues_all', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['tournament_table', match.match.tournament_table_id] })
-            }
+            await matchUpdate.mutateAsync({
+                group_id: match.match.tournament_table_id,
+                match_id: match.match.id,
+                match: updatedMatch
+            })
 
             setPendingScores(prev => {
                 const newScores = { ...prev }
                 delete newScores[match.match.id]
                 return newScores
             })
-
             toast.success(t("admin.tournaments.matches.score_updated_success"))
         } catch (error) {
             toast.error(t("admin.tournaments.matches.score_update_error"))
@@ -337,22 +347,32 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     const groupCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-[10px]">
-            {tableMap.get(rowData.match.tournament_table_id)?.class || "N/A"}
+            {tableMap.get(rowData.match.tournament_table_id)?.group.class || "N/A"}
         </div>
     ), [tableMap])
 
     // Memoize TableNumberForm to prevent re-renders
     const MemoizedTableNumberForm = React.memo(TableNumberForm)
 
-    const tableCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
-        <div className="flex items-center h-full px-2">
-            <MemoizedTableNumberForm
-                brackets={false}
-                match={rowData.match}
-                initialTableNumber={rowData.match.extra_data ? rowData.match.extra_data.table : "0"}
-            />
-        </div>
-    ), [])
+    const tableCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
+        // Check if any player in this match is taken
+        const p1Players = rowData.p1.players || []
+        const p2Players = rowData.p2.players || []
+        const isAnyPlayerTaken = [...p1Players, ...p2Players].some(player =>
+            isParticipantTaken(player.user_id, rowData.match.state)
+        )
+
+        return (
+            <div className="flex items-center h-full px-2">
+                <MemoizedTableNumberForm
+                    brackets={false}
+                    match={rowData.match}
+                    initialTableNumber={rowData.match.extra_data ? rowData.match.extra_data.table : "0"}
+                    disabled={isAnyPlayerTaken}
+                />
+            </div>
+        )
+    }, [isParticipantTaken])
 
     const participant1CellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
         <div className="flex items-center h-full px-2 text-sm">
@@ -365,7 +385,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     // Replace the existing cell renderers with these memoized versions:
     const participant1ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
         const isChampionsLeague = rowData.match.table_type === "champions_league" ||
-            tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES
+            tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES
 
         return (
             <div className="flex items-center h-full px-2">
@@ -386,7 +406,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     const participant2ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
         const isChampionsLeague = rowData.match.table_type === "champions_league" ||
-            tableMap.get(rowData.match.tournament_table_id)?.dialog_type === DialogType.DT_TEAM_LEAGUES
+            tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES
 
         return (
             <div className="flex items-center h-full px-2">
@@ -463,7 +483,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             rowData.match.round,
             rowData.match.bracket,
             rowData.match.next_loser_bracket,
-            table?.size || 0,
+            table?.group.size || 0,
             t
         );
 
@@ -488,7 +508,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const tableHeight = all ? "h-[65vh]" : "h-[65vh]";
 
     return (
-        <div className={`rounded-md border my-2 overflow-x-auto ${tableHeight}`} >
+        <div className={`rounded-md border my-2 ${tableHeight}`} >
             <AutoSizer>
                 {({ height, width }) => (
                     <Table

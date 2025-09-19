@@ -1,4 +1,4 @@
-import { MatchesResponse, UseGetChildMatchesQuery, UsePatchMatch, UsePatchMatchReset, UsePatchMatchSwitch, UseStartMatch } from "@/queries/match";
+import { TableInfoResponse, UseGetChildMatchesQuery, UsePatchMatch, UsePatchMatchReset, UsePatchMatchSwitch, UseStartMatch } from "@/queries/match";
 import { Match, MatchWrapper, PlayerKey, TableTennisExtraData } from "@/types/matches";
 import { createContext, useContext, useState, ReactNode, useEffect } from "react"
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ interface ProtocolModalContextValues {
     teamBCaptain: string
     forfeitMatch: MatchWrapper | null
     isLoading: boolean
-    childMatches: MatchesResponse | undefined
+    childMatches: TableInfoResponse | undefined
     onClose: () => void;
     setForfeitMatch: (value: MatchWrapper | null) => void
     setTableReferee: (value: string) => void
@@ -89,8 +89,6 @@ export const ProtocolModalProvider = ({
     )
     const { mutateAsync: updateMatch } = UsePatchMatch(
         tournamentId,
-        match.match.tournament_table_id,
-        match.match.id
     )
 
     const { mutateAsync: switchParticipants } = UsePatchMatchSwitch(
@@ -152,7 +150,7 @@ export const ProtocolModalProvider = ({
             previous_match_readable_id_2: match.match.previous_match_readable_id_2,
         };
 
-        await updateMatch(sendMatch);
+        await updateMatch({ group_id: match.match.tournament_table_id, match_id: match.match.id, match: sendMatch });
     }
 
     const handlePlayerChange = async (
@@ -192,7 +190,7 @@ export const ProtocolModalProvider = ({
                     topCoord: 0,
                 };
 
-                await updateMatch(sendMatch);
+                await updateMatch({ match_id: match.match.id, group_id: match.match.tournament_table_id, match: sendMatch });
             } else {
                 await changePlayer(currentKey, playerId);
             }
@@ -216,7 +214,7 @@ export const ProtocolModalProvider = ({
                     topCoord: 0,
                 };
 
-                await updateMatch(sendMatch);
+                await updateMatch({ match_id: match.match.id, group_id: match.match.tournament_table_id, match: sendMatch });
             } catch (error) {
                 void error;
                 toast.error(t("toasts.protocol_modals.update_error"))
@@ -275,7 +273,7 @@ export const ProtocolModalProvider = ({
                 ...match.match,
                 winner_id: "finished",
             }
-            await updateMatch(match_payload)
+            await updateMatch({ match_id: match.match.id, group_id: match.match.tournament_table_id, match: match_payload })
             toast.success(t("toasts.protocol_modals.match_finish_success"))
             setForfeitMatch(null)
         } catch (error) {
@@ -287,8 +285,8 @@ export const ProtocolModalProvider = ({
     const [playerMatches, setPlayerMatches] = useState<MatchWrapper[]>([])
 
     useEffect(() => {
-        if (childMatches && childMatches.data) {
-            setPlayerMatches(childMatches.data)
+        if (childMatches && childMatches.data && childMatches.data.matches) {
+            setPlayerMatches(childMatches.data.matches)
         }
     }, [childMatches, match.match.extra_data])
 

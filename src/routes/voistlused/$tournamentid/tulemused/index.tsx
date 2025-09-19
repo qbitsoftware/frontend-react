@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { UseGetTournamentTables } from '@/queries/tables'
 import { parseTableType } from '@/lib/utils'
 import { useTournament } from '../-components/tournament-provider'
 import { formatDateString } from '@/lib/utils'
@@ -7,32 +6,15 @@ import { UsersRound } from 'lucide-react';
 import { Link } from '@tanstack/react-router'
 import ErrorPage from '@/components/error'
 import { useTranslation } from 'react-i18next'
-import { ErrorResponse } from '@/types/errors'
 
 
 export const Route = createFileRoute('/voistlused/$tournamentid/tulemused/')({
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    let tournament_tables = null;
-    try {
-      tournament_tables = await queryClient.ensureQueryData(
-        UseGetTournamentTables(Number(params.tournamentid)),
-      )
-      return { tournament_tables }
-    } catch (error) {
-      const err = error as ErrorResponse
-      if (err.response?.status === 404) {
-        return { tournament_tables: null }
-      }
-      throw error
-    }
-  },
 })
 
 function RouteComponent() {
-  const { tournament_tables } = Route.useLoaderData()
-  const { tournamentData: tournament } = useTournament();
+  const { tournamentData: tournament, tournamentTables } = useTournament();
   const { t } = useTranslation()
   const startDate = formatDateString(tournament.start_date);
 
@@ -68,7 +50,7 @@ function RouteComponent() {
     default: <p className='font-medium text-[#26314D]'>{startDate}</p>
   }
 
-  const tablesWithParticipants = tournament_tables?.data?.filter(table =>
+  const tablesWithParticipants = tournamentTables.filter(table =>
     table.participants && table.participants.length > 0
   ) || [];
 
@@ -82,7 +64,7 @@ function RouteComponent() {
           <h4 className='font-bold mb-4 md:mb-8 text-center md:text-left text-gray-700'>{t('competitions.results.groups')}</h4>
           <ul className='pb-8 flex flex-col gap-2'>
             {tablesWithParticipants.map((table) => (
-              <Link key={table.id} href={`/voistlused/${tournament.id}/tulemused/${table.id}`} className="md:w-2/3">
+              <Link key={table.group.id} href={`/voistlused/${tournament.id}/tulemused/${table.group.id}`} className="md:w-2/3">
                 <li className=' bg-white flex flex-row items-center justify-between border border-stone-100 px-4 md:pr-12 md:pl-6 py-4 rounded-sm shadow-scheduleCard cursor-pointer hover:bg-[#F9F9FB]'>
                   <div className='flex flex-row items-center'>
                     <div className='flex flex-row items-center gap-2 border border-stone-100 rounded-sm p-1'>
@@ -90,8 +72,8 @@ function RouteComponent() {
                       <span className='md:text-lg font-medium'>{table.participants.length}</span>
                     </div>
                     <div className='px-6 flex flex-col'>
-                      <h3 className='text-base md:text-xl font-medium'>{table.class}</h3>
-                      <span className='hidden md:block'>{parseTableType(table.type)}</span>
+                      <h3 className='text-base md:text-xl font-medium'>{table.group.class}</h3>
+                      <span className='hidden md:block'>{parseTableType(table.group.type)}</span>
                     </div>
                   </div>
                   {stateComponents[tournamentState()]}

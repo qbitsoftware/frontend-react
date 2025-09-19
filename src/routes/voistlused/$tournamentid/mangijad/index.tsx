@@ -1,42 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { UseGetTournamentTables } from "@/queries/tables";
 import Group from "./-components/group";
 import ErrorPage from "@/components/error";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ErrorResponse } from "@/types/errors";
 import { ResponsiveClassSelector } from "@/components/responsive-class-selector";
 import { SearchWithResults } from "@/components/search-with-results";
 import { Player } from "@/types/players";
 import { cn } from "@/lib/utils";
+import { useTournament } from "../-components/tournament-provider";
 
 export const Route = createFileRoute("/voistlused/$tournamentid/mangijad/")({
   component: RouteComponent,
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    try {
-      const tables_data = await queryClient.ensureQueryData(
-        UseGetTournamentTables(Number(params.tournamentid))
-      );
-      return { tables_data };
-    } catch (error) {
-      const err = error as ErrorResponse;
-      if (err.response?.status === 404) {
-        return { tables_data: null };
-      }
-      throw error;
-    }
-  },
 });
 
 function RouteComponent() {
-  const { tables_data } = Route.useLoaderData();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeClass, setActiveClass] = useState<string>("all");
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
   const { t } = useTranslation();
+  const { tournamentTables } = useTournament()
 
-  const originalData = tables_data?.data || [];
+  const originalData = tournamentTables || [];
 
   const getUniqueClasses = (tables: any[]) => {
     const classes = new Set<string>();
@@ -53,7 +38,7 @@ function RouteComponent() {
   let filteredData = originalData;
 
   if (activeClass !== "all") {
-    filteredData = filteredData.filter((table) => table.class === activeClass);
+    filteredData = filteredData.filter((table) => table.group.class === activeClass);
   }
 
   if (searchQuery && filteredData.length > 0) {
@@ -112,7 +97,7 @@ function RouteComponent() {
 
       const newOpenGroups = new Set<string>();
       for (let i = 0; i < Math.min(groupsToOpen, filteredData.length); i++) {
-        newOpenGroups.add(filteredData[i].id.toString());
+        newOpenGroups.add(filteredData[i].group.id.toString());
       }
       setOpenGroups(newOpenGroups);
     }
@@ -127,7 +112,7 @@ function RouteComponent() {
 
         const newOpenGroups = new Set<string>();
         for (let i = 0; i < Math.min(groupsToOpen, filteredData.length); i++) {
-          newOpenGroups.add(filteredData[i].id.toString());
+          newOpenGroups.add(filteredData[i].group.id.toString());
         }
         setOpenGroups(newOpenGroups);
       }
@@ -151,9 +136,8 @@ function RouteComponent() {
 
   return (
     <>
-      {tables_data &&
-        tables_data.data &&
-        tables_data.data.some(
+      {tournamentTables &&
+        tournamentTables.some(
           (table) => table.participants && table.participants.length > 0
         ) ? (
         <div className="min-h-screen">
@@ -175,10 +159,10 @@ function RouteComponent() {
             <div className={cn("grid grid-cols-1 gap-6", filteredData.length !== 1 && "lg:grid-cols-2 xl:grid-cols-3")}>
               {filteredData.map((table) => (
                 <Group
-                  key={table.id}
+                  key={table.group.id}
                   group={table}
-                  isOpen={openGroups.has(table.id.toString())}
-                  onToggle={() => handleGroupToggle(table.id.toString())}
+                  isOpen={openGroups.has(table.group.id.toString())}
+                  onToggle={() => handleGroupToggle(table.group.id.toString())}
                 />
               ))}
             </div>

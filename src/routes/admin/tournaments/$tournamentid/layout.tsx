@@ -4,13 +4,14 @@ import {
   useLocation,
   useNavigate,
   useParams,
+  useSearch,
 } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
 import ErrorPage from "@/components/error";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { UseGetTournamentTablesQuery } from "@/queries/tables";
 import GroupDropdown from "../-components/group-dropdown";
 import { UseGetTournamentAdminQuery } from "@/queries/tournaments";
@@ -18,6 +19,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TournamentProvider } from "@/routes/voistlused/$tournamentid/-components/tournament-provider";
 import { useNavigationHelper } from "@/providers/navigationProvider";
+import { useTableSidebarContext } from "@/providers/tableSidebarContext";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/tournaments/$tournamentid")({
@@ -34,6 +37,8 @@ function RouteComponent() {
   const { t } = useTranslation();
   const { data, isLoading } = UseGetTournamentTablesQuery(Number(tournamentid));
   const { groupId } = useNavigationHelper();
+  const { isCollapsed: isTableSidebarCollapsed } = useTableSidebarContext();
+  const search = useSearch({ strict: false })
 
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -42,28 +47,31 @@ function RouteComponent() {
   });
   const groupsHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  let first_tournament_table: number | undefined = undefined;
-  if (!isLoading && data && data.data && data.data.length > 0) {
-    first_tournament_table = data.data[0].id;
-  }
+  const first_tournament_table = useMemo(() => {
+    if (!isLoading && data && data.data && data.data.length > 0) {
+      return data.data[0].group.id;
+    }
+    return undefined;
+  }, [isLoading, data]);
+
   useEffect(() => {
     if (!isLoadingTournament && (!tournament_data || !tournament_data.data)) {
       navigate({ to: "/admin/tournaments" });
     }
   }, [isLoadingTournament, tournament_data, navigate]);
 
-  const handleGroupsMouseEnter = () => {
+  const handleGroupsMouseEnter = useCallback(() => {
     if (groupsHoverTimeoutRef.current) {
       clearTimeout(groupsHoverTimeoutRef.current);
     }
     setShowGroupsDropdown(true);
-  };
+  }, []);
 
-  const handleGroupsMouseLeave = () => {
+  const handleGroupsMouseLeave = useCallback(() => {
     groupsHoverTimeoutRef.current = setTimeout(() => {
       setShowGroupsDropdown(false);
     }, 200);
-  };
+  }, []);
 
   useEffect(() => {
     if (showGroupsDropdown && dropdownRef.current) {
@@ -86,28 +94,26 @@ function RouteComponent() {
     }
   }, [showGroupsDropdown]);
 
-  const currentTab = location.pathname.includes("/osalejad")
-    ? "participants"
-    : location.pathname.includes("/mangud")
-      ? "matches"
-      : location.pathname.includes("/tabelid")
-        ? "brackets"
-        : location.pathname.includes("/ajakava")
-          ? "schedule"
-          : location.pathname.includes("/kohad")
-            ? "finalplacement"
-            : location.pathname.includes("/grupid")
-              ? "groups"
-              : location.pathname.includes("/pildid")
-                ? "images"
-                : "info";
+  const currentTab = useMemo(() => {
+    if (location.pathname.includes("/osalejad")) return "participants";
+    if (location.pathname.includes("/mangud")) return "matches";
+    if (location.pathname.includes("/tabelid")) return "brackets";
+    if (location.pathname.includes("/ajakava")) return "schedule";
+    if (location.pathname.includes("/kohad")) return "finalplacement";
+    if (location.pathname.includes("/grupid")) return "groups";
+    if (location.pathname.includes("/pildid")) return "images";
+    return "info";
+  }, [location.pathname]);
 
 
   return (
     <>
       <TooltipProvider delayDuration={300}>
-        <TournamentProvider tournamentData={tournament_data?.data!}>
-          <div className="mx-auto min-h-[95vh] h-full lg:mr-64">
+        <TournamentProvider tournamentData={tournament_data?.data!} tournamentTables={data?.data || []}>
+          <div className={cn(
+            "mx-auto min-h-[95vh] h-full",
+            isTableSidebarCollapsed ? "lg:mr-16" : "lg:mr-64"
+          )}>
             <div className="w-full relative">
               <div className="py-3 sm:py-4 px-4 md:px-8 flex flex-col xl:flex-row gap-3 lg:gap-4 justify-between items-start w-full bg-gradient-to-b from-white via-white/50 to-[#fafafa] border-b relative z-20 overflow-visible">
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -161,6 +167,8 @@ function RouteComponent() {
                               to={
                                 groupId
                                   ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/osalejad`
+                                  : search.activeGroups
+                                  ? `/admin/tournaments/${tournamentid}/grupid/${search.activeGroups.split(',')[0]}/osalejad`
                                   : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/osalejad`
                               }
                               onClick={(e) => {
@@ -198,11 +206,7 @@ function RouteComponent() {
                         <Tooltip open={!first_tournament_table ? undefined : false}>
                           <TooltipTrigger asChild>
                             <Link
-                              to={
-                                groupId
-                                  ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/mangud`
-                                  : `/admin/tournaments/${tournamentid}/mangud`
-                              }
+                              to={`/admin/tournaments/${tournamentid}/mangud`} search={groupId ? { activeGroups: groupId.toString() } : undefined}
                               onClick={(e) => {
                                 if (!first_tournament_table) {
                                   e.preventDefault();
@@ -241,6 +245,8 @@ function RouteComponent() {
                               to={
                                 groupId
                                   ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/tabelid`
+                                  : search.activeGroups
+                                  ? `/admin/tournaments/${tournamentid}/grupid/${search.activeGroups.split(',')[0]}/tabelid`
                                   : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/tabelid`
                               }
                               onClick={(e) => {
@@ -280,7 +286,9 @@ function RouteComponent() {
                               to={
                                 groupId
                                   ? `/admin/tournaments/${tournamentid}/grupid/${groupId}/kohad`
-                                  : `/admin/tournaments/${tournamentid}/kohad`
+                                  : search.activeGroups
+                                  ? `/admin/tournaments/${tournamentid}/grupid/${search.activeGroups.split(',')[0]}/kohad`
+                                  : `/admin/tournaments/${tournamentid}/grupid/${first_tournament_table}/kohad`
                               }
                               onClick={(e) => {
                                 if (!first_tournament_table) {

@@ -4,6 +4,13 @@ import { useParams, useRouter } from "@tanstack/react-router";
 import { UseGetFreeVenuesAll } from "@/queries/venues";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  useSidebar,
+  SidebarTrigger
+} from "@/components/ui/sidebar";
 
 interface TableStatus {
   id: string;
@@ -78,6 +85,8 @@ const formatPlayerName = (fullName: string): string => {
 
 const TableStatusSidebar = () => {
   const { t } = useTranslation();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   const { tournamentid } = useParams({ strict: false });
   const router = useRouter();
@@ -95,7 +104,7 @@ const TableStatusSidebar = () => {
     if (!tournamentTables?.data) return [];
 
     const groupsMap = new Map(
-      tournamentGroups?.data?.map((group) => [group.id, group.class]) || [],
+      tournamentGroups?.data?.map((group) => [group.group.id, group.group.class]) || [],
     );
 
     return tournamentTables.data.map((table) => {
@@ -131,54 +140,79 @@ const TableStatusSidebar = () => {
       // Get the match ID from the table data
       const matchId = tournamentTables?.data?.find(t => t.id.toString() === table.id)?.match?.match?.id;
 
-      const searchParams = matchId ? { openMatch: matchId.toString() } : {};
+      const searchParams = matchId ? { openMatch: matchId.toString(), activeGroups: String(table.tournament_table_id) } : {};
 
       router.navigate({
-        to: `/admin/tournaments/${tournamentid}/grupid/${table.tournament_table_id}/mangud`,
+        to: `/admin/tournaments/${tournamentid}/mangud`,
         search: searchParams,
       });
     }
   };
 
   return (
-    <div className="hidden min-w-[16rem] lg:flex flex-col border-l h-screen fixed top-0 right-0 z-10 bg-[#F8F9FA]">
-      <div className="flex items-center justify-between h-[4.5rem] px-2 border-b">
-        <h3 className="text-lg font-semibold">
-          {t("admin.tournaments.tables.title")}{" "}
-          {tableStatuses.filter((t) => t.isOccupied).length}/
-          {tableStatuses.length}
-        </h3>
-      </div>
-      <div className="flex flex-col overflow-y-auto w-full h-full">
-        {tableStatuses.map((table) => (
-          <div
-            onClick={() => handleRowClick(table)}
-            key={table.id}
-            className={cn(
-              "w-full flex items-center gap-2 justify-between h-10 min-h-10 px-2 overflow-hidden border-b relative flex-shrink-0",
-              table.tournament_table_id && "cursor-pointer",
-            )}
-          >
-            <h3 className="text-sm font-semibold flex-shrink-0">{table.number}</h3>
-            {table.match && (
-              <div className="flex-1 flex items-center justify-end gap-2 text-[11px] overflow-hidden">
-                <span className="truncate">{formatPlayerName(table.match.participant1)}</span>
-                <span className="flex-shrink-0">vs</span>
-                <span className="truncate">{formatPlayerName(table.match.participant2)}</span>
-                {table.match.startTime && (
-                  <MatchTimer startTime={table.match.startTime} />
-                )}
-              </div>
-            )}
-            {!table.isOccupied && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-              </div>
-            )}
+    <Sidebar side="right" collapsible="icon" className="border-l bg-[#F8F9FA] data-[state=collapsed]:w-24 data-[state=expanded]:w-64">
+      <SidebarHeader className="h-[4.2rem] px-2 border-b flex items-center justify-center">
+        {isCollapsed ? (
+          <div className="flex justify-center w-full">
+            <SidebarTrigger />
           </div>
-        ))}
-      </div>
-    </div>
+        ) : (
+          <div className="flex items-center justify-start gap-2 w-full">
+            <SidebarTrigger />
+            <h3 className="text-lg font-semibold">
+              {t("admin.tournaments.tables.title")}{" "}
+              {tableStatuses.filter((t) => t.isOccupied).length}/
+              {tableStatuses.length}
+            </h3>
+          </div>
+        )}
+      </SidebarHeader>
+      <SidebarContent className="overflow-y-auto">
+        <div className="flex flex-col w-full h-full">
+          {tableStatuses.map((table) => (
+            <div
+              onClick={() => handleRowClick(table)}
+              key={table.id}
+              className={cn(
+                "w-full flex items-center gap-2 h-10 min-h-10 px-2 overflow-hidden border-b relative flex-shrink-0 justify-between",
+                table.tournament_table_id && "cursor-pointer",
+              )}
+            >
+              <h3 className={cn(
+                "text-xs font-semibold flex-shrink-0",
+                isCollapsed ? "text-xs" : ""
+              )}>{table.number}</h3>
+
+              {isCollapsed ? (
+                table.match && table.match.startTime ? (
+                  <MatchTimer startTime={table.match.startTime} />
+                ) : !table.isOccupied ? (
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                ) : null
+              ) : (
+                <>
+                  {table.match && (
+                    <div className="flex-1 flex items-center justify-end gap-2 text-[11px] overflow-hidden">
+                      <span className="truncate">{formatPlayerName(table.match.participant1)}</span>
+                      <span className="flex-shrink-0">vs</span>
+                      <span className="truncate">{formatPlayerName(table.match.participant2)}</span>
+                      {table.match.startTime && (
+                        <MatchTimer startTime={table.match.startTime} />
+                      )}
+                    </div>
+                  )}
+                  {!table.isOccupied && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </SidebarContent>
+    </Sidebar>
   );
 };
 

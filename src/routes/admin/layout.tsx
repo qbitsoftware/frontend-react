@@ -3,6 +3,7 @@ import {
   Outlet,
   useLocation,
   useNavigate,
+  useParams,
   useRouter,
   useRouterState,
 } from "@tanstack/react-router";
@@ -13,14 +14,16 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import ErrorPage from "@/components/error";
 import { UseGetCurrentUser } from "@/queries/users";
 import { useUser } from "@/providers/userProvider";
-import TableStatusSidebar from "./tournaments/$tournamentid/-components/table-status-sidebar";
+import TableStatusSidebarWrapper from "./tournaments/$tournamentid/-components/table-status-sidebar-wrapper";
 import TableStatusSidebarSkeleton from "./tournaments/$tournamentid/-components/table-status-skeleton";
-import { WSProvider } from "@/providers/wsProvider";
-import { WSMessage, WSMsgType } from "@/types/ws_message";
 import { useQueryClient } from "@tanstack/react-query";
-// import { WSProvider } from "@/providers/wsProvider";
-// import { WSMessage, WSMsgType } from "@/types/ws_message";
-// import { useQueryClient } from "@tanstack/react-query";
+import { WSMessage, WSMsgType, WSParticipantsData, WSTableInfo, WSTournamentData, WSTournamentsData, WSTournamentTableData, WSTournamentTablesData } from "@/types/ws_message";
+import { WSProvider } from "@/providers/wsProvider";
+import { TableSidebarContextProvider } from "@/providers/tableSidebarContext";
+import { TournamentTablesResponse, TournamentTableWithStagesResponse } from "@/queries/tables";
+import { TableInfoResponse } from "@/queries/match";
+import { VenuesResponse } from "@/queries/venues";
+import { BracketReponse, TournamentResponse, TournamentsResponse } from "@/queries/tournaments";
 
 // Helper function to get cookie value
 function getCookie(name: string) {
@@ -65,10 +68,12 @@ function RouteComponent() {
   const { user } = useUser();
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const params = useParams({ strict: false })
 
   const isTournamentAdminRoute = /^\/admin\/tournaments\/\d+/.test(location.pathname);
   const defaultOpen = getCookie("sidebar:state") !== "false" && !isTournamentAdminRoute;
   const [hasSidebarLoaded, setHasSidebarLoaded] = useState(false);
+  const [isTableSidebarCollapsed, setIsTableSidebarCollapsed] = useState(false);
   const previousTournamentId = useRef<string | null>(null);
 
   if (!user?.role.includes('admin')) {
@@ -110,99 +115,251 @@ function RouteComponent() {
   }, []);
 
   const handleWSMessage = useCallback((data: WSMessage) => {
-    if (data.type === WSMsgType.ParticipantUpdated || data.type === WSMsgType.ParticipantCreated || data.type === WSMsgType.ParticipantDeleted) {
-      const { tournament_id, table_id } = data.data;
-      const path = window.location.pathname;
-      if (path.includes(tournament_id) && path.includes(table_id)) {
-        queryClient.invalidateQueries({ queryKey: ["participants", Number(table_id)] });
-      }
-    } else if (data.type === WSMsgType.TournamentCreated) {
-      queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
-    } else if (data.type === WSMsgType.TournamentDeleted) {
-      const { tournament_id } = data.data;
-      const path = window.location.pathname;
-      queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
-      if (path.includes(tournament_id)) {
-        navigate({ to: `/admin/tournaments` });
-      }
-    } else if (data.type === WSMsgType.TournamentUpdated) {
-      const { tournament_id } = data.data
-      queryClient.invalidateQueries({ queryKey: ['tournaments_admin_query'] })
-      queryClient.invalidateQueries({ queryKey: ['tournament_admin_query', Number(tournament_id)] })
-      queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
-      queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
-    } else if (data.type === WSMsgType.MatchUpdated) {
-      const { tournament_id, table_id } = data.data;
-      queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id), Number(table_id)] })
-      queryClient.invalidateQueries({ queryKey: ['matches', Number(tournament_id)] })
-      queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
-      queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
-      queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
-      queryClient.invalidateQueries({ queryKey: ['tournament_table', Number(table_id)] })
-    } else if (data.type === WSMsgType.TournamentTableCreated) {
-      const { tournament_id } = data.data;
-      const path = window.location.pathname;
-      if (path.includes(tournament_id)) {
-        queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
-        queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-      }
-    } else if (data.type === WSMsgType.TournamentTableUpdated) {
-      const { tournament_id, table_id } = data.data;
-      const path = window.location.pathname;
-      if (path.includes(tournament_id)) {
-        queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
-        if (path.includes(table_id)) {
-          queryClient.invalidateQueries({ queryKey: ['participants', Number(table_id)] })
-          queryClient.invalidateQueries({ queryKey: ['bracket', Number(table_id)] })
-          queryClient.invalidateQueries({ queryKey: ['matches', Number(table_id)] })
-          queryClient.invalidateQueries({ queryKey: ["tournament_table", Number(table_id)] })
+    switch (data.type) {
+      case WSMsgType.WSMsgTypeParticipants:
+        const new_data = data.data as WSParticipantsData
+        if (Number(params.tournamentid) === data.tournament_id) {
+          if (data.group_id && data.group_id === Number(params.groupid)) {
+            queryClient.setQueryData(["tournament_table", Number(data.group_id)], (oldData: TournamentTableWithStagesResponse) => {
+              if (oldData && new_data.participants) {
+                return {
+                  ...oldData,
+                  data: {
+                    ...oldData.data,
+                    group: new_data.tournament_table ? new_data.tournament_table : oldData.data.group,
+                    participants: new_data.participants
+                  }
+                }
+              } else if (oldData) {
+                return {
+                  ...oldData,
+                  data: {
+                    ...oldData.data,
+                    participants: [],
+                  }
+                }
+              }
+            })
+            if (new_data.stages) {
+              new_data.stages.map((stage) => {
+                queryClient.setQueryData(['tournament_tables', stage.id], (oldData: TournamentTableWithStagesResponse) => {
+                  if (oldData) {
+                    return {
+                      ...oldData,
+                      data: {
+                        ...oldData.data,
+                        group: stage
+                      }
+                    }
+                  }
+                })
+              })
+            }
+          }
         }
-      }
-    } else if (data.type === WSMsgType.TournamentTableDeleted) {
-      const { tournament_id, table_id } = data.data;
-      const path = window.location.pathname;
+        break;
+      case WSMsgType.WSMsgTypeTableInfo:
+        const new_data_matches = data.data as WSTableInfo
+        if (Number(params.tournamentid) === data.tournament_id) {
+          queryClient.setQueryData(['matches_info_tournament', data.tournament_id], (oldData: TableInfoResponse) => {
+            if (oldData && oldData.data && oldData.data.matches) {
+              const updatedMatches = oldData.data.matches.map((m) => {
+                const updatedMatch = new_data_matches.info?.matches.find((um) => um.match.id === m.match.id);
+                return updatedMatch ? updatedMatch : m;
+              });
 
-      if (path.includes(tournament_id)) {
-        queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', Number(tournament_id)] })
-        if (path.includes(String(table_id))) {
-          navigate({ to: `/admin/tournaments/${Number(tournament_id)}/grupid` });
+              const output = {
+                ...oldData,
+                data: {
+                  ...oldData.data,
+                  matches: updatedMatches,
+                }
+              }
+
+              return output
+            }
+          })
+          queryClient.setQueryData(['venues_all', data.tournament_id], (oldData: VenuesResponse) => {
+            return {
+              ...oldData,
+              data: new_data_matches.info?.all_tables,
+            }
+          })
+          queryClient.setQueryData(['venues_free', data.tournament_id], (oldData: VenuesResponse) => {
+            return {
+              ...oldData,
+              data: new_data_matches.info?.free_tables,
+            }
+          })
+          if (data.group_id && Number(params.groupid) === data.group_id) {
+            queryClient.setQueryData(['matches_info', data.group_id], (oldData: TableInfoResponse) => {
+              if (!oldData) return data;
+              const output = {
+                ...oldData,
+                data: {
+                  ...oldData.data,
+                  matches: new_data_matches.info?.matches,
+                  free_tables: new_data_matches.info?.free_tables,
+                  tournament_table: new_data_matches.info?.tournament_table
+                }
+              }
+
+              return output
+            })
+            if (new_data_matches.info?.brackets) {
+              queryClient.setQueryData(['bracket', data.tournament_id, data.group_id], (oldData: BracketReponse) => {
+                if (!oldData) return { data: new_data_matches.info?.brackets, message: "", error: null };
+                const output = {
+                  ...oldData,
+                  data: new_data_matches.info?.brackets
+                }
+                return output
+              })
+            }
+            queryClient.setQueryData(["tournament_table", data.group_id], (oldData: TournamentTableWithStagesResponse) => {
+              if (!oldData) return oldData;
+              const output = {
+                ...oldData,
+                data: {
+                  ...oldData.data,
+                  group: new_data_matches.info?.tournament_table.group,
+                }
+              }
+              return output
+            })
+          }
+
         }
-      }
-    } else if (data.type === WSMsgType.MatchStarted) {
-      const { tournament_id, table_id } = data.data;
-      const path = window.location.pathname;
-      if (path.includes(tournament_id) && path.includes(table_id)) {
-        queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ['matches', Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id)] })
-      }
-    } else if (data.type === WSMsgType.MatchReset) {
-      const { tournament_id, table_id } = data.data;
-      const path = window.location.pathname;
 
-      if (path.includes(tournament_id) && path.includes(table_id)) {
-        queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ["participants", Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id)] })
-        queryClient.invalidateQueries({ queryKey: ["matches", Number(table_id)] })
-      }
-      queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
-      queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
-    } else if (data.type === WSMsgType.MatchResetSolo) {
-      const { tournament_id, table_id } = data.data;
-      const path = window.location.pathname;
+        break;
+      case WSMsgType.WSMsgTypeTournamentCreated:
+        const data_trnment = data.data as WSTournamentData
+        if (window.location.pathname.includes("/admin/tournaments")) {
+          queryClient.setQueryData(
+            ["tournaments_admin_query"],
+            (oldData: TournamentsResponse) => {
+              if (oldData?.data && data.data && data_trnment.tournament) {
+                return {
+                  ...oldData,
+                  data: [...oldData.data, data_trnment.tournament],
+                };
+              } else if (data_trnment.tournament) {
+                const newData: TournamentsResponse = {
+                  message: "",
+                  error: null,
+                  data: [data_trnment.tournament],
+                }
+                return newData;
+              } else {
+                return {
+                  message: "",
+                  error: null,
+                  data: [],
+                }
+              }
+            },
+          );
+          if (data_trnment.tournament) {
+            queryClient.setQueryData(["tournament_admin_query", data_trnment.tournament.id], (oldData: TournamentResponse) => {
+              if (!oldData) {
+                return { data: data_trnment.tournament, message: "", error: null }
+              } else {
+                return oldData
+              }
+            })
+          }
 
-      if (path.includes(tournament_id) && path.includes(table_id)) {
-        queryClient.invalidateQueries({ queryKey: ['matches_group', Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ['bracket', Number(tournament_id)] })
-        queryClient.invalidateQueries({ queryKey: ['matches', Number(table_id)] })
-        queryClient.invalidateQueries({ queryKey: ['venues_all', Number(tournament_id)] })
-        queryClient.invalidateQueries({ queryKey: ['venues_free', Number(tournament_id)] })
-        queryClient.refetchQueries({ queryKey: ['tournament_table', Number(table_id)] })
+        }
+        break
+      case WSMsgType.WSMsgTypeTournamentUpdated:
+        const data_trnments = data.data as WSTournamentsData
+        if (data_trnments.tournaments && window.location.pathname.includes("/admin/tournaments")) {
+          queryClient.setQueryData(["tournaments_admin_query"], (oldData: TournamentsResponse) => {
+            if (data_trnments.tournaments) {
+              return {
+                ...oldData,
+                data: [...data_trnments.tournaments]
+              }
+            }
+            return oldData;
+          })
 
-      }
+          let seen = false
+          data_trnments.tournaments.map((trnment) => {
+            if (trnment.id === Number(params.tournamentid)) {
+              queryClient.setQueryData(["tournament_admin_query", trnment.id], (oldData: TournamentResponse) => {
+                return { data: trnment, message: oldData.message, error: oldData.error };
+              });
+              queryClient.invalidateQueries({ queryKey: ['venues_all', trnment.id] })
+              seen = true
+            }
+          })
+          if (!seen) {
+            navigate({ to: "/admin/tournaments" })
+          }
+        }
+        break;
+      case WSMsgType.WSMsgTypeTournamentTableCreated:
+        const data_tt = data.data as WSTournamentTableData
+        if (params.tournamentid && Number(params.tournamentid) === data.tournament_id) {
+          if (data_tt.tournament_table) {
+            queryClient.setQueryData(["tournament_tables_query", data.tournament_id], (oldData: TournamentTablesResponse) => {
+              if (oldData) {
+                if (oldData.data) {
+                  let seen = false
+                  oldData.data.map((tt) => {
+                    if (tt.group.id === data_tt.tournament_table?.group.id) {
+                      seen = true
+                      return {
+                        ...oldData,
+                      }
+                    }
+                  })
+                  if (!seen) {
+                    return {
+                      ...oldData,
+                      data: [...oldData.data, data_tt.tournament_table]
+                    }
+                  }
+                } else {
+                  return {
+                    ...oldData,
+                    data: [data_tt.tournament_table]
+                  }
+                }
+              }
+            })
+          }
+        }
+        break;
+      case WSMsgType.WSMsgTypeTournamentTableUpdated:
+        const data_tts = data.data as WSTournamentTablesData
+        if (data_tts.tournament_tables) {
+          let seen = false
+          data_tts.tournament_tables.map((tt) => {
+            if (params.groupid && Number(params.groupid) == Number(tt.group.id)) {
+              queryClient.setQueryData(["tournament_table", tt.group.id], (oldData: TournamentTableWithStagesResponse) => {
+                return { ...oldData, data: tt }
+              })
+              seen = true
+            }
+          })
+          if (!seen) {
+            navigate({ to: `/admin/tournaments/${params.tournamentid}/grupid` })
+          }
+        }
+
+        queryClient.setQueryData(["tournament_tables_query", data.tournament_id], (oldData: TournamentTablesResponse) => {
+          return { ...oldData, data: data_tts.tournament_tables }
+        })
+
+        break
+      default:
+        console.log("Unhandled WS message type:", data.type);
+        break;
     }
-  }, [location.pathname, queryClient, navigate]);
+
+  }, [location.pathname, queryClient, navigate, params]);
 
 
 
@@ -211,17 +368,21 @@ function RouteComponent() {
     <div className="flex flex-col mx-auto bg-[#F7F7F7]">
       <div className="overflow-hidden">
         <WSProvider url={import.meta.env.VITE_BACKEND_API_URL_WS + "ws/v1/admin"} onMessage={handleWSMessage}>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <SidebarController />
-            <AdminSidebar />
-            <div className="w-full overflow-x-auto pb-20 lg:pb-0">
-              <Outlet />
-            </div>
-            {isTournamentRoute && (
-              (isLoading && !hasSidebarLoaded) ? <TableStatusSidebarSkeleton /> : <TableStatusSidebar />
-            )}
-          </SidebarProvider>
-          <AdminBottomNav />
+          <TableSidebarContextProvider isCollapsed={isTableSidebarCollapsed}>
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <SidebarController />
+              <AdminSidebar />
+              <div className="w-full overflow-x-auto pb-20 lg:pb-0">
+                <Outlet />
+              </div>
+              {isTournamentRoute && (
+                (isLoading && !hasSidebarLoaded) ?
+                  <TableStatusSidebarSkeleton /> :
+                  <TableStatusSidebarWrapper onStateChange={setIsTableSidebarCollapsed} />
+              )}
+            </SidebarProvider>
+            <AdminBottomNav />
+          </TableSidebarContextProvider>
         </WSProvider>
       </div>
     </div>

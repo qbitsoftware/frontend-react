@@ -57,9 +57,15 @@ export type User = {
   role: number;
   license: string | null;
   expiration_date: string | null;
+  rating_last_change: number;
   isikukood?: string;
   selectedLicenseType?: LicenseType;
+  selectedLicenseDuration?: number;
   combinedIndex?: number;
+  genderCombinedIndex?: number;
+  originalRateOrder?: number;
+  menCombinedIndex?: number;
+  womenCombinedIndex?: number;
 };
 
 export type UserLogin = {

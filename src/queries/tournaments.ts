@@ -208,90 +208,74 @@ export const UseGetTournamentQuery = (id: number) => {
 
 export const UsePostTournament = () => {
   const queryClient = useQueryClient();
-  const { connected } = useWS()
   return useMutation({
     mutationFn: async (formData: TournamentFormValues) => {
-      const { data } = await axiosInstance.post(
-        `/api/v1/tournaments`,
-        formData,
-        {
-          withCredentials: true,
-        },
-      );
+      const { data } = await axiosInstance.post(`/api/v1/tournaments`, formData, {
+        withCredentials: true,
+      });
       return data;
     },
     onSuccess: (data: TournamentResponse) => {
-      if (!connected) {
-        queryClient.setQueryData(
-          ["tournaments_admin"],
-          (oldData: TournamentsResponse) => {
-            if (oldData?.data && data.data) {
-              oldData.data = [...oldData.data, data.data];
-              oldData.message = data.message;
-              oldData.error = data.error;
-            } else {
-              const newData: TournamentsResponse = {
-                message: data.message,
-                error: data.error,
-                data: data.data ? [data.data] : null,
-              };
-              return newData;
-            }
-            return oldData;
-          },
-        );
-      }
+      queryClient.setQueryData(
+        ["tournaments_admin"],
+        (oldData: TournamentsResponse) => {
+          if (oldData?.data && data.data) {
+            oldData.data = [...oldData.data, data.data];
+            oldData.message = data.message;
+            oldData.error = data.error;
+          } else {
+            const newData: TournamentsResponse = {
+              message: data.message,
+              error: data.error,
+              data: data.data ? [data.data] : null,
+            };
+            return newData;
+          }
+          return oldData;
+        },
+      );
+      queryClient.setQueryData(["tournament_admin_query", data.data?.id], (oldData: TournamentResponse) => {
+        if (!oldData) {
+          return data
+        }
+      })
     },
   });
 };
 
 export interface BracketReponse {
-  data: Bracket | null;
+  data: Bracket;
   message: string;
   error: string | null;
 }
 
-export const UseStartTournament = (tournament_id: number) => {
-  const queryClient = useQueryClient();
-  return useMutation<BracketReponse, unknown, boolean>({
-    mutationFn: async (start: boolean) => {
-      const { data } = await axiosInstance.post(
-        `/api/v1/tournaments/${tournament_id}`,
-        JSON.stringify({ start }),
-        {
-          withCredentials: true,
-        },
-      );
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.resetQueries({ queryKey: ["tournaments_admin"] });
-    },
-  });
-};
-
 export const UsePatchTournament = (id: number) => {
   const queryClient = useQueryClient();
-  const { connected } = useWS()
   return useMutation({
     mutationFn: async (formData: TournamentFormValues) => {
-      const { data } = await axiosInstance.patch(
-        `/api/v1/tournaments/${id}`,
-        formData,
-        {
-          withCredentials: true,
-        },
-      );
+      const { data } = await axiosInstance.patch(`/api/v1/tournaments/${id}`, formData, {
+        withCredentials: true,
+      });
       return data;
     },
 
-    onSuccess: () => {
-      if (!connected) {
-        queryClient.invalidateQueries({ queryKey: ["tournaments_admin_query"] });
-        queryClient.invalidateQueries({ queryKey: ['tournament_admin_query', id] })
-        queryClient.invalidateQueries({ queryKey: ["bracket", id] });
-        queryClient.invalidateQueries({ queryKey: ["matches", id] });
-      }
+    onSuccess: (data: TournamentsResponse) => {
+      queryClient.setQueryData(["tournament_admin_query", id], (oldData: TournamentResponse) => {
+        if (data.data) {
+          const trnment = data.data.find((trn) => trn.id === id);
+          if (trnment) {
+            return { data: trnment, message: data.message, error: data.error };
+          }
+        } else {
+          return oldData
+        }
+      });
+      queryClient.setQueryData(["tournaments_admin_query"], (oldData: TournamentsResponse) => {
+        if (data) {
+          return data
+        }
+        return oldData;
+      })
     },
   });
 };
@@ -355,25 +339,6 @@ export const UseGetHomePageTournamentsQuery = (forHomepage: boolean) => {
     },
   });
 }
-
-export const UseCalcTournamentRating = (tournament_id: number) => {
-  // const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosInstance.post(
-        `/api/v1/tournaments/${tournament_id}/calc_rating`,
-        {},
-        {
-          withCredentials: true,
-        },
-      );
-      return data;
-    },
-    // onSuccess: () => {
-    //   queryClient.resetQueries({ queryKey: ["tournaments_admin"] });
-    // },
-  });
-};
 
 export interface TimetableVisibilityRequest {
   visibility: boolean;

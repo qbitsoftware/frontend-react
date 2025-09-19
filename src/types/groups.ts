@@ -1,5 +1,3 @@
-import { Participant } from "./participants";
-
 export enum DialogType {
   DT_TEAM_LEAGUES = "team_leagues",
   DT_DOUBLES = "doubles",
@@ -24,8 +22,6 @@ export type TournamentTable = {
   max_team_size: number;
   woman_weight: number;
   size: number;
-  participants: Participant[];
-  stages: TournamentTable[];
   avg_match_duration: number;
   start_date: string;
   break_duration: number;

@@ -1,10 +1,7 @@
-import { UseGetTournamentMatches } from '@/queries/match'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useParams } from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { UseGetTournamentTables } from '@/queries/tables'
 import ErrorPage from '@/components/error'
 import { useTranslation } from 'react-i18next'
-import { ErrorResponse } from '@/types/errors'
 import ITTFMatchComponent from './-components/new-match-comp'
 import { GroupType, MatchState, MatchWrapper } from '@/types/matches'
 import {
@@ -15,47 +12,33 @@ import {
 } from './-components/schedule-utils'
 import { Filters } from './-components/filters'
 import { ResponsiveClassSelector } from '@/components/responsive-class-selector'
+import { UseGetTournamentMatchesQuery } from '@/queries/match'
+import { useTournament } from '../-components/tournament-provider'
 
 export const Route = createFileRoute('/voistlused/$tournamentid/mangud/')({
   errorComponent: () => <ErrorPage />,
-  loader: async ({ context: { queryClient }, params }) => {
-    try {
-      const matchesData = await queryClient.ensureQueryData(
-        UseGetTournamentMatches(Number(params.tournamentid)),
-      )
-      const tournamentTables = await queryClient.ensureQueryData(
-        UseGetTournamentTables(Number(params.tournamentid)),
-      )
-
-      return { matchesData, tournamentTables }
-    } catch (error) {
-      const err = error as ErrorResponse
-      if (err.response?.status === 404) {
-        return { matchesData: null, tournamentTables: null }
-      }
-      throw error
-    }
-  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { matchesData, tournamentTables } = Route.useLoaderData()
   const [activeDay, setActiveDay] = useState<number | string>('all')
   const [activeClass, setActiveClass] = useState<string>('all')
   const [activeStatus, setActiveStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const { t } = useTranslation()
   const initialSetupDone = useRef(false)
+  const params = useParams({ strict: false })
+  const { data: matchesData } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
+  const { tournamentTables } = useTournament()
 
   const tableMap = useMemo(() => {
     const map = new Map()
 
-    if (!tournamentTables?.data) return map
+    if (!tournamentTables) return map
 
-    tournamentTables.data.forEach((table) => {
+    tournamentTables.forEach((table) => {
       // Add the main table
-      map.set(table.id, table)
+      map.set(table.group.id, table)
 
       // Add each stage if its id is not already in the map
       if (Array.isArray(table.stages)) {
@@ -68,21 +51,21 @@ function RouteComponent() {
     })
 
     return map
-  }, [tournamentTables?.data])
+  }, [tournamentTables])
 
   const safeMatches = useMemo(() => {
-    if (!matchesData?.data || !Array.isArray(matchesData.data)) return []
-    return getUniqueMatches(matchesData.data)
-  }, [matchesData?.data])
+    if (!matchesData?.data.matches || !Array.isArray(matchesData.data.matches)) return []
+    return getUniqueMatches(matchesData.data.matches)
+  }, [matchesData?.data.matches])
 
   const classFilteredMatches = useMemo(() => {
     if (activeClass === 'all') return safeMatches
 
     const relevantTableIds = new Set<string | number>()
-    if (tournamentTables?.data) {
-      tournamentTables.data.forEach((table) => {
-        if (table.class === activeClass) {
-          relevantTableIds.add(table.id)
+    if (tournamentTables) {
+      tournamentTables.forEach((table) => {
+        if (table.group.class === activeClass) {
+          relevantTableIds.add(table.group.id)
           if (Array.isArray(table.stages)) {
             table.stages.forEach((stage) => {
               relevantTableIds.add(stage.id)
@@ -95,7 +78,7 @@ function RouteComponent() {
     return safeMatches.filter((match) =>
       relevantTableIds.has(match.match.tournament_table_id),
     )
-  }, [safeMatches, activeClass, tournamentTables?.data])
+  }, [safeMatches, activeClass, tournamentTables])
 
   const uniqueGamedays = useMemo(
     () => getUniqueGamedays(classFilteredMatches),
@@ -103,7 +86,7 @@ function RouteComponent() {
   )
 
   const uniqueClasses = useMemo(
-    () => getUniqueClasses(tournamentTables?.data || []),
+    () => getUniqueClasses(tournamentTables || []),
     [],
   )
 
@@ -237,11 +220,11 @@ function RouteComponent() {
       })
     }
 
-    const table = tournamentTables?.data?.find(
-      (tbl) => tbl.class === activeClass,
+    const table = tournamentTables.find(
+      (tbl) => tbl.group.class === activeClass,
     )
 
-    if (table?.type === GroupType.CHAMPIONS_LEAGUE) {
+    if (table?.group.type === GroupType.CHAMPIONS_LEAGUE) {
       setActiveDay(bestDayIndex)
     } else {
       setActiveDay('all')
@@ -251,7 +234,7 @@ function RouteComponent() {
   }, [uniqueGamedays])
 
   // Early return for no data
-  if (!matchesData?.data || !Array.isArray(matchesData.data)) {
+  if (!matchesData?.data.matches || !Array.isArray(matchesData.data.matches)) {
     return (
       <div className="p-6 text-center rounded-sm">
         <p className="text-stone-500">{t('competitions.errors.no_groups')}</p>
@@ -259,7 +242,7 @@ function RouteComponent() {
     )
   }
 
-  if (matchesData.data.length === 0) {
+  if (matchesData.data.matches.length === 0) {
     return (
       <div className="p-6 text-center rounded-sm">
         <p className="text-stone-500">{t('competitions.errors.no_schedule')}</p>

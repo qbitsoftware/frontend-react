@@ -1,9 +1,10 @@
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "./axiosconf";
 import { ParticipantFormValues } from "@/routes/admin/tournaments/$tournamentid/-components/participant-forms/form-utils";
 import { Participant } from "@/types/participants";
 import { selectedTeams } from "@/routes/admin/tournaments/$tournamentid/grupid/$groupid/osalejad/-components/new-double";
-import { useWS } from "@/providers/wsProvider";
+import { TournamentTableWithStagesResponse } from "./tables";
+import { TableInfoResponse } from "./match";
 
 export type ParticipantResponse = {
     data: Participant | null
@@ -15,18 +16,6 @@ export type ParticipantsResponse = {
     data: Participant[] | null
     message: string;
     error: string | null
-}
-
-export function UseGetTournamentParticipants(tournament_id: number) {
-    return queryOptions<ParticipantsResponse>({
-        queryKey: ["participants", tournament_id],
-        queryFn: async () => {
-            const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/participants`, {
-                withCredentials: true,
-            })
-            return data;
-        }
-    })
 }
 
 export function UseGetTournamentParticipantsQuery(tournament_id: number) {
@@ -41,18 +30,6 @@ export function UseGetTournamentParticipantsQuery(tournament_id: number) {
     })
 }
 
-
-export function UseGetParticipants(tournament_id: number, table_id: number) {
-    return queryOptions<ParticipantsResponse>({
-        queryKey: ["participants", table_id],
-        queryFn: async () => {
-            const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants`, {
-                withCredentials: true,
-            })
-            return data;
-        }
-    })
-}
 
 export function UseGetParticipantsQuery(tournament_id: number, table_id: number, regrouped: boolean = false, initialData?: ParticipantsResponse) {
     return useQuery<ParticipantsResponse>({
@@ -70,23 +47,28 @@ export function UseGetParticipantsQuery(tournament_id: number, table_id: number,
 
 export function UseCreateParticipants(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
-        mutationFn: async (formData: ParticipantFormValues): Promise<ParticipantResponse> => {
+        mutationFn: async (formData: ParticipantFormValues): Promise<ParticipantsResponse> => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants`, formData, {
                 withCredentials: true,
             })
             return data;
         },
-        onSuccess: (data: ParticipantResponse) => {
-            if (!connected) {
-                queryClient.setQueryData(["participants", table_id],
-                    (oldData: ParticipantsResponse | undefined) => {
-                        if (!oldData) return { data: [data.data], message: data.message, error: null };
-                        return data
+        onSuccess: (data: ParticipantsResponse) => {
+            queryClient.setQueryData(["tournament_table", table_id],
+                (oldData: TournamentTableWithStagesResponse) => {
+                    if (oldData.data && data.data) {
+                        return {
+                            ...oldData,
+                            data: {
+                                ...oldData.data,
+                                participants: data.data
+                            }
+                        }
                     }
-                )
-            }
+                    return oldData
+                }
+            )
         }
     })
 }
@@ -98,7 +80,6 @@ type UpdateParticipantArgs = {
 
 export function UseUpdateParticipant(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
 
     return useMutation<ParticipantsResponse, Error, UpdateParticipantArgs>({
         mutationFn: async ({ formData, participantId }) => {
@@ -110,39 +91,26 @@ export function UseUpdateParticipant(tournament_id: number, table_id: number) {
             return data
         },
         onSuccess: (data: ParticipantsResponse) => {
-            if (!connected) {
-                queryClient.setQueryData(["participants", table_id],
-                    (oldData: ParticipantsResponse | undefined) => {
-                        if (!oldData || !oldData.data) return oldData;
-                        const updatedParticipantsMap = new Map(
-                            // we can put ? since always there is atleast one participant ( updated participant )
-                            data.data?.map(participant => [participant.id, participant])
-                        );
-
-                        const updatedData = oldData.data.map(participant =>
-                            updatedParticipantsMap.has(participant.id)
-                                ? updatedParticipantsMap.get(participant.id)!
-                                : participant
-                        );
-
-                        const sortedData = [...updatedData].sort((a, b) => a.order - b.order);
-
+            queryClient.setQueryData(["tournament_table", table_id],
+                (oldData: TournamentTableWithStagesResponse) => {
+                    if (oldData.data && data.data) {
                         return {
                             ...oldData,
-                            data: sortedData,
-                            message: data.message,
-                            error: null
+                            data: {
+                                ...oldData.data,
+                                participants: data.data
+                            }
                         }
                     }
-                )
-            }
+                    return oldData
+                }
+            )
         }
     })
 }
 
 export function UseDeleteParticipant(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
         mutationFn: async (participantId: string) => {
             const { data } = await axiosInstance.delete(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/${participantId}`, {
@@ -150,16 +118,20 @@ export function UseDeleteParticipant(tournament_id: number, table_id: number) {
             })
             return data;
         },
-        onSuccess: (data: ParticipantResponse) => {
+        onSuccess: (data: ParticipantsResponse) => {
             // Update cache by filtering out the deleted participant
-            if (!connected) {
-                queryClient.setQueryData(["participants", table_id],
-                    (oldData: ParticipantsResponse | undefined) => {
-                        if (data) return data
-                        if (!oldData || !oldData.data) return oldData;
+            queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (oldData && oldData.data && data.data) {
+                    return {
+                        ...oldData,
+                        data: {
+                            ...oldData.data,
+                            participants: data.data
+                        }
                     }
-                )
-            }
+                }
+                return oldData
+            })
         }
     })
 }
@@ -169,6 +141,7 @@ export type Order = {
 }
 
 export function UsePostSeeding(tournament_id: number, table_id: number) {
+    const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (order: Order) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/seed`, order, {
@@ -176,12 +149,23 @@ export function UsePostSeeding(tournament_id: number, table_id: number) {
             })
             return data;
         },
+        onSuccess: (data: TableInfoResponse) => {
+            queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (!oldData) return data;
+                return {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        group: data.data ? data.data.tournament_table : oldData.data,
+                    }
+                }
+            })
+        }
     })
 }
 
 export function UsePostOrder(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
         mutationFn: async () => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/order?order=rating`, {}, {
@@ -189,10 +173,19 @@ export function UsePostOrder(tournament_id: number, table_id: number) {
             })
             return data;
         },
-        onSuccess: () => {
-            if (!connected) {
-                queryClient.invalidateQueries({ queryKey: ["participants", table_id] })
-            }
+        onSuccess: (data: ParticipantsResponse) => {
+            queryClient.setQueryData(["tournament_table", table_id],
+                (oldData: TournamentTableWithStagesResponse) => {
+                    if (!oldData || !oldData.data) return oldData;
+                    return {
+                        ...oldData,
+                        data: {
+                            ...oldData.data,
+                            participants: data.data ? data.data : oldData.data.participants
+                        }
+                    }
+                }
+            )
         },
     })
 }
@@ -201,7 +194,6 @@ export function UsePostOrder(tournament_id: number, table_id: number) {
 
 export function UsePostOrderReset(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
         mutationFn: async () => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/reset`, {}, {
@@ -209,21 +201,19 @@ export function UsePostOrderReset(tournament_id: number, table_id: number) {
             })
             return data;
         },
-        onSuccess: () => {
-            if (!connected) {
-                queryClient.invalidateQueries({ queryKey: ["participants", table_id] })
-                queryClient.invalidateQueries({ queryKey: ["bracket", table_id] })
-                queryClient.invalidateQueries({ queryKey: ["matches", table_id] })
-                queryClient.invalidateQueries({ queryKey: ['matches_group', table_id] })
-                queryClient.resetQueries({ queryKey: ["tournament_table", table_id] })
-            }
+        onSuccess: (data: TournamentTableWithStagesResponse) => {
+            queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (data) {
+                    return data
+                }
+                return oldData
+            })
         },
     })
 }
 
 export function UseImportParticipants(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
         mutationFn: async (file: File) => {
             const formData = new FormData();
@@ -242,21 +232,22 @@ export function UseImportParticipants(tournament_id: number, table_id: number) {
             return data;
         },
         onSuccess: (new_data: ParticipantsResponse) => {
-            if (!connected) {
-                queryClient.setQueryData(["participants", table_id], (oldData: ParticipantsResponse) => {
-                    if (!oldData || !oldData.data) return oldData;
-                    return {
-                        ...new_data,
-                    };
-                })
-            }
+            queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (!oldData || !oldData.data) return oldData;
+                return {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        participants: new_data.data ? new_data.data : oldData.data.participants
+                    }
+                };
+            })
         }
     })
 }
 
 export function UsePostParticipantMerge(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
         mutationFn: async (formdata: selectedTeams) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/merge`, formdata, {
@@ -264,17 +255,25 @@ export function UsePostParticipantMerge(tournament_id: number, table_id: number)
             })
             return data;
         },
-        onSuccess: () => {
-            if (!connected) {
-                queryClient.invalidateQueries({ queryKey: ["participants", table_id] })
-            }
+        onSuccess: (data: ParticipantsResponse) => {
+            queryClient.setQueryData(["tournament_table", table_id],
+                (oldData: TournamentTableWithStagesResponse) => {
+                    if (!oldData || !oldData.data) return oldData;
+                    return {
+                        ...oldData,
+                        data: {
+                            ...oldData.data,
+                            participants: data.data ? data.data : oldData.data.participants
+                        }
+                    }
+                }
+            )
         },
     })
 }
 
 export function UsePostParticipantJoin(tournament_id: number, table_id: number, type: 'dynamic' | 'doubles') {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
         mutationFn: async () => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/join?type=${type}`, {}, {
@@ -282,10 +281,19 @@ export function UsePostParticipantJoin(tournament_id: number, table_id: number, 
             })
             return data;
         },
-        onSuccess: () => {
-            if (!connected) {
-                queryClient.invalidateQueries({ queryKey: ["participants", table_id] })
-            }
+        onSuccess: (data: ParticipantsResponse) => {
+            queryClient.setQueryData(["tournament_table", table_id],
+                (oldData: TournamentTableWithStagesResponse) => {
+                    if (!oldData || !oldData.data) return oldData;
+                    return {
+                        ...oldData,
+                        data: {
+                            ...oldData.data,
+                            participants: data.data ? data.data : oldData.data.participants
+                        }
+                    }
+                }
+            )
         },
     })
 }
@@ -302,6 +310,7 @@ export function UsePostParticipantMove(tournament_id: number, table_id: number) 
 }
 
 export function UsePostParticipantRegister(tournament_id: number, table_id: number, participant_id: string, player_id: string) {
+    const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async () => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/${participant_id}/player/${player_id}/register`, {}, {
@@ -309,10 +318,35 @@ export function UsePostParticipantRegister(tournament_id: number, table_id: numb
             })
             return data;
         },
+        onSuccess: (data: { data: number, message: string, error: any }) => {
+            queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (!oldData || !oldData.data) return oldData;
+                const updatedParticipants = oldData.data.participants.map(participant => {
+                    if (participant.id === participant_id) {
+                        const updatedPlayers = participant.players.map(player => {
+                            if (player.id === player_id) {
+                                return { ...player, registration_id: data.data };
+                            }
+                            return player;
+                        });
+                        return { ...participant, players: updatedPlayers };
+                    }
+                    return participant;
+                });
+                return {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        participants: updatedParticipants
+                    }
+                };
+            })
+        }
     })
 }
 
 export function UsePostParticipantUnregister(tournament_id: number, table_id: number, participant_id: string, player_id: string) {
+    const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (registration_id: number) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/${participant_id}/player/${player_id}/unregister/${registration_id}`, {}, {
@@ -320,5 +354,29 @@ export function UsePostParticipantUnregister(tournament_id: number, table_id: nu
             })
             return data;
         },
+        onSuccess: () => {
+            queryClient.setQueryData(["tournament_table", table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (!oldData || !oldData.data) return oldData;
+                const updatedParticipants = oldData.data.participants.map(participant => {
+                    if (participant.id === participant_id) {
+                        const updatedPlayers = participant.players.map(player => {
+                            if (player.id === player_id) {
+                                return { ...player, registration_id: undefined };
+                            }
+                            return player;
+                        });
+                        return { ...participant, players: updatedPlayers };
+                    }
+                    return participant;
+                });
+                return {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        participants: updatedParticipants
+                    }
+                };
+            })
+        }
     })
 }

@@ -1,50 +1,53 @@
-import { TournamentTable } from '@/types/groups'
+import { getRealParticipantLength } from '@/components/utils/utils'
+import { TournamentTableWithStages } from '@/queries/tables'
+import { DialogType } from '@/types/groups'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 
 interface Props {
-    groups: TournamentTable[]
+    groups: TournamentTableWithStages[]
     tournament_id: number
 }
 
 export default function GroupDropdown({ groups, tournament_id }: Props) {
     const { t } = useTranslation()
-    
+
     const truncateClassName = (className: string, maxLength: number = 15) => {
         if (className.length <= maxLength) return className
         return className.substring(0, maxLength) + '...'
     }
-    
+
     return (
         <>
             <div className="flex-1 overflow-y-auto min-h-0">
                 <div className="py-2">
                     {groups.map((group) => (
                         <Link
-                            key={group.id}
-                            to={`/admin/tournaments/${tournament_id}/grupid/${group.id}`}
+                            key={group.group.id}
+                            to={`/admin/tournaments/${tournament_id}/grupid/${group.group.id}`}
                             className="group flex items-center justify-between px-5 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-400"
                         >
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div className="flex items-center justify-center w-9 h-9 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg group-hover:from-blue-200 group-hover:to-indigo-200 transition-colors flex-shrink-0">
-                                    {/* <span className="text-sm font-bold text-blue-700">{String.fromCharCode(65 + index)}</span> */}
-
-                                    <span className="text-sm font-bold text-blue-700">{group.size}</span>
+                                    <span className="text-sm font-bold text-blue-700">{group.group.size}</span>
                                 </div>
                                 <div className="flex flex-col min-w-0 flex-1">
-                                    <span 
+                                    <span
                                         className="text-sm font-medium text-gray-900 group-hover:text-blue-900"
-                                        title={group.class}
+                                        title={group.group.class}
                                     >
-                                        {truncateClassName(group.class)}
+                                        {truncateClassName(group.group.class)}
                                     </span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
                                 <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 group-hover:bg-blue-100 rounded-full transition-colors">
                                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                                    <span className="text-xs font-medium text-gray-600 group-hover:text-blue-700">{group.participants.length}</span>
+                                    {(() => {
+                                        const r_participants = getRealParticipantLength(group.participants, group.group)
+                                        return group.group.dialog_type === DialogType.DT_DOUBLES || group.group.dialog_type === DialogType.DT_FIXED_DOUBLES ? r_participants.right_side : r_participants.total
+                                    })()}
                                 </div>
                                 <svg className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

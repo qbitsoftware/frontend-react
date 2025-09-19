@@ -1,8 +1,10 @@
+import { TournamentTableWithStages } from '@/queries/tables'
 import { Tournament } from '@/types/tournaments'
 import React, { createContext, useContext, ReactNode } from 'react'
 
 interface TournamentContextProps {
   tournamentData: Tournament
+  tournamentTables: TournamentTableWithStages[]
   children?: ReactNode
 }
 
@@ -18,14 +20,15 @@ export const useTournament = () => {
 
 interface ProviderProps {
   tournamentData: Tournament
+  tournamentTables: TournamentTableWithStages[]
   groupId?: number | null
   children?: ReactNode
 }
 
-export const TournamentProvider: React.FC<ProviderProps> = ({ tournamentData, children }) => {
+export const TournamentProvider: React.FC<ProviderProps> = ({ tournamentData, tournamentTables, children }) => {
 
   return (
-    <TournamentContext.Provider value={{ tournamentData }}>
+    <TournamentContext.Provider value={{ tournamentData, tournamentTables }}>
       {children}
     </TournamentContext.Provider>
   )

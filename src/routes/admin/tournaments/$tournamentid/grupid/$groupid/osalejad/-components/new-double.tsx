@@ -1,4 +1,4 @@
-import { ParticipantsResponse, UsePostParticipantMerge } from "@/queries/participants"
+import { UsePostParticipantMerge } from "@/queries/participants"
 import { TournamentTable } from "@/types/groups"
 import { NewSolo } from "./new-solo"
 import { useEffect, useState } from "react"
@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 import { GroupType } from "@/types/matches"
 import { NewTeams } from "./new-teams"
+import { Participant } from "@/types/participants"
 
 export interface selectedTeams {
     type: 'double' | 'round_robin'
@@ -14,21 +15,17 @@ export interface selectedTeams {
 }
 
 interface Props {
-    participant_data: ParticipantsResponse
+    participants: Participant[]
     tournament_id: number
     tournament_table: TournamentTable
     highlightInput?: boolean
 }
 
-export default function NewDouble({ participant_data, tournament_id, tournament_table, highlightInput }: Props) {
+export default function NewDouble({ participants, tournament_id, tournament_table, highlightInput }: Props) {
     const { t } = useTranslation()
     const mergeMutation = UsePostParticipantMerge(tournament_id, tournament_table.id)
-    const soloParticipants = tournament_table.type === GroupType.DYNAMIC ? participant_data.data?.filter(p => p.group_id === "" && p.type !== "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length === 1) || []
-    const teamParticipants = tournament_table.type === GroupType.DYNAMIC ? participant_data.data?.filter(p => p.group_id !== "" || p.type === "round_robin") || [] : participant_data.data?.filter(p => p.players && p.players.length > 1) || []
-    const soloData: ParticipantsResponse = {
-        ...participant_data,
-        data: soloParticipants,
-    }
+    const soloParticipants = tournament_table.type === GroupType.DYNAMIC ? participants.filter(p => p.group_id === "" && p.type !== "round_robin") || [] : participants.filter(p => p.players && p.players.length === 1) || []
+    const teamParticipants = tournament_table.type === GroupType.DYNAMIC ? participants.filter(p => p.group_id !== "" || p.type === "round_robin") || [] : participants.filter(p => p.players && p.players.length > 1) || []
 
     const [selectedTeams, setSelectedTeams] = useState<selectedTeams>()
     useEffect(() => {
@@ -50,11 +47,6 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
         mergeTeams()
     }, [selectedTeams])
 
-    const teamData: ParticipantsResponse = {
-        ...participant_data,
-        data: teamParticipants,
-    }
-
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -72,8 +64,8 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                 </div>
                 <div className="overflow-x-auto">
                     <NewSolo
-                        all_participants={participant_data.data}
-                        participant_data={soloData}
+                        all_participants={participants}
+                        participants={soloParticipants}
                         tournament_id={tournament_id}
                         tournament_table={tournament_table}
                         selectedTeams={selectedTeams}
@@ -99,19 +91,18 @@ export default function NewDouble({ participant_data, tournament_id, tournament_
                 <div className="overflow-x-auto">
                     {tournament_table.type === GroupType.DYNAMIC ? (
                         <NewSolo
-                            all_participants={participant_data.data}
-                            participant_data={teamData}
+                            all_participants={participants}
+                            participants={teamParticipants}
                             tournament_id={tournament_id}
                             tournament_table={tournament_table}
                             selectedTeams={selectedTeams}
                             setSelectedTeams={setSelectedTeams}
                             highlightInput={highlightInput}
-                            // isSecondary={true}
                             renderRR
                         />
                     ) : (
                         <NewTeams
-                            participant_data={teamData}
+                            participants={teamParticipants}
                             tournament_id={tournament_id}
                             tournament_table={tournament_table}
                             highLightInput={highlightInput}

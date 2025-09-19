@@ -3,18 +3,18 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, formatDateString } from "@/lib/utils";
 import { useTournament } from "./tournament-provider";
 import { useTranslation } from "react-i18next";
-import { TournamentTable } from "@/types/groups";
 import { Calendar, MapPin } from "lucide-react";
+import { TournamentTableWithStages } from "@/queries/tables";
 
 interface Props {
-  tournament_tables: TournamentTable[]
+  tournament_tables: TournamentTableWithStages[]
 }
 
 const Navbar = ({ tournament_tables }: Props) => {
   const { t } = useTranslation()
 
   // Get the first available tournament table for direct bracket navigation
-  const firstTableId = tournament_tables.length > 0 ? tournament_tables[0].id : null;
+  const firstTableId = tournament_tables.length > 0 ? tournament_tables[0].group.id : null;
   const resultsHref = firstTableId ? `/tulemused/${firstTableId}` : "/tulemused";
 
   const NavLinks = [
@@ -54,7 +54,7 @@ const Navbar = ({ tournament_tables }: Props) => {
   // Filter out "Juhend" if no champions_league table exists
   const filteredNavLinks = NavLinks.filter(link => {
     if (link.name === t("competitions.navbar.guide") || link.name === t("competitions.navbar.sponsors")) {
-      return tournament_tables.some(table => table.type === "champions_league");
+      return tournament_tables.some(table => table.group.type === "champions_league");
     }
     return true;
   });
@@ -85,7 +85,7 @@ const Navbar = ({ tournament_tables }: Props) => {
                   <span className="truncate">{tournament.location}</span>
                 </div>
               </div>
-              
+
               {/* Desktop: Stacked layout */}
               <div className="hidden md:block space-y-1 sm:space-y-2">
                 <div className="flex items-center justify-start gap-2 text-sm md:text-base lg:text-lg text-blue-100 font-medium">

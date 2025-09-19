@@ -13,12 +13,12 @@ import blueprofile from "@/assets/blue-profile.png";
 import { useTranslation } from "react-i18next";
 import { ImageModal } from "./image-modal";
 import { Participant } from "@/types/participants";
-import { TournamentTable } from "@/types/groups";
 import { GroupType } from "@/types/matches";
+import { TournamentTableWithStages } from "@/queries/tables";
 
 interface SoloTableProps {
   participants: Participant[] | null;
-  table_data: TournamentTable
+  table_data: TournamentTableWithStages
 }
 
 const SoloTable: React.FC<SoloTableProps> = ({ participants, table_data }) => {
@@ -34,7 +34,7 @@ const SoloTable: React.FC<SoloTableProps> = ({ participants, table_data }) => {
     setSelectedImage(null);
   };
 
-  const filteredParticipants = participants && participants.filter((participant) => ((table_data.type === GroupType.ROUND_ROBIN || table_data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT || table_data.type === GroupType.DYNAMIC) ? participant.group_id != "" : participant))
+  const filteredParticipants = participants && participants.filter((participant) => ((table_data.group.type === GroupType.ROUND_ROBIN || table_data.group.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT || table_data.group.type === GroupType.DYNAMIC) ? participant.group_id != "" : participant))
 
   return (
     <div className="h-full bg-white rounded-md">

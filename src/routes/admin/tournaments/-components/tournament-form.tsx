@@ -242,6 +242,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
 
   let postMutation = UsePostTournament();
   if (initial_data) {
+    //@ts-ignore
     postMutation = UsePatchTournament(initial_data.id);
   }
 
@@ -549,6 +550,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
                             placeholder={t(
                               "admin.tournaments.create_tournament.number_of_tables_placeholder"
                             )}
+                            onWheel={(e) => e.currentTarget.blur()}
                             className="h-10"
                             {...field}
                             onChange={(e) => {

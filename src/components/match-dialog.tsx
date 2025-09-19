@@ -131,8 +131,6 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
 
   const usePatchMatch = UsePatchMatch(
     tournamentId,
-    match.match.tournament_table_id,
-    match.match.id,
   );
 
   const useResetMatch = UsePatchMatchReset(
@@ -224,7 +222,7 @@ const MatchDialog: React.FC<MatchDialogProps> = ({
     }
 
     try {
-      await usePatchMatch.mutateAsync(sendMatch);
+      await usePatchMatch.mutateAsync({ group_id: match.match.tournament_table_id, match_id: match.match.id, match: sendMatch });
       toast.message(t("toasts.protocol_modals.updated_match_score"));
       await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {

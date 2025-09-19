@@ -4,7 +4,7 @@ import ReGrouping from "./regrouping";
 import TimeEditingModal from "./time-editing-modal";
 import { useTranslation } from "react-i18next";
 import { GroupType, MatchState, MatchWrapper } from "@/types/matches";
-import { DialogType, TournamentTable } from "@/types/groups";
+import { DialogType } from "@/types/groups";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ProtocolModalProvider } from "@/providers/protocolProvider";
 import { TableTennisProtocolModal } from "./tt-modal/tt-modal";
@@ -12,14 +12,16 @@ import MatchDialog from "@/components/match-dialog";
 import { MatchesTable } from "./matches-table";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import PlacementCompletionModal from "./placement-completion-modal";
+import { TournamentTableWithStages } from "@/queries/tables";
 
 interface MatchesProps {
   data: MatchWrapper[] | [];
   all_matches: MatchWrapper[] | [];
   tournament_id: number;
-  tournament_table: TournamentTable;
+  tournament_table: TournamentTableWithStages;
   player_count: number;
   openMatchId?: string;
+  tournamentProgress?: React.ReactElement;
 }
 
 export type FilterOptions = MatchState | "all";
@@ -31,6 +33,7 @@ export const Matches: React.FC<MatchesProps> = ({
   player_count,
   all_matches,
   openMatchId,
+  tournamentProgress,
 }: MatchesProps) => {
   const [isRegroupingModalOpen, setIsRegroupingModalOpen] = useState(false);
   const [isTimeEditingModalOpen, setIsTimeEditingModalOpen] = useState(false);
@@ -107,7 +110,7 @@ export const Matches: React.FC<MatchesProps> = ({
       }
       navigate({
         to: '/admin/tournaments/$tournamentid/grupid/$groupid/mangud',
-        params: { tournamentid: String(tournament_id), groupid: String(tournament_table.id) },
+        params: { tournamentid: String(tournament_id), groupid: String(tournament_table.group.id) },
         search: {
           openMatch: undefined,
           filter: next.join(","),
@@ -147,8 +150,8 @@ export const Matches: React.FC<MatchesProps> = ({
     // Apply sorting logic similar to the main tournament view
     const sortMatches = (matches: MatchWrapper[]) => {
       return matches.slice().sort((a, b) => {
-        const isTimetableA = tournament_table.time_table === true;
-        const isTimetableB = tournament_table.time_table === true;
+        const isTimetableA = tournament_table.group.time_table === true;
+        const isTimetableB = tournament_table.group.time_table === true;
 
         if (isTimetableA && isTimetableB) {
           return new Date(a.match.start_date).getTime() - new Date(b.match.start_date).getTime();
@@ -186,17 +189,39 @@ export const Matches: React.FC<MatchesProps> = ({
       });
     };
 
-    const ongoing = sortMatches(validMatches.filter(m => m.match.state === MatchState.ONGOING));
+    const sortOngoingByTable = (matches: MatchWrapper[]) => {
+      return matches.slice().sort((a, b) => {
+        const tableStrA = a.match.extra_data?.table || "0";
+        const tableStrB = b.match.extra_data?.table || "0";
+
+        // Convert to numbers with explicit base 10
+        const tableA = Number(tableStrA);
+        const tableB = Number(tableStrB);
+
+        // Ensure they're valid numbers
+        const numA = isNaN(tableA) ? 0 : tableA;
+        const numB = isNaN(tableB) ? 0 : tableB;
+
+        if (numA !== numB) {
+          return numA - numB;
+        }
+
+
+        return a.match.id.localeCompare(b.match.id);
+      });
+    };
+
+    const ongoing = sortOngoingByTable(validMatches.filter(m => m.match.state === MatchState.ONGOING));
     const created = sortMatches(validMatches.filter(m => m.match.state === MatchState.CREATED));
     const finished = sortMatches(validMatches.filter(m => m.match.state === MatchState.FINISHED));
 
     // Return early for non-round-robin tournaments
-    if (tournament_table.type !== GroupType.DYNAMIC && tournament_table.type !== GroupType.ROUND_ROBIN) {
+    if (tournament_table.group.type !== GroupType.DYNAMIC && tournament_table.group.type !== GroupType.ROUND_ROBIN) {
       return [...ongoing, ...created, ...finished];
     }
 
     // If round-robin, apply additional sorting for participant spacing and group alternation
-    if (tournament_table.type === GroupType.DYNAMIC || tournament_table.type === GroupType.ROUND_ROBIN) {
+    if (tournament_table.group.type === GroupType.DYNAMIC || tournament_table.group.type === GroupType.ROUND_ROBIN) {
       const grouped = sortedByState.reduce((acc, match) => {
         const state = match.match.state;
         if (!acc[state]) acc[state] = [];
@@ -269,8 +294,10 @@ export const Matches: React.FC<MatchesProps> = ({
       // Apply round-robin sorting to each state group
       const finalResult: MatchWrapper[] = [];
       [MatchState.ONGOING, MatchState.CREATED, MatchState.FINISHED].forEach(state => {
-        if (grouped[state]) {
+        if (grouped[state] && state !== MatchState.ONGOING) {
           finalResult.push(...sortRoundRobinMatches(grouped[state]));
+        } else if (grouped[state]) {
+          finalResult.push(...sortOngoingByTable(grouped[state]));
         }
       });
 
@@ -296,7 +323,8 @@ export const Matches: React.FC<MatchesProps> = ({
     return (
       <Card className="w-full border-stone-100">
         <CardHeader className="flex flex-row w-full items-center justify-between space-y-0">
-          <div className="flex gap-4 flex-col">
+          <div className="flex gap-4 flex-col w-full">
+            {tournamentProgress}
             {/* Compact filter checkboxes */}
             <div className="flex flex-col sm:flex-row">
               <label className="flex items-center gap-1 px-1 py-0 text-xs font-normal">
@@ -338,11 +366,11 @@ export const Matches: React.FC<MatchesProps> = ({
             </div>
             <div>
               <div className="flex gap-4  text-xs text-gray-600">
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className="text-sm font-bold text-gray-900">
                   <span className="font-light text-base">
                     {t("admin.tournaments.groups.layout.games_title")}
                   </span>{" "}
-                  {tournament_table.class}
+                  {tournament_table.group.class}
                 </h3>
                 <div className="flex flex-col sm:flex-row">
                   <div className="flex items-center gap-1">
@@ -362,7 +390,7 @@ export const Matches: React.FC<MatchesProps> = ({
             </div>
           </div>
 
-          {tournament_table.type === GroupType.CHAMPIONS_LEAGUE && (
+          {tournament_table.group.type === GroupType.CHAMPIONS_LEAGUE && (
             <div className="flex gap-1 border bg-[#FAFCFE] py-1 px-0 rounded-md">
               <Button
                 variant="ghost"
@@ -403,9 +431,9 @@ export const Matches: React.FC<MatchesProps> = ({
             active_participant={activeParticipant}
           />
           {selectedMatch &&
-            (tournament_table.solo ||
-              (!tournament_table.solo &&
-                tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
+            (tournament_table.group.solo ||
+              (!tournament_table.group.solo &&
+                tournament_table.group.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
             <MatchDialog
               open={isOpen}
               onClose={handleModalClose}
@@ -414,7 +442,7 @@ export const Matches: React.FC<MatchesProps> = ({
             />
           ) : (
             selectedMatch &&
-            (tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES || tournament_table.type === GroupType.CHAMPIONS_LEAGUE) && (
+            (tournament_table.group.dialog_type == DialogType.DT_TEAM_LEAGUES || tournament_table.group.type === GroupType.CHAMPIONS_LEAGUE) && (
               <ProtocolModalProvider
                 isOpen={isOpen}
                 onClose={handleModalClose}
@@ -435,7 +463,7 @@ export const Matches: React.FC<MatchesProps> = ({
         />
         <TimeEditingModal
           matches={all_matches}
-          tournamentTableId={tournament_table.id}
+          tournamentTableId={tournament_table.group.id}
           tournamentId={tournament_id}
           isOpen={isTimeEditingModalOpen}
           onClose={() => setIsTimeEditingModalOpen(false)}

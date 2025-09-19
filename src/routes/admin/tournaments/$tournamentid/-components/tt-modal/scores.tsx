@@ -33,7 +33,7 @@ const Scores = () => {
                         </span>
                         <span className="text-2xl font-bold">
                             {!isLoading && childMatches && childMatches.data
-                                ? childMatches.data.reduce(
+                                ? childMatches.data.matches.reduce(
                                     (total, match) =>
                                         total +
                                         (match.match.winner_id === match.p1.id
@@ -56,7 +56,7 @@ const Scores = () => {
                         </span>
                         <span className="text-2xl font-bold">
                             {!isLoading && childMatches && childMatches.data
-                                ? childMatches.data.reduce(
+                                ? childMatches.data.matches.reduce(
                                     (total, match) =>
                                         total +
                                         (match.match.winner_id === match.p2.id &&
@@ -94,7 +94,7 @@ const Scores = () => {
                             {!isLoading &&
                                 childMatches &&
                                 childMatches.data &&
-                                childMatches.data.map((player_match) => (
+                                childMatches.data.matches.map((player_match) => (
                                     <TableRow
                                         key={player_match.match.id}
                                         className="hover:bg-gray-50"

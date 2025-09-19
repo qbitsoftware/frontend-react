@@ -1,9 +1,9 @@
 import { TournamentTable } from "@/types/groups";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "./axiosconf";
-import TournamentTableForm from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
+import { TournamentTableFormSchema } from "@/routes/admin/tournaments/$tournamentid/grupid/-components/table-form";
 import { TimeTableFormValues } from "@/routes/admin/tournaments/$tournamentid/ajakava/seaded/-components/timetable-configurations-form";
-import { useWS } from "@/providers/wsProvider";
+import { Participant } from "@/types/participants";
 
 export interface TournamentTableResponse {
     data: TournamentTable | null
@@ -18,12 +18,13 @@ export interface TournamentTableWithStagesResponse {
 }
 
 export interface TournamentTableWithStages {
-    group: TournamentTable | null;
+    group: TournamentTable;
     stages: TournamentTable[] | null;
+    participants: Participant[];
 }
 
-interface TournamentTablesResponse {
-    data: TournamentTable[] | null
+export interface TournamentTablesResponse {
+    data: TournamentTableWithStages[] | null
     message: string;
     error: string | null;
 }
@@ -75,8 +76,31 @@ export const UseGetTournamentTable = (tournament_id: number, tournament_table_id
             })
             return data;
         },
-        staleTime: 5 * 60 * 1000,
-        gcTime: 30 * 60 * 1000,
+        select: (data) => {
+            const orderedParticipants = data.data.participants.map(participant => {
+                if (!participant.players) {
+                    return participant
+                }
+                const sortedPlayers = [...participant.players].sort((a, b) => {
+                    if (a.rank === 0 && b.rank !== 0) return 1
+                    if (b.rank === 0 && a.rank !== 0) return -1
+                    if (a.rank === 0 && b.rank === 0) return 0
+                    return a.rank - b.rank
+                })
+                return {
+                    ...participant,
+                    players: sortedPlayers
+                }
+            })
+
+            return {
+                ...data,
+                data: {
+                    ...data.data,
+                    participants: orderedParticipants
+                }
+            }
+        }
     })
 }
 
@@ -96,48 +120,77 @@ export const UseGetTournamentTableQuery = (tournament_id: number, tournament_tab
 export const UsePatchTournamentTable = (tournament_id: number, tournament_table_id: number) => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (formData: TournamentTableForm) => {
+        mutationFn: async (formData: TournamentTableFormSchema) => {
             const { data } = await axiosInstance.patch(`/api/v1/tournaments/${tournament_id}/tables/${tournament_table_id}`, formData, {
                 withCredentials: true
             })
             return data;
         },
 
-        onSuccess: (data: TournamentTableResponse) => {
-            queryClient.setQueryData(["tournament_table", tournament_table_id], (oldData: TournamentTableResponse) => {
-                if (oldData) {
-                    oldData.data = data.data
-                    oldData.message = data.message
-                    oldData.error = data.error
+        onSuccess: (data: TournamentTablesResponse) => {
+            queryClient.setQueryData(["tournament_table", tournament_table_id], (oldData: TournamentTableWithStagesResponse) => {
+                if (oldData && data && data.data) {
+                    data.data.map((table) => {
+                        if (table.group.id === tournament_table_id) {
+                            return {
+                                data: table,
+                                message: "",
+                                error: null,
+                            }
+                        }
+                    })
                 }
                 return oldData
             })
-            // queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-            // ["tournament_tables_query", tournament_id]
-            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-            queryClient.invalidateQueries({ queryKey: ['participants', tournament_table_id] })
-            queryClient.invalidateQueries({ queryKey: ['bracket', tournament_table_id] })
-            queryClient.invalidateQueries({ queryKey: ['matches', tournament_table_id] })
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], () => {
+                return data
+            })
         }
     })
 }
 
 export const UsePostTournamentTable = (tournament_id: number) => {
     const queryClient = useQueryClient()
-    const { connected } = useWS()
     return useMutation({
-        mutationFn: async (formData: TournamentTableForm) => {
+        mutationFn: async (formData: TournamentTableFormSchema) => {
             const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables`, formData, {
                 withCredentials: true
             })
             return data;
         },
 
-        onSuccess: () => {
-            if (!connected) {
-                queryClient.resetQueries({ queryKey: ['tournament_tables', tournament_id] })
-                queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-            }
+        onSuccess: (data: TournamentTableWithStagesResponse) => {
+            queryClient.setQueryData(["tournament_table", data.data.group.id], (oldData: TournamentTableWithStagesResponse) => {
+                if (data) {
+                    return data
+                }
+                return oldData
+            })
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], (oldData: TournamentTablesResponse) => {
+                if (oldData && oldData.data) {
+                    let seen = false
+                    oldData.data.map((tt) => {
+                        if (tt.group.id === data.data.group.id) {
+                            seen = true
+                            return {
+                                ...oldData,
+                            }
+                        }
+                    })
+                    if (!seen) {
+                        return {
+                            ...oldData,
+                            data: [...oldData.data, data.data]
+                        }
+                    }
+                } else {
+                    return {
+                        data: [data.data],
+                        message: "",
+                        error: null,
+                    }
+                }
+            })
         }
     })
 }
@@ -151,9 +204,18 @@ export const UseDeleteTournamentTable = (tournament_id: number, tournament_table
             })
             return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tournament_tables_query', tournament_id] })
-        },
+
+        onSuccess: (data: TournamentTablesResponse) => {
+            queryClient.setQueryData(["tournament_table", tournament_table_id], (oldData: TournamentTableWithStagesResponse) => {
+                return {
+                    ...oldData,
+                    data: null
+                }
+            })
+            queryClient.setQueryData(["tournament_tables_query", tournament_id], () => {
+                return data
+            })
+        }
     })
 }
 
