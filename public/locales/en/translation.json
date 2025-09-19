@@ -482,6 +482,7 @@
       "player_added": "Player added successfully",
       "player_removed": "Player removed",
       "player_already_added": "This player has already been added to the list",
+      "player_has_active_license": "This player already has an active license",
       "redirecting": "License purchasing functionality is currently in development"
     },
     "validation": {

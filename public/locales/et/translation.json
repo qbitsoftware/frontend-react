@@ -520,6 +520,7 @@
       "player_added": "Mängija edukalt lisatud",
       "player_removed": "Mängija eemaldatud",
       "player_already_added": "See mängija on juba nimekirja lisatud",
+      "player_has_active_license": "Sellel mängijal on juba kehtiv litsents",
       "redirecting": "Litsentisde ostmise funktsionaalsus on hetkel arenduses"
     },
     "validation": {

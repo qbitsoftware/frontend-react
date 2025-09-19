@@ -243,7 +243,17 @@ function RouteComponent() {
   }
 
   const handlePlayerSelect = (user: User) => {
-    // Check if player is already added by ELTL ID
+    console.log(user.license)
+    if (user.license && user.expiration_date) {
+      const expirationDate = new Date(user.expiration_date)
+      const currentDate = new Date()
+
+      if (expirationDate > currentDate) {
+        toast.error(t('licenses.toasts.player_has_active_license'))
+        return
+      }
+    }
+
     if (user.eltl_id && user.eltl_id > 0) {
       const isAlreadyAdded = players.some(
         (existingPlayer) => existingPlayer.eltl_id === user.eltl_id
