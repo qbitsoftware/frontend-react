@@ -44,7 +44,7 @@ export const categories: CategoryItem[] = [
 
 // Define the search params schema
 const searchParamsSchema = z.object({
-  page: z.coerce.number().default(1),
+  page: z.coerce.number().optional(),
   category: z.string().optional(),
   search: z.string().optional(),
 })

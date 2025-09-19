@@ -140,10 +140,10 @@ const TableStatusSidebar = () => {
       // Get the match ID from the table data
       const matchId = tournamentTables?.data?.find(t => t.id.toString() === table.id)?.match?.match?.id;
 
-      const searchParams = matchId ? { openMatch: matchId.toString() } : {};
+      const searchParams = matchId ? { openMatch: matchId.toString(), activeGroups: String(table.tournament_table_id) } : {};
 
       router.navigate({
-        to: `/admin/tournaments/${tournamentid}/grupid/${table.tournament_table_id}/mangud`,
+        to: `/admin/tournaments/${tournamentid}/mangud`,
         search: searchParams,
       });
     }

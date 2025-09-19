@@ -40,7 +40,6 @@ function RouteComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const params = useParams({ from: "/admin/tournaments/$tournamentid" })
   const search = useSearch({ from: "/admin/tournaments/$tournamentid/mangud/" });
-  // const { data: tablesQuery, isLoading: isLoadingTables } = UseGetTournamentTablesQuery(Number(params.tournamentid))
   const { t } = useTranslation()
   const { data: matchData, isLoading: isLoadingMatches } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
   const { tournamentTables } = useTournament()
@@ -57,6 +56,21 @@ function RouteComponent() {
       : ["all"];
     setFilterValue(urlFilterValue);
   }, [search.filter]);
+
+  useEffect(() => {
+    if (search.openMatch && matchData) {
+      const match = matchData.data?.matches.find(m => m.match.id === search.openMatch);
+      if (match) {
+        setSelectedMatch(match);
+        setSelectedTournamentTable(tableMap.get(match.match.tournament_table_id) || null);
+        setIsOpen(true);
+      }
+    } else {
+      setIsOpen(false);
+      setSelectedMatch(null);
+      setSelectedTournamentTable(null);
+    }
+  }, [search.openMatch, matchData, tableMap]);
 
 
   const filteredData = useMemo(() => {
