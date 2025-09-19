@@ -54,9 +54,9 @@ function RouteComponent() {
   }, [tournamentTables])
 
   const safeMatches = useMemo(() => {
-    if (!matchesData?.data || !Array.isArray(matchesData.data)) return []
-    return getUniqueMatches(matchesData.data)
-  }, [matchesData?.data])
+    if (!matchesData?.data.matches || !Array.isArray(matchesData.data.matches)) return []
+    return getUniqueMatches(matchesData.data.matches)
+  }, [matchesData?.data.matches])
 
   const classFilteredMatches = useMemo(() => {
     if (activeClass === 'all') return safeMatches
@@ -234,7 +234,7 @@ function RouteComponent() {
   }, [uniqueGamedays])
 
   // Early return for no data
-  if (!matchesData?.data || !Array.isArray(matchesData.data)) {
+  if (!matchesData?.data.matches || !Array.isArray(matchesData.data.matches)) {
     return (
       <div className="p-6 text-center rounded-sm">
         <p className="text-stone-500">{t('competitions.errors.no_groups')}</p>
@@ -242,7 +242,7 @@ function RouteComponent() {
     )
   }
 
-  if (matchesData.data.length === 0) {
+  if (matchesData.data.matches.length === 0) {
     return (
       <div className="p-6 text-center rounded-sm">
         <p className="text-stone-500">{t('competitions.errors.no_schedule')}</p>
