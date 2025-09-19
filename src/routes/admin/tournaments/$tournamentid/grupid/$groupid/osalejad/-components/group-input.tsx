@@ -43,6 +43,8 @@ export default function GroupInput({ group, tournament_id, tournament_table }: G
         }
     }
 
+    console.log("state", tournament_table.state)
+
     return (
         <div className=''>
             <div className="flex justify-between items-center  bg-[#062842] py-2 rounded-l-sm pr-2">
@@ -55,7 +57,7 @@ export default function GroupInput({ group, tournament_id, tournament_table }: G
                         onBlur={handleNameChange}
                     />
                 </h3>
-                {tournament_table.state < TTState.TT_STATE_MATCHES_CREATED &&
+                {tournament_table.state < TTState.TT_STATE_MATCHES_ASSIGNED &&
                     <Trash
                         className="h-6 w-6 text-red-500 cursor-pointer hover:text-red-700"
                         onClick={handleDeleteGroup}
