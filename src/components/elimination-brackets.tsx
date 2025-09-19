@@ -420,7 +420,7 @@ export const EliminationBrackets = ({
                         <div key={uniqueKey}>
                           {table.name !== "Plussring" && (
                             <div
-                              className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()}`}
+                              className={`font-bold text-lg sm:text-xl lg:text-2xl py-2 sm:py-3 lg:py-4 px-1 sm:px-0 bracket-title bracket-title-${table.name.replace(/\s+/g, "-").toLowerCase()} ${table.name === "Miinusring" && table.matches.length === 1 ? "mb-7" : ""}`}
                             >
                               {table.name}
                             </div>
