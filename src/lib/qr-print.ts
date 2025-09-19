@@ -85,8 +85,8 @@ export const printQRCodeToBlankSheet = async (url: string, title?: string) => {
             .qr-wrapper {
               background: #f8fafc;
               border-radius: 20px;
-              padding: 10px;
-              margin: 24px 0 0px 0;
+              padding: 8px;
+              margin: 24px 0 12px 0;
               display: inline-block;
               border: 3px solid #e2e8f0;
             }
@@ -126,7 +126,7 @@ export const printQRCodeToBlankSheet = async (url: string, title?: string) => {
               color: #4a5568;
               line-height: 1.6;
               padding: 0px 0;
-              margin-top: 8px;
+              margin-top: 12px;
             }
             
             .scan-icon {
