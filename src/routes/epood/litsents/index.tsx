@@ -104,11 +104,11 @@ function RouteComponent() {
 
     if (status === 'cancel') {
       toast.message('Payment was cancelled')
-      window.location.href = '/litsents/cancel'
+      window.location.href = '/epood/litsents/cancel'
       return
     } else if (status === 'failed') {
       toast.error(t('licenses.payment.status.failed'))
-      window.location.href = '/litsents/cancel'
+      window.location.href = '/epood/litsents/cancel'
       return
     }
 
@@ -122,13 +122,13 @@ function RouteComponent() {
           .then((result) => {
             if (result.data?.status === 'active') {
               toast.success(t('licenses.payment.status.success'))
-              window.location.href = '/litsents/success'
+              window.location.href = '/epood/litsents/success'
             } else if (result.data?.status === 'pending') {
               toast.message(t('licenses.payment.status.pending'))
             } else {
               toast.error(t('licenses.payment.status.failed'))
               // Redirect to cancel page
-              window.location.href = '/litsents/cancel'
+              window.location.href = '/epood/litsents/cancel'
             }
           })
           .catch((error) => {
@@ -137,7 +137,7 @@ function RouteComponent() {
           })
       } else if (status === 'success') {
         toast.success(t('licenses.payment.status.success'))
-        window.location.href = '/litsents/success'
+        window.location.href = '/epood/litsents/success'
       }
     }
   }, [t])
