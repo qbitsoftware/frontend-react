@@ -13,7 +13,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useTranslation } from "react-i18next";
 import { TournamentEvent, UseGetHomePageTournamentsQuery } from "@/queries/tournaments";
-import Calendar3MonthView from "./cal-3-month";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import CalTableView from "./cal-table-view";
 import Cal1YearView from "./cal-1-year";
 
 export function TournamentsCalendar() {
@@ -27,6 +29,7 @@ export function TournamentsCalendar() {
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [activeTab, setActiveTab] = useState<string>("three-month");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { t } = useTranslation()
 
@@ -67,7 +70,7 @@ export function TournamentsCalendar() {
         </div>
         
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Select
               value={selectedYear.toString()}
               onValueChange={(value) => setSelectedYear(Number.parseInt(value))}
@@ -83,10 +86,25 @@ export function TournamentsCalendar() {
                 ))}
               </SelectContent>
             </Select>
+
+            {activeTab === "three-month" && (
+              <div className="relative w-full sm:w-96">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder={t('calendar.search_placeholder')}
+                  className="pl-10 bg-white border border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] focus:ring-[#4C97F1]/20 rounded-lg text-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            )}
           </div>
 
           <div>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs value={activeTab} onValueChange={(value) => {
+              setActiveTab(value);
+              setSearchQuery(""); 
+            }}>
               <TabsList className="grid grid-cols-2 bg-white p-1 rounded-lg border border-gray-200 h-8">
                 <TabsTrigger
                   value="three-month"
@@ -109,11 +127,12 @@ export function TournamentsCalendar() {
       <div className="bg-white border border-gray-200/30 rounded-lg p-4">
         <TooltipProvider>
           {activeTab === "three-month" ? (
-            <Calendar3MonthView
+            <CalTableView
               selectedYear={selectedYear}
               isLoading={isLoading}
               error={error}
               tournaments={tournaments}
+              searchQuery={searchQuery}
             />) : (
             <Cal1YearView
               selectedYear={selectedYear}

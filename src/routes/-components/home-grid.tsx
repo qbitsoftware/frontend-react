@@ -6,6 +6,7 @@ import RatingWidget from "./rating-widget";
 import Adboard from "./adboard";
 import { useTranslation } from "react-i18next";
 import VideoBoard from "./videos";
+import RatingRisersCarousel from "./rating-risers-carousel";
 
 const HomePageGrid = () => {
   const { t } = useTranslation();
@@ -22,15 +23,26 @@ const HomePageGrid = () => {
         <div className="absolute inset-0 bg-[url('/sun-tornado.svg')] bg-no-repeat bg-cover opacity-20 block"></div>
       </div>
       <div className="relative z-10">
-        {/* Top Section: News and Calendar - Mobile Stacked, Desktop Side by Side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 my-4 sm:my-6 lg:my-8 mb-8 sm:mb-12 lg:mb-16">
+        <div className="my-4 sm:my-6 lg:my-8">
+          <WidgetWrapper
+            heading={t("homepage.ratingRisers.title")}
+            addr="reiting"
+            icon="arrow_up"
+          >
+            <div className="py-1 px-2 sm:px-4 flex-grow">
+              <RatingRisersCarousel />
+            </div>
+          </WidgetWrapper>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 my-4 sm:my-6 lg:my-8 mb-4 sm:mb-6 lg:mb-8">
           <div className="flex flex-col">
             <WidgetWrapper
               heading={t("homepage.news.name")}
               addr="uudised"
               icon="news"
             >
-              <div className="py-2 px-2 sm:px-4 flex-grow" ref={newsRef}>
+              <div className="py-1 px-2 sm:px-4 flex-grow" ref={newsRef}>
                 <NewsWidget />
               </div>
             </WidgetWrapper>
@@ -41,7 +53,7 @@ const HomePageGrid = () => {
               addr="voistlused"
               icon="calendar"
             >
-              <div className="py-2 px-2 sm:px-4 flex-grow" ref={calendarRef}>
+              <div className="py-1 px-2 sm:px-4 flex-grow" ref={calendarRef}>
                 <CalendarWidget
                 />
               </div>
@@ -49,10 +61,10 @@ const HomePageGrid = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 my-4 sm:my-6 lg:my-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 my-2 sm:my-3 lg:my-4">
           <div className="flex flex-col order-3 sm:order-3 lg:order-1">
             <div className="h-full">
-              <div className="lg:mt-[calc(3.5rem+1px)]">
+              <div className="lg:mt-[calc(3.0rem)]">
                 <div className="p-1 sm:p-2 flex-grow scrollbar-hide overflow-hidden" ref={adboardRef}>
                   <Adboard />
                 </div>
@@ -66,20 +78,19 @@ const HomePageGrid = () => {
               addr="reiting"
               icon="ranking"
             >
-              <div className="py-2 px-1 sm:px-2 flex-grow" ref={ratingRef}>
+              <div className="py-1 px-1 sm:px-2 flex-grow" ref={ratingRef}>
                 <RatingWidget />
               </div>
             </WidgetWrapper>
           </div>
 
-          {/* Videos Widget - Full width on mobile, half width on tablet, quarter width on desktop */}
           <div className="flex flex-col order-2 sm:order-2 lg:order-3">
             <WidgetWrapper
               heading={t("homepage.videoboard.name")}
               addr="#"
               icon="videos"
             >
-              <div className="py-2 px-1 sm:px-2 flex-grow scrollbar-hide overflow-hidden" ref={videosRef}>
+              <div className="py-1 px-1 sm:px-2 flex-grow scrollbar-hide overflow-hidden" ref={videosRef}>
                 <VideoBoard />
               </div>
             </WidgetWrapper>

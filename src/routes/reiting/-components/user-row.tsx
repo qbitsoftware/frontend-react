@@ -95,7 +95,7 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                 ) : (
                     "-"
                 )}
-                {user.rating_last_change != null && user.rating_last_change !== 0 && !(user.rate_order === -(user.rating_last_change) && user.rate_order > 100) && (
+                {user.rating_last_change != null && user.rating_last_change !== 0 && !(user.rate_order === -(user.rating_last_change)) && (
                     <>
                         <svg
                             width="16"

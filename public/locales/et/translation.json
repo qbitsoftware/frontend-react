@@ -122,6 +122,9 @@
         "men": "Kõrgeima Asetusega Mehed",
         "women": "Kõrgeima Asetusega Naised"
       }
+    },
+    "ratingRisers": {
+      "title": "Nädala Tõusjad"
     }
   },
   "feedback": {
@@ -233,7 +236,7 @@
     "tournaments": {
       "title": "Turniiride ülevaade",
       "subtitle": "Siit leiad informatsioon hetkeste avalike turniiride kohta",
-      "searchPlaceholder": "Otsi turniire...",
+      "searchPlaceholder": "Otsi võistlust...",
       "empty": {
         "title": "Turniire ei ole saadaval",
         "description": "Hetkel ei ole ühtegi turniiri registreerimiseks avatud. Vaata varsti uuesti või võta meiega ühendust turniiri korraldamiseks!",
@@ -738,10 +741,10 @@
     "all_categories": "Kõik kategooriad",
     "no_tournaments": "Võistlusi pole veel lisatud",
     "no_tournaments_subtitle": "Hetkel ei ole kalendris ühtki turniiri.",
-    "search_placeholder": "Otsi turniiri...",
+    "search_placeholder": "Otsi võistlust...",
     "upcoming": "Tulemas",
     "finished": "Lõppenud",
-    "3_months": "Kuude lõikes",
+    "3_months": "Tabelina",
     "game_day": "Mängupäev",
     "play_off": "Kohamängud",
     "full_year": "Aasta lõikes",
@@ -762,10 +765,22 @@
       "december": "Detsember"
     }
   },
+  "table_view": {
+    "tournament_name": "Turniir",
+    "dates": "Kuupäevad",
+    "location": "Asukoht",
+    "organizer": "Korraldaja",
+    "category": "Kategooria",
+    "actions": "Tegevused",
+    "view_details": "Vaata detaile",
+    "finals": "Finaal",
+    "gameday": "Mängupäev",
+    "no_tournaments_year": "{{year}} aastaks ei leitud turniire"
+  },
   "tournaments": {
     "header": "Võistlused",
     "inputs": {
-      "search": "Otsi turniiri...",
+      "search": "Otsi võistlust...",
       "start_date": "Alguskuupäev",
       "end_date": "Lõppkuupäev",
       "reset_dates": "Lähtesta kuupäevad",
@@ -1608,7 +1623,7 @@
           "newest": "Uusimad ennem",
           "oldest": "Vanimad ennem"
         },
-        "search": "Otsi turniiri...",
+        "search": "Otsi võistlust...",
         "all_games": "Kõik mängud",
         "winner_declared": "Lõppenud",
         "ongoing_games": "Käimas",
