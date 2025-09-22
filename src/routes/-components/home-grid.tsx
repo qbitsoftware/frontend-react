@@ -35,7 +35,6 @@ const HomePageGrid = () => {
           </WidgetWrapper>
         </div>
 
-        {/* Top Section: News and Calendar - Mobile Stacked, Desktop Side by Side */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 my-4 sm:my-6 lg:my-8 mb-4 sm:mb-6 lg:mb-8">
           <div className="flex flex-col">
             <WidgetWrapper
@@ -65,7 +64,7 @@ const HomePageGrid = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 my-2 sm:my-3 lg:my-4">
           <div className="flex flex-col order-3 sm:order-3 lg:order-1">
             <div className="h-full">
-              <div className="lg:mt-[calc(3.5rem+1px)]">
+              <div className="lg:mt-[calc(3.0rem)]">
                 <div className="p-1 sm:p-2 flex-grow scrollbar-hide overflow-hidden" ref={adboardRef}>
                   <Adboard />
                 </div>
@@ -85,7 +84,6 @@ const HomePageGrid = () => {
             </WidgetWrapper>
           </div>
 
-          {/* Videos Widget - Full width on mobile, half width on tablet, quarter width on desktop */}
           <div className="flex flex-col order-2 sm:order-2 lg:order-3">
             <WidgetWrapper
               heading={t("homepage.videoboard.name")}
