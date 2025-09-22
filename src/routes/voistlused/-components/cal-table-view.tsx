@@ -102,7 +102,7 @@ export default function CalTableView({ selectedYear, isLoading, error, tournamen
             <div key={key} style={style} className="border-b border-gray-200 last:border-b-0">
                 <div
                     ref={isCurrentTournament ? currentTournamentRef : null}
-                    className={`transition-colors grid grid-cols-5 items-center min-h-[80px] ${
+                    className={`transition-colors min-h-[60px] md:min-h-[80px] ${
                         isCurrentTournament
                             ? "bg-blue-50 border-l-4 border-l-[#4C97F1] hover:bg-blue-100"
                             : isPast
@@ -110,60 +110,116 @@ export default function CalTableView({ selectedYear, isLoading, error, tournamen
                                 : "hover:bg-gray-50"
                     }`}
                 >
-                    <div className="px-6 py-4">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0 h-3 w-3 rounded-full bg-[#4C97F1] mr-3"></div>
-                            <div>
-                                <div className="text-sm font-medium text-gray-900">
-                                    {event.tournament.name}
-                                </div>
-                                {(event.is_gameday || event.is_finals) && (
-                                    <div className="text-xs text-gray-500">
-                                        {event.is_finals ? t('table_view.finals') : t('table_view.gameday')}
+                    <div className="hidden md:grid md:grid-cols-5 md:items-center">
+                        <div className="px-6 py-4">
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0 h-3 w-3 rounded-full bg-[#4C97F1] mr-3"></div>
+                                <div>
+                                    <div className="text-sm font-medium text-gray-900">
+                                        {event.tournament.name}
                                     </div>
-                                )}
+                                    {(event.is_gameday || event.is_finals) && (
+                                        <div className="text-xs text-gray-500">
+                                            {event.is_finals ? t('table_view.finals') : t('table_view.gameday')}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="px-6 py-4">
-                        <div className="flex items-center text-sm text-gray-900">
-                            <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                            {formatDateRange(event)}
+                        <div className="px-6 py-4">
+                            <div className="flex items-center text-sm text-gray-900">
+                                <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+                                {formatDateRange(event)}
+                            </div>
                         </div>
-                    </div>
-                    <div className="px-6 py-4">
-                        <div className="flex items-center text-sm text-gray-900">
-                            <MapPin className="h-4 w-4 text-gray-400 mr-2" />
-                            <span title={event.tournament.location || '-'}>
-                                {event.tournament.location
-                                    ? event.tournament.location.length > 25
-                                        ? `${event.tournament.location.substring(0, 25)}...`
-                                        : event.tournament.location
-                                    : '-'
-                                }
-                            </span>
+                        <div className="px-6 py-4">
+                            <div className="flex items-center text-sm text-gray-900">
+                                <MapPin className="h-4 w-4 text-gray-400 mr-2" />
+                                <span title={event.tournament.location || '-'}>
+                                    {event.tournament.location
+                                        ? event.tournament.location.length > 25
+                                            ? `${event.tournament.location.substring(0, 25)}...`
+                                            : event.tournament.location
+                                        : '-'
+                                    }
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div className="px-6 py-4">
-                        <div className="flex items-center text-sm text-gray-900">
-                            <Users className="h-4 w-4 text-gray-400 mr-2" />
-                            {event.tournament.organizer || '-'}
+                        <div className="px-6 py-4">
+                            <div className="flex items-center text-sm text-gray-900">
+                                <Users className="h-4 w-4 text-gray-400 mr-2" />
+                                {event.tournament.organizer || '-'}
+                            </div>
                         </div>
-                    </div>
-                    <div className="px-6 py-4 text-center">
-                        <Link
-                            to="/voistlused/$tournamentid"
-                            params={{ tournamentid: event.tournament.id.toString() }}
-                        >
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="hover:bg-[#4C97F1] hover:text-white hover:border-[#4C97F1] transition-colors"
+                        <div className="px-6 py-4 text-center">
+                            <Link
+                                to="/voistlused/$tournamentid"
+                                params={{ tournamentid: event.tournament.id.toString() }}
                             >
-                                <ExternalLink className="h-4 w-4 mr-1" />
-                                {t('table_view.view_details')}
-                            </Button>
-                        </Link>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="hover:bg-[#4C97F1] hover:text-white hover:border-[#4C97F1] transition-colors"
+                                >
+                                    <ExternalLink className="h-4 w-4 mr-1" />
+                                    {t('table_view.view_details')}
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Mobile Layout - Horizontal Scroll */}
+                    <div className="md:hidden">
+                        <div className="flex items-center min-w-[1200px] px-6 py-4 gap-10">
+                            <div className="flex items-center w-[300px] flex-shrink-0">
+                                <div className="flex-shrink-0 h-3 w-3 rounded-full bg-[#4C97F1] mr-4"></div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="text-sm font-medium text-gray-900 truncate" title={event.tournament.name}>
+                                        {event.tournament.name}
+                                    </div>
+                                    {(event.is_gameday || event.is_finals) && (
+                                        <div className="text-xs text-gray-500 mt-1">
+                                            {event.is_finals ? t('table_view.finals') : t('table_view.gameday')}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center text-sm text-gray-900 w-[160px] flex-shrink-0">
+                                <Calendar className="h-4 w-4 text-gray-400 mr-3 flex-shrink-0" />
+                                <span className="whitespace-nowrap">{formatDateRange(event)}</span>
+                            </div>
+
+                            <div className="flex items-center text-sm text-gray-900 w-[220px] flex-shrink-0">
+                                <MapPin className="h-4 w-4 text-gray-400 mr-3 flex-shrink-0" />
+                                <span className="truncate" title={event.tournament.location || '-'}>
+                                    {event.tournament.location || '-'}
+                                </span>
+                            </div>
+
+                            <div className="flex items-center text-sm text-gray-900 w-[180px] flex-shrink-0">
+                                <Users className="h-4 w-4 text-gray-400 mr-3 flex-shrink-0" />
+                                <span className="truncate" title={event.tournament.organizer || '-'}>
+                                    {event.tournament.organizer || '-'}
+                                </span>
+                            </div>
+
+                            <div className="flex-shrink-0 w-[140px]">
+                                <Link
+                                    to="/voistlused/$tournamentid"
+                                    params={{ tournamentid: event.tournament.id.toString() }}
+                                >
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="hover:bg-[#4C97F1] hover:text-white hover:border-[#4C97F1] transition-colors whitespace-nowrap"
+                                    >
+                                        <ExternalLink className="h-4 w-4 mr-2" />
+                                        {t('table_view.view_details')}
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,7 +232,7 @@ export default function CalTableView({ selectedYear, isLoading, error, tournamen
     return (
         <div className="w-full">
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <div className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
+                <div className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10 hidden md:block">
                     <div className="grid grid-cols-5 items-center">
                         <div className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             {t('table_view.tournament_name')}
@@ -198,7 +254,7 @@ export default function CalTableView({ selectedYear, isLoading, error, tournamen
 
                 <div
                     ref={tableContainerRef}
-                    className="h-[calc(70vh-60px)]"
+                    className="h-[calc(70vh-60px)] md:overflow-visible overflow-x-auto"
                 >
                     {filteredTournaments.length > 0 ? (
                         <AutoSizer>
@@ -206,9 +262,9 @@ export default function CalTableView({ selectedYear, isLoading, error, tournamen
                                 <VirtualizedList
                                     ref={virtualizedListRef}
                                     height={height}
-                                    width={width}
+                                    width={Math.max(width, 1200)}
                                     rowCount={filteredTournaments.length}
-                                    rowHeight={80}
+                                    rowHeight={60}
                                     rowRenderer={renderTableRow}
                                     overscanRowCount={5}
                                     scrollToAlignment="center"

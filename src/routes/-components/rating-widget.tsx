@@ -113,23 +113,23 @@ const RatingWidget = () => {
         <div className="overflow-y-auto flex-1 scrollbar-hide rounded-b-[8px] sm:rounded-b-[12px]">
           <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg table-fixed">
             <colgroup>
-              <col className="w-12 sm:w-16" />
+              <col className="w-16 sm:w-20" />
               <col className="w-auto min-w-0" />
               <col className="w-12 sm:w-16" />
-              <col className="w-12 sm:w-16" />
+              <col className="hidden sm:table-column w-12 sm:w-16" />
             </colgroup>
             <TableHeader className="rounded-lg bg-white">
               <TableRow className="sticky top-0 z-10 h-8">
-                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-center font-medium text-xs sm:text-sm w-12 sm:w-16">
+                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm w-16 sm:w-20">
                   NR
                 </TableHead>
                 <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm min-w-0">
                   {t("rating.table.head.player")}
                 </TableHead>
-                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-center font-medium text-xs sm:text-sm w-12 sm:w-16">
+                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm w-12 sm:w-16">
                   PP
                 </TableHead>
-                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-center font-medium text-xs sm:text-sm w-12 sm:w-16">
+                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm w-12 sm:w-16 hidden sm:table-cell">
                   RP
                 </TableHead>
               </TableRow>
