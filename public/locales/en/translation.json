@@ -126,6 +126,9 @@
         "men": "Top Ranked Men",
         "women": "Top Ranked Women"
       }
+    },
+    "ratingRisers": {
+      "title": "On The Rise"
     }
   },
   "feedback": {
@@ -724,6 +727,18 @@
       "november": "November",
       "december": "December"
     }
+  },
+  "table_view": {
+    "tournament_name": "Tournament",
+    "dates": "Dates",
+    "location": "Location",
+    "organizer": "Organizer",
+    "category": "Category",
+    "actions": "Actions",
+    "view_details": "View Details",
+    "finals": "Finals",
+    "gameday": "Gameday",
+    "no_tournaments_year": "No tournaments found for {{year}}"
   },
   "tournaments": {
     "header": "Tournaments",

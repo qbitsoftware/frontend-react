@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { months } from "./cal-3-month";
 import ErrorState from "./error-state-skeleton";
 import { TournamentEvent } from "@/queries/tournaments";
 import { getDaysInMonth } from "@/routes/-components/calendar-utils";
@@ -7,6 +6,11 @@ import { formatDate } from "./calendar-utils";
 import { Link } from "@tanstack/react-router";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
+
+const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
 
 interface Props {
     selectedYear: number;
