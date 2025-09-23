@@ -38,7 +38,7 @@ function RouteComponent() {
     const [timeUntilNext, setTimeUntilNext] = useState('')
     const [isExportingRatings, setIsExportingRatings] = useState(false)
     const [withRating, setWithRating] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('2025-09-10');
+    const [selectedDate, setSelectedDate] = useState('2025-08-20');
 
     useEffect(() => {
         const updateTimer = () => {
@@ -251,7 +251,7 @@ function RouteComponent() {
                                             className="border border-slate-300 rounded px-2 py-1 w-full text-xs"
                                             value={selectedDate}
                                             onChange={e => setSelectedDate(e.target.value)}
-                                            min="2025-09-09"
+                                            min="2025-08-20"
                                             max={new Date().toISOString().split('T')[0]}
                                         />
                                     </div>
