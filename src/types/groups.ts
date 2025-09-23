@@ -2,8 +2,17 @@ export enum DialogType {
   DT_TEAM_LEAGUES = "team_leagues",
   DT_DOUBLES = "doubles",
   DT_FIXED_DOUBLES = "fixed_doubles",
+  DT_3_PER_TEAM = "3_per_team",
+  DT_2_PER_TEAM_DOUBLE = "2_per_team_double",
+  DT_4_PER_TEAM_DOUBLE = "4_per_team_double",
 }
 
+export const Leagues = [
+  DialogType.DT_TEAM_LEAGUES,
+  DialogType.DT_3_PER_TEAM,
+  DialogType.DT_2_PER_TEAM_DOUBLE,
+  DialogType.DT_4_PER_TEAM_DOUBLE,
+]
 
 
 export type TournamentTable = {

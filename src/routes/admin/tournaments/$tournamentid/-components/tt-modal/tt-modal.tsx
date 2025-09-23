@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useProtocolModal } from "@/providers/protocolProvider";
 import { Content } from "./content";
 import { useTranslation } from "react-i18next";
+import { LotterySheetDownload } from "../download-lottery-sheet";
 
 
 export const TableTennisProtocolModal = () => {
@@ -21,6 +22,11 @@ export const TableTennisProtocolModal = () => {
                             <span>vs</span>
                             <span className="font-bold">{match.p2.name}</span>
                             <ProtocolDownloadButton
+                                tournamentId={tournamentId}
+                                groupId={match.match.tournament_table_id}
+                                matchId={match.match.id}
+                            />
+                            <LotterySheetDownload
                                 tournamentId={tournamentId}
                                 groupId={match.match.tournament_table_id}
                                 matchId={match.match.id}

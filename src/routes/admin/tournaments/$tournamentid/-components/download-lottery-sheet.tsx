@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { downloadExcelFile, UseGetDownloadProtocol } from "@/queries/download";
 import { useTranslation } from "react-i18next";
 
-export function ProtocolDownloadButton({ tournamentId, groupId, matchId }: { tournamentId: number, groupId: number, matchId: string }) {
-    const { data, isLoading } = UseGetDownloadProtocol(tournamentId, groupId, matchId, "protocol");
+export function LotterySheetDownload({ tournamentId, groupId, matchId }: { tournamentId: number, groupId: number, matchId: string }) {
+    const { data, isLoading } = UseGetDownloadProtocol(tournamentId, groupId, matchId, "lottery_sheet");
 
     const handleDownload = () => {
         if (data) {
-            downloadExcelFile(data, `protocol_${matchId}.xlsx`);
+            downloadExcelFile(data, `loosileht_${matchId}.xlsx`);
         }
     };
 
@@ -20,7 +20,7 @@ export function ProtocolDownloadButton({ tournamentId, groupId, matchId }: { tou
             variant="outline"
             className="ml-4"
         >
-            {isLoading ? t('protocol.loading') : t('protocol.download')}
+            {isLoading ? t('protocol.loading') : t('protocol.download_lottery_sheet')}
         </Button>
     );
 }

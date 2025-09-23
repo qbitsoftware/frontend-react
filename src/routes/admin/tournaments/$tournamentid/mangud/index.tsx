@@ -7,7 +7,7 @@ import { UseGetTournamentMatchesQuery } from '@/queries/match'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { MatchesTable } from '../-components/matches-table'
 import { GroupType, MatchState, MatchWrapper } from '@/types/matches'
-import { DialogType } from '@/types/groups'
+import { Leagues } from '@/types/groups'
 import MatchDialog from '@/components/match-dialog'
 import { ProtocolModalProvider } from '@/providers/protocolProvider'
 import { TableTennisProtocolModal } from '../-components/tt-modal/tt-modal'
@@ -65,7 +65,8 @@ function RouteComponent() {
         setSelectedTournamentTable(tableMap.get(match.match.tournament_table_id) || null);
         setIsOpen(true);
       }
-    } else {
+    }
+    else {
       setIsOpen(false);
       setSelectedMatch(null);
       setSelectedTournamentTable(null);
@@ -258,13 +259,33 @@ function RouteComponent() {
 
 
   const handleCardClick = (match: MatchWrapper) => {
-    setSelectedMatch(match);
-    setSelectedTournamentTable(tableMap.get(match.match.tournament_table_id) || null);
-    setIsOpen(true);
+    // setSelectedMatch(match);
+    // setSelectedTournamentTable(tableMap.get(match.match.tournament_table_id) || null);
+    // setIsOpen(true);
+    navigate({
+      to: '/admin/tournaments/$tournamentid/mangud',
+      params: { tournamentid: params.tournamentid },
+      search: {
+        filter: search.filter,
+        openMatch: match.match.id,
+        activeGroups: search.activeGroups
+      },
+      replace: true,
+    });
   };
 
   const handleModalClose = () => {
     setIsOpen(false);
+    navigate({
+      to: '/admin/tournaments/$tournamentid/mangud',
+      params: { tournamentid: params.tournamentid },
+      search: {
+        filter: search.filter,
+        openMatch: undefined,
+        activeGroups: search.activeGroups
+      },
+      replace: true,
+    });
   };
 
   const handleFilterChange = (value: FilterOptions) => {
@@ -370,10 +391,10 @@ function RouteComponent() {
             active_participant={activeParticipant}
             all={true}
           />
-          {selectedMatch &&
-            (selectedTournamentTable?.group.solo ||
-              (!selectedTournamentTable?.group.solo &&
-                selectedTournamentTable?.group.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
+          {selectedMatch && selectedTournamentTable &&
+            (selectedTournamentTable.group.solo ||
+              (!selectedTournamentTable.group.solo &&
+                !Leagues.includes(selectedTournamentTable.group.dialog_type))) ? (
             <MatchDialog
               open={isOpen}
               onClose={handleModalClose}
@@ -381,14 +402,14 @@ function RouteComponent() {
               tournamentId={Number(params.tournamentid)}
             />
           ) : (
-            selectedMatch &&
-            (selectedTournamentTable?.group.dialog_type == DialogType.DT_TEAM_LEAGUES || selectedTournamentTable?.group.type === GroupType.CHAMPIONS_LEAGUE) && (
+            selectedMatch && selectedTournamentTable &&
+            (Leagues.includes(selectedTournamentTable.group.dialog_type) || selectedTournamentTable.group.type === GroupType.CHAMPIONS_LEAGUE) && (
               <ProtocolModalProvider
                 isOpen={isOpen}
                 onClose={handleModalClose}
                 tournamentId={Number(params.tournamentid)}
                 match={selectedMatch}
-                playerCount={selectedTournamentTable?.group.min_team_size || 1}
+                playerCount={selectedTournamentTable.group.min_team_size || 1}
               >
                 <TableTennisProtocolModal />
               </ProtocolModalProvider>

@@ -297,6 +297,12 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, pa
     }
   }
 
+  const allowed_types_for_min_max_team_size: string[] = [
+    DialogType.DT_2_PER_TEAM_DOUBLE,
+    DialogType.DT_3_PER_TEAM,
+    DialogType.DT_4_PER_TEAM_DOUBLE,
+  ];
+
   return (
     <div className=''>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -619,16 +625,22 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, pa
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="team_leagues">
-                              {t("admin.tournaments.create_tournament.team_leagues")}
+                            <SelectItem value={DialogType.DT_3_PER_TEAM}>
+                              {t("admin.tournaments.create_tournament.3_per_team")}
+                            </SelectItem>
+                            <SelectItem value={DialogType.DT_2_PER_TEAM_DOUBLE}>
+                              {t("admin.tournaments.create_tournament.2_per_team_double")}
+                            </SelectItem>
+                            <SelectItem value={DialogType.DT_4_PER_TEAM_DOUBLE}>
+                              {t("admin.tournaments.create_tournament.4_per_team_double")}
                             </SelectItem>
                             {form.watch("type") !== GroupType.ROUND_ROBIN && form.watch("type") !== GroupType.ROUND_ROBIN_FULL_PLACEMENT && form.watch("type") !== GroupType.CHAMPIONS_LEAGUE &&
                               (
                                 <>
-                                  <SelectItem value="doubles">
+                                  <SelectItem value={DialogType.DT_DOUBLES}>
                                     {t("admin.tournaments.create_tournament.doubles")}
                                   </SelectItem>
-                                  <SelectItem value="fixed_doubles">
+                                  <SelectItem value={DialogType.DT_FIXED_DOUBLES}>
                                     {t("admin.tournaments.create_tournament.fixed_doubles")}
                                   </SelectItem>
                                 </>
@@ -642,7 +654,7 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, pa
                 )}
 
               </div>
-              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", form.watch("dialog_type") !== DialogType.DT_TEAM_LEAGUES ? "hidden" : "")}>
+              <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", !allowed_types_for_min_max_team_size.includes(form.watch("dialog_type")) ? "hidden" : "")}>
                 <FormField
                   control={form.control}
                   name="min_team_size"

@@ -1,12 +1,13 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query"
 import { axiosInstance } from "./axiosconf"
-import { Match, MatchTimeUpdate, MatchWrapper } from "@/types/matches"
+import { GroupType, Match, MatchTimeUpdate, MatchWrapper } from "@/types/matches"
 import { Participant } from "@/types/participants"
 import { Venue } from "@/types/venues"
 import { VenuesResponse } from "./venues"
 import { Bracket } from "@/types/brackets"
 import { BracketReponse } from "./tournaments"
 import { TournamentTableWithStages, TournamentTableWithStagesResponse } from "./tables"
+import { Leagues } from "@/types/groups"
 
 export interface TableInfoResponse {
     data: MatchesInfo
@@ -21,6 +22,8 @@ export interface MatchesInfo {
     all_tables: Venue[]
     tournament_table: TournamentTableWithStages
     brackets: Bracket | null
+    current_match: Match | null
+    child_matches: MatchWrapper[] | null
 }
 
 export interface Protocol {
@@ -51,6 +54,7 @@ export const UsePatchMatch = (id: number) => {
             return data;
         },
         onSuccess: (data: TableInfoResponse) => {
+            console.log("invalidating")
             queryClient.setQueryData(['matches_info', data.data.tournament_table.group.id], (oldData: TableInfoResponse) => {
                 if (!oldData) return data;
                 const output = {
@@ -75,6 +79,45 @@ export const UsePatchMatch = (id: number) => {
                     return output
                 })
             }
+            if (data.data.current_match && (Leagues.includes(data.data.tournament_table.group.dialog_type) || data.data.tournament_table.group.type === GroupType.CHAMPIONS_LEAGUE)) {
+                queryClient.setQueryData(['matches', data.data.tournament_table.group.id, data.data.current_match.extra_data.parent_match_id], (oldData: TableInfoResponse) => {
+                    if (oldData && oldData.data && oldData.data.matches) {
+                        const updatedMatches = oldData.data.matches.map((m) => {
+                            if (data.data.current_match && m.match.id === data.data.current_match.id) {
+                                return { ...m, match: data.data.current_match }
+                            } else {
+                                return m;
+                            }
+                        })
+
+                        const output = {
+                            ...oldData,
+                            data: {
+                                ...oldData.data,
+                                matches: updatedMatches,
+                            }
+                        }
+
+                        return output
+                    }
+                })
+            }
+
+            if (data.data.child_matches && data.data.current_match) {
+                queryClient.setQueryData(['matches', data.data.tournament_table.group.id, data.data.current_match.id], (oldData: TableInfoResponse) => {
+                    if (!oldData) return data;
+                    return {
+                        ...oldData,
+                        data: {
+                            ...oldData.data,
+                            matches: data.data.child_matches || [],
+                            free_tables: data.data.free_tables,
+                        }
+                    }
+                })
+
+            }
+
             queryClient.setQueryData(['matches_info_tournament', id], (oldData: TableInfoResponse) => {
                 if (oldData && oldData.data && oldData.data.matches) {
                     const updatedMatches = oldData.data.matches.map((m) => {
@@ -93,13 +136,14 @@ export const UsePatchMatch = (id: number) => {
                     return output
                 }
             })
+
             queryClient.setQueryData(["tournament_table", data.data.tournament_table.group.id], (oldData: TournamentTableWithStagesResponse) => {
                 if (!oldData) return oldData;
                 const output = {
                     ...oldData,
                     data: {
                         ...oldData.data,
-                        group: data.data.tournament_table,
+                        group: data.data.tournament_table.group,
                     }
                 }
                 return output
@@ -142,6 +186,17 @@ export const UsePatchMatchReset = (tournament_id: number, group_id: number, matc
                     }
                 }
             })
+            queryClient.setQueryData(['matches', group_id, match_id], (oldData: TableInfoResponse) => {
+                if (!oldData) return data;
+                return {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        matches: data.data.child_matches || [],
+                        free_tables: data.data.free_tables,
+                    }
+                }
+            })
             queryClient.setQueryData(['venues_all', tournament_id], (oldData: VenuesResponse) => {
                 if (!oldData) return { data: data.data.all_tables, message: "", error: null };
                 return {
@@ -172,11 +227,96 @@ export const UsePatchMatchSwitch = (id: number, group_id: number, match_id: stri
             })
             return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['bracket', id] })
-            queryClient.refetchQueries({ queryKey: ['bracket', id] })
-            queryClient.invalidateQueries({ queryKey: ['matches', group_id] })
-            // queryClient.resetQueries({ queryKey: ['matches', group_id] })
+        onSuccess: (data: TableInfoResponse) => {
+            queryClient.setQueryData(['matches_info', data.data.tournament_table.group.id], (oldData: TableInfoResponse) => {
+                if (!oldData) return data;
+                const output = {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        matches: data.data.matches,
+                        free_tables: data.data.free_tables,
+                        tournament_table: data.data.tournament_table
+                    }
+                }
+
+                return output
+            })
+            if (data.data.brackets) {
+                queryClient.setQueryData(['bracket', id, data.data.tournament_table.group.id], (oldData: BracketReponse) => {
+                    if (!oldData) return { data: data.data.brackets, message: data.message, error: null };
+                    const output = {
+                        ...oldData,
+                        data: data.data.brackets
+                    }
+                    return output
+                })
+            }
+            if (data.data.current_match && (Leagues.includes(data.data.tournament_table.group.dialog_type) || data.data.tournament_table.group.type === GroupType.CHAMPIONS_LEAGUE)) {
+                queryClient.setQueryData(['matches', data.data.tournament_table.group.id, data.data.current_match.extra_data.parent_match_id], (oldData: TableInfoResponse) => {
+                    if (oldData && oldData.data && oldData.data.matches) {
+                        const updatedMatches = oldData.data.matches.map((m) => {
+                            if (data.data.current_match && m.match.id === data.data.current_match.id) {
+                                return { ...m, match: data.data.current_match }
+                            } else {
+                                return m;
+                            }
+                        })
+
+                        const output = {
+                            ...oldData,
+                            data: {
+                                ...oldData.data,
+                                matches: updatedMatches,
+                            }
+                        }
+
+                        return output
+                    }
+                })
+            }
+            queryClient.setQueryData(['matches_info_tournament', id], (oldData: TableInfoResponse) => {
+                if (oldData && oldData.data && oldData.data.matches) {
+                    const updatedMatches = oldData.data.matches.map((m) => {
+                        const updatedMatch = data.data.matches.find((um) => um.match.id === m.match.id);
+                        return updatedMatch ? updatedMatch : m;
+                    });
+
+                    const output = {
+                        ...oldData,
+                        data: {
+                            ...oldData.data,
+                            matches: updatedMatches,
+                        }
+                    }
+
+                    return output
+                }
+            })
+            queryClient.setQueryData(["tournament_table", data.data.tournament_table.group.id], (oldData: TournamentTableWithStagesResponse) => {
+                if (!oldData) return oldData;
+                const output = {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        group: data.data.tournament_table.group,
+                    }
+                }
+                return output
+            })
+            queryClient.setQueryData(['venues_all', id], (oldData: VenuesResponse) => {
+                return {
+                    ...oldData,
+                    data: data.data.all_tables,
+                }
+            })
+            queryClient.setQueryData(['venues_free', id], (oldData: VenuesResponse) => {
+                return {
+                    ...oldData,
+                    data: data.data.free_tables,
+                }
+            })
+
         }
     })
 }
