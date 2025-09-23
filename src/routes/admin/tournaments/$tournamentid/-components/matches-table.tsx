@@ -6,7 +6,7 @@ import { TableNumberForm } from "./table-number-form"
 import { ParticipantType } from "@/types/participants"
 import React, { useCallback, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { DialogType } from "@/types/groups"
+import { Leagues } from "@/types/groups"
 import { Edit } from "lucide-react"
 import { AutoSizer, Column, Table } from "react-virtualized"
 import 'react-virtualized/styles.css'
@@ -65,7 +65,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }
 
     const getScore = useCallback((match: MatchWrapper, player: ParticipantType) => {
-        if (match.match.table_type === "champions_league" || tableMap.get(match.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES) {
+        if (match.match.table_type === "champions_league" || (tableMap.get(match.match.tournament_table_id)?.group.dialog_type && Leagues.includes(tableMap.get(match.match.tournament_table_id)!.group.dialog_type))) {
             return player === ParticipantType.P1 ? match.match.extra_data.team_1_total || 0 : match.match.extra_data.team_2_total || 0
         }
 
@@ -153,17 +153,16 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                             </span>
                         )}
                         {findLastPlayerMatch && findLastPlayerMatch.match.finish_date && match.match.state === MatchState.CREATED && (
-                            <span className={`text-[10px] ${
-                                (() => {
-                                    const finished = new Date(findLastPlayerMatch.match.finish_date)
-                                    const diffMs = Date.now() - finished.getTime()
-                                    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+                            <span className={`text-[10px] ${(() => {
+                                const finished = new Date(findLastPlayerMatch.match.finish_date)
+                                const diffMs = Date.now() - finished.getTime()
+                                const diffMinutes = Math.floor(diffMs / (1000 * 60))
 
-                                    if (diffMinutes >= 60) return 'text-red-500'
-                                    if (diffMinutes >= 30) return 'text-orange-400'
-                                    return 'text-gray-500'
-                                })()
-                            }`}>
+                                if (diffMinutes >= 60) return 'text-red-500'
+                                if (diffMinutes >= 30) return 'text-orange-400'
+                                return 'text-gray-500'
+                            })()
+                                }`}>
                                 {t('admin.tournaments.matches.waiting')}: {formatWaitingTime(findLastPlayerMatch.match.finish_date)}
                             </span>
                         )}
@@ -384,8 +383,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
 
     // Replace the existing cell renderers with these memoized versions:
     const participant1ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
-        const isChampionsLeague = rowData.match.table_type === "champions_league" ||
-            tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES
+        const tt = tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type
+        let isChampionsLeague = false
+        if (tt) {
+            isChampionsLeague = rowData.match.table_type === "champions_league" || Leagues.includes(tt)
+        }
 
         return (
             <div className="flex items-center h-full px-2">
@@ -405,8 +407,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }, [getScore, tableMap, pendingScores])
 
     const participant2ScoreCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
-        const isChampionsLeague = rowData.match.table_type === "champions_league" ||
-            tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type === DialogType.DT_TEAM_LEAGUES
+        const tt = tableMap.get(rowData.match.tournament_table_id)?.group.dialog_type
+        let isChampionsLeague = false
+        if (tt) {
+            isChampionsLeague = rowData.match.table_type === "champions_league" || Leagues.includes(tt)
+        }
 
         return (
             <div className="flex items-center h-full px-2">

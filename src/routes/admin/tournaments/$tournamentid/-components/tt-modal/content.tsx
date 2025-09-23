@@ -12,12 +12,12 @@ import { useTranslation } from "react-i18next";
 export function Content() {
 
   const {
-    playerCount,
-    match,  
+    match,
     notes,
     headReferee,
     tableReferee,
     forfeitMatch,
+    childMatches,
     handleSwitchParticipants,
     handleMatchStart,
     handleMatchReset,
@@ -74,7 +74,7 @@ export function Content() {
             <Button
               onClick={handleSwitchParticipants}
               variant="outline"
-              disabled={match.match.winner_id !== ""}
+              disabled={childMatches && childMatches.data && childMatches.data.matches && childMatches.data.matches.length > 0}
               size="sm"
               className=""
             >
@@ -82,14 +82,15 @@ export function Content() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TeamPlayers key={1} team={1} playerCount={playerCount} players={getAvailablePlayers(1)} />
-            <TeamPlayers key={2} team={2} playerCount={playerCount} players={getAvailablePlayers(2)} />
+            <TeamPlayers key={1} team={1} players={getAvailablePlayers(1)} />
+            <TeamPlayers key={2} team={2} players={getAvailablePlayers(2)} />
           </div>
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1">
               <h6 className="font-semibold text-sm">{t('protocol.notes')}</h6>
               <div className="flex gap-5">
                 <Button
+                  disabled={childMatches && childMatches.data && childMatches.data.matches && childMatches.data.matches.length > 0}
                   onClick={handleMatchStart}
                   size="sm"
                   className="h-8 px-3 text-xs"

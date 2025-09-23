@@ -1184,6 +1184,9 @@
         "team_leagues": "Team Leagues",
         "dynamic": "Dynamic (Round Robin > Main Bracket)",
         "doubles": "Doubles",
+        "3_per_team": "U-19",
+        "2_per_team_double": "U-15",
+        "4_per_team_double": "U-13",
         "fixed_doubles": "Fixed Doubles",
         "errors": {
           "location": "Location is required",
@@ -2088,6 +2091,7 @@
     "head_referee_placeholder": "Enter head referee name",
     "final_score": "Final score",
     "download": "Download protocol",
+    "download_lottery_sheet": "Download draw protocol",
     "start_game": "Start game",
     "reset_game": "Reset game",
     "finish_game": "Finish game",

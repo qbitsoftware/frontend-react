@@ -1,7 +1,7 @@
 import { BracketReponse } from "@/queries/tournaments";
 import React, { useEffect, useState } from "react";
 import GroupStageBracket from "@/components/group-stage-bracket";
-import { DialogType, TournamentTable } from "@/types/groups";
+import { Leagues, TournamentTable } from "@/types/groups";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { EliminationBrackets } from "@/components/elimination-brackets";
@@ -156,7 +156,10 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
         </div>
       </Card>
 
-      {selectedMatch && (tournament_table.solo || (!tournament_table.solo && tournament_table.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
+      {selectedMatch &&
+        (tournament_table.solo ||
+          (!tournament_table.solo &&
+            !Leagues.includes(tournament_table.dialog_type))) ? (
         <MatchDialog
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -166,7 +169,7 @@ const BracketComponent: React.FC<BracketComponentProps> = ({
       )
         : (
           selectedMatch &&
-          tournament_table.dialog_type == DialogType.DT_TEAM_LEAGUES && (
+          (Leagues.includes(tournament_table.dialog_type) || tournament_table.type === GroupType.CHAMPIONS_LEAGUE) && (
             <ProtocolModalProvider
               isOpen={isOpen}
               onClose={() => setIsOpen(false)}

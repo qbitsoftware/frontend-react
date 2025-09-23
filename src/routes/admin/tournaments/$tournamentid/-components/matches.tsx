@@ -4,7 +4,7 @@ import ReGrouping from "./regrouping";
 import TimeEditingModal from "./time-editing-modal";
 import { useTranslation } from "react-i18next";
 import { GroupType, MatchState, MatchWrapper } from "@/types/matches";
-import { DialogType } from "@/types/groups";
+import { Leagues } from "@/types/groups";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ProtocolModalProvider } from "@/providers/protocolProvider";
 import { TableTennisProtocolModal } from "./tt-modal/tt-modal";
@@ -319,6 +319,8 @@ export const Matches: React.FC<MatchesProps> = ({
     }
   };
 
+  console.log("midavittu", Leagues.includes(tournament_table.group.dialog_type))
+
   if (data.length > 0) {
     return (
       <Card className="w-full border-stone-100">
@@ -433,7 +435,7 @@ export const Matches: React.FC<MatchesProps> = ({
           {selectedMatch &&
             (tournament_table.group.solo ||
               (!tournament_table.group.solo &&
-                tournament_table.group.dialog_type != DialogType.DT_TEAM_LEAGUES)) ? (
+                !Leagues.includes(tournament_table.group.dialog_type))) ? (
             <MatchDialog
               open={isOpen}
               onClose={handleModalClose}
@@ -442,7 +444,7 @@ export const Matches: React.FC<MatchesProps> = ({
             />
           ) : (
             selectedMatch &&
-            (tournament_table.group.dialog_type == DialogType.DT_TEAM_LEAGUES || tournament_table.group.type === GroupType.CHAMPIONS_LEAGUE) && (
+            (Leagues.includes(tournament_table.group.dialog_type) || tournament_table.group.type === GroupType.CHAMPIONS_LEAGUE) && (
               <ProtocolModalProvider
                 isOpen={isOpen}
                 onClose={handleModalClose}

@@ -57,6 +57,13 @@ function RouteComponent() {
     return t('common.subgroups');
   }
 
+  const allowed_types_for_teams: string[] = [
+    DialogType.DT_TEAM_LEAGUES,
+    DialogType.DT_3_PER_TEAM,
+    DialogType.DT_2_PER_TEAM_DOUBLE,
+    DialogType.DT_4_PER_TEAM_DOUBLE,
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {tt.group &&
@@ -120,7 +127,7 @@ function RouteComponent() {
           () => {
             return (
               <>
-                {tt.group.dialog_type === DialogType.DT_TEAM_LEAGUES ? (
+                {allowed_types_for_teams.includes(tt.group.dialog_type) ? (
                   <NewTeams
                     participants={tt.participants}
                     tournament_id={Number(tournamentid)}
