@@ -126,6 +126,9 @@
         "men": "Top Ranked Men",
         "women": "Top Ranked Women"
       }
+    },
+    "ratingRisers": {
+      "title": "On The Rise"
     }
   },
   "feedback": {
@@ -372,6 +375,7 @@
       "complete_payment": "Complete Payment",
       "payment_failed": "Payment failed. Please try again.",
       "september_notice": "License purchasing functionality will be available starting from September.",
+      "october_notice": "License purchasing will be opened on October 1st",
       "e_invoice_notice": "E-invoice payment is not yet available, please use existing payment methods",
       "status": {
         "success": "License purchased successfully!",
@@ -723,6 +727,18 @@
       "november": "November",
       "december": "December"
     }
+  },
+  "table_view": {
+    "tournament_name": "Tournament",
+    "dates": "Dates",
+    "location": "Location",
+    "organizer": "Organizer",
+    "category": "Category",
+    "actions": "Actions",
+    "view_details": "View Details",
+    "finals": "Finals",
+    "gameday": "Gameday",
+    "no_tournaments_year": "No tournaments found for {{year}}"
   },
   "tournaments": {
     "header": "Tournaments",

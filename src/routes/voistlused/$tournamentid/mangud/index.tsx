@@ -14,6 +14,7 @@ import { Filters } from './-components/filters'
 import { ResponsiveClassSelector } from '@/components/responsive-class-selector'
 import { UseGetTournamentMatchesQuery } from '@/queries/match'
 import { useTournament } from '../-components/tournament-provider'
+import LoadingScreen from '@/routes/-components/loading-screen'
 
 export const Route = createFileRoute('/voistlused/$tournamentid/mangud/')({
   errorComponent: () => <ErrorPage />,
@@ -28,7 +29,7 @@ function RouteComponent() {
   const { t } = useTranslation()
   const initialSetupDone = useRef(false)
   const params = useParams({ strict: false })
-  const { data: matchesData } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
+  const { data: matchesData, isLoading } = UseGetTournamentMatchesQuery(Number(params.tournamentid))
   const { tournamentTables } = useTournament()
 
   const tableMap = useMemo(() => {
@@ -232,6 +233,14 @@ function RouteComponent() {
 
     initialSetupDone.current = true
   }, [uniqueGamedays])
+
+  if (isLoading) {
+    return (
+      <div>
+        <LoadingScreen />
+      </div>
+    )
+  }
 
   // Early return for no data
   if (!matchesData?.data.matches || !Array.isArray(matchesData.data.matches)) {

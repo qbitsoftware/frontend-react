@@ -36,7 +36,7 @@ export function AppSidebar() {
             href: '/klubid',
         },
         { name: t('navbar.menu.ratings'), href: '/reiting' },
-        { name: t('navbar.menu.license'), href: '/litsents' },
+        { name: t('navbar.menu.license'), href: '/epood/litsents' },
         {
             name: t('navbar.menu.eltl'),
             href: '#',

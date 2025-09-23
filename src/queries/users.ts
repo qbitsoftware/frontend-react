@@ -263,6 +263,12 @@ export interface FeedbackItem {
   created_at: string;
 }
 
+export interface TopWeekRankingsResponse {
+  data: User[];
+  message: string;
+  error: string | null;
+}
+
 export interface FeedbackResponse {
   data: FeedbackItem[];
   message: string;
@@ -284,6 +290,18 @@ export const useGetAllFeedback = () => {
     queryKey: ["feedback"],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/api/v1/feedback", {
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
+};
+
+export const useGetTopWeekRankings = () => {
+  return useQuery<TopWeekRankingsResponse>({
+    queryKey: ["top_week_rankings"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get("/api/v1/homepage/top_week_rankings", {
         withCredentials: true,
       });
       return data;

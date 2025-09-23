@@ -19,7 +19,38 @@ const RatingWidget = () => {
   const [users, setUsers] = useState<User[]>([])
   useEffect(() => {
     if (data && data.data) {
-      setUsers(data.data);
+      const allPlayers = [...data.data];
+
+      const createGenderCombinedList = () => {
+        const estonianPlayers = allPlayers.filter(user => user.rate_order > 0);
+
+        const playersWithAdjustedOrder = estonianPlayers.map(user => ({
+          ...user,
+          originalRateOrder: user.rate_order,
+          adjustedRateOrder: user.sex === 'N' ? user.rate_order * 4.5 : user.rate_order
+        }));
+
+        const sortedPlayers = playersWithAdjustedOrder.sort((a, b) => a.adjustedRateOrder - b.adjustedRateOrder);
+
+        sortedPlayers.forEach((user, index) => {
+          user.genderCombinedIndex = index + 1;
+        });
+
+        return sortedPlayers;
+      };
+
+      const genderCombined = createGenderCombinedList();
+      const uniqueUsers = allPlayers.map(user => ({ ...user }));
+
+      genderCombined.forEach(genderUser => {
+        const user = uniqueUsers.find(u => u.id === genderUser.id);
+        if (user) {
+          user.genderCombinedIndex = genderUser.genderCombinedIndex;
+          user.originalRateOrder = genderUser.originalRateOrder;
+        }
+      });
+
+      setUsers(uniqueUsers);
     }
   }, [data])
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
@@ -31,12 +62,22 @@ const RatingWidget = () => {
   if (users) {
     const filteredUsers = users
       .filter((user) => {
-        if (activeTab === "combined") return user.eltl_id != 0 && true && user.foreigner == 0;
-        if (activeTab === "men") return user.sex === "M" && user.foreigner == 0;
-        if (activeTab === "women") return user.sex === "N" && user.foreigner == 0;
+        const hasELTLId = user.eltl_id != 0;
+        const isEstonianPlayer = hasELTLId && user.rate_order > 0;
+
+        if (activeTab === "combined") {
+          return user.genderCombinedIndex && isEstonianPlayer;
+        }
+        if (activeTab === "men") return user.sex === "M" && user.foreigner == 0 && isEstonianPlayer;
+        if (activeTab === "women") return user.sex === "N" && user.foreigner == 0 && isEstonianPlayer;
         return true;
       })
-      .sort((a, b) => a.rate_order - b.rate_order);
+      .sort((a, b) => {
+        if (activeTab === "combined" && a.genderCombinedIndex && b.genderCombinedIndex) {
+          return a.genderCombinedIndex - b.genderCombinedIndex;
+        }
+        return a.rate_order - b.rate_order;
+      });
 
     return (
       <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col relative space-y-0 border rounded-[8px] sm:rounded-[12px]">
@@ -72,23 +113,23 @@ const RatingWidget = () => {
         <div className="overflow-y-auto flex-1 scrollbar-hide rounded-b-[8px] sm:rounded-b-[12px]">
           <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg table-fixed">
             <colgroup>
-              <col className="w-12 sm:w-16" />
+              <col className="w-16 sm:w-20" />
               <col className="w-auto min-w-0" />
               <col className="w-12 sm:w-16" />
-              <col className="w-12 sm:w-16" />
+              <col className="hidden sm:table-column w-12 sm:w-16" />
             </colgroup>
             <TableHeader className="rounded-lg bg-white">
               <TableRow className="sticky top-0 z-10 h-8">
-                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-center font-medium text-xs sm:text-sm w-12 sm:w-16">
+                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm w-16 sm:w-20">
                   NR
                 </TableHead>
                 <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm min-w-0">
                   {t("rating.table.head.player")}
                 </TableHead>
-                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-center font-medium text-xs sm:text-sm w-12 sm:w-16">
+                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm w-12 sm:w-16">
                   PP
                 </TableHead>
-                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-center font-medium text-xs sm:text-sm w-12 sm:w-16">
+                <TableHead className="h-5 md:h-10 px-1 sm:px-2 md:px-4 lg:px-6 py-0 sm:py-1 text-left font-medium text-xs sm:text-sm w-12 sm:w-16 hidden sm:table-cell">
                   RP
                 </TableHead>
               </TableRow>
@@ -105,6 +146,12 @@ const RatingWidget = () => {
                       user={user}
                       setSelectedPlayerId={setSelectedPlayerId}
                       setIsModalOpen={setIsModalOpen}
+                      displayIndex={
+                        activeTab === "combined" && user.genderCombinedIndex
+                          ? user.genderCombinedIndex
+                          : user.rate_order
+                      }
+                      isGenderCombined={activeTab === "combined"}
                     />
                   )
                 })}

@@ -124,8 +124,8 @@ const CalendarWidget = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
+      <div className="space-y-2 sm:space-y-3 lg:space-y-4">
 
         <div className="space-y-2 sm:space-y-3">
           {upcomingEvents.length > 0
@@ -138,7 +138,7 @@ const CalendarWidget = () => {
         </div>
       </div>
 
-      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+      <div className="space-y-2 sm:space-y-3 lg:space-y-4">
         <div className="space-y-2 sm:space-y-3">
           {pastEvents.length > 0
             ? pastEvents.map((event, index) => (
