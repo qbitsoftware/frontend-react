@@ -27,7 +27,7 @@ const NewsWidget = () => {
   }, [data])
 
   const BlogSkeleton = () => (
-    <div className="bg-white border border-gray-200 rounded-lg sm:rounded-xl p-2 sm:p-2.5">
+    <div className="bg-white border border-gray-200 rounded-md sm:rounded-lg p-2 sm:p-2.5">
       <div className="flex items-start gap-2 sm:gap-3">
         <Skeleton className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-md sm:rounded-lg" />
 
@@ -64,7 +64,7 @@ const NewsWidget = () => {
 
   if (error || !blogs.length) {
     return (
-      <div className="border-2 border-dashed border-gray-300 rounded-lg sm:rounded-xl py-8 sm:py-12 px-4 sm:px-6 text-center bg-gray-50/50">
+      <div className="border-2 border-dashed border-gray-300 rounded-md sm:rounded-lg py-8 sm:py-12 px-4 sm:px-6 text-center bg-gray-50/50">
         <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-gray-200 flex items-center justify-center">
           <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
@@ -81,14 +81,14 @@ const NewsWidget = () => {
   }
 
   return (
-    <div className="space-y-2 sm:space-y-3">
-      {blogs.slice(0, 3).map((post) => (
+    <div className="space-y-2 sm:space-y-3 max-h-[32vh] overflow-y-auto scrollbar-hide">
+      {blogs.slice(0, window.innerWidth < 1024 ? 2 : 8).map((post) => (
         <Link
           key={post.id}
           href={`/uudised/${post.id}`}
           className="group block"
         >
-          <article className="bg-white border border-gray-200 rounded-lg sm:rounded-xl p-2 sm:p-2.5 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
+          <article className="bg-white border border-gray-200 rounded-md sm:rounded-lg p-2 sm:p-2.5 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
             <div className="flex items-start gap-2 sm:gap-3">
               {/* Featured Image */}
               <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-md sm:rounded-lg overflow-hidden">

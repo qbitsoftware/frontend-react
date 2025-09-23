@@ -26,8 +26,8 @@ const RatingRisersCarousel = () => {
 
   if (isLoading) {
     return (
-      <div className="relative">
-        <div className="relative h-[70px] sm:h-[75px] lg:h-[80px] overflow-hidden">
+      <div className="relative mt-3">
+        <div className="relative h-[70px] sm:h-[75px] lg:h-[80px] overflow-hidden ">
           <div className="flex gap-3 sm:gap-4">
             {Array.from({ length: 5 }).map((_, index) => (
               <div
@@ -71,8 +71,9 @@ const RatingRisersCarousel = () => {
   }
 
   return (
-    <div className="relative">
-      <div className="relative h-[70px] sm:h-[75px] lg:h-[80px] overflow-hidden">
+    <div className="relative mt-3">
+      <div className="relative h-[60px] sm:h-[75px] lg:h-[80px] overflow-hidden">
+        {/* Left shadow */}
         <motion.div
           className="flex gap-3 sm:gap-4"
           animate={{

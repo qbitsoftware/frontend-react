@@ -31,6 +31,7 @@ import { Club } from "@/types/clubs";
 import UserRowSkeleton from "./user-row-skeleton";
 import { RatingFilters } from "@/components/rating-filters";
 import { UseGetRatingInfo } from "@/queries/rating";
+import RatingRisersCarousel from "@/routes/-components/rating-risers-carousel";
 
 export function Reiting() {
   const { t } = useTranslation();
@@ -285,7 +286,7 @@ export function Reiting() {
             {t("rating.abbreviations")}
           </p>
 
-          <div className="mb-6 sm:mb-12 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden sm:block">
+          <div className="mb-6 sm:mb-12 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden sm:block ">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-sm font-bold">i</span>
@@ -316,7 +317,8 @@ export function Reiting() {
           </div>
         </div>
 
-        <div className="mt-5 border rounded-t-[12px]">
+      <RatingRisersCarousel />
+        <div className="mt-2 border rounded-t-[12px]">
           <RatingFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
