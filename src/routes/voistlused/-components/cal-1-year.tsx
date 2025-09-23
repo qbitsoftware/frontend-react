@@ -1,11 +1,20 @@
 import { useTranslation } from "react-i18next";
 import ErrorState from "./error-state-skeleton";
 import { TournamentEvent } from "@/queries/tournaments";
-import { getDaysInMonth } from "@/routes/-components/calendar-utils";
 import { formatDate } from "./calendar-utils";
 import { Link } from "@tanstack/react-router";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
+import {
+    Table,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@/components/ui/table";
+import { useMemo } from "react";
+import { List } from "react-virtualized";
+import "react-virtualized/styles.css";
 
 const months = [
     "January", "February", "March", "April", "May", "June",
@@ -19,158 +28,223 @@ interface Props {
     tournaments: TournamentEvent[];
 }
 
+interface CalendarWeek {
+    weekNumber: number;
+    days: CalendarDay[];
+}
+
+interface CalendarDay {
+    date: Date;
+    events: TournamentEvent[];
+    monthIndex: number;
+    dayOfMonth: number;
+}
+
 export default function Cal1YearView({ selectedYear, isLoading, error, tournaments }: Props) {
     const { t } = useTranslation()
-    const eventsByDate = new Map<string, TournamentEvent[]>();
-    const daysInMonthArray = getDaysInMonth(selectedYear);
 
-    const getEventsForDate = (year: number, month: number, day: number) => {
-        const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        return eventsByDate.get(dateKey) || [];
-    };
+    const calendarData = useMemo(() => {
+        const eventsByDate = new Map<string, TournamentEvent[]>();
 
-    tournaments.forEach((event) => {
-        // Get the correct dates based on event type
-        const getStartDate = (event: TournamentEvent) =>
-            (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.start_date);
-        const getEndDate = (event: TournamentEvent) =>
-            (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.end_date);
+        tournaments.forEach((event) => {
+            const getStartDate = (event: TournamentEvent) =>
+                (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.start_date);
+            const getEndDate = (event: TournamentEvent) =>
+                (event.is_gameday || event.is_finals) ? new Date(event.gameday_date) : new Date(event.tournament.end_date);
 
-        const startDate = getStartDate(event);
-        const endDate = getEndDate(event);
+            const startDate = getStartDate(event);
+            const endDate = getEndDate(event);
 
-        if (
-            startDate.getFullYear() !== selectedYear &&
-            endDate.getFullYear() !== selectedYear
-        ) {
-            return;
-        }
+            if (
+                startDate.getFullYear() !== selectedYear &&
+                endDate.getFullYear() !== selectedYear
+            ) {
+                return;
+            }
 
-        const currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-            if (currentDate.getFullYear() !== selectedYear) {
+            const currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                if (currentDate.getFullYear() !== selectedYear) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    continue;
+                }
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+
+                if (!eventsByDate.has(dateKey)) {
+                    eventsByDate.set(dateKey, []);
+                }
+
+                eventsByDate.get(dateKey)!.push(event);
                 currentDate.setDate(currentDate.getDate() + 1);
-                continue;
             }
-            const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+        });
 
-            if (!eventsByDate.has(dateKey)) {
-                eventsByDate.set(dateKey, []);
+        // Generate weeks for the year
+        const weeks: CalendarWeek[] = [];
+        const firstDayOfYear = new Date(selectedYear, 0, 1);
+
+        // Start from the first Monday of the year or before
+        const startDate = new Date(firstDayOfYear);
+        startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+
+        let weekNumber = 0;
+        const currentDate = new Date(startDate);
+
+        while (currentDate.getFullYear() <= selectedYear ||
+               (currentDate.getFullYear() === selectedYear + 1 && currentDate.getMonth() === 0 && currentDate.getDate() <= 7)) {
+
+            const week: CalendarWeek = {
+                weekNumber: weekNumber++,
+                days: []
+            };
+
+            for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+
+                week.days.push({
+                    date: new Date(currentDate),
+                    events: eventsByDate.get(dateKey) || [],
+                    monthIndex: currentDate.getMonth(),
+                    dayOfMonth: currentDate.getDate()
+                });
+
+                currentDate.setDate(currentDate.getDate() + 1);
             }
 
-            eventsByDate.get(dateKey)!.push(event);
+            weeks.push(week);
 
-            currentDate.setDate(currentDate.getDate() + 1);
+            if (currentDate.getFullYear() > selectedYear + 1) break;
         }
-    });
+
+        return weeks;
+    }, [tournaments, selectedYear]);
 
 
     if (isLoading) return <YearViewSkeleton />;
     if (error) return <YearViewError />;
 
+    const renderDayCell = (day: CalendarDay) => {
+        const hasEvents = day.events.length > 0;
+
+        if (hasEvents) {
+            const cellStyle = {
+                backgroundColor: day.events[0].tournament.color || '#4C97F1',
+            };
+
+            const tooltipContent = (
+                <div className="p-3 space-y-2 max-w-xs">
+                    <div className="font-semibold text-gray-900">
+                        {formatDate(day.date.getFullYear(), day.monthIndex, day.dayOfMonth)}
+                    </div>
+                    <div className="space-y-2">
+                        {day.events.map((event) => (
+                            <Link key={`${event.tournament.id}-${event.is_gameday ? event.gameday_date : ''}`}
+                                  to={event.is_gameday ? `/voistlused/${event.parent_tournament_id}` : `/voistlused/${event.tournament.id}`}>
+                                <div className="flex items-start gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                                    <div
+                                        className="w-3 h-3 mt-1 rounded-sm flex-shrink-0 shadow-sm"
+                                        style={{ backgroundColor: event.tournament.color || '#4C97F1' }}
+                                    />
+                                    <div className="min-w-0">
+                                        <div className="text-sm font-medium text-gray-900 line-clamp-2">
+                                            {event.tournament.name}
+                                        </div>
+                                        {(event.is_gameday && event.order) && (
+                                            <div className="text-xs text-gray-600 mt-1">
+                                                {event.is_finals ? t('calendar.play_off') : `${t('calendar.game_day')} ${event.order}`}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <div className="w-8 h-8 mx-auto">
+                            <div
+                                className={`flex items-center justify-center w-full h-full cursor-pointer hover:scale-105 transition-transform duration-200 rounded-sm shadow-sm ${day.events.length > 1 ? "ring-2 ring-blue-200" : ""}`}
+                                style={day.events.length > 1 ? {
+                                    backgroundColor: "#D1F9F9",
+                                } : cellStyle}
+                            >
+                                {day.events.length > 1 && (
+                                    <div className="flex items-center justify-center text-xs font-bold text-blue-600">
+                                        +{day.events.length - 1}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </TooltipTrigger>
+                    <TooltipContent sideOffset={5} className="bg-white border-2 border-gray-100 shadow-xl rounded-xl p-0">
+                        {tooltipContent}
+                    </TooltipContent>
+                </Tooltip>
+            );
+        } else {
+            const isCurrentYear = day.date.getFullYear() === selectedYear;
+            return (
+                <div className="w-8 h-8 mx-auto">
+                    <div className={`w-full h-full rounded-sm ${isCurrentYear ? 'bg-gray-100' : 'bg-gray-50'}`} />
+                </div>
+            );
+        }
+    };
+
+    const WeekRow = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+        const week = calendarData[index];
+
+        return (
+            <div style={style}>
+                <TableRow className="border-b border-gray-100">
+                    <TableCell className="text-xs text-gray-500 font-medium w-12">
+                        W{week.weekNumber + 1}
+                    </TableCell>
+                    {week.days.map((day, dayIndex) => (
+                        <TableCell key={dayIndex} className="p-2 text-center relative">
+                            <div className="text-xs text-gray-400 mb-1">
+                                {day.dayOfMonth}
+                            </div>
+                            {renderDayCell(day)}
+                        </TableCell>
+                    ))}
+                </TableRow>
+            </div>
+        );
+    };
+
     return (
         <div className="space-y-4">
             <div className="bg-white rounded-lg border border-gray-200/50 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <div className="min-w-[1100px]">
-                        {/* Month headers */}
-                        <div className="grid grid-cols-12 gap-2 p-3 bg-gray-50">
-                            {months.map((month, monthIndex) => {
-                                const daysInMonth = daysInMonthArray[monthIndex];
-                                return (
-                                    <div
-                                        key={monthIndex}
-                                        className="text-center w-full"
-                                    >
-                                        <div className="text-sm font-semibold text-gray-700 mb-3">
-                                            {t('calendar.months.' + month.toLowerCase())}
-                                        </div>
-                                        <div className="grid grid-cols-4 gap-1 p-2">
-                                            {/* Generate all cells for this month */}
-                                            {Array.from({ length: daysInMonth }, (_, i) => {
-                                                const day = i + 1;
-                                                const eventsOnDay = getEventsForDate(
-                                                    selectedYear,
-                                                    monthIndex,
-                                                    day
-                                                );
-                                                const hasEvents = eventsOnDay.length > 0;
-
-                                                if (hasEvents) {
-                                                    const cellStyle = {
-                                                        backgroundColor: eventsOnDay[0].tournament.color || '#4C97F1',
-                                                    };
-
-                                                    const tooltipContent = (
-                                                        <div className="p-3 space-y-2 max-w-xs">
-                                                            <div className="font-semibold text-gray-900">
-                                                                {formatDate(selectedYear, monthIndex, day)}
-                                                            </div>
-                                                            <div className="space-y-2">
-                                                                {eventsOnDay.map((event) => (
-                                                                    <Link key={`${event.tournament.id}-${event.is_gameday ? event.gameday_date : ''}`} to={event.is_gameday ? `/voistlused/${event.parent_tournament_id}` : `/voistlused/${event.tournament.id}`}>
-                                                                        <div className="flex items-start gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                                                                            <div
-                                                                                className="w-3 h-3 mt-1 rounded-sm flex-shrink-0 shadow-sm"
-                                                                                style={{ backgroundColor: event.tournament.color || '#4C97F1' }}
-                                                                            />
-                                                                            <div className="min-w-0">
-                                                                                <div className="text-sm font-medium text-gray-900 line-clamp-2">
-                                                                                    {event.tournament.name}
-                                                                                </div>
-                                                                                {(event.is_gameday && event.order) && (
-                                                                                    <div className="text-xs text-gray-600 mt-1">
-                                                                                        {event.is_finals ? t('calendar.play_off') : `${t('calendar.game_day')} ${event.order}`}
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                    </Link>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    );
-
-                                                    return (
-                                                        <Tooltip key={`${monthIndex}-${day}`}>
-                                                            <TooltipTrigger asChild>
-                                                                <div className="aspect-square w-full">
-                                                                    <div
-                                                                        className={`flex items-center justify-center relative w-full h-full cursor-pointer hover:scale-105 transition-transform duration-200 rounded-sm shadow-sm ${eventsOnDay.length > 1 ? "ring-2 ring-blue-200" : ""} `}
-                                                                        style={eventsOnDay.length > 1 ? {
-                                                                            backgroundColor: "#D1F9F9",
-                                                                        } : cellStyle}
-                                                                    >
-                                                                        {(eventsOnDay.length > 1) && (
-                                                                            <div className="flex items-center justify-center text-xs font-bold text-blue-600">
-                                                                                +{eventsOnDay.length - 1}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent sideOffset={5} className="bg-white border-2 border-gray-100 shadow-xl rounded-xl p-0">
-                                                                {tooltipContent}
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <div className="aspect-square w-full"
-                                                            key={`${monthIndex}-${day}`}
-                                                        >
-                                                            <div className="w-full h-full bg-gray-100 rounded-sm" />
-                                                        </div>
-                                                    );
-                                                }
-                                            })}
-                                        </div>
-
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow className="bg-gray-50">
+                            <TableHead className="w-12 text-center text-xs font-semibold">
+                                Week
+                            </TableHead>
+                            <TableHead className="text-center text-xs font-semibold">Mon</TableHead>
+                            <TableHead className="text-center text-xs font-semibold">Tue</TableHead>
+                            <TableHead className="text-center text-xs font-semibold">Wed</TableHead>
+                            <TableHead className="text-center text-xs font-semibold">Thu</TableHead>
+                            <TableHead className="text-center text-xs font-semibold">Fri</TableHead>
+                            <TableHead className="text-center text-xs font-semibold">Sat</TableHead>
+                            <TableHead className="text-center text-xs font-semibold">Sun</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                </Table>
+                <div style={{ height: '600px', width: '100%' }}>
+                    <List
+                        height={600}
+                        itemCount={calendarData.length}
+                        itemSize={60}
+                        width="100%"
+                    >
+                        {WeekRow}
+                    </List>
                 </div>
             </div>
 

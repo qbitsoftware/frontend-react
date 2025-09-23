@@ -80,8 +80,8 @@ const RatingWidget = () => {
       });
 
     return (
-      <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col relative space-y-0 border rounded-[8px] sm:rounded-[12px]">
-        <div className="w-full border-b border-stone-200 mb-0 rounded-t-[8px] sm:rounded-t-[12px] bg-gray-50">
+      <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col relative space-y-0 border rounded-md sm:rounded-lg">
+        <div className="w-full border-b border-stone-200 mb-0 rounded-t-md sm:rounded-t-lg bg-gray-50">
           <Tabs
             defaultValue="men"
             value={activeTab}
@@ -110,7 +110,7 @@ const RatingWidget = () => {
             </TabsList>
           </Tabs>
         </div>
-        <div className="overflow-y-auto flex-1 scrollbar-hide rounded-b-[8px] sm:rounded-b-[12px]">
+        <div className="overflow-y-auto flex-1 scrollbar-hide rounded-b-md sm:rounded-b-lg">
           <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg table-fixed">
             <colgroup>
               <col className="w-16 sm:w-20" />

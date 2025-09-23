@@ -39,7 +39,7 @@ const VideoBoard = () => {
   };
 
   return (
-    <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col rounded-lg sm:rounded-xl overflow-hidden">
+    <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col rounded-md sm:rounded-lg overflow-hidden">
       <div className="h-full overflow-y-auto scrollbar-hide space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-0">
         {videos.map((video, index) => {
           const videoId = getVideoId(video.url);
@@ -48,7 +48,7 @@ const VideoBoard = () => {
           const isPlaying = playingVideos.has(index);
 
           return (
-            <div key={index} className="group bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
+            <div key={index} className="group bg-gray-50 border border-gray-200 rounded-md sm:rounded-lg p-2 sm:p-3 lg:p-4 hover:border-[#4C97F1]/30 hover:shadow-lg hover:shadow-[#4C97F1]/10 transition-all duration-300">
               <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-2 sm:mb-3 line-clamp-2 group-hover:text-[#4C97F1] transition-colors duration-200">
                 {video.title}
               </h3>

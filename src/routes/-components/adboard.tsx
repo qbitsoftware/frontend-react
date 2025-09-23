@@ -18,10 +18,10 @@ const ads = [
 
 const Adboard = () => {
   return (
-    <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-4 border rounded-lg sm:rounded-xl bg-white overflow-hidden">
+    <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[790px] flex flex-col space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-4 border rounded-md sm:rounded-lg bg-white overflow-hidden">
       <div className="h-full overflow-y-auto scrollbar-hide space-y-2 sm:space-y-3 lg:space-y-4">
         {ads.map((ad, index) => (
-          <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-2 sm:p-3 hover:border-[#4C97F1]/30 hover:shadow-md transition-all duration-300">
+          <div key={index} className="bg-gray-50 border border-gray-200 rounded-md p-2 sm:p-3 hover:border-[#4C97F1]/30 hover:shadow-md transition-all duration-300">
             <img 
               src={ad.url} 
               alt={`Advertisement ${index + 1}`}

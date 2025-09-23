@@ -73,6 +73,20 @@ export function UseGetTournamentsPublic() {
   });
 }
 
+export function UseGetTournamentsPublicQuery() {
+  return useQuery<TournamentsResponse>({
+    queryKey: ["tournaments_public_query"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/v1/tournaments`, {
+        params: { public: true },
+        withCredentials: true,
+      });
+      return data;
+    },
+  });
+}
+
+
 export type TournamentTypesResposne = {
   data: TournamentType[] | null;
   message: string;

@@ -14,7 +14,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
         <Link to={`/voistlused/${event.tournament.id}`} key={event.tournament.id}>
             <div className="group mb-2 sm:mb-3 relative">
                 <div className={`
-            flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border transition-all duration-300
+            flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-md sm:rounded-lg border transition-all duration-300
             ${isUpcoming
                         ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20 hover:border-[#4C97F1]/40 hover:shadow-lg hover:shadow-[#4C97F1]/10'
                         : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'

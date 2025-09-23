@@ -25,9 +25,6 @@ const HomePageGrid = () => {
       <div className="relative z-10">
         <div className="my-4 sm:my-6 lg:my-8">
           <WidgetWrapper
-            heading={t("homepage.ratingRisers.title")}
-            addr="reiting"
-            icon="arrow_up"
           >
             <div className="py-1 px-2 sm:px-4 flex-grow">
               <RatingRisersCarousel />

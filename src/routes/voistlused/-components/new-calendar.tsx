@@ -9,14 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useTranslation } from "react-i18next";
-import { TournamentEvent, UseGetHomePageTournamentsQuery } from "@/queries/tournaments";
+import { TournamentEvent, UseGetTournamentsPublicQuery } from "@/queries/tournaments";
+import { Tournament } from "@/types/tournaments";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import CalTableView from "./cal-table-view";
-import Cal1YearView from "./cal-1-year";
 
 export function TournamentsCalendar() {
   useEffect(() => {
@@ -28,17 +27,25 @@ export function TournamentsCalendar() {
   const currentYear = currentDate.getFullYear();
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [activeTab, setActiveTab] = useState<string>("three-month");
   const [searchQuery, setSearchQuery] = useState("");
 
   const { t } = useTranslation()
 
-  const { data, isLoading, error } = UseGetHomePageTournamentsQuery(false);
+  const { data, isLoading, error } = UseGetTournamentsPublicQuery();
 
   const [tournaments, setTournaments] = useState<TournamentEvent[]>([]);
   useEffect(() => {
     if (data && data.data) {
-      setTournaments(data.data);
+      const tournamentEvents: TournamentEvent[] = data.data.map((tournament: Tournament) => ({
+        tournament,
+        is_gameday: false,
+        is_finals: false,
+        gameday_date: tournament.start_date,
+        class: '',
+        order: 0,
+        parent_tournament_id: tournament.id
+      }));
+      setTournaments(tournamentEvents);
     }
   }, [data])
 
@@ -87,60 +94,29 @@ export function TournamentsCalendar() {
               </SelectContent>
             </Select>
 
-            {activeTab === "three-month" && (
-              <div className="relative w-full sm:w-96">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={t('calendar.search_placeholder')}
-                  className="pl-10 bg-white border border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] focus:ring-[#4C97F1]/20 rounded-lg text-sm"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            )}
+            <div className="relative w-full sm:w-96">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder={t('calendar.search_placeholder')}
+                className="pl-10 bg-white border border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] focus:ring-[#4C97F1]/20 rounded-lg text-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
-          <div>
-            <Tabs value={activeTab} onValueChange={(value) => {
-              setActiveTab(value);
-              setSearchQuery(""); 
-            }}>
-              <TabsList className="grid grid-cols-2 bg-white p-1 rounded-lg border border-gray-200 h-8">
-                <TabsTrigger
-                  value="three-month"
-                  className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white bg-transparent text-gray-600 rounded transition-all duration-200 font-medium text-xs px-2"
-                >
-                  {t('calendar.3_months')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="year"
-                  className="data-[state=active]:bg-[#4C97F1] data-[state=active]:text-white bg-transparent text-gray-600 rounded transition-all duration-200 font-medium text-xs px-2"
-                >
-                  {t('calendar.full_year')}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
         </div>
       </div>
 
       <div className="bg-white border border-gray-200/30 rounded-lg p-4">
         <TooltipProvider>
-          {activeTab === "three-month" ? (
-            <CalTableView
-              selectedYear={selectedYear}
-              isLoading={isLoading}
-              error={error}
-              tournaments={tournaments}
-              searchQuery={searchQuery}
-            />) : (
-            <Cal1YearView
-              selectedYear={selectedYear}
-              isLoading={isLoading}
-              error={error}
-              tournaments={tournaments}
-            />
-          )}
+          <CalTableView
+            selectedYear={selectedYear}
+            isLoading={isLoading}
+            error={error}
+            tournaments={tournaments}
+            searchQuery={searchQuery}
+          />
         </TooltipProvider>
       </div>
     </div>
