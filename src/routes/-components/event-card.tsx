@@ -17,7 +17,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
             flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-md sm:rounded-lg border transition-all duration-300
             ${isUpcoming
                         ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20 hover:border-[#4C97F1]/40 hover:shadow-lg hover:shadow-[#4C97F1]/10'
-                        : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
+                        : 'bg-white/50 border-gray-200 hover:border-gray-300 hover:shadow-md'
                     }
           `}>
                     {/* Date Display */}
@@ -46,7 +46,7 @@ export default function EventCard({ event, isUpcoming }: Props) {
                     px-1.5 sm:px-2 md:px-2 lg:px-3 py-1 sm:py-1.5 md:py-1 lg:py-2 rounded-md sm:rounded-lg text-center font-medium shadow-sm border
                     ${isUpcoming
                                         ? 'bg-[#4C97F1] text-white border-[#4C97F1]'
-                                        : 'bg-gray-100 text-gray-700 border-gray-200'
+                                        : 'bg-slate-100 text-gray-700 border-gray-200'
                                     }
                   `}>
                                     <div className="text-xs font-medium opacity-90">

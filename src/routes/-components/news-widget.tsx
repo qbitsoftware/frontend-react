@@ -81,8 +81,8 @@ const NewsWidget = () => {
   }
 
   return (
-    <div className="space-y-2 sm:space-y-3">
-      {blogs.slice(0, 3).map((post) => (
+    <div className="space-y-2 sm:space-y-3 max-h-[32vh] overflow-y-auto scrollbar-hide">
+      {blogs.slice(0, window.innerWidth < 1024 ? 2 : 8).map((post) => (
         <Link
           key={post.id}
           href={`/uudised/${post.id}`}

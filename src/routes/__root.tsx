@@ -41,7 +41,11 @@ export const Route = createRootRouteWithContext<{
       <>
         <SidebarProvider defaultOpen={false}>
           <div className="flex flex-col w-full relative">
-            {showNavbar && <Navbar />}
+            {showNavbar && (
+              <>
+                <Navbar />
+              </>
+            )}
             <main className="flex-grow">
               <Outlet />
             </main>

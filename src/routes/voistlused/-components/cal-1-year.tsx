@@ -239,12 +239,11 @@ export default function Cal1YearView({ selectedYear, isLoading, error, tournamen
                 <div style={{ height: '600px', width: '100%' }}>
                     <List
                         height={600}
-                        itemCount={calendarData.length}
-                        itemSize={60}
-                        width="100%"
-                    >
-                        {WeekRow}
-                    </List>
+                        rowCount={calendarData.length}
+                        rowHeight={60}
+                        rowRenderer={WeekRow}
+                        width={window.innerWidth}
+                    />
                 </div>
             </div>
 

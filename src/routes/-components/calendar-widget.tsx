@@ -62,7 +62,7 @@ const CalendarWidget = () => {
         flex items-center gap-2 sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border
         ${isUpcoming
           ? 'bg-gradient-to-r from-[#4C97F1]/5 to-blue-50 border-[#4C97F1]/20'
-          : 'bg-white border-gray-200'
+          : 'bg-slate-100 border-gray-200'
         }
       `}>
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
@@ -80,7 +80,7 @@ const CalendarWidget = () => {
 
   if (isLoading) {
     return (
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-3">
         <div className="space-y-6">
           <div className="space-y-3">
             {[...Array(3)].map((_, index) => (
@@ -124,7 +124,7 @@ const CalendarWidget = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-3">
       <div className="space-y-2 sm:space-y-3 lg:space-y-4">
 
         <div className="space-y-2 sm:space-y-3">

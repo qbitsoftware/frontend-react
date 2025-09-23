@@ -15,7 +15,7 @@ function RouteComponent() {
   }, []);
 
   return (
-    <div className="w-full mx-auto lg:px-4 max-w-[98%]">
+    <div className="w-full mx-auto lg:px-4 max-w-[98%] md:max-w-[100%]">
       <Reiting />
     </div>
   );
