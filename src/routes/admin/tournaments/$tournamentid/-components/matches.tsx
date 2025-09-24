@@ -319,8 +319,6 @@ export const Matches: React.FC<MatchesProps> = ({
     }
   };
 
-  console.log("midavittu", Leagues.includes(tournament_table.group.dialog_type))
-
   if (data.length > 0) {
     return (
       <Card className="w-full border-stone-100">

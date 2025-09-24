@@ -54,7 +54,7 @@ export const UsePatchMatch = (id: number) => {
             return data;
         },
         onSuccess: (data: TableInfoResponse) => {
-            console.log("invalidating")
+            // console.log("invalidating")
             queryClient.setQueryData(['matches_info', data.data.tournament_table.group.id], (oldData: TableInfoResponse) => {
                 if (!oldData) return data;
                 const output = {

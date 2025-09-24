@@ -1,14 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { downloadExcelFile, UseGetDownloadProtocol } from "@/queries/download";
+import { useDownloadProtocol } from "@/queries/download";
 import { useTranslation } from "react-i18next";
 
 export function ProtocolDownloadButton({ tournamentId, groupId, matchId }: { tournamentId: number, groupId: number, matchId: string }) {
-    const { data, isLoading } = UseGetDownloadProtocol(tournamentId, groupId, matchId, "protocol");
+    const downloadMutation = useDownloadProtocol();
 
     const handleDownload = () => {
-        if (data) {
-            downloadExcelFile(data, `protocol_${matchId}.xlsx`);
-        }
+        downloadMutation.mutate({
+            tournamentId,
+            groupId,
+            matchId,
+            type: "protocol"
+        });
     };
 
     const { t } = useTranslation();
@@ -16,11 +19,11 @@ export function ProtocolDownloadButton({ tournamentId, groupId, matchId }: { tou
     return (
         <Button
             onClick={handleDownload}
-            disabled={isLoading || !data}
+            disabled={downloadMutation.isPending}
             variant="outline"
             className="ml-4"
         >
-            {isLoading ? t('protocol.loading') : t('protocol.download')}
+            {downloadMutation.isPending ? t('protocol.loading') : t('protocol.download')}
         </Button>
     );
 }
