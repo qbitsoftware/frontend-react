@@ -39,11 +39,14 @@ const TeamTable: React.FC<TeamTableProps> = ({ participants, table_data }) => {
     setIsDialogOpen(true)
   }
 
+
+  const filteredParticipants = participants && participants.filter((participant) => ((table_data.group.type === GroupType.ROUND_ROBIN || table_data.group.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT || table_data.group.type === GroupType.DYNAMIC) ? participant.group_id != "" : participant))
+
   return (
     <div className="w-full h-full rounded-md">
-      {participants && participants.length > 0 ? (
+      {filteredParticipants && filteredParticipants.length > 0 ? (
         <div className="space-y-2 max-h-80 overflow-y-auto">
-          {participants.map((participant) => (
+          {filteredParticipants.map((participant) => (
             <div
               key={participant.id}
               onClick={() => handleCardClick(participant)}
