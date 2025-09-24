@@ -21,7 +21,7 @@ export function ProtocolDownloadButton({ tournamentId, groupId, matchId }: { tou
             onClick={handleDownload}
             disabled={downloadMutation.isPending}
             variant="outline"
-            className="ml-4"
+            className="ml-4 bg-slate-100 hover:bg-slate-200"
         >
             {downloadMutation.isPending ? t('protocol.loading') : t('protocol.download')}
         </Button>

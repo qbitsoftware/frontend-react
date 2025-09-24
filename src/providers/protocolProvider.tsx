@@ -28,6 +28,7 @@ interface ProtocolModalContextValues {
     teamBCaptain: string
     forfeitMatch: MatchWrapper | null
     isLoading: boolean
+    isPending: boolean
     childMatches: TableInfoResponse | undefined
     onClose: () => void;
     setForfeitMatch: (value: MatchWrapper | null) => void
@@ -63,6 +64,7 @@ export const ProtocolModalProvider = ({
     const [teamBCaptain, setTeamBCaptain] = useState<string>("")
     const [tableReferee, setTableReferee] = useState<string>("")
     const [headReferee, setHeadReferee] = useState<string>("")
+    const [isPending, setIsPending] = useState<boolean>(false);
     const [forfeitMatch, setForfeitMatch] = useState<MatchWrapper | null>(null);
 
     // Initialize state
@@ -73,7 +75,7 @@ export const ProtocolModalProvider = ({
         setTableReferee(extraData.table_referee || "")
         setHeadReferee(extraData.head_referee || "")
         setForfeitMatch(null)
-    }, [isOpen, match.match.id])
+    }, [isOpen, match.match.id, extraData.captain_a, extraData.captain_b])
 
     // Queries
     const { data: childMatches, isLoading } = UseGetChildMatchesQuery(
@@ -219,11 +221,13 @@ export const ProtocolModalProvider = ({
                 void error;
                 toast.error(t("toasts.protocol_modals.update_error"))
             }
+            setIsPending(false)
         }, 500),
         [match.match, updateMatch]
     );
 
     const handleCaptainChange = (value: string, captainKey: string) => {
+        setIsPending(true);
         if (captainKey === "captain_a") {
             setTeamACaptain(value);
         } else if (captainKey === "captain_b") {
@@ -233,16 +237,19 @@ export const ProtocolModalProvider = ({
     };
 
     const handleNotesChange = (value: string) => {
+        setIsPending(true)
         setNotes(value);
         debouncedUpdateField('notes', value);
     };
 
     const handleTableRefereeChange = (value: string) => {
+        setIsPending(true)
         setTableReferee(value);
         debouncedUpdateField('table_referee', value);
     };
 
     const handleHeadRefereeChange = (value: string) => {
+        setIsPending(true)
         setHeadReferee(value);
         debouncedUpdateField('head_referee', value);
     };
@@ -301,6 +308,7 @@ export const ProtocolModalProvider = ({
         tableReferee,
         forfeitMatch,
         isLoading,
+        isPending,
         childMatches,
         teamACaptain,
         teamBCaptain,

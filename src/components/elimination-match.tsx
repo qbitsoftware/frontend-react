@@ -1,5 +1,5 @@
 import { TableMatch } from "@/types/brackets";
-import { TournamentTable } from "@/types/groups";
+import { Leagues, TournamentTable } from "@/types/groups";
 import {
   capitalizeWords,
   cn,
@@ -144,13 +144,13 @@ const EliminationMatch = ({
   const bracket =
     Math.abs(
       Number(match.match.bracket.split("-")[0]) -
-        Number(match.match.bracket.split("-")[1])
+      Number(match.match.bracket.split("-")[1])
     ) == 1
       ? match.match.bracket
       : "";
 
   // Check if both participants have individual placements visible
-  const hasIndividualPlacements = 
+  const hasIndividualPlacements =
     getIndividualPlacement(match, match.participant_1.id) !== null &&
     getIndividualPlacement(match, match.participant_2.id) !== null;
 
@@ -192,11 +192,11 @@ const EliminationMatch = ({
         )}
         <div className="absolute text-[10px] -top-[15px]">
           {match.match.state !== MatchState.FINISHED &&
-          match.participant_1.id != "" &&
-          match.participant_2.id != "" &&
-          match.participant_1.id != "empty" &&
-          match.participant_2.id != "empty" &&
-          admin ? (
+            match.participant_1.id != "" &&
+            match.participant_2.id != "" &&
+            match.participant_1.id != "empty" &&
+            match.participant_2.id != "empty" &&
+            admin ? (
             <div className="flex items-center w-full hide-in-pdf">
               <TableNumberForm
                 brackets={true}
@@ -242,9 +242,9 @@ const EliminationMatch = ({
           className={cn(
             "relative flex w-full h-1/2 items-center transition-all duration-200 border-b border-gray-200",
             isTournamentWinner(match, match.participant_1.id) &&
-              "bg-green-200/50",
+            "bg-green-200/50",
             hoveredPlayerId === match.participant_1.id &&
-              "ring-2 ring-blue-400 bg-blue-50 shadow-md"
+            "ring-2 ring-blue-400 bg-blue-50 shadow-md"
           )}
         >
           {match.match.previous_match_readable_id_1 < 0 && (
@@ -330,12 +330,12 @@ const EliminationMatch = ({
                         ? "w"
                         : "o"
                       : match.match.forfeit &&
-                          match.match.forfeit_type === "RET"
+                        match.match.forfeit_type === "RET"
                         ? match.match.winner_id === match.participant_1.id
                           ? "-"
                           : "RET"
                         : match.match.forfeit &&
-                            match.match.forfeit_type === "DSQ"
+                          match.match.forfeit_type === "DSQ"
                           ? match.match.winner_id === match.participant_1.id
                             ? "-"
                             : "DQ"
@@ -348,9 +348,9 @@ const EliminationMatch = ({
           className={cn(
             "relative flex w-full h-1/2 items-center transition-all duration-200",
             isTournamentWinner(match, match.participant_2.id) &&
-              "bg-green-200/50",
+            "bg-green-200/50",
             hoveredPlayerId === match.participant_2.id &&
-              "ring-2 ring-blue-400 bg-blue-50 shadow-md"
+            "ring-2 ring-blue-400 bg-blue-50 shadow-md"
           )}
         >
           {match.match.previous_match_readable_id_2 < 0 && (
@@ -435,12 +435,12 @@ const EliminationMatch = ({
                         ? "w"
                         : "o"
                       : match.match.forfeit &&
-                          match.match.forfeit_type === "RET"
+                        match.match.forfeit_type === "RET"
                         ? match.match.winner_id === match.participant_2.id
                           ? "-"
                           : "RET"
                         : match.match.forfeit &&
-                            match.match.forfeit_type === "DSQ"
+                          match.match.forfeit_type === "DSQ"
                           ? match.match.winner_id === match.participant_2.id
                             ? "-"
                             : "DQ"
@@ -454,6 +454,7 @@ const EliminationMatch = ({
       {/* Render tooltip using portal when transformed to avoid CSS transform issues */}
       {!admin && isTransformed &&
         showTooltip &&
+        !Leagues.includes(tournamentTable.dialog_type) &&
         createPortal(
           <MatchHoverTooltip
             match={match}
@@ -465,7 +466,7 @@ const EliminationMatch = ({
         )}
 
       {/* Render tooltip normally when not transformed */}
-      {!admin && !isTransformed && (
+      {!admin && !isTransformed && !Leagues.includes(tournamentTable.dialog_type) && (
         <MatchHoverTooltip
           match={match}
           visible={showTooltip}

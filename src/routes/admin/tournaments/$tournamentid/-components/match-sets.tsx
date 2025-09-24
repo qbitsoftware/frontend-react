@@ -68,7 +68,8 @@ export const MatchSets: React.FC<MatchSetProps> = ({ match }) => {
                         <Input
                             type="text"
                             value={set.p1_score === null ? '' : match.match.forfeit ? 0 : set.p1_score}
-                            // onChange={(e) => handleScoreChange(set.number, 'p1_score', e.target.value)}
+                            data-set={set.number}
+                            data-participant="p1_score"
                             onChange={(e) => {
                                 const value = e.target.value;
 
@@ -86,6 +87,21 @@ export const MatchSets: React.FC<MatchSetProps> = ({ match }) => {
 
                                 handleScoreChange(set.number, 'p1_score', numberValue.toString())
                             }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault()
+
+                                    let nextSet = set.number
+                                    let nextParticipant: 'p1_score' | 'p2_score' = 'p2_score'
+
+                                    const currentRow = (e.target as HTMLInputElement).closest('tr')
+                                    const nextInput = currentRow?.querySelector(`input[data-set="${nextSet}"][data-participant="${nextParticipant}"]`) as HTMLInputElement
+                                    if (nextInput) {
+                                        nextInput.focus()
+                                        nextInput.select()
+                                    }
+                                }
+                            }}
                             className="min-w-[60px] text-center"
                             min="0"
                             disabled={match.match.forfeit}
@@ -94,7 +110,8 @@ export const MatchSets: React.FC<MatchSetProps> = ({ match }) => {
                         <Input
                             type="text"
                             value={set.p2_score === null ? '' : match.match.forfeit ? 0 : set.p2_score}
-                            // onChange={(e) => handleScoreChange(set.number, 'p2_score', e.target.value)}
+                            data-set={set.number}
+                            data-participant="p2_score"
                             onChange={(e) => {
                                 const value = e.target.value;
 
@@ -111,6 +128,37 @@ export const MatchSets: React.FC<MatchSetProps> = ({ match }) => {
                                 const numberValue = cleanedValue === '' ? 0 : Number.parseInt(cleanedValue);
 
                                 handleScoreChange(set.number, 'p2_score', numberValue.toString())
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault()
+
+                                    let nextSet = set.number + 1
+                                    let nextParticipant: 'p1_score' | 'p2_score' = 'p1_score'
+
+                                    if (nextSet > 5) {
+                                        const currentRow = (e.target as HTMLInputElement).closest('tr')
+                                        const nextRow = currentRow?.nextElementSibling as HTMLTableRowElement
+
+                                        if (nextRow) {
+                                            const firstInput = nextRow.querySelector('input[data-set="1"][data-participant="p1_score"]') as HTMLInputElement
+                                            if (firstInput) {
+                                                firstInput.focus()
+                                                firstInput.select()
+                                                return
+                                            }
+                                        }
+
+                                        nextSet = 1
+                                    }
+
+                                    const currentRow = (e.target as HTMLInputElement).closest('tr')
+                                    const nextInput = currentRow?.querySelector(`input[data-set="${nextSet}"][data-participant="${nextParticipant}"]`) as HTMLInputElement
+                                    if (nextInput) {
+                                        nextInput.focus()
+                                        nextInput.select()
+                                    }
+                                }
                             }}
                             className="min-w-[60px] text-center"
                             min="0"

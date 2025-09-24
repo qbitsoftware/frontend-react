@@ -245,42 +245,6 @@ function RouteComponent() {
                 </div>
               </div>
             )}
-            {/* <TabsList className="h-9 space-x-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
-              {isMeistrikad && (
-                <>
-                  <TabsTrigger
-                    value="bracket"
-                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
-                  >
-                    {t("competitions.bracket")}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="placement"
-                    className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
-                  >
-                    {t("competitions.play_off")}
-                  </TabsTrigger>
-                </>
-              )}
-
-              {isRoundRobinFull && (
-                <TabsTrigger
-                  value="bracket"
-                  className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
-                >
-                  {t("competitions.bracket")}
-                </TabsTrigger>
-              )}
-
-              {!isMeistrikad && !isRoundRobinFull && (
-                <TabsTrigger
-                  value="placement"
-                  className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-xs px-3 py-1 rounded-md"
-                >
-                  {t("competitions.play_off")}
-                </TabsTrigger>
-              )}
-            </TabsList> */}
           </div>
 
           {hasBracketData && (

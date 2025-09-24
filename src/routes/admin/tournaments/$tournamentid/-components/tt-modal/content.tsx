@@ -10,7 +10,6 @@ import Forfeit from "./forfeit";
 import { useTranslation } from "react-i18next";
 
 export function Content() {
-
   const {
     match,
     notes,
@@ -18,6 +17,7 @@ export function Content() {
     tableReferee,
     forfeitMatch,
     childMatches,
+    isPending,
     handleSwitchParticipants,
     handleMatchStart,
     handleMatchReset,
@@ -74,7 +74,7 @@ export function Content() {
             <Button
               onClick={handleSwitchParticipants}
               variant="outline"
-              disabled={childMatches && childMatches.data && childMatches.data.matches && childMatches.data.matches.length > 0}
+              disabled={isPending || (childMatches && childMatches.data && childMatches.data.matches && childMatches.data.matches.length > 0)}
               size="sm"
               className=""
             >
