@@ -262,6 +262,7 @@ function RouteComponent() {
         </CardHeader>
         <CardContent className="flex-1 overflow-hidden">
           <MatchesTable
+            all_matches={matchData ? matchData.data.matches : []}
             matches={filteredData}
             handleRowClick={handleCardClick}
             tournament_id={Number(params.tournamentid)}
