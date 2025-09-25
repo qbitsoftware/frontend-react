@@ -384,6 +384,7 @@ function RouteComponent() {
         </CardHeader>
         <CardContent>
           <MatchesTable
+            all_matches={matchData ? matchData.data.matches : []}
             matches={filteredData}
             handleRowClick={handleCardClick}
             tournament_id={Number(params.tournamentid)}

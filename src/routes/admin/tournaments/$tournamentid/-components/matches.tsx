@@ -424,6 +424,7 @@ export const Matches: React.FC<MatchesProps> = ({
         </CardHeader>
         <CardContent>
           <MatchesTable
+            all_matches={all_matches}
             matches={filteredData}
             handleRowClick={handleCardClick}
             tournament_id={tournament_id}

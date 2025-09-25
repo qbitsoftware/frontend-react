@@ -17,6 +17,7 @@ import { TournamentTableWithStages } from "@/queries/tables"
 
 interface MatchesTableProps {
     matches: MatchWrapper[] | []
+    all_matches: MatchWrapper[] | []
     handleRowClick: (match: MatchWrapper) => void
     tournament_id: number
     tournament_table: TournamentTableWithStages[]
@@ -26,6 +27,7 @@ interface MatchesTableProps {
 
 export const MatchesTable: React.FC<MatchesTableProps> = ({
     matches,
+    all_matches,
     handleRowClick,
     tournament_id,
     tournament_table,
@@ -119,7 +121,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         const isPlayerTaken = participantPlayers?.some(p =>
             isParticipantTaken(p.user_id, match.match.state)
         ) || false
-        const findLastPlayerMatch = matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
+        const findLastPlayerMatch = all_matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
         const groupParticipant = data && data.data && data.data.find(p => p.id === match.p1.group_id || p.id === match.p2.group_id)
 
         return (

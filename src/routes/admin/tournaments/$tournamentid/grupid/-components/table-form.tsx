@@ -670,8 +670,10 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, pa
                             if (value === "") {
                               field.onChange(0);
                             } else {
-                              const cleanedValue = value.replace(/^0+/, '');
-                              field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
+                              if (/^\d+$/.test(value)) {
+                                const cleanedValue = value.replace(/^0+/, '');
+                                field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
+                              }
                             }
                           }}
                           value={field.value === 0 ? '' : field.value}
@@ -696,8 +698,10 @@ export const TournamentTableForm: React.FC<TableFormProps> = ({ initial_data, pa
                             if (value === "") {
                               field.onChange(0);
                             } else {
-                              const cleanedValue = value.replace(/^0+/, '');
-                              field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
+                              if (/^\d+$/.test(value)) {
+                                const cleanedValue = value.replace(/^0+/, '');
+                                field.onChange(cleanedValue === '' ? 0 : Number.parseInt(cleanedValue));
+                              }
                             }
                           }}
                           value={field.value === 0 ? '' : field.value}
