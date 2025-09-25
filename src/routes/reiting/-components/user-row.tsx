@@ -75,7 +75,7 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                 : "bg-blue-50/30 hover:bg-blue-50/50"
                 }`}
         >
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-sm sm:text-lg font-bold text-[#4C97F1] whitespace-nowrap">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-sm sm:text-lg font-bold text-[#4C97F1] whitespace-nowrap w-16 sm:w-20">
                 {showCombinedOrder && combinedOrder !== undefined ? (
                     <>
                         {combinedOrder}
@@ -120,46 +120,48 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                     </>
                 )}
             </TableCell>
-            <TableCell className="px-0 sm:px-2 lg:px-6 py-2 sm:py-3 flex items-center space-x-2 sm:space-x-3">
-                <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
-                    <AvatarImage
-                        src=""
-                        alt={`${user.first_name} ${user.last_name}'s profile`}
-                    />
-                    <AvatarFallback>
-                        <img
-                            src={placeholderImg}
-                            className="rounded-full h-full w-full object-cover"
-                            alt="Profile"
+            <TableCell className="px-0 sm:px-2 lg:px-6 py-2 sm:py-3 w-32 sm:w-40 lg:w-48">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                    <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
+                        <AvatarImage
+                            src=""
+                            alt={`${user.first_name} ${user.last_name}'s profile`}
                         />
-                    </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col min-w-0">
-                    <span className="text-xs sm:text-sm font-semibold group-hover:text-blue-600 group-hover:underline truncate">
-                        {user.last_name}
-                    </span>
-                    <span className="text-xs sm:text-sm text-gray-600 truncate">
-                        {user.first_name}
-                    </span>
+                        <AvatarFallback>
+                            <img
+                                src={placeholderImg}
+                                className="rounded-full h-full w-full object-cover"
+                                alt="Profile"
+                            />
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                        <span className="text-xs sm:text-sm font-semibold group-hover:text-blue-600 group-hover:underline truncate">
+                            {user.last_name}
+                        </span>
+                        <span className="text-xs sm:text-sm text-gray-600 truncate">
+                            {user.first_name}
+                        </span>
+                    </div>
                 </div>
             </TableCell>
 
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm w-12 sm:w-16">
                 {user.rate_pl_points}
             </TableCell>
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm w-12 sm:w-16">
                 {user.rate_points}
             </TableCell>
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm w-12 sm:w-16">
                 {Math.round(user.rate_weigth)}
             </TableCell>
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm w-16 sm:w-20">
                 {user.eltl_id}
             </TableCell>
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden sm:table-cell">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm w-16 sm:w-20 hidden sm:table-cell">
                 {getYear(user.birth_date)}
             </TableCell>
-            <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3">
+            <TableCell className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 w-24 sm:w-32 lg:w-40">
                 <div className="flex items-center space-x-1 sm:space-x-2">
                     <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
                         <AvatarImage
@@ -175,7 +177,7 @@ export default function UserRow({ user, clubs, index, handleModalOpen, displayIn
                     </span>
                 </div>
             </TableCell>
-            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm hidden lg:table-cell">
+            <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm w-20 sm:w-24 hidden lg:table-cell">
                 {(() => {
                     const licenseInfo = getLicenseInfo(
                         user.license,

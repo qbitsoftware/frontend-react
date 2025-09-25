@@ -1387,6 +1387,14 @@
           "add_image": "Lisa pildid",
           "remove_all": "Eemalda kõik",
           "save": "Salvesta",
+          "load_more_previews": "Lae rohkem eelvaateid",
+          "image_added": "pilt lisatud",
+          "images_added": "pilti lisatud",
+          "ready_to_upload": "Valmis üleslaadimiseks",
+          "more": "veel",
+          "uploading_batch": "Laadin üles pakki",
+          "batch_size": "Paki suurus",
+          "images_per_batch": "pilti paki kohta",
           "toasts": {
             "success_add": "Pildigrupp loodud edukalt",
             "error_add": "Pildigrupi loomine nurjus",
@@ -1626,7 +1634,7 @@
           "newest": "Uusimad ennem",
           "oldest": "Vanimad ennem"
         },
-        "search": "Otsi võistlust...",
+        "search": "Otsi mängijat...",
         "all_games": "Kõik mängud",
         "winner_declared": "Lõppenud",
         "ongoing_games": "Käimas",
