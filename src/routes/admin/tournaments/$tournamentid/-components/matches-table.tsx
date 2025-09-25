@@ -41,10 +41,15 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     const tableRef = useRef<Table>(null)
     const [scrollTop, setScrollTop] = useState(0)
 
-    const matchIds = useMemo(() => matches.map(m => m.match.id), [matches])
+    const sortedMatches = useMemo(() => {
+        // Use the order provided by the parent component - don't re-sort
+        return matches
+    }, [matches])
+
+    const matchIds = useMemo(() => sortedMatches.map(m => m.match.id), [sortedMatches])
     const stableKey = useMemo(() => {
-        return `${matches.length}-${matchIds.join('-')}`
-    }, [matches.length, matchIds])
+        return `${sortedMatches.length}-${matchIds.join('-')}`
+    }, [sortedMatches.length, matchIds])
 
     const handleScroll = useCallback(({ scrollTop: newScrollTop }: { scrollTop: number }) => {
         setScrollTop(newScrollTop)
@@ -84,7 +89,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             return false
         }
 
-        return matches.some(match => {
+        return sortedMatches.some(match => {
             if (match.match.state === MatchState.ONGOING) {
                 // Check all players in both participants (handles singles and doubles)
                 const p1PlayerIds = match.p1.players?.map(player => player.user_id) || []
@@ -111,7 +116,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         const participantPlayers = player === ParticipantType.P1 ? match.p1.players : match.p2.players
         const playerName = player === ParticipantType.P1 ? match.p1.name : match.p2.name
         // const playerGroupName = player === ParticipantType.P1 ? match.p1.group_id: match.p2.group_id
-        const isForfeit = matches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
+        const isForfeit = sortedMatches.find(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.forfeit && m.match.winner_id != playerId)
         if (playerId === "empty") return <div className="text-gray-400">Bye Bye</div>
         if (playerId === "") return <div></div>
 
@@ -119,7 +124,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         const isPlayerTaken = participantPlayers?.some(p =>
             isParticipantTaken(p.user_id, match.match.state)
         ) || false
-        const findLastPlayerMatch = matches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
+        const findLastPlayerMatch = sortedMatches.filter(m => (m.match.p1_id == playerId || m.match.p2_id == playerId) && m.match.state === MatchState.FINISHED).sort((a, b) => new Date(b.match.finish_date).getTime() - new Date(a.match.finish_date).getTime())[0]
         const groupParticipant = data && data.data && data.data.find(p => p.id === match.p1.group_id || p.id === match.p2.group_id)
 
         return (
@@ -171,7 +176,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                 </div>
             </div>
         )
-    }, [matches, data, t, isParticipantTaken])
+    }, [sortedMatches, data, t, isParticipantTaken])
 
     const getPendingScore = useCallback((matchId: string, player: ParticipantType) => {
         const pending = pendingScores[matchId]
@@ -374,7 +379,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }, [isParticipantTaken])
 
     const participant1CellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
-        <div className="flex items-center h-full px-2 text-sm">
+        <div className="flex items-center h-full px-2" style={{ fontSize: '13px' }}>
             {renderPlayer(rowData, ParticipantType.P1)}
         </div>
     ), [renderPlayer])
@@ -464,24 +469,12 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
     }, [pendingScores, loadingUpdates, submitScore, clearPendingScore])
 
     const participant2CellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
-        <div className="flex items-center h-full px-2 text-sm">
+        <div className="flex items-center h-full px-2" style={{ fontSize: '13px' }}>
             {renderPlayer(rowData, ParticipantType.P2)}
         </div>
     ), [renderPlayer])
 
-    const bracketCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => (
-        <div className="flex items-center h-full px-2 text-[10px]">
-            {rowData.match.type === "winner"
-                ? t("admin.tournaments.matches.table.winner_bracket")
-                : rowData.match.type === "loser"
-                    ? t("admin.tournaments.matches.table.loser_bracket")
-                    : rowData.match.type === "bracket"
-                        ? t("admin.tournaments.matches.table.bracket_bracket")
-                        : "-"}
-        </div>
-    ), [t])
-
-    const roundCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
+    const bracketRoundCellRenderer = useCallback(({ rowData }: { rowData: MatchWrapper }) => {
         const table = tableMap.get(rowData.match.tournament_table_id)
         const roundDisplayName = getRoundDisplayName(
             rowData.match.type,
@@ -492,14 +485,23 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
             t
         );
 
+        const bracketName = rowData.match.type === "winner"
+            ? t("admin.tournaments.matches.table.winner_bracket")
+            : rowData.match.type === "loser"
+                ? t("admin.tournaments.matches.table.loser_bracket")
+                : rowData.match.type === "bracket"
+                    ? t("admin.tournaments.matches.table.bracket_bracket")
+                    : "-";
+
         return (
-            <div className="flex items-center h-full px-2 text-sm">
-                {roundDisplayName}
+            <div className="flex flex-col items-start h-full px-2 py-1 text-[10px]">
+                <span className="font-medium">{bracketName}</span>
+                <span className="text-gray-600">{roundDisplayName}</span>
             </div>
         )
     }, [tableMap, t])
 
-    if (matches.length === 0) {
+    if (sortedMatches.length === 0) {
         return (
             <div className="flex items-center justify-center h-48">
                 <span className="text-gray-400 text-base font-medium">
@@ -510,7 +512,7 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
         )
     }
 
-    const tableHeight = all ? "h-[65vh]" : "h-[65vh]";
+    const tableHeight = all ? "h-full" : "h-[65vh]";
 
     return (
         <div className={`rounded-md border my-2 ${tableHeight}`} >
@@ -523,12 +525,12 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         height={height}
                         headerHeight={40}
                         rowHeight={40}
-                        rowCount={matches.length}
-                        rowGetter={({ index }) => matches[index]}
+                        rowCount={sortedMatches.length}
+                        rowGetter={({ index }) => sortedMatches[index]}
                         onScroll={handleScroll}
                         scrollTop={scrollTop}
                         rowClassName={({ index }) =>
-                            index !== -1 ? `border-b ${getRowClassName(matches[index])}` : "bg-gray-50"
+                            index !== -1 ? `border-b ${getRowClassName(sortedMatches[index])}` : "bg-gray-50"
                         }
                         headerClassName="bg-gray-50 font-semibold text-[10px] border-b"
                     >
@@ -601,19 +603,11 @@ export const MatchesTable: React.FC<MatchesTableProps> = ({
                         />
 
                         <Column
-                            label={t("admin.tournaments.matches.table.bracket")}
-                            dataKey="bracket"
-                            width={120}
-                            flexGrow={0}
-                            cellRenderer={bracketCellRenderer}
-                        />
-
-                        <Column
-                            label={t("admin.tournaments.matches.table.round")}
-                            dataKey="round"
+                            label={t("admin.tournaments.matches.table.bracket") + " / " + t("admin.tournaments.matches.table.round")}
+                            dataKey="bracketRound"
                             width={100}
                             flexGrow={0}
-                            cellRenderer={roundCellRenderer}
+                            cellRenderer={bracketRoundCellRenderer}
                         />
                     </Table>
                 )}

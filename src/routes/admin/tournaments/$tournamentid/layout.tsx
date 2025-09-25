@@ -359,7 +359,7 @@ function RouteComponent() {
                   )}
                 </div>
               </div>
-              <div className="px-0 md:px-0 pb-8">
+              <div className="px-0 md:px-0 pb-0">
                 <Outlet />
               </div>
             </div>

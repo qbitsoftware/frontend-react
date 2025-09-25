@@ -1364,6 +1364,14 @@
           "add_image": "Add images",
           "remove_all": "Remove all",
           "save": "Save",
+          "load_more_previews": "Load more previews",
+          "image_added": "image added",
+          "images_added": "images added",
+          "ready_to_upload": "Ready to upload",
+          "more": "more",
+          "uploading_batch": "Uploading batch",
+          "batch_size": "Batch size",
+          "images_per_batch": "images per batch",
           "toasts": {
             "success_add": "Image group added",
             "error_add": "Failed to add image group",
@@ -1603,11 +1611,11 @@
           "newest": "Newest First",
           "oldest": "Oldest First"
         },
-        "search": "Search tournaments...",
-        "all_games": "All games",
-        "winner_declared": "Ended games",
-        "ongoing_games": "Ongoing games",
-        "upcoming_games": "Upcoming games"
+        "search": "Search matches...",
+        "all_games": "All matches",
+        "winner_declared": "Ended matches",
+        "ongoing_games": "Ongoing matches",
+        "upcoming_games": "Upcoming matches"
       },
       "progress": {
         "title": "Tournament Progress",

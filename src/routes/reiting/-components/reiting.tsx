@@ -44,6 +44,7 @@ export function Reiting() {
   const [isRatingCalculatorOpen, setIsRatingCalculatorOpen] = useState(false);
   const [isRatingInfoOpen, setIsRatingInfoOpen] = useState(false);
   const [showForeigners, setShowForeigners] = useState(false);
+  const [allowTableScroll, setAllowTableScroll] = useState(false);
 
   // Data fetching
   const { data: ratingInfo } = UseGetRatingInfo();
@@ -143,6 +144,42 @@ export function Reiting() {
       setClubs(clubsData.data);
     }
   }, [clubsData]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const threshold = 15;
+      setAllowTableScroll(scrollY >= threshold);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (allowTableScroll && window.innerWidth < 768) {
+      const preventDownScroll = (e: WheelEvent) => {
+        if (e.deltaY > 0) {
+          e.preventDefault();
+        }
+      };
+
+      const preventDownKeys = (e: KeyboardEvent) => {
+        const downKeys = ['ArrowDown', 'PageDown', 'End', 'Space'];
+        if (downKeys.includes(e.key)) {
+          e.preventDefault();
+        }
+      };
+
+      document.addEventListener('wheel', preventDownScroll, { passive: false });
+      document.addEventListener('keydown', preventDownKeys);
+
+      return () => {
+        document.removeEventListener('wheel', preventDownScroll);
+        document.removeEventListener('keydown', preventDownKeys);
+      };
+    }
+  }, [allowTableScroll]);
 
   const windowScrollRef = useRef(0);
 
@@ -335,35 +372,35 @@ export function Reiting() {
             onInfoClick={() => setIsRatingInfoOpen(true)}
           />
 
-          <div className="w-full overflow-auto rounded-t-md max-h-[70vh]">
+          <div className={`w-full overflow-x-auto rounded-t-md max-h-[70vh] ${allowTableScroll ? "overflow-y-auto" : "overflow-y-hidden"}`}>
             <Table className="w-full mx-auto border-collapse rounded-t-lg shadow-lg">
               <TableHeader className="rounded-lg">
                 <TableRow className="bg-white sticky top-0 z-10">
-                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-16 sm:w-20">
                     NR
                   </TableHead>
-                  <TableHead className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                  <TableHead className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-32 sm:w-40 lg:w-48">
                     {t("rating.table.head.player")}
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-12 sm:w-16">
                     PP
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-12 sm:w-16">
                     RP
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-12 sm:w-16">
                     KA
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-16 sm:w-20">
                     ID
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm hidden sm:table-cell">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-16 sm:w-20 hidden sm:table-cell">
                     {t("rating.table.head.birthyear")}
                   </TableHead>
-                  <TableHead className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm">
+                  <TableHead className="px-1 sm:px-2 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-24 sm:w-32 lg:w-40">
                     {t("rating.table.head.club")}
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm hidden lg:table-cell">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left font-medium text-xs sm:text-sm w-20 sm:w-24 hidden lg:table-cell">
                     {t("rating.table.head.license")}
                   </TableHead>
                 </TableRow>
