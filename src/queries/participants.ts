@@ -167,8 +167,9 @@ export function UsePostSeeding(tournament_id: number, table_id: number) {
 export function UsePostOrder(tournament_id: number, table_id: number) {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async () => {
-            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/order?order=rating`, {}, {
+        mutationFn: async (date: string) => {
+            const { data } = await axiosInstance.post(`/api/v1/tournaments/${tournament_id}/tables/${table_id}/participants/order`, {}, {
+                params: { date, order: "rating" },
                 withCredentials: true,
             })
             return data;

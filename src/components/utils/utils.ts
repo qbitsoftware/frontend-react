@@ -1,6 +1,6 @@
 import { BracketType, TableMatch } from "@/types/brackets";
 import { BRACKET_CONSTANTS } from "@/types/brackets";
-import { DialogType, TournamentTable } from "@/types/groups";
+import { DialogType, Leagues, TournamentTable } from "@/types/groups";
 import { GroupType, MatchWrapper } from "@/types/matches";
 import { Participant } from "@/types/participants";
 
@@ -182,7 +182,7 @@ export const getTournamentTypeKey = (data: { type: string; solo: boolean; dialog
     return "dynamic";
   }
 
-  if (!data.solo && data.dialog_type === DialogType.DT_TEAM_LEAGUES &&
+  if (!data.solo && Leagues.includes(data.dialog_type as DialogType) &&
     (data.type === GroupType.ROUND_ROBIN || data.type === GroupType.ROUND_ROBIN_FULL_PLACEMENT)) {
     return "teams-roundrobin";
   }

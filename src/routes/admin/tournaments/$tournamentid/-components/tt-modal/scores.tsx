@@ -104,16 +104,19 @@ const Scores = () => {
                         style={{ minWidth: "500px" }}
                     >
                         <TableHeader>
-                            <TableRow className="bg-gray-50 hover:bg-gray-50">
-                                <TableHead className="text-xs font-medium p-2 text-left w-16">
+                            <TableRow className="bg-gray-50 hover:bg-gray-50 sticky top-0 z-10">
+                                <TableHead className="text-xs font-semibold p-0.5 text-left w-10 min-w-[28px] h-7 align-middle">
                                     {t('protocol.table.game')}
                                 </TableHead>
                                 {Array.from({ length: maxSets }).map((_, idx) => (
-                                    <TableHead key={idx} className="text-xs font-medium p-2 text-center w-12">
+                                    <TableHead key={idx} className="text-xs font-semibold p-0.5 text-center w-10 min-w-[32px] h-7 align-middle">
                                         {`S${idx + 1}`}
                                     </TableHead>
                                 ))}
-                                <TableHead className="text-xs font-medium p-2 text-center w-24">
+                                <TableHead className="text-xs font-semibold p-0.5 text-center w-14 min-w-[28px] h-7 align-middle">
+                                    {t('protocol.table.sets')}
+                                </TableHead>
+                                <TableHead className="text-xs font-semibold p-0.5 text-center w-14 min-w-[28px] h-7 align-middle">
                                     {t('protocol.actions.title')}
                                 </TableHead>
                             </TableRow>
@@ -123,16 +126,16 @@ const Scores = () => {
                                 // Skeleton rows
                                 Array.from({ length: 5 }).map((_, idx) => (
                                     <TableRow key={idx} className="hover:bg-gray-50">
-                                        <TableCell className="text-xs font-medium p-2">
-                                            <div className="h-[14px] w-8 bg-gray-200 rounded animate-pulse"></div>
+                                        <TableCell className="text-xs font-medium p-1">
+                                            <div className="h-[12px] w-6 bg-gray-200 rounded animate-pulse"></div>
                                         </TableCell>
                                         {Array.from({ length: maxSets }).map((_, setIdx) => (
-                                            <TableCell key={setIdx} className="p-2 text-center">
-                                                <div className="h-[20px] w-full bg-gray-200 rounded animate-pulse mx-auto"></div>
+                                            <TableCell key={setIdx} className="p-1 text-center">
+                                                <div className="h-[14px] w-full bg-gray-200 rounded animate-pulse mx-auto"></div>
                                             </TableCell>
                                         ))}
-                                        <TableCell className="p-2">
-                                            <div className="h-6 w-full bg-gray-200 rounded animate-pulse text-xs px-2"></div>
+                                        <TableCell className="p-1">
+                                            <div className="h-4 w-full bg-gray-200 rounded animate-pulse text-xs px-1"></div>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -145,19 +148,27 @@ const Scores = () => {
                                         key={player_match.match.id}
                                         className="hover:bg-gray-50"
                                     >
-                                        <TableCell className="text-xs font-medium p-2">
+                                        <TableCell className="text-xs font-medium p-1">
                                             {order[player_match.match.order - 1]}
                                         </TableCell>
                                         <MatchSets
                                             key={player_match.match.id}
                                             match={player_match}
                                         />
-                                        <TableCell className="p-2">
+                                        <TableCell className="text-xs font-bold text-center align-middle p-1" style={{ width: 28 }}>
+                                            {(() => {
+                                                const score = player_match.match.extra_data?.score || [];
+                                                const p1 = score.filter(s => s.p1_score > s.p2_score).length;
+                                                const p2 = score.filter(s => s.p2_score > s.p1_score).length;
+                                                return `${p1}:${p2}`;
+                                            })()}
+                                        </TableCell>
+                                        <TableCell className="p-1">
                                             <Button
                                                 onClick={() =>
                                                     handleForfeitMatch(player_match)
                                                 }
-                                                className="text-xs h-6 px-2 w-full"
+                                                className="text-xs h-5 px-1 w-full min-w-0"
                                                 size="sm"
                                                 variant="outline"
                                             >

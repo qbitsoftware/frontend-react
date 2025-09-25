@@ -31,12 +31,12 @@ export const TableTennisProtocolModal = () => {
                                 <X className="cursor-pointer h-5 w-5 absolute right-0" onClick={onClose} />
                             </div>
                             <div className="flex justify-center">
-                                <ProtocolDownloadButton
+                                <LotterySheetDownload
                                     tournamentId={tournamentId}
                                     groupId={match.match.tournament_table_id}
                                     matchId={match.match.id}
                                 />
-                                <LotterySheetDownload
+                                <ProtocolDownloadButton
                                     tournamentId={tournamentId}
                                     groupId={match.match.tournament_table_id}
                                     matchId={match.match.id}
@@ -50,18 +50,17 @@ export const TableTennisProtocolModal = () => {
                             {t("protocol.title")}: <span className="font-bold">{match.p1.name}</span> vs <span className="font-bold">{match.p2.name}</span>
                         </DialogTitle>
                         <div className="flex items-center gap-2">
+                            <LotterySheetDownload
+                                tournamentId={tournamentId}
+                                groupId={match.match.tournament_table_id}
+                                matchId={match.match.id}
+                            />
                             <TableNumberForm
                                 match={match.match}
                                 initialTableNumber={match.match.extra_data?.table}
                                 brackets={false}
                             />
-
                             <ProtocolDownloadButton
-                                tournamentId={tournamentId}
-                                groupId={match.match.tournament_table_id}
-                                matchId={match.match.id}
-                            />
-                            <LotterySheetDownload
                                 tournamentId={tournamentId}
                                 groupId={match.match.tournament_table_id}
                                 matchId={match.match.id}

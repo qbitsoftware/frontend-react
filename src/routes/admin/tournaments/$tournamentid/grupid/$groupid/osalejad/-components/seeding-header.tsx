@@ -18,11 +18,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Upload, Download, TrendingUp, CheckCircle, Users, Settings, Play, ChevronRight, Grid2x2, Zap, UserPlus } from "lucide-react";
+import { Upload, Download, TrendingUp, CheckCircle, Users, Settings, Play, ChevronRight, Grid2x2, Zap, UserPlus, CalendarIcon } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { TournamentTableWithStages } from "@/queries/tables";
 import { axiosInstance } from '@/queries/axiosconf';
 import { getRealParticipantLength } from "@/components/utils/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 interface SeedingHeaderProps {
   tournament_id: number;
@@ -45,6 +47,8 @@ const SeedingHeader = ({
   const assignRoundRobin = UsePostParticipantJoin(tournament_id, table_data.id, 'dynamic')
   const moveParticipant = UsePostParticipantMove(tournament_id, table_data.id);
   const importMutation = UseImportParticipants(tournament_id, table_data.id)
+
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -102,7 +106,11 @@ const SeedingHeader = ({
   const handleOrder = async () => {
     setIsLoading(true)
     try {
-      await updateOrder.mutateAsync();
+      let formatted = "";
+      if (selectedDate) {
+        formatted = selectedDate.toLocaleDateString("sv-SE")
+      }
+      await updateOrder.mutateAsync(formatted);
       toast.message(t('toasts.participants.order_success'))
     } catch (error) {
       void error;
@@ -407,6 +415,30 @@ const SeedingHeader = ({
 
                       {step.actions === 'seeding' && (
                         <div className="flex flex-wrap items-center gap-2">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-7 text-xs flex items-center gap-1.5"
+                              >
+                                <CalendarIcon className="h-3 w-3" />
+                                {selectedDate
+                                  ? selectedDate.toLocaleDateString()
+                                  : t('common.select_date')}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={setSelectedDate}
+                                disabled={(date) => date > new Date() || date < new Date(2025, 7, 19)}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
                           <Button
                             onClick={handleOrder}
                             disabled={isLoading || disabled}
