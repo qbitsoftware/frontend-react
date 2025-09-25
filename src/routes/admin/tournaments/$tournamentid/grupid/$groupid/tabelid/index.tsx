@@ -71,21 +71,4 @@ function RouteComponent() {
       </div>
     </div>
   );
-
-  // return (
-  //   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-  //     <div className="flex justify-center items-center h-[50vh]">
-  //       <Loader2 className="animate-spin" />
-  //     </div>
-  //   </div>
-  // )
-  // return (
-  //   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-  //     <div className="flex justify-center items-center h-48">
-  //       <span className="text-gray-400 text-base font-medium">
-  //         Tabeli andmete laadimisel tekkis viga.
-  //       </span>
-  //     </div>
-  //   </div>
-  // )
 }

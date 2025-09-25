@@ -14,6 +14,35 @@ export const Leagues = [
   DialogType.DT_4_PER_TEAM_DOUBLE,
 ]
 
+export function getPlayerLabels(dialogType: DialogType | undefined): { left: string[]; right: string[] } {
+  if (!dialogType) {
+    return { left: [], right: [] }
+  }
+  switch (dialogType) {
+    case DialogType.DT_2_PER_TEAM_DOUBLE:
+      return {
+        left: ["A", "B", "Paar", "A", "B"],
+        right: ["X", "Y", "Paar", "Y", "X"],
+      }
+    case DialogType.DT_3_PER_TEAM:
+      return {
+        left: ["A", "B", "C", "A", "B"],
+        right: ["X", "Y", "Z", "Y", "X"],
+      }
+    case DialogType.DT_4_PER_TEAM_DOUBLE:
+      return {
+        left: ["M1N1", "N2", "M2", "N1", "M1"],
+        right: ["M1N1", "N2", "M2", "N1", "M1"],
+      }
+    default:
+      return {
+        left: [],
+        right: [],
+      }
+  }
+}
+
+
 
 export type TournamentTable = {
   created_at: string;

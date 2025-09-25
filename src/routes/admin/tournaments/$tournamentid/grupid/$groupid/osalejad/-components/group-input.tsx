@@ -43,8 +43,6 @@ export default function GroupInput({ group, tournament_id, tournament_table }: G
         }
     }
 
-    console.log("state", tournament_table.state)
-
     return (
         <div className=''>
             <div className="flex justify-between items-center  bg-[#062842] py-2 rounded-l-sm pr-2">

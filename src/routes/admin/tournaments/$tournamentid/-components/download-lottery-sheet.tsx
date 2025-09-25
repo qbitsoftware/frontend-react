@@ -1,14 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { downloadExcelFile, UseGetDownloadProtocol } from "@/queries/download";
+import { useDownloadProtocol } from "@/queries/download";
 import { useTranslation } from "react-i18next";
 
 export function LotterySheetDownload({ tournamentId, groupId, matchId }: { tournamentId: number, groupId: number, matchId: string }) {
-    const { data, isLoading } = UseGetDownloadProtocol(tournamentId, groupId, matchId, "lottery_sheet");
+    const downloadMutation = useDownloadProtocol();
 
     const handleDownload = () => {
-        if (data) {
-            downloadExcelFile(data, `loosileht_${matchId}.xlsx`);
-        }
+        downloadMutation.mutate({
+            tournamentId,
+            groupId,
+            matchId,
+            type: "lottery_sheet"
+        });
     };
 
     const { t } = useTranslation();
@@ -16,11 +19,11 @@ export function LotterySheetDownload({ tournamentId, groupId, matchId }: { tourn
     return (
         <Button
             onClick={handleDownload}
-            disabled={isLoading || !data}
+            disabled={downloadMutation.isPending}
             variant="outline"
-            className="ml-4"
+            className="ml-4 bg-slate-100 hover:bg-slate-200"
         >
-            {isLoading ? t('protocol.loading') : t('protocol.download_lottery_sheet')}
+            {downloadMutation.isPending ? t('protocol.loading') : t('protocol.download_lottery_sheet')}
         </Button>
     );
 }

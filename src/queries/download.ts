@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "./axiosconf";
 
 export const UseGetDownloadProtocol = (tournament_id: number, group_id: number, match_id: string, type: 'protocol' | 'lottery_sheet') => {
@@ -17,6 +17,32 @@ export const UseGetDownloadProtocol = (tournament_id: number, group_id: number, 
     })
 }
 
+export const useDownloadProtocol = () => {
+    return useMutation({
+        mutationFn: async ({ tournamentId, groupId, matchId, type }: {
+            tournamentId: number;
+            groupId: number;
+            matchId: string;
+            type: 'protocol' | 'lottery_sheet';
+        }) => {
+            const { data } = await axiosInstance.get(`/api/v1/tournaments/${tournamentId}/tables/${groupId}/match/${matchId}/protocol`, {
+                withCredentials: true,
+                responseType: 'blob',
+                params: {
+                    type: type,
+                }
+            });
+            return data as Blob;
+        },
+        onSuccess: (data, variables) => {
+            const name = variables.type === 'protocol' ? 'protokoll' : 'loosileht';
+            downloadExcelFile(data, `${name}_${variables.matchId}.xlsx`);
+        },
+        onError: (error) => {
+            console.error('Download failed:', error);
+        }
+    });
+};
 
 export const downloadExcelFile = (blob: Blob, fileName: string = 'protocol.xlsx') => {
     const url = window.URL.createObjectURL(blob);
