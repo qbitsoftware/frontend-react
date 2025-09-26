@@ -382,6 +382,11 @@
       "club": "Klubi nimi",
       "gender_male": "Mees",
       "gender_female": "Naine",
+      "gender": {
+        "placeholder": "Sugu",
+        "male": "Mees",
+        "female": "Naine"
+      },
       "add_to_list": "Lisa mängija nimekirja",
       "manual_help_text": "Sisesta andmebaasis puuduva mängija andmed. Kõik väljad on kohustuslikud.",
       "club_help": "Jäta tühjaks või sisesta 'KLUBITU' kui mängijal pole klubikuuluvust",
@@ -398,7 +403,6 @@
       "birth_date": "Sünnipäev",
       "estonian_id": "Eesti isikukood",
       "no_estonian_id": "Mul pole Eesti isikukoodi",
-      "gender": "Sugu",
       "verifying_id": "Kontrollin Eesti isikukoodi...",
       "submit_button": "Lisa mängija"
     },

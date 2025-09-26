@@ -353,7 +353,6 @@
       "birth_year": "Birth Year",
       "isikukood": "Estonian National ID Code",
       "club": "Club Name",
-      "gender": "Gender",
       "gender_male": "Male",
       "gender_female": "Female",
       "add_to_list": "Add Player to List",
@@ -362,7 +361,12 @@
       "no_estonian_id": "I don't have an Estonian ID code",
       "search_club": "Search for club...",
       "no_clubs_found": "No clubs found",
-      "auto_generated": "Auto-generated from ID code"
+      "auto_generated": "Auto-generated from ID code",
+      "gender": {
+        "placeholder": "Sex",
+        "male": "Male",
+        "female": "Female"
+      }
     },
     "payment": {
       "email_label": "Email Address",
