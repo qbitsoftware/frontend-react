@@ -329,30 +329,32 @@ export default function GroupStageBracket({
 
                       <TableCell className="font-bold text-center py-2 px-3 border-b border-l border-gray-200 bg-gray-50 text-gray-900 w-[90px] min-w-[90px]">
                         {placementIndex !== -1 ? (
-                          <div className="flex items-center justify-center gap-1">
+                          <div className="flex items-center justify-center gap-1 placement-with-reasoning">
                             <span className="text-base">{placementIndex + 1}</span>
                             {reasons.length > 0 && (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <span className="ml-1 cursor-pointer text-blue-500 hover:text-blue-700">
-                                      <Info className="w-4 h-4 inline" />
-                                    </span>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-xs text-left">
-                                    <div>
-                                      <div className="font-semibold mb-1 text-sm text-blue-700">
-                                        {t("competitions.results.tiebreaker_reasons") || "Tiebreaker reasons:"}
+                              <div className="reasoning-tooltip">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span className="ml-1 cursor-pointer text-blue-500 hover:text-blue-700 print:hidden">
+                                        <Info className="w-4 h-4 inline" />
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-xs text-left">
+                                      <div>
+                                        <div className="font-semibold mb-1 text-sm text-blue-700">
+                                          {t("competitions.results.tiebreaker_reasons") || "Tiebreaker reasons:"}
+                                        </div>
+                                        <ol className="list-decimal list-inside text-xs text-gray-800 space-y-1">
+                                          {reasons.map((reason, idx) => (
+                                            <li key={idx}>{t(`competitions.results.tiebreaker.${reason}`)}</li>
+                                          ))}
+                                        </ol>
                                       </div>
-                                      <ol className="list-decimal list-inside text-xs text-gray-800 space-y-1">
-                                        {reasons.map((reason, idx) => (
-                                          <li key={idx}>{t(`competitions.results.tiebreaker.${reason}`)}</li>
-                                        ))}
-                                      </ol>
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
                             )}
                           </div>
                         ) : (
