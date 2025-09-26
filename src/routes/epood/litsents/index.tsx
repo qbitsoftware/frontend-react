@@ -504,6 +504,7 @@ function RouteComponent() {
         eltl_id: player.eltl_id,
         club_name: player.club?.name || "KLUBITU",
         selected_license_duration: player.selectedLicenseDuration || 1,
+        foreigner: player.foreigner || 0,
       })),
       currency: "EUR",
     };

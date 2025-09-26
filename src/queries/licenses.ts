@@ -13,6 +13,7 @@ export interface PaymentRequest {
     eltl_id: number
     club_name: string
     selected_license_duration: number
+    foreigner: number
   }>
   currency: string
 }
