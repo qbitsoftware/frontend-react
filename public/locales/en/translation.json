@@ -567,7 +567,15 @@
       "solo_team": "Player",
       "total_points": "Total points",
       "placement": "Live placement",
-      "no_results": "No results"
+      "no_results": "No results",
+      "tiebreaker_reasons": "How ties are broken",
+      "tiebreaker": {
+        "REASON_HEAD_TO_HEAD": "Head-to-head results",
+        "REASON_FORFEIT": "Win by forfeit",
+        "REASON_SET_DIFFERENCE": "Set difference",
+        "REASON_POINTS": "Point difference",
+        "REASON_RANDOM": "Random"
+      }
     },
     "standings": {
       "og_placement": "Seed",

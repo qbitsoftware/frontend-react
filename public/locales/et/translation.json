@@ -605,7 +605,15 @@
       "solo_team": "Võistleja",
       "total_points": "Punktid kokku",
       "placement": "Paremusjärjestus",
-      "no_results": "Tulemusi pole"
+      "no_results": "Tulemusi pole",
+      "tiebreaker_reasons": "Kuidas lahendati viigid",
+      "tiebreaker": {
+        "REASON_HEAD_TO_HEAD": "Omavaheline mäng",
+        "REASON_FORFEIT": "Võit loobumisega",
+        "REASON_SET_DIFFERENCE": "Seti vahe",
+        "REASON_POINTS": "Punktide ülekaal",
+        "REASON_RANDOM": "Juhuslik"
+      }
     },
     "standings": {
       "placement": "Koht",

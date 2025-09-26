@@ -13,11 +13,12 @@ import { useState } from "react";
 import { RoundRobinBracket, RoundRobins } from "@/types/brackets";
 import { Button } from "./ui/button";
 import { MatchWrapper } from "@/types/matches";
-import { Printer, QrCode } from "lucide-react";
+import { Info, Printer, QrCode } from "lucide-react";
 import { TournamentTable } from "@/types/groups";
 import { PDFPreviewModal } from "./pdf-preview-modal";
 import { UseGetPlacements } from "@/queries/brackets";
 import { printQRCodeToBlankSheet } from "@/lib/qr-print";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 interface GroupStageBracketProps {
   brackets: RoundRobins;
@@ -255,11 +256,15 @@ export default function GroupStageBracket({
                 return roundRobinBracket.map((team, rowIndex) => {
                   if (team.participant.group_id === "") return null;
                   let placementIndex = -1;
+                  let reasons: string[] = []
                   if (placementData?.data) {
                     const groupParticipants = placementData?.data!.filter(p => p.group_id === team.participant.group_id) || [];
                     placementIndex = groupParticipants.findIndex(
                       (p) => p.id === team.participant.id
                     );
+                    if (placementIndex !== -1 && groupParticipants[placementIndex].reasoning) {
+                      reasons = groupParticipants[placementIndex].reasoning || []
+                    }
                   }
 
 
@@ -313,11 +318,45 @@ export default function GroupStageBracket({
                           <Skeleton className="h-4 w-8 mx-auto" />
                         )}
                       </TableCell>
-                      <TableCell className="font-bold text-center py-2 px-3 border-b border-l border-gray-200 bg-gray-50 text-gray-900 w-[90px] min-w-[90px]">
+                      {/* <TableCell className="font-bold text-center py-2 px-3 border-b border-l border-gray-200 bg-gray-50 text-gray-900 w-[90px] min-w-[90px]">
                         {placementIndex !== -1 ? (
                           <span className="text-base">{placementIndex + 1}</span>
+                          
                         ) : (
-                        <span className="text-base">-</span>
+                          <span className="text-base">-</span>
+                        )}
+                      </TableCell> */}
+
+                      <TableCell className="font-bold text-center py-2 px-3 border-b border-l border-gray-200 bg-gray-50 text-gray-900 w-[90px] min-w-[90px]">
+                        {placementIndex !== -1 ? (
+                          <div className="flex items-center justify-center gap-1">
+                            <span className="text-base">{placementIndex + 1}</span>
+                            {reasons.length > 0 && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="ml-1 cursor-pointer text-blue-500 hover:text-blue-700">
+                                      <Info className="w-4 h-4 inline" />
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-xs text-left">
+                                    <div>
+                                      <div className="font-semibold mb-1 text-sm text-blue-700">
+                                        {t("competitions.results.tiebreaker_reasons") || "Tiebreaker reasons:"}
+                                      </div>
+                                      <ol className="list-decimal list-inside text-xs text-gray-800 space-y-1">
+                                        {reasons.map((reason, idx) => (
+                                          <li key={idx}>{t(`competitions.results.tiebreaker.${reason}`)}</li>
+                                        ))}
+                                      </ol>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-base">-</span>
                         )}
                       </TableCell>
                     </TableRow>
