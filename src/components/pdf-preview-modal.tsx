@@ -197,13 +197,30 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
     }
   });
 
-  container.querySelectorAll('.bg-blue-200, .bg-blue-400, [class*="bg-blue-"]').forEach((el) => {
-    const htmlEl = el as HTMLElement;
-    htmlEl.style.backgroundColor = "transparent";
-    htmlEl.style.border = "1px solid #000";
-  });
+  if (!isRoundRobin) {
+    container.querySelectorAll('.bg-blue-200, .bg-blue-400, [class*="bg-blue-"]').forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      htmlEl.style.backgroundColor = "transparent";
+      htmlEl.style.border = "1px solid #000";
+    });
+  }
 
   container.querySelectorAll('.hide-in-pdf').forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.display = "none";
+  });
+
+  container.querySelectorAll('.reasoning-tooltip').forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.display = "none";
+  });
+
+  container.querySelectorAll('[data-radix-tooltip-trigger], [data-radix-tooltip-content], [data-radix-popper-content-wrapper]').forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.display = "none";
+  });
+
+  container.querySelectorAll('[role="tooltip"]').forEach((el) => {
     const htmlEl = el as HTMLElement;
     htmlEl.style.display = "none";
   });
@@ -221,7 +238,7 @@ const applyPrintStyles = (container: HTMLElement, settings: { whiteBackground: b
 
     container.querySelectorAll('*').forEach((element) => {
       const htmlEl = element as HTMLElement;
-      if (htmlEl.className.includes('w-[') || htmlEl.className.includes('overflow-x-')) {
+      if (htmlEl.className && typeof htmlEl.className === 'string' && (htmlEl.className.includes('w-[') || htmlEl.className.includes('overflow-x-'))) {
         htmlEl.style.width = '100%';
         htmlEl.style.maxWidth = 'none';
         htmlEl.style.minWidth = '0';

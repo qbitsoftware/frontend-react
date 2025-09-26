@@ -27,6 +27,7 @@ export type Participant = {
   version: number;
   extra_data: PartipantExtraData;
   is_active?: boolean;
+  reasoning?: string[]
 };
 
 interface Deleted_at {

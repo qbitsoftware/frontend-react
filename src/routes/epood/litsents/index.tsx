@@ -6,6 +6,8 @@ import {
   ShoppingCart,
   User as UserIcon,
   UserPlus,
+  XCircle,
+  BadgeCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -60,6 +62,11 @@ function RouteComponent() {
   const [showLicenseTermsModal, setShowLicenseTermsModal] = useState(false);
   const createPaymentMutation = useCreatePayment();
   const checkPaymentStatusMutation = useCheckPaymentStatus();
+  const [lookupResult, setLookupResult] = useState<User | null>(null);
+
+  const handlePlayerLookup = (user: User) => {
+    setLookupResult(user);
+  };
 
   const licenseTypes = [
     {
@@ -156,9 +163,9 @@ function RouteComponent() {
     const isAlreadyAdded = players.some(
       (existingPlayer) =>
         existingPlayer.first_name.toLowerCase() ===
-          playerData.first_name.toLowerCase() &&
+        playerData.first_name.toLowerCase() &&
         existingPlayer.last_name.toLowerCase() ===
-          playerData.last_name.toLowerCase() &&
+        playerData.last_name.toLowerCase() &&
         existingPlayer.birth_date === playerData.birth_date
     );
 
@@ -206,33 +213,33 @@ function RouteComponent() {
       club:
         clubName !== "KLUBITU"
           ? {
-              id: 0,
-              name: clubName,
-              created_at: "",
-              updated_at: "",
-              deleted_at: null,
-              email: "",
-              phone: "",
-              contact_person: "",
-              address: "",
-              website: "",
-              organization_id: 0,
-              image_url: "",
-            }
+            id: 0,
+            name: clubName,
+            created_at: "",
+            updated_at: "",
+            deleted_at: null,
+            email: "",
+            phone: "",
+            contact_person: "",
+            address: "",
+            website: "",
+            organization_id: 0,
+            image_url: "",
+          }
           : {
-              id: 0,
-              name: "KLUBITU",
-              created_at: "",
-              updated_at: "",
-              deleted_at: null,
-              email: "",
-              phone: "",
-              contact_person: "",
-              address: "",
-              website: "",
-              organization_id: 0,
-              image_url: "",
-            },
+            id: 0,
+            name: "KLUBITU",
+            created_at: "",
+            updated_at: "",
+            deleted_at: null,
+            email: "",
+            phone: "",
+            contact_person: "",
+            address: "",
+            website: "",
+            organization_id: 0,
+            image_url: "",
+          },
       rate_order: 0,
       rate_pl_points: 0,
       rate_points: 0,
@@ -467,53 +474,54 @@ function RouteComponent() {
   };
 
   const handleCompletePayment = async () => {
-    // if (
-    //   !agreedToSalesTerms ||
-    //   !agreedToLicenseTerms ||
-    //   !agreedToGuardianConsent
-    // ) {
-    //   toast.error(t("licenses.terms.must_agree_to_terms"));
-    //   return;
-    // }
+    if (
+      !agreedToSalesTerms ||
+      !agreedToLicenseTerms ||
+      !agreedToGuardianConsent
+    ) {
+      toast.error(t("licenses.terms.must_agree_to_terms"));
+      return;
+    }
 
-    // if (!email || !validateEmail(email)) {
-    //   setEmailError(t("licenses.payment.email_invalid"));
-    //   return;
-    // }
+    if (!email || !validateEmail(email)) {
+      setEmailError(t("licenses.payment.email_invalid"));
+      return;
+    }
 
-    // if (players.length === 0) {
-    //   toast.error(t("licenses.payment.no_players"));
-    //   return;
-    // }
+    if (players.length === 0) {
+      toast.error(t("licenses.payment.no_players"));
+      return;
+    }
 
-    // const paymentData = {
-    //   email,
-    //   players: players.map((player) => ({
-    //     id: player.id,
-    //     first_name: player.first_name,
-    //     last_name: player.last_name,
-    //     birth_date: player.birth_date,
-    //     licenseType: player.selectedLicenseType || LicenseType.ADULT,
-    //     eltl_id: player.eltl_id,
-    //     club_name: player.club?.name || "KLUBITU",
-    //     selected_license_duration: player.selectedLicenseDuration || 1,
-    //   })),
-    //   currency: "EUR",
-    // };
+    const paymentData = {
+      email,
+      players: players.map((player) => ({
+        id: player.id,
+        first_name: player.first_name,
+        last_name: player.last_name,
+        birth_date: player.birth_date,
+        licenseType: player.selectedLicenseType || LicenseType.ADULT,
+        eltl_id: player.eltl_id,
+        club_name: player.club?.name || "KLUBITU",
+        selected_license_duration: player.selectedLicenseDuration || 1,
+        foreigner: player.foreigner || 0,
+      })),
+      currency: "EUR",
+    };
 
-    // try {
-    //   const result = await createPaymentMutation.mutateAsync(paymentData);
-    //   if (result.data?.payment_url) {
-    //     window.location.href = result.data.payment_url;
-    //   } else {
-    //     toast.error(t("licenses.payment.creation_failed"));
-    //   }
-    // } catch (error) {
-    //   console.error("Payment creation error:", error);
-    //   toast.error(t("licenses.payment.creation_failed"));
-    // }
+    try {
+      const result = await createPaymentMutation.mutateAsync(paymentData);
+      if (result.data?.payment_url) {
+        window.location.href = result.data.payment_url;
+      } else {
+        toast.error(t("licenses.payment.creation_failed"));
+      }
+    } catch (error) {
+      console.error("Payment creation error:", error);
+      toast.error(t("licenses.payment.creation_failed"));
+    }
 
-    toast.message(t('licenses.payment.october_notice'))
+    // toast.message(t('licenses.payment.october_notice'))
   };
 
   return (
@@ -521,12 +529,67 @@ function RouteComponent() {
       <div className="py-2 sm:py-4">
         <div className="lg:rounded-lg px-3 sm:px-4 lg:px-12 py-3 sm:py-6">
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            <div className="flex items-center gap-4 pb-6 border-b border-gray-200/50">
-              <div className="w-1 h-8 bg-[#4C97F1] rounded-full"></div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {t("licenses.page_title")}
-              </h1>
+            <div className="flex items-center gap-4 pb-6 border-b border-gray-200/50 flex-col sm:flex-row sm:justify-between">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                <div className="w-1 h-8 bg-[#4C97F1] rounded-full"></div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {t("licenses.page_title")}
+                </h1>
+              </div>
+              <div className="w-full sm:w-auto mt-4 sm:mt-0 relative">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 shadow-sm flex flex-col sm:flex-row sm:items-center gap-2">
+                  <div className="font-semibold text-blue-900 text-sm mb-2 sm:mb-0 sm:mr-3">
+                    {t("licenses.quick_lookup.title", "Player Lookup")}
+                  </div>
+                  <div className="flex-1 relative w-full sm:w-[265px] md:w-[300px]">
+                    <PlayerSearchInput
+                      placeholder={t(
+                        "licenses.add_player.search_placeholder"
+                      )}
+                      className="w-full"
+                      inputClassName="border-2 border-gray-200 hover:border-[#4C97F1]/50 focus:border-[#4C97F1] rounded-xl px-4 py-2 shadow-sm transition-all text-xs sm:text-sm"
+                      onPlayerSelect={handlePlayerLookup}
+                      translationPrefix="licenses.add_player"
+                    />
+                    {lookupResult && (
+                      <div
+                        className="absolute left-0 w-full sm:max-w-[220px] md:max-w-[300px] min-w-[220px] z-20 mt-2 bg-white border border-blue-200 rounded-lg shadow-lg p-3 animate-fade-in flex flex-col"
+                        style={{ top: '100%' }}
+                      >
+                        <button
+                          className="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1 rounded"
+                          onClick={() => setLookupResult(null)}
+                          aria-label="Close"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                        <div className="font-semibold text-blue-900 pr-6">
+                          {lookupResult.first_name} {lookupResult.last_name}
+                        </div>
+                        <div className="text-xs text-gray-700">
+                          ELTL ID: {lookupResult.eltl_id || "-"}
+                        </div>
+                        <div className="mt-1 flex items-center gap-1 text-xs">
+                          {lookupResult.license && lookupResult.expiration_date ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-800 font-medium">
+                              <BadgeCheck className="w-4 h-4 mr-1" />
+                              {t("licenses.status.active", "Active")} (
+                              {new Date(lookupResult.expiration_date).toLocaleDateString("et-EE")})
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-medium">
+                              <XCircle className="w-4 h-4 mr-1" />
+                              {t("licenses.status.inactive", "Inactive")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div className="mt-4 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-3 sm:p-4 shadow-sm mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-1 h-4 bg-green-600 rounded-full"></div>
@@ -752,9 +815,9 @@ function RouteComponent() {
                                   const basePrice = license
                                     ? license.price
                                     : getLicenseTypePrice(
-                                        player.selectedLicenseType ||
-                                          LicenseType.ADULT
-                                      );
+                                      player.selectedLicenseType ||
+                                      LicenseType.ADULT
+                                    );
                                   const duration =
                                     player.selectedLicenseDuration || 1;
                                   return basePrice * duration;
@@ -849,11 +912,10 @@ function RouteComponent() {
                     value={email}
                     onChange={(e) => handleEmailChange(e.target.value)}
                     placeholder={t("licenses.payment.email_placeholder")}
-                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm text-sm ${
-                      emailError
-                        ? "border-red-300 focus:border-red-500"
-                        : "border-gray-200 hover:border-green-400 focus:border-green-500"
-                    }`}
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm text-sm ${emailError
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-200 hover:border-green-400 focus:border-green-500"
+                      }`}
                   />
                   {emailError && (
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">

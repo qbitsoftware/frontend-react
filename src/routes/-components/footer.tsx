@@ -164,15 +164,15 @@ export default function Footer() {
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground font-['Inter']">Powered by</span>
               <a
-                href="https://tournament10.com"
+                href="https://sportsoftware.ai"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition-opacity duration-300 hover:opacity-80"
               >
                 <img 
-                  src="/t10logo_text.svg" 
-                  alt="Tournament10" 
-                  className="h-6" 
+                  src="/sportsoftware_logo.svg" 
+                  alt="SportSoftware" 
+                  className="h-8" 
                 />
               </a>
             </div>

@@ -337,6 +337,9 @@
   "licenses": {
     "title": "Licenses",
     "page_title": "Player License Purchase/Renewal",
+    "quick_lookup": {
+      "title": "Player Lookup"
+    },
     "add_player": {
       "title": "Add Player",
       "search_placeholder": "Search for existing player...",
@@ -353,7 +356,6 @@
       "birth_year": "Birth Year",
       "isikukood": "Estonian National ID Code",
       "club": "Club Name",
-      "gender": "Gender",
       "gender_male": "Male",
       "gender_female": "Female",
       "add_to_list": "Add Player to List",
@@ -362,7 +364,12 @@
       "no_estonian_id": "I don't have an Estonian ID code",
       "search_club": "Search for club...",
       "no_clubs_found": "No clubs found",
-      "auto_generated": "Auto-generated from ID code"
+      "auto_generated": "Auto-generated from ID code",
+      "gender": {
+        "placeholder": "Sex",
+        "male": "Male",
+        "female": "Female"
+      }
     },
     "payment": {
       "email_label": "Email Address",
@@ -567,7 +574,15 @@
       "solo_team": "Player",
       "total_points": "Total points",
       "placement": "Live placement",
-      "no_results": "No results"
+      "no_results": "No results",
+      "tiebreaker_reasons": "How ties are broken",
+      "tiebreaker": {
+        "REASON_HEAD_TO_HEAD": "Head-to-head results",
+        "REASON_FORFEIT": "Win by forfeit",
+        "REASON_SET_DIFFERENCE": "Set difference",
+        "REASON_POINTS": "Point difference",
+        "REASON_RANDOM": "Random"
+      }
     },
     "standings": {
       "og_placement": "Seed",

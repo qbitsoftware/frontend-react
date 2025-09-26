@@ -64,8 +64,8 @@ export default function TeamParticipants({ tournament_id, tournament_table, part
             sport_type: "tabletennis",
             order: participants.length + 1,
             group_id: group_participant?.id,
-            players: []
-
+            players: [],
+            group: 1,
         }
         try {
             await addOrUpdateParticipant(new_participant)
