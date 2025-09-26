@@ -156,9 +156,9 @@ function RouteComponent() {
     const isAlreadyAdded = players.some(
       (existingPlayer) =>
         existingPlayer.first_name.toLowerCase() ===
-          playerData.first_name.toLowerCase() &&
+        playerData.first_name.toLowerCase() &&
         existingPlayer.last_name.toLowerCase() ===
-          playerData.last_name.toLowerCase() &&
+        playerData.last_name.toLowerCase() &&
         existingPlayer.birth_date === playerData.birth_date
     );
 
@@ -206,33 +206,33 @@ function RouteComponent() {
       club:
         clubName !== "KLUBITU"
           ? {
-              id: 0,
-              name: clubName,
-              created_at: "",
-              updated_at: "",
-              deleted_at: null,
-              email: "",
-              phone: "",
-              contact_person: "",
-              address: "",
-              website: "",
-              organization_id: 0,
-              image_url: "",
-            }
+            id: 0,
+            name: clubName,
+            created_at: "",
+            updated_at: "",
+            deleted_at: null,
+            email: "",
+            phone: "",
+            contact_person: "",
+            address: "",
+            website: "",
+            organization_id: 0,
+            image_url: "",
+          }
           : {
-              id: 0,
-              name: "KLUBITU",
-              created_at: "",
-              updated_at: "",
-              deleted_at: null,
-              email: "",
-              phone: "",
-              contact_person: "",
-              address: "",
-              website: "",
-              organization_id: 0,
-              image_url: "",
-            },
+            id: 0,
+            name: "KLUBITU",
+            created_at: "",
+            updated_at: "",
+            deleted_at: null,
+            email: "",
+            phone: "",
+            contact_person: "",
+            address: "",
+            website: "",
+            organization_id: 0,
+            image_url: "",
+          },
       rate_order: 0,
       rate_pl_points: 0,
       rate_points: 0,
@@ -467,53 +467,53 @@ function RouteComponent() {
   };
 
   const handleCompletePayment = async () => {
-    // if (
-    //   !agreedToSalesTerms ||
-    //   !agreedToLicenseTerms ||
-    //   !agreedToGuardianConsent
-    // ) {
-    //   toast.error(t("licenses.terms.must_agree_to_terms"));
-    //   return;
-    // }
+    if (
+      !agreedToSalesTerms ||
+      !agreedToLicenseTerms ||
+      !agreedToGuardianConsent
+    ) {
+      toast.error(t("licenses.terms.must_agree_to_terms"));
+      return;
+    }
 
-    // if (!email || !validateEmail(email)) {
-    //   setEmailError(t("licenses.payment.email_invalid"));
-    //   return;
-    // }
+    if (!email || !validateEmail(email)) {
+      setEmailError(t("licenses.payment.email_invalid"));
+      return;
+    }
 
-    // if (players.length === 0) {
-    //   toast.error(t("licenses.payment.no_players"));
-    //   return;
-    // }
+    if (players.length === 0) {
+      toast.error(t("licenses.payment.no_players"));
+      return;
+    }
 
-    // const paymentData = {
-    //   email,
-    //   players: players.map((player) => ({
-    //     id: player.id,
-    //     first_name: player.first_name,
-    //     last_name: player.last_name,
-    //     birth_date: player.birth_date,
-    //     licenseType: player.selectedLicenseType || LicenseType.ADULT,
-    //     eltl_id: player.eltl_id,
-    //     club_name: player.club?.name || "KLUBITU",
-    //     selected_license_duration: player.selectedLicenseDuration || 1,
-    //   })),
-    //   currency: "EUR",
-    // };
+    const paymentData = {
+      email,
+      players: players.map((player) => ({
+        id: player.id,
+        first_name: player.first_name,
+        last_name: player.last_name,
+        birth_date: player.birth_date,
+        licenseType: player.selectedLicenseType || LicenseType.ADULT,
+        eltl_id: player.eltl_id,
+        club_name: player.club?.name || "KLUBITU",
+        selected_license_duration: player.selectedLicenseDuration || 1,
+      })),
+      currency: "EUR",
+    };
 
-    // try {
-    //   const result = await createPaymentMutation.mutateAsync(paymentData);
-    //   if (result.data?.payment_url) {
-    //     window.location.href = result.data.payment_url;
-    //   } else {
-    //     toast.error(t("licenses.payment.creation_failed"));
-    //   }
-    // } catch (error) {
-    //   console.error("Payment creation error:", error);
-    //   toast.error(t("licenses.payment.creation_failed"));
-    // }
+    try {
+      const result = await createPaymentMutation.mutateAsync(paymentData);
+      if (result.data?.payment_url) {
+        window.location.href = result.data.payment_url;
+      } else {
+        toast.error(t("licenses.payment.creation_failed"));
+      }
+    } catch (error) {
+      console.error("Payment creation error:", error);
+      toast.error(t("licenses.payment.creation_failed"));
+    }
 
-    toast.message(t('licenses.payment.october_notice'))
+    // toast.message(t('licenses.payment.october_notice'))
   };
 
   return (
@@ -752,9 +752,9 @@ function RouteComponent() {
                                   const basePrice = license
                                     ? license.price
                                     : getLicenseTypePrice(
-                                        player.selectedLicenseType ||
-                                          LicenseType.ADULT
-                                      );
+                                      player.selectedLicenseType ||
+                                      LicenseType.ADULT
+                                    );
                                   const duration =
                                     player.selectedLicenseDuration || 1;
                                   return basePrice * duration;
@@ -849,11 +849,10 @@ function RouteComponent() {
                     value={email}
                     onChange={(e) => handleEmailChange(e.target.value)}
                     placeholder={t("licenses.payment.email_placeholder")}
-                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm text-sm ${
-                      emailError
-                        ? "border-red-300 focus:border-red-500"
-                        : "border-gray-200 hover:border-green-400 focus:border-green-500"
-                    }`}
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none transition-all shadow-sm text-sm ${emailError
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-200 hover:border-green-400 focus:border-green-500"
+                      }`}
                   />
                   {emailError && (
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
