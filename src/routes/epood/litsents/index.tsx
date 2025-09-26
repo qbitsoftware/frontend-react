@@ -474,54 +474,54 @@ function RouteComponent() {
   };
 
   const handleCompletePayment = async () => {
-    if (
-      !agreedToSalesTerms ||
-      !agreedToLicenseTerms ||
-      !agreedToGuardianConsent
-    ) {
-      toast.error(t("licenses.terms.must_agree_to_terms"));
-      return;
-    }
+    // if (
+    //   !agreedToSalesTerms ||
+    //   !agreedToLicenseTerms ||
+    //   !agreedToGuardianConsent
+    // ) {
+    //   toast.error(t("licenses.terms.must_agree_to_terms"));
+    //   return;
+    // }
 
-    if (!email || !validateEmail(email)) {
-      setEmailError(t("licenses.payment.email_invalid"));
-      return;
-    }
+    // if (!email || !validateEmail(email)) {
+    //   setEmailError(t("licenses.payment.email_invalid"));
+    //   return;
+    // }
 
-    if (players.length === 0) {
-      toast.error(t("licenses.payment.no_players"));
-      return;
-    }
+    // if (players.length === 0) {
+    //   toast.error(t("licenses.payment.no_players"));
+    //   return;
+    // }
 
-    const paymentData = {
-      email,
-      players: players.map((player) => ({
-        id: player.id,
-        first_name: player.first_name,
-        last_name: player.last_name,
-        birth_date: player.birth_date,
-        licenseType: player.selectedLicenseType || LicenseType.ADULT,
-        eltl_id: player.eltl_id,
-        club_name: player.club?.name || "KLUBITU",
-        selected_license_duration: player.selectedLicenseDuration || 1,
-        foreigner: player.foreigner || 0,
-      })),
-      currency: "EUR",
-    };
+    // const paymentData = {
+    //   email,
+    //   players: players.map((player) => ({
+    //     id: player.id,
+    //     first_name: player.first_name,
+    //     last_name: player.last_name,
+    //     birth_date: player.birth_date,
+    //     licenseType: player.selectedLicenseType || LicenseType.ADULT,
+    //     eltl_id: player.eltl_id,
+    //     club_name: player.club?.name || "KLUBITU",
+    //     selected_license_duration: player.selectedLicenseDuration || 1,
+    //     foreigner: player.foreigner || 0,
+    //   })),
+    //   currency: "EUR",
+    // };
 
-    try {
-      const result = await createPaymentMutation.mutateAsync(paymentData);
-      if (result.data?.payment_url) {
-        window.location.href = result.data.payment_url;
-      } else {
-        toast.error(t("licenses.payment.creation_failed"));
-      }
-    } catch (error) {
-      console.error("Payment creation error:", error);
-      toast.error(t("licenses.payment.creation_failed"));
-    }
+    // try {
+    //   const result = await createPaymentMutation.mutateAsync(paymentData);
+    //   if (result.data?.payment_url) {
+    //     window.location.href = result.data.payment_url;
+    //   } else {
+    //     toast.error(t("licenses.payment.creation_failed"));
+    //   }
+    // } catch (error) {
+    //   console.error("Payment creation error:", error);
+    //   toast.error(t("licenses.payment.creation_failed"));
+    // }
 
-    // toast.message(t('licenses.payment.october_notice'))
+    toast.message(t('licenses.payment.october_notice'))
   };
 
   return (
