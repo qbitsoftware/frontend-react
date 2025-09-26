@@ -369,6 +369,9 @@
   "licenses": {
     "title": "Litsentsid",
     "page_title": "Mängija litsentsi ostmine/uuendamine",
+    "quick_lookup": {
+      "title": "Mängija otsing"
+    },
     "add_player": {
       "search_placeholder": "Otsi olemasolevat mängijat...",
       "add_new_player": "Lisa uus mängija",

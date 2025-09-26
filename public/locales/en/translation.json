@@ -337,6 +337,9 @@
   "licenses": {
     "title": "Licenses",
     "page_title": "Player License Purchase/Renewal",
+    "quick_lookup": {
+      "title": "Player Lookup"
+    },
     "add_player": {
       "title": "Add Player",
       "search_placeholder": "Search for existing player...",
