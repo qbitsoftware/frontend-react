@@ -241,7 +241,7 @@ export default function GroupRow({ participant, index, tournament_id, tournament
                         <Table>
                             <ParticipantHeader team={true} />
                             <TableBody>
-                                {participantState.players && participantState.players.map((player, idx) => (
+                                {participantState.players && participantState.players.sort((a, b) => b.extra_data.rate_points - a.extra_data.rate_points).map((player, idx) => (
                                     <PlayerRow key={idx} player={player} participant={participantState} index={idx} updateField={(field, value) => updateField(field, value)} tournament_id={tournament_id} tournament_table={tournament_table} />
                                 ))}
                                 {(tournament_table.dialog_type === DialogType.DT_DOUBLES || tournament_table.dialog_type === DialogType.DT_FIXED_DOUBLES) && participantState.players && participantState.players.length >= 2 ? null : (
